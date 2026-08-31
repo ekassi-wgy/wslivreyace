@@ -69,6 +69,50 @@
     setActive(0);
   }
 
+  /* --- Frise : filtrage par periode -------------------------------------
+     Le depliement des entrees est gere par le collapse de Bootstrap ; ce
+     bloc ne fait que masquer les entrees hors periode. */
+
+  var chips = document.querySelectorAll(".chip[data-period]");
+  var entries = document.querySelectorAll(".chrono__item[data-period]");
+
+  if (chips.length && entries.length) {
+    chips.forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        var wanted = chip.dataset.period;
+        chips.forEach(function (c) {
+          var on = c === chip;
+          c.classList.toggle("is-active", on);
+          c.setAttribute("aria-pressed", String(on));
+        });
+        entries.forEach(function (item) {
+          item.hidden = wanted !== "tout" && item.dataset.period !== wanted;
+        });
+      });
+    });
+  }
+
+  /* --- Sommaire lateral : reperage de la section courante --------------- */
+
+  var subLinks = Array.prototype.slice.call(document.querySelectorAll(".subnav a[href^='#']"));
+
+  if (subLinks.length && "IntersectionObserver" in window) {
+    var sections = subLinks
+      .map(function (a) { return document.querySelector(a.getAttribute("href")); })
+      .filter(Boolean);
+
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        subLinks.forEach(function (a) {
+          a.classList.toggle("is-active", a.getAttribute("href") === "#" + entry.target.id);
+        });
+      });
+    }, { rootMargin: "-30% 0px -60% 0px" });
+
+    sections.forEach(function (el) { spy.observe(el); });
+  }
+
   /* --- Apparition au defilement ---------------------------------------
      Le decalage est calcule par groupe : les elements d'une meme section
      entrent en cascade, jamais tous ensemble. */

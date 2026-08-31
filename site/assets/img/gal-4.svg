@@ -1,24 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-label="ARCHIVE 04">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1125" width="2000" height="1125" role="img" aria-label="ARCHIVE 04 — gabarit 2000 par 1125 pixels">
   <defs>
-    <filter id="g7" x="0" y="0" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="119"/>
+    <filter id="g11" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="187"/>
       <feColorMatrix type="saturate" values="0"/>
       <feComponentTransfer><feFuncA type="linear" slope="0.055"/></feComponentTransfer>
     </filter>
-    <linearGradient id="v7" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#6E685C" stop-opacity="0.28"/>
+    <linearGradient id="v11" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6E685C" stop-opacity="0.26"/>
       <stop offset="1" stop-color="#6E685C" stop-opacity="0.02"/>
     </linearGradient>
-    <clipPath id="c7"><rect width="1600" height="900"/></clipPath>
+    <clipPath id="c11"><rect width="2000" height="1125"/></clipPath>
   </defs>
-  <g clip-path="url(#c7)">
-    <rect width="1600" height="900" fill="#C8C1B2"/>
-    <circle cx="496" cy="342" r="243" fill="#6E685C" opacity="0.20"/>
-    <rect x="0" y="558" width="1600" height="900" fill="url(#v7)"/>
-    <path d="M0 666 Q 560 540 1600 720 L 1600 900 L 0 900 Z" fill="#6E685C" opacity="0.16"/>
-    <rect width="1600" height="900" filter="url(#g7)" opacity="0.9"/>
-    <text x="800" y="450" font-family="Jost, Futura, sans-serif" font-size="26"
-          letter-spacing="5" fill="#5A544A" opacity="0.62"
-          text-anchor="middle" dominant-baseline="middle">ARCHIVE 04</text>
+  <g clip-path="url(#c11)">
+    <rect width="2000" height="1125" fill="#C8C1B2"/>
+    <circle cx="300" cy="405" r="438" fill="#6E685C" opacity="0.18"/>
+    <rect x="0" y="697" width="2000" height="1125" fill="url(#v11)"/>
+    <path d="M0 832 Q 700 675 2000 900 L 2000 1125 L 0 1125 Z" fill="#6E685C" opacity="0.15"/>
+    <rect x="80" y="80" width="1840" height="965" fill="none" stroke="#5A544A" stroke-opacity="0.28" stroke-width="1" stroke-dasharray="37 25"/>
+    <rect width="2000" height="1125" filter="url(#g11)" opacity="0.9"/>
+    <g font-family="Jost, Futura, Century Gothic, sans-serif" text-anchor="middle" fill="#4A443B">
+      <text x="1000" y="506" font-size="28" letter-spacing="7" opacity="0.72">ARCHIVE 04</text>
+      <text x="1000" y="590" font-size="56" font-weight="500" letter-spacing="2" opacity="0.92">2000 &#215; 1125 px</text>
+      <text x="1000" y="674" font-size="19" letter-spacing="3" opacity="0.6">PANORAMIQUE 16:9</text>
+    </g>
   </g>
 </svg>

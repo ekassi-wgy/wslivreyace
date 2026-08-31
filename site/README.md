@@ -55,7 +55,9 @@ template. Une seule animation appuyée : la révélation par masque des titres d
 
 ```
 site/
-├── index.html              page d'accueil
+├── index.html              accueil
+├── le-livre.html           l'ouvrage (CDC §4.2 et §4.3)
+├── biographie.html         le personnage (CDC §4.4)
 └── assets/
     ├── css/tokens.css      jetons : couleurs, typo, rythme, mouvement
     ├── css/base.css        reset, neutralisation Bootstrap, typographie
@@ -104,8 +106,31 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
 
 - **Logotype** — le verrou de `index.html` est une reconstruction HTML approchée.
   Remplacer par le SVG officiel (`.logo`, présent dans l'en-tête et le pied).
-- **Visuels** — les huit `.svg` de `assets/img/` sont des cadres d'attente générés.
-  Prévoir un traitement homogène des archives (voir CDC §6).
+- **Visuels** — les `.svg` de `assets/img/` sont des cadres d'attente générés. Chacun
+  affiche la dimension de livraison attendue et son cadrage. Ces valeurs sont calculées
+  sur la largeur réelle d'affichage en écran 2× ; le hero est en dérive `scale(1.1)`,
+  d'où sa marge supplémentaire.
+
+  | Fichier | Dimensions | Cadrage |
+  |---|---|---|
+  | `hero-1/2/3.svg` | **2000 × 2600 px** | portrait, sujet décentré à droite |
+  | `couverture.svg` | **1200 × 1550 px** | ratio 240 × 310 mm |
+  | `portrait.svg` | **1400 × 1750 px** | buste |
+  | `auteur.svg` | **1000 × 1250 px** | portrait 4:5 |
+  | `extrait-1/2.svg` | **1500 × 1000 px** | double page |
+  | `gal-1.svg` | **1800 × 1350 px** | paysage 4:3 |
+  | `gal-2.svg` | **1300 × 1730 px** | portrait 3:4 |
+  | `gal-3.svg` | **1100 × 1100 px** | carré |
+  | `gal-4.svg` | **2000 × 1125 px** | panoramique 16:9 |
+
+  Les visuels du hero sont recadrés en `object-fit: cover` sur un panneau vertical :
+  **prévoir le sujet dans la moitié droite**, la gauche étant recouverte par le voile
+  papier. Livrer en JPEG qualité 80 après redimensionnement — les archives brutes sont
+  souvent bien plus lourdes que nécessaire (CDC §5, performance).
+
+  Traitement homogène des archives : le CSS applique déjà
+  `grayscale(1) contrast(1.04) sepia(0.14)`, ce qui unifie des sources d'origines
+  diverses sans retouche préalable (CDC §6).
 - **Contenus** — tout le texte éditorial est balisé provisoire. **Les dates de la frise
   et les citations doivent être validées avant publication** : Yacé est une figure
   historique réelle, aucun propos ne doit lui être attribué sans source.
@@ -113,10 +138,25 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
 
 ---
 
-## 6. Couverture du cahier des charges
+## 6. Dette connue
+
+La navigation et le pied de page sont **dupliqués à l'identique** dans les trois pages
+(vérifié par empreinte). C'est tenable à trois pages, pas à douze : ils doivent devenir
+des gabarits partagés dès que le socle applicatif est choisi. C'est la première tâche
+de la phase 2.
+
+## 7. Couverture du cahier des charges
 
 Accueil (§4.1) — **complet** : hero slider, accroche, aperçu du livre, teaser
 biographie, frise de repères, témoignages, actualités, CTA commande.
+
+Le livre (§4.2) — **complet** : résumé long, mot de l'éditeur, fiche technique,
+sommaire, extrait, feuilletage, où acheter. L'auteur (§4.3) y est traité en section
+plutôt qu'en page dédiée, faute de matière ; à détacher dès que le contenu existe.
+
+Biographie (§4.4) — **complet** : contexte historique, biographie structurée en cinq
+chapitres avec sommaire latéral collé, frise chronologique filtrable par période et
+dépliable, citations, galerie de portraits.
 
 Transverses (§5) — **partiel** : responsive, accessibilité, structure sémantique,
 métadonnées, schema.org `Book`/`Person`, lazy loading sont en place. Newsletter,

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1250" width="1000" height="1250" role="img" aria-label="AUTEUR — gabarit 1000 par 1250 pixels">
+  <defs>
+    <filter id="g5" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="85"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.055"/></feComponentTransfer>
+    </filter>
+    <linearGradient id="v5" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7A7466" stop-opacity="0.26"/>
+      <stop offset="1" stop-color="#7A7466" stop-opacity="0.02"/>
+    </linearGradient>
+    <clipPath id="c5"><rect width="1000" height="1250"/></clipPath>
+  </defs>
+  <g clip-path="url(#c5)">
+    <rect width="1000" height="1250" fill="#CFC8BA"/>
+    <circle cx="390" cy="450" r="290" fill="#7A7466" opacity="0.18"/>
+    <rect x="0" y="775" width="1000" height="1250" fill="url(#v5)"/>
+    <path d="M0 925 Q 350 750 1000 1000 L 1000 1250 L 0 1250 Z" fill="#7A7466" opacity="0.15"/>
+    <rect x="71" y="71" width="858" height="1108" fill="none" stroke="#5A544A" stroke-opacity="0.28" stroke-width="1" stroke-dasharray="33 22"/>
+    <rect width="1000" height="1250" filter="url(#g5)" opacity="0.9"/>
+    <g font-family="Jost, Futura, Century Gothic, sans-serif" text-anchor="middle" fill="#4A443B">
+      <text x="500" y="575" font-size="25" letter-spacing="6" opacity="0.72">AUTEUR</text>
+      <text x="500" y="650" font-size="50" font-weight="500" letter-spacing="2" opacity="0.92">1000 &#215; 1250 px</text>
+      <text x="500" y="725" font-size="17" letter-spacing="2" opacity="0.6">PORTRAIT 4:5</text>
+    </g>
+  </g>
+</svg>

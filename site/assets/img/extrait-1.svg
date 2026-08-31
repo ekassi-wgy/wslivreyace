@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1000" width="1500" height="1000" role="img" aria-label="EXTRAIT 01 — gabarit 1500 par 1000 pixels">
+  <defs>
+    <filter id="g6" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="102"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.055"/></feComponentTransfer>
+    </filter>
+    <linearGradient id="v6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9A9386" stop-opacity="0.26"/>
+      <stop offset="1" stop-color="#9A9386" stop-opacity="0.02"/>
+    </linearGradient>
+    <clipPath id="c6"><rect width="1500" height="1000"/></clipPath>
+  </defs>
+  <g clip-path="url(#c6)">
+    <rect width="1500" height="1000" fill="#E1DBD0"/>
+    <circle cx="270" cy="360" r="360" fill="#9A9386" opacity="0.18"/>
+    <rect x="0" y="620" width="1500" height="1000" fill="url(#v6)"/>
+    <path d="M0 740 Q 525 600 1500 800 L 1500 1000 L 0 1000 Z" fill="#9A9386" opacity="0.15"/>
+    <rect x="71" y="71" width="1358" height="858" fill="none" stroke="#5A544A" stroke-opacity="0.28" stroke-width="1" stroke-dasharray="33 22"/>
+    <rect width="1500" height="1000" filter="url(#g6)" opacity="0.9"/>
+    <g font-family="Jost, Futura, Century Gothic, sans-serif" text-anchor="middle" fill="#4A443B">
+      <text x="750" y="450" font-size="25" letter-spacing="6" opacity="0.72">EXTRAIT 01</text>
+      <text x="750" y="525" font-size="50" font-weight="500" letter-spacing="2" opacity="0.92">1500 &#215; 1000 px</text>
+      <text x="750" y="600" font-size="17" letter-spacing="2" opacity="0.6">DOUBLE PAGE</text>
+    </g>
+  </g>
+</svg>

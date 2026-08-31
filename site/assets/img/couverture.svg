@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1400" width="1000" height="1400" role="img" aria-label="COUVERTURE — A FOURNIR">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1550" width="1200" height="1550" role="img" aria-label="COUVERTURE — gabarit 1200 par 1550 pixels">
   <defs>
     <filter id="g3" x="0" y="0" width="100%" height="100%">
       <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="51"/>
@@ -6,19 +6,22 @@
       <feComponentTransfer><feFuncA type="linear" slope="0.055"/></feComponentTransfer>
     </filter>
     <linearGradient id="v3" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#6E685C" stop-opacity="0.28"/>
+      <stop offset="0" stop-color="#6E685C" stop-opacity="0.26"/>
       <stop offset="1" stop-color="#6E685C" stop-opacity="0.02"/>
     </linearGradient>
-    <clipPath id="c3"><rect width="1000" height="1400"/></clipPath>
+    <clipPath id="c3"><rect width="1200" height="1550"/></clipPath>
   </defs>
   <g clip-path="url(#c3)">
-    <rect width="1000" height="1400" fill="#C8C1B2"/>
-    <circle cx="130" cy="532" r="310" fill="#6E685C" opacity="0.20"/>
-    <rect x="0" y="868" width="1000" height="1400" fill="url(#v3)"/>
-    <path d="M0 1036 Q 350 840 1000 1120 L 1000 1400 L 0 1400 Z" fill="#6E685C" opacity="0.16"/>
-    <rect width="1000" height="1400" filter="url(#g3)" opacity="0.9"/>
-    <text x="500" y="700" font-family="Jost, Futura, sans-serif" font-size="29"
-          letter-spacing="5" fill="#5A544A" opacity="0.62"
-          text-anchor="middle" dominant-baseline="middle">COUVERTURE — A FOURNIR</text>
+    <rect width="1200" height="1550" fill="#C8C1B2"/>
+    <circle cx="156" cy="558" r="372" fill="#6E685C" opacity="0.18"/>
+    <rect x="0" y="961" width="1200" height="1550" fill="url(#v3)"/>
+    <path d="M0 1147 Q 420 930 1200 1240 L 1200 1550 L 0 1550 Z" fill="#6E685C" opacity="0.15"/>
+    <rect x="85" y="85" width="1030" height="1380" fill="none" stroke="#5A544A" stroke-opacity="0.28" stroke-width="2" stroke-dasharray="40 26"/>
+    <rect width="1200" height="1550" filter="url(#g3)" opacity="0.9"/>
+    <g font-family="Jost, Futura, Century Gothic, sans-serif" text-anchor="middle" fill="#4A443B">
+      <text x="600" y="715" font-size="30" letter-spacing="8" opacity="0.72">COUVERTURE</text>
+      <text x="600" y="805" font-size="60" font-weight="500" letter-spacing="2" opacity="0.92">1200 &#215; 1550 px</text>
+      <text x="600" y="895" font-size="20" letter-spacing="3" opacity="0.6">RATIO 240 x 310 MM</text>
+    </g>
   </g>
 </svg>
