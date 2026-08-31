@@ -1,0 +1,567 @@
+/* =========================================================================
+   PGY — Composants
+   Chaque composant est reconstruit a partir de zero sur le squelette
+   Bootstrap. Aucun arrondi generique, aucune ombre portee diffuse :
+   la hierarchie est portee par le filet, le blanc et la typographie.
+   ========================================================================= */
+
+/* --- Navigation --------------------------------------------------------
+   Transparente sur le hero, elle ne se materialise qu'au defilement.
+   Le fond se pose alors en papier translucide plutot qu'en bloc opaque :
+   la page continue d'exister derriere elle. */
+
+.nav-bar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: var(--z-nav);
+  padding-block: clamp(1.25rem, 2.4vw, 2.25rem);
+  transition:
+    padding var(--dur-2) var(--ease),
+    background var(--dur-2) var(--ease),
+    border-color var(--dur-2) var(--ease);
+  border-bottom: 1px solid transparent;
+}
+.nav-bar.is-stuck {
+  padding-block: 0.875rem;
+  background: rgba(247, 244, 238, 0.90);
+  border-bottom-color: var(--rule);
+  -webkit-backdrop-filter: saturate(1.4) blur(16px);
+  backdrop-filter: saturate(1.4) blur(16px);
+}
+.nav-bar__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-6);
+}
+
+/* Verrou du logotype. A remplacer par le SVG officiel — voir README. */
+.logo { display: flex; align-items: center; gap: 0.9rem; color: var(--ink); }
+.logo__mark {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.logo__rule { width: 1px; height: 30px; background: var(--rule-strong); }
+.logo__text { line-height: 1.15; }
+.logo__text b {
+  display: block;
+  font-weight: 300;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.logo__text span {
+  display: block;
+  font-weight: 600;
+  font-size: 1.0625rem;
+  letter-spacing: 0.06em;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.5rem, 2.6vw, 2.75rem);
+  list-style: none;
+}
+.nav-menu a {
+  position: relative;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  padding-block: 0.35rem;
+  transition: color var(--dur-1) var(--ease);
+}
+/* Le filet se trace depuis la gauche : un mouvement directionnel se lit,
+   un fondu ne se lit pas. */
+.nav-menu a::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 100%; height: 1px;
+  background: var(--brass);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-2) var(--ease-out);
+}
+.nav-menu a:hover { color: var(--ink); }
+.nav-menu a:hover::after, .nav-menu a:focus-visible::after { transform: scaleX(1); }
+
+/* Le CTA est un <a> dans .nav-menu : sans ce rappel, `.nav-menu a` (0,2,0)
+   l'emporte sur `.btn-pgy` (0,1,0) et peint l'encre sur l'encre (1.4:1). */
+.nav-menu a.btn-pgy { color: var(--paper); }
+.nav-menu a.btn-pgy::after { background: var(--brass-text); transform: translateY(101%); }
+.nav-menu a.btn-pgy:hover { color: var(--paper); }
+.nav-menu a.btn-pgy:hover::after { transform: translateY(0); }
+
+.nav-toggle {
+  display: none;
+  width: 40px; height: 40px;
+  position: relative;
+  cursor: pointer;
+}
+.nav-toggle span {
+  position: absolute;
+  left: 8px;
+  width: 24px; height: 1px;
+  background: var(--ink);
+  transition: transform var(--dur-2) var(--ease-out), opacity var(--dur-1) var(--ease);
+}
+.nav-toggle span:nth-child(1) { top: 15px; }
+.nav-toggle span:nth-child(2) { top: 23px; }
+.nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(4px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span:nth-child(2) { transform: translateY(-4px) rotate(-45deg); }
+
+/* --- Boutons -----------------------------------------------------------
+   Le remplissage monte par le bas au survol. Le geste est court et unique :
+   pas de changement de taille, pas d'ombre, pas de rebond. */
+
+.btn-pgy {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.05rem 2.15rem;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+  color: var(--paper);
+  cursor: pointer;
+  isolation: isolate;
+  overflow: hidden;
+}
+.btn-pgy::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: var(--ink);
+  z-index: -2;
+}
+.btn-pgy::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: var(--brass-text);
+  z-index: -1;
+  transform: translateY(101%);
+  transition: transform var(--dur-2) var(--ease-out);
+}
+.btn-pgy:hover::after, .btn-pgy:focus-visible::after { transform: translateY(0); }
+.btn-pgy__arrow { transition: transform var(--dur-2) var(--ease-out); }
+.btn-pgy:hover .btn-pgy__arrow { transform: translateX(5px); }
+
+.btn-pgy--ghost { color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.btn-pgy--ghost::before { background: none; }
+.btn-pgy--ghost::after { background: var(--ink); }
+.btn-pgy--ghost:hover, .btn-pgy--ghost:focus-visible { color: var(--paper); }
+
+.btn-pgy--light { color: var(--ink); }
+.btn-pgy--light::before { background: var(--paper); }
+.btn-pgy--light::after { background: var(--brass-soft); }
+
+.btn-pgy--sm { padding: 0.8rem 1.5rem; font-size: 0.6875rem; }
+
+/* --- Hero --------------------------------------------------------------
+   Composition volontairement dissymetrique : le texte occupe la moitie
+   gauche et s'aligne bas, l'image deborde le bord droit sans marge.
+   Un hero centre aurait immediatement signe le template. */
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--paper);
+}
+.hero__carousel, .hero .carousel-inner { position: absolute; inset: 0; }
+
+.hero .carousel-item {
+  transition-duration: 1100ms;
+  transition-timing-function: var(--ease);
+}
+.hero .active.carousel-item-start,
+.hero .active.carousel-item-end { transition: opacity 0s 1100ms; }
+
+.hero__slide { position: absolute; inset: 0; }
+
+/* Le panneau image : 52 % de largeur, ancre a droite, plus haut que le
+   bloc texte pour casser tout alignement horizontal. */
+.hero__media {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 52%;
+  overflow: hidden;
+}
+.hero__media::after {         /* voile papier cote gauche : la photo entre
+                                 dans la page au lieu d'y etre collee.
+                                 Feutrage long — un degrade court laisse
+                                 subsister l'arete franche qu'il pretend
+                                 effacer, et le raccord parait inacheve. */
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(96deg,
+    var(--paper) 0%,
+    rgba(247, 244, 238, 0.74) 9%,
+    rgba(247, 244, 238, 0.30) 26%,
+    rgba(247, 244, 238, 0.08) 40%,
+    rgba(247, 244, 238, 0) 54%);
+}
+.hero__img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.04) sepia(0.14);   /* duotone archive */
+  transform: scale(1.1);
+}
+.hero .carousel-item.active .hero__img {
+  animation: heroDrift 9s var(--ease-out) both;      /* derive lente, 9 s */
+}
+@keyframes heroDrift { from { transform: scale(1.1); } to { transform: scale(1); } }
+
+.hero__content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: clamp(7rem, 14vh, 11rem);
+  padding-top: 8rem;
+}
+/* .hero__content est un conteneur flex pour l'alignement bas : sans cette
+   regle la .row devient un flex-item qui se retracte sur son contenu, la
+   colonne tombe a ~250px et le titre est rogne par le masque. */
+.hero__content > .row { flex: 1 1 100%; width: 100%; }
+
+/* Revelation par masque : chaque ligne monte derriere un cache.
+   C'est le seul effet appuye du site — il porte l'entree, rien d'autre. */
+/* Le cache ne doit rogner que verticalement. Le decalage padding/marge rend
+   ses approches laterales, sinon les empattements filiformes du Bodoni et
+   les accents sont rabotes sur les bords. */
+.mask {
+  display: block;
+  overflow: hidden;
+  /* Le cache ne doit rogner que par le bas, la ou le texte entre. Le couple
+     padding/marge negative repousse les bords de decoupe sans decaler la
+     composition : sans lui, l'accent d'un E capital et les empattements
+     filiformes du Bodoni sont rabotes. */
+  padding: 0.14em 0.08em 0;
+  margin: -0.14em -0.08em 0;
+}
+.mask__i { display: block; transform: translateY(105%); }
+.hero .carousel-item.active .mask__i {
+  animation: maskUp 1150ms var(--ease-out) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes maskUp { to { transform: translateY(0); } }
+
+.hero__fade { opacity: 0; }
+.hero .carousel-item.active .hero__fade {
+  animation: fadeUp 900ms var(--ease-out) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.hero__count {
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  color: var(--brass-text);
+  letter-spacing: 0.1em;
+  margin-bottom: var(--sp-5);
+  font-variant-numeric: tabular-nums;
+}
+.hero__title { margin-bottom: var(--sp-5); }
+.hero__lead { margin-bottom: var(--sp-7); }
+.hero__cta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-6); }
+
+/* Indicateurs : numerotes, alignes bas-gauche, avec une jauge de progression
+   qui rend l'autoplay lisible au lieu de le subir. */
+.hero__nav {
+  position: absolute;
+  left: var(--gutter);
+  bottom: clamp(2rem, 5vh, 3.5rem);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+}
+.hero__dot {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  color: var(--ink-3);
+  transition: color var(--dur-2) var(--ease);
+}
+.hero__dot i {
+  display: block;
+  width: 26px; height: 1px;
+  background: var(--rule-strong);
+  transition: width var(--dur-2) var(--ease-out), background var(--dur-2) var(--ease);
+}
+.hero__dot:hover { color: var(--ink); }
+.hero__dot.is-active { color: var(--ink); }
+.hero__dot.is-active i { width: 62px; background: var(--brass); }
+
+.hero__progress {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  z-index: 3;
+  height: 1px;
+  background: var(--rule);
+}
+.hero__progress i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--brass);
+  transform-origin: left;
+}
+.hero__progress i.is-running { animation: heroBar var(--hero-interval) linear both; }
+.hero:hover .hero__progress i { animation-play-state: paused; }   /* suit la
+                                 pause au survol native de Bootstrap */
+@keyframes heroBar { from { width: 0; } to { width: 100%; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__progress { display: none; }
+  .mask__i, .hero__fade { transform: none; opacity: 1; }
+}
+
+/* --- Cadre d'image -----------------------------------------------------
+   Un filet laiton decale derriere l'image. Detail d'encadrement, emprunte
+   au passe-partout : il donne la profondeur qu'on refuse a l'ombre portee. */
+.frame { position: relative; display: block; }
+.frame::before {
+  content: "";
+  position: absolute;
+  inset: clamp(12px, 1.6vw, 22px) calc(-1 * clamp(12px, 1.6vw, 22px))
+          calc(-1 * clamp(12px, 1.6vw, 22px)) clamp(12px, 1.6vw, 22px);
+  border: 1px solid var(--brass);
+  opacity: 0.55;
+  pointer-events: none;
+}
+.frame img { position: relative; filter: grayscale(1) contrast(1.04) sepia(0.14); }
+
+/* --- Fiche technique de l'ouvrage -------------------------------------- */
+.specs { border-top: 1px solid var(--rule); }
+.specs div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--sp-5);
+  padding-block: var(--sp-4);
+  border-bottom: 1px solid var(--rule);
+}
+.specs dt {
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.specs dd { margin: 0; color: var(--ink); text-align: right; }
+
+/* --- Chronologie -------------------------------------------------------
+   Ligne editoriale, pas de rail vertical ni de pastilles : le millesime
+   en Bodoni suffit a porter le rythme. */
+.tl { border-top: 1px solid var(--rule); }
+.tl__item {
+  display: grid;
+  grid-template-columns: minmax(6rem, 10rem) 1fr;
+  gap: clamp(1.5rem, 4vw, 4rem);
+  padding-block: clamp(1.75rem, 3vw, 2.75rem);
+  border-bottom: 1px solid var(--rule);
+  transition: background var(--dur-2) var(--ease);
+}
+.tl__item:hover { background: var(--brass-wash); }
+.tl__year {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 2.9vw, 2.6rem);
+  line-height: 1;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--dur-2) var(--ease);
+}
+.tl__item:hover .tl__year { color: var(--brass-text); }
+.tl__body h3 { margin-bottom: var(--sp-3); }
+
+/* --- Galerie -----------------------------------------------------------
+   Trames de hauteurs inegales : la grille regulière est le premier reflexe
+   de template, on la casse par les spans. */
+.gal {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(0.75rem, 1.4vw, 1.5rem);
+}
+.gal__i { position: relative; overflow: hidden; background: var(--paper-sunk); }
+.gal__i img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.04) sepia(0.14);
+  transition: transform 1.2s var(--ease-out), filter var(--dur-3) var(--ease);
+}
+.gal__i:hover img { transform: scale(1.045); filter: grayscale(1) contrast(1.08) sepia(0.05); }
+.gal__i:nth-child(1) { grid-column: span 7; aspect-ratio: 4 / 3; }
+.gal__i:nth-child(2) { grid-column: span 5; aspect-ratio: 3 / 4; align-self: end; }
+.gal__i:nth-child(3) { grid-column: span 4; aspect-ratio: 1; }
+.gal__i:nth-child(4) { grid-column: span 8; aspect-ratio: 16 / 9; }
+
+/* --- Citation ---------------------------------------------------------- */
+.quote {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.1vw, 2.9rem);
+  line-height: 1.28;
+  letter-spacing: -0.015em;
+  color: var(--paper);
+  max-width: 22ch;
+}
+.quote__src {
+  margin-top: var(--sp-6);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--brass-soft);
+}
+
+/* --- Points de vente --------------------------------------------------- */
+.pos { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.pos__i { background: var(--paper); padding: clamp(1.5rem, 2.4vw, 2.25rem); }
+.pos__i h3 { margin-bottom: var(--sp-2); }
+
+/* --- Pied de page ------------------------------------------------------ */
+.foot { background: var(--ink-deep); color: rgba(247, 244, 238, 0.68); }
+.foot .logo { color: var(--paper); }
+.foot .logo__rule { background: var(--rule-dark); }
+.foot .logo__text b { color: var(--brass-soft); }
+.foot a { color: rgba(247, 244, 238, 0.68); transition: color var(--dur-1) var(--ease); }
+.foot a:hover { color: var(--brass-soft); }
+.foot__rule { height: 1px; background: var(--rule-dark); }
+
+/* --- Responsive --------------------------------------------------------
+   Sous 992px la composition dissymetrique n'a plus la largeur pour exister :
+   l'image passe en fond plein cadre et le texte se pose dessus. */
+@media (max-width: 991.98px) {
+  .nav-toggle { display: block; }
+  .nav-menu {
+    position: fixed;
+    inset: 0 0 auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 7rem var(--gutter) 3rem;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    transform: translateY(-101%);
+    transition: transform var(--dur-3) var(--ease-out);
+    z-index: -1;
+  }
+  .nav-menu.is-open { transform: translateY(0); }
+  .nav-menu li { width: 100%; border-bottom: 1px solid var(--rule); }
+  .nav-menu li:last-child { border: 0; padding-top: var(--sp-5); }
+  .nav-menu a { display: block; padding-block: var(--sp-4); font-size: 0.9375rem; }
+  .nav-menu a::after { display: none; }
+
+  .hero__media { width: 100%; }
+  .hero__media::after {
+    background: linear-gradient(4deg,
+      var(--paper) 8%, rgba(247, 244, 238, 0.86) 46%, rgba(247, 244, 238, 0.42) 100%);
+  }
+  .hero__content { padding-bottom: clamp(8rem, 22vh, 12rem); }
+
+  .gal__i:nth-child(n) { grid-column: span 12; aspect-ratio: 3 / 2; align-self: auto; }
+  .gal__i:nth-child(2) { aspect-ratio: 3 / 4; }
+}
+
+@media (max-width: 575.98px) {
+  .tl__item { grid-template-columns: 1fr; gap: var(--sp-3); }
+  .specs div { flex-direction: column; align-items: flex-start; gap: var(--sp-1); }
+  .specs dd { text-align: left; }
+  .hero__cta { gap: var(--sp-5); }
+  .btn-pgy { width: 100%; justify-content: space-between; }
+}
+
+/* --- Temoignages (CDC §4.1) --------------------------------------------
+   Citations courtes en trois colonnes. Le filet superieur remplace la carte :
+   il structure sans enfermer, et evite l'effet "carte a ombre" proscrit. */
+.testi__i { border-top: 1px solid var(--rule-strong); padding-top: var(--sp-5); }
+.testi__q {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 1.45vw, 1.3rem);
+  line-height: 1.52;
+  color: var(--ink);
+  margin-bottom: var(--sp-5);
+}
+.testi__a {
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brass-text);
+}
+.testi__a span {
+  display: block;
+  margin-top: var(--sp-1);
+  font-size: 0.875rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-3);
+}
+
+/* --- Actualites (CDC §4.1 et §4.7) -------------------------------------
+   Liste editoriale plutot que grille de vignettes : une actualite se lit
+   en ligne, et la grille de cartes aurait ramene l'aspect template. */
+.news { border-top: 1px solid var(--rule); }
+.news__i {
+  display: grid;
+  grid-template-columns: minmax(6rem, 9rem) 1fr auto;
+  gap: clamp(1.25rem, 3vw, 3rem);
+  align-items: baseline;
+  padding-block: clamp(1.5rem, 2.6vw, 2.25rem);
+  border-bottom: 1px solid var(--rule);
+  transition: background var(--dur-2) var(--ease);
+}
+.news__i:hover { background: var(--brass-wash); }
+.news__date {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  color: var(--brass-text);
+  font-variant-numeric: tabular-nums;
+}
+.news__t {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 1.6vw, 1.45rem);
+  line-height: 1.28;
+  transition: color var(--dur-2) var(--ease);
+}
+.news__i:hover .news__t { color: var(--brass-text); }
+.news__cat {
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+/* Colonnes du pied de page : la carte complete du site vit ici. */
+.foot__col p:first-child {
+  margin-bottom: var(--sp-3);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brass-soft);
+}
+.foot__col ul { list-style: none; padding: 0; margin: 0; line-height: 2.05; font-size: 0.9375rem; }
+
+@media (max-width: 767.98px) {
+  .news__i { grid-template-columns: 1fr; gap: var(--sp-2); }
+  .news__cat { justify-self: start; }
+}

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" width="900" height="1200" role="img" aria-label="ARCHIVE 02">
+  <defs>
+    <filter id="g5" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="85"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.055"/></feComponentTransfer>
+    </filter>
+    <linearGradient id="v5" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7A7466" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#7A7466" stop-opacity="0.02"/>
+    </linearGradient>
+    <clipPath id="c5"><rect width="900" height="1200"/></clipPath>
+  </defs>
+  <g clip-path="url(#c5)">
+    <rect width="900" height="1200" fill="#CFC8BA"/>
+    <circle cx="351" cy="456" r="261" fill="#7A7466" opacity="0.20"/>
+    <rect x="0" y="744" width="900" height="1200" fill="url(#v5)"/>
+    <path d="M0 888 Q 315 720 900 960 L 900 1200 L 0 1200 Z" fill="#7A7466" opacity="0.16"/>
+    <rect width="900" height="1200" filter="url(#g5)" opacity="0.9"/>
+    <text x="450" y="600" font-family="Jost, Futura, sans-serif" font-size="26"
+          letter-spacing="5" fill="#5A544A" opacity="0.62"
+          text-anchor="middle" dominant-baseline="middle">ARCHIVE 02</text>
+  </g>
+</svg>

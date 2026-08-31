@@ -1,0 +1,86 @@
+/* =========================================================================
+   PGY — Jetons de design
+   Source chromatique : le logo est strictement monochrome (gris #4D4D4D).
+   Il fournit donc l'axe neutre (papier + encre). Le laiton patine est
+   l'accent choisi : registre commemoratif, dorure a chaud, plaque gravee.
+   Aucune couleur brute du logo n'est employee en grande surface.
+   ========================================================================= */
+
+:root {
+  /* --- Neutres — 60 % de la surface --------------------------------------
+     Papier chaud, jamais de blanc pur : le blanc pur eteint le laiton et
+     donne l'aspect "ecran" que l'on cherche a eviter. */
+  --paper:        #F7F4EE;   /* fond principal */
+  --paper-high:   #FCFAF6;   /* surfaces surelevees, champs de formulaire */
+  --paper-sunk:   #EFEAE0;   /* sections en retrait, alternance de rythme */
+
+  /* --- Encre — 30 % -------------------------------------------------------
+     Noir chaud desature, jamais #000 : le noir pur cisaille sur papier chaud. */
+  --ink:          #262523;   /* titres et corps          13.98:1 sur papier */
+  --ink-2:        #4D4D4D;   /* gris exact du logo        7.79:1 — rappel */
+  --ink-3:        #6B6862;   /* texte secondaire          5.12:1 */
+  --ink-deep:     #1E1D1B;   /* fond des sections sombres */
+
+  /* --- Accent laiton — 10 % ---------------------------------------------
+     Deux valeurs distinctes, et c'est deliberé :
+     --brass       : filets, traits, decor. Non porteur de texte (2.95:1).
+     --brass-text  : texte et liens sur papier (5.28:1, AA valide).
+     Confondre les deux casserait l'accessibilite. */
+  --brass:        #A88B5C;
+  --brass-text:   #7D6134;
+  --brass-soft:   #C9B48D;   /* laiton sur fond sombre    6.9:1 sur --ink-deep */
+  --brass-wash:   rgba(168, 139, 92, 0.10);
+
+  /* --- Filets ------------------------------------------------------------ */
+  --rule:         #DED7C9;   /* hairline chaude, jamais un gris froid */
+  --rule-strong:  #C4BBA9;
+  --rule-dark:    rgba(247, 244, 238, 0.14);
+
+  /* --- Typographie -------------------------------------------------------
+     Bodoni Moda : contraste vertical eleve, empattements filiformes.
+       Registre monumental / grave — la plaque commemorative, pas le magazine.
+       Reserve aux grandes tailles : en dessous de 24px son contraste casse.
+     Jost : geometrique, echo direct du logotype (memes coupes franches,
+       meme construction circulaire). Porte l'interface et le corps de texte. */
+  --font-display: "Bodoni Moda", "Didot", "Times New Roman", serif;
+  --font-sans:    "Jost", "Futura", "Century Gothic", system-ui, sans-serif;
+
+  /* Echelle fluide — ratio ~1.32, cale sur 1440px */
+  --fs-hero:   clamp(3.25rem, 8.5vw, 8.5rem);
+  --fs-d1:     clamp(2.5rem, 5.4vw, 4.75rem);
+  --fs-d2:     clamp(1.9rem, 3.4vw, 3rem);
+  --fs-d3:     clamp(1.35rem, 1.9vw, 1.75rem);
+  --fs-lead:   clamp(1.0625rem, 1.15vw, 1.25rem);
+  --fs-body:   1.0625rem;
+  --fs-small:  0.9375rem;
+  --fs-kicker: 0.75rem;
+
+  --lh-tight:  0.97;   /* place pour les capitales accentuees */
+  --lh-snug:   1.18;
+  --lh-body:   1.78;
+
+  --track-kicker: 0.26em;   /* les capitales ont besoin d'air pour respirer */
+  --track-display: -0.022em;
+
+  /* --- Rythme vertical — echelle de 4px ---------------------------------- */
+  --sp-1: 0.25rem;  --sp-2: 0.5rem;   --sp-3: 0.75rem;  --sp-4: 1rem;
+  --sp-5: 1.5rem;   --sp-6: 2rem;     --sp-7: 3rem;     --sp-8: 4rem;
+  --sp-9: 6rem;     --sp-10: 8rem;
+
+  /* Respiration des sections : genereuse, c'est le premier marqueur premium */
+  --section-y: clamp(5.5rem, 11vw, 11rem);
+  --gutter:    clamp(1.5rem, 5vw, 5.5rem);
+  --measure:   64ch;         /* longueur de ligne de lecture confortable */
+
+  /* --- Mouvement ---------------------------------------------------------
+     Courbes lentes en sortie : le mouvement doit s'installer, jamais rebondir.
+     Aucun ressort, aucun overshoot — ce sont des marqueurs de template. */
+  --ease:      cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-1: 220ms;
+  --dur-2: 420ms;
+  --dur-3: 900ms;
+
+  --z-nav: 100;
+  --hero-interval: 7000ms;
+}

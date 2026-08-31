@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Philippe Grégoire Yacé — Une destinée (1920-1998)</title>
+<meta name="description" content="Une destinée — la biographie de Philippe Grégoire Yacé (1920-1998), figure de la construction de l'État ivoirien.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Bodoni Moda : contraste vertical, registre monumental — display uniquement.
+     Jost : géométrique, écho direct du logotype — interface et corps de texte. -->
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="assets/css/tokens.css" rel="stylesheet">
+<link href="assets/css/base.css" rel="stylesheet">
+<link href="assets/css/components.css" rel="stylesheet">
+<link rel="canonical" href="https://example.org/">
+
+<!-- Partage social (CDC §5) — remplacer l'URL absolue et le visuel au déploiement -->
+<meta property="og:type" content="book">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Philippe Grégoire Yacé — Une destinée (1920-1998)">
+<meta property="og:description" content="La biographie de Philippe Grégoire Yacé, figure de la construction de l'État ivoirien.">
+<meta property="og:image" content="https://example.org/assets/img/couverture.svg">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- Données structurées (CDC §5). Seules les données établies sont déclarées ;
+     auteur, éditeur, ISBN et dates précises restent à renseigner. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Book",
+  "name": "Philippe Grégoire Yacé : une destinée (1920-1998)",
+  "inLanguage": "fr",
+  "about": {
+    "@type": "Person",
+    "name": "Philippe Grégoire Yacé",
+    "birthDate": "1920",
+    "deathDate": "1998",
+    "nationality": "Ivoirienne",
+    "jobTitle": "Président de l'Assemblée nationale de Côte d'Ivoire (1959-1980)"
+  }
+}
+</script>
+</head>
+
+<body>
+<a class="skip-link" href="#main">Aller au contenu</a>
+
+<!-- ===================== NAVIGATION ===================== -->
+<header class="nav-bar">
+  <div class="shell">
+    <div class="nav-bar__row">
+
+      <!-- VERROU LOGOTYPE — reconstruit en HTML faute du fichier source.
+           À remplacer par le SVG officiel : voir README.md § Logotype. -->
+      <a class="logo" href="#" aria-label="Philippe Grégoire Yacé — accueil">
+        <span class="logo__mark">PGY</span>
+        <span class="logo__rule" aria-hidden="true"></span>
+        <span class="logo__text">
+          <b>Philippe Grégoire</b>
+          <span>YACÉ</span>
+        </span>
+      </a>
+
+      <nav aria-label="Navigation principale">
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="#ouvrage">Le livre</a></li>
+          <li><a href="#homme">Biographie</a></li>
+          <li><a href="#galerie">Archives</a></li>
+          <li><a href="#actualites">Actualités</a></li>
+          <li><a class="btn-pgy btn-pgy--sm" href="#commander">Commander</a></li>
+        </ul>
+      </nav>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navMenu" aria-label="Ouvrir le menu">
+        <span></span><span></span>
+      </button>
+
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div id="heroCarousel" class="carousel slide carousel-fade hero__carousel"
+       data-bs-ride="carousel" data-bs-interval="7000">
+    <div class="carousel-inner">
+
+      <!-- CONTENU PROVISOIRE — textes à valider par l'éditeur -->
+      <div class="carousel-item active hero__slide">
+        <div class="hero__media">
+          <img class="hero__img" src="assets/img/hero-1.svg" alt="">
+        </div>
+        <div class="shell hero__content">
+          <div class="row">
+            <div class="col-lg-7 col-xl-6">
+              <p class="hero__count hero__fade" style="--d:120ms">01 — 03</p>
+              <h1 class="t-hero hero__title">
+                <span class="mask"><span class="mask__i" style="--d:200ms">Une</span></span>
+                <span class="mask"><span class="mask__i" style="--d:320ms">destinée</span></span>
+              </h1>
+              <p class="t-lead hero__lead hero__fade" style="--d:560ms">
+                La biographie de Philippe Grégoire Yacé — un parcours qui épouse
+                celui de la Côte d'Ivoire, de la veille de l'indépendance aux
+                dernières années du siècle.
+              </p>
+              <div class="hero__cta hero__fade" style="--d:680ms">
+                <a class="btn-pgy" href="#ouvrage">
+                  Découvrir l'ouvrage
+                  <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
+                </a>
+                <a class="link" href="#reperes">Parcourir les repères</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="carousel-item hero__slide">
+        <div class="hero__media">
+          <img class="hero__img" src="assets/img/hero-2.svg" alt="">
+        </div>
+        <div class="shell hero__content">
+          <div class="row">
+            <div class="col-lg-7 col-xl-6">
+              <p class="hero__count hero__fade" style="--d:120ms">02 — 03</p>
+              <h1 class="t-hero hero__title">
+                <span class="mask"><span class="mask__i" style="--d:200ms">1920</span></span>
+                <span class="mask"><span class="mask__i" style="--d:320ms">1998</span></span>
+              </h1>
+              <p class="t-lead hero__lead hero__fade" style="--d:560ms">
+                Soixante-dix-huit années traversées par la naissance d'une nation.
+                <em>Texte à compléter par l'éditeur.</em>
+              </p>
+              <div class="hero__cta hero__fade" style="--d:680ms">
+                <a class="btn-pgy" href="#homme">
+                  L'homme
+                  <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="carousel-item hero__slide">
+        <div class="hero__media">
+          <img class="hero__img" src="assets/img/hero-3.svg" alt="">
+        </div>
+        <div class="shell hero__content">
+          <div class="row">
+            <div class="col-lg-7 col-xl-6">
+              <p class="hero__count hero__fade" style="--d:120ms">03 — 03</p>
+              <h1 class="t-hero hero__title">
+                <span class="mask"><span class="mask__i" style="--d:200ms">L'ouvrage</span></span>
+              </h1>
+              <p class="t-lead hero__lead hero__fade" style="--d:560ms">
+                Un volume relié, richement documenté et illustré d'archives inédites.
+                <em>Descriptif à compléter par l'éditeur.</em>
+              </p>
+              <div class="hero__cta hero__fade" style="--d:680ms">
+                <a class="btn-pgy" href="#commander">
+                  Commander
+                  <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
+                </a>
+                <a class="link" href="#commander">Points de vente</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Indicateurs : peau maison branchée sur l'instance Bootstrap -->
+  <div class="hero__nav" role="tablist" aria-label="Diapositives">
+    <button class="hero__dot is-active" type="button" role="tab" aria-current="true">
+      <i aria-hidden="true"></i>01
+    </button>
+    <button class="hero__dot" type="button" role="tab" aria-current="false">
+      <i aria-hidden="true"></i>02
+    </button>
+    <button class="hero__dot" type="button" role="tab" aria-current="false">
+      <i aria-hidden="true"></i>03
+    </button>
+  </div>
+
+  <div class="hero__progress" aria-hidden="true"><i></i></div>
+</section>
+
+<!-- ===================== 01 · MANIFESTE ===================== -->
+<section class="section" id="homme">
+  <div class="shell">
+    <div class="row">
+      <div class="col-lg-2">
+        <p class="section-num reveal">01</p>
+      </div>
+      <div class="col-lg-9 col-xl-8">
+        <p class="kicker reveal">L'homme</p>
+        <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-7);">
+          Une vie publique adossée<br>à la construction d'un État.
+        </h2>
+        <div class="row">
+          <div class="col-md-10 col-lg-9">
+            <p class="t-body reveal">
+              <em>Texte de présentation à rédiger par l'éditeur.</em> Ce paragraphe
+              tient la place du chapeau introductif : il pose en quelques lignes
+              la stature du personnage et l'angle retenu par l'ouvrage.
+            </p>
+            <p class="t-body reveal">
+              Président de l'Assemblée nationale de Côte d'Ivoire de 1959 à 1980,
+              secrétaire général du PDCI-RDA, puis président du Conseil économique
+              et social — Philippe Grégoire Yacé occupe pendant quatre décennies
+              une position centrale dans la vie institutionnelle du pays.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 02 · L'OUVRAGE ===================== -->
+<section class="section section--sunk" id="ouvrage">
+  <div class="shell">
+    <div class="row align-items-center" style="row-gap: var(--sp-9);">
+
+      <div class="col-lg-5 offset-lg-1 order-lg-2">
+        <p class="section-num reveal">02</p>
+        <p class="kicker reveal">L'ouvrage</p>
+        <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-6);">Une destinée</h2>
+        <p class="t-lead reveal" style="margin-bottom: var(--sp-7);">
+          <em>Quatrième de couverture à fournir.</em> Quelques lignes suffisent :
+          l'objet du livre, sa méthode, ce qu'il apporte de neuf.
+        </p>
+
+        <!-- FICHE TECHNIQUE — valeurs provisoires -->
+        <dl class="specs reveal" style="margin-bottom: var(--sp-7);">
+          <div><dt>Auteur</dt><dd>À renseigner</dd></div>
+          <div><dt>Éditeur</dt><dd>À renseigner</dd></div>
+          <div><dt>Parution</dt><dd>À renseigner</dd></div>
+          <div><dt>Format</dt><dd>Relié, 240 × 310 mm</dd></div>
+          <div><dt>Pages</dt><dd>À renseigner</dd></div>
+          <div><dt>ISBN</dt><dd>À renseigner</dd></div>
+        </dl>
+
+        <a class="btn-pgy reveal" href="#commander">
+          Commander l'ouvrage
+          <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
+        </a>
+      </div>
+
+      <div class="col-lg-5 order-lg-1">
+        <span class="frame reveal">
+          <img loading="lazy" decoding="async" src="assets/img/couverture.svg" alt="Couverture de l'ouvrage — visuel provisoire">
+        </span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 03 · REPÈRES ===================== -->
+<section class="section" id="reperes">
+  <div class="shell">
+    <div class="row" style="margin-bottom: var(--sp-8);">
+      <div class="col-lg-2"><p class="section-num reveal">03</p></div>
+      <div class="col-lg-7">
+        <p class="kicker reveal">Repères</p>
+        <h2 class="t-d1 reveal">Quatre dates,<br>un siècle ivoirien.</h2>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-10 offset-lg-2">
+        <!-- CHRONOLOGIE — dates à faire valider par l'éditeur avant mise en ligne -->
+        <div class="tl">
+          <div class="tl__item reveal">
+            <div class="tl__year">1920</div>
+            <div class="tl__body">
+              <h3 class="t-d3">Naissance</h3>
+              <p class="t-body"><em>Notice à compléter.</em></p>
+            </div>
+          </div>
+          <div class="tl__item reveal">
+            <div class="tl__year">1959</div>
+            <div class="tl__body">
+              <h3 class="t-d3">Présidence de l'Assemblée nationale</h3>
+              <p class="t-body">Il en occupe le perchoir pendant vingt et un ans.
+                <em>Notice à compléter.</em></p>
+            </div>
+          </div>
+          <div class="tl__item reveal">
+            <div class="tl__year">1980</div>
+            <div class="tl__body">
+              <h3 class="t-d3">Conseil économique et social</h3>
+              <p class="t-body"><em>Notice à compléter.</em></p>
+            </div>
+          </div>
+          <div class="tl__item reveal">
+            <div class="tl__year">1998</div>
+            <div class="tl__body">
+              <h3 class="t-d3">Disparition</h3>
+              <p class="t-body"><em>Notice à compléter.</em></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CITATION ===================== -->
+<section class="section section--dark">
+  <div class="shell">
+    <div class="row">
+      <div class="col-lg-9 offset-lg-2">
+        <p class="kicker reveal">Extrait</p>
+        <blockquote class="quote reveal" style="margin:0;">
+          Emplacement réservé à un extrait de l'ouvrage,
+          à choisir par l'éditeur.
+        </blockquote>
+        <p class="quote__src reveal">Une destinée — chapitre à préciser</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 04 · GALERIE ===================== -->
+<section class="section" id="galerie">
+  <div class="shell">
+    <div class="row" style="margin-bottom: var(--sp-8);">
+      <div class="col-lg-2"><p class="section-num reveal">04</p></div>
+      <div class="col-lg-7">
+        <p class="kicker reveal">Galerie</p>
+        <h2 class="t-d1 reveal">Archives.</h2>
+      </div>
+      <div class="col-lg-3 d-flex align-items-end justify-content-lg-end">
+        <a class="link reveal" href="#">Voir toute la galerie</a>
+      </div>
+    </div>
+
+    <div class="gal">
+      <a class="gal__i reveal" href="#"><img loading="lazy" decoding="async" src="assets/img/gal-1.svg" alt="Archive — visuel provisoire"></a>
+      <a class="gal__i reveal" href="#"><img loading="lazy" decoding="async" src="assets/img/gal-2.svg" alt="Archive — visuel provisoire"></a>
+      <a class="gal__i reveal" href="#"><img loading="lazy" decoding="async" src="assets/img/gal-3.svg" alt="Archive — visuel provisoire"></a>
+      <a class="gal__i reveal" href="#"><img loading="lazy" decoding="async" src="assets/img/gal-4.svg" alt="Archive — visuel provisoire"></a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 05 · TÉMOIGNAGES ===================== -->
+<section class="section section--sunk" id="temoignages">
+  <div class="shell">
+    <div class="row" style="margin-bottom: var(--sp-8);">
+      <div class="col-lg-2"><p class="section-num reveal">05</p></div>
+      <div class="col-lg-7">
+        <p class="kicker reveal">Témoignages</p>
+        <h2 class="t-d1 reveal">Ce qu'ils en disent.</h2>
+      </div>
+      <div class="col-lg-3 d-flex align-items-end justify-content-lg-end">
+        <a class="link reveal" href="#">Déposer un témoignage</a>
+      </div>
+    </div>
+
+    <div class="row" style="row-gap: var(--sp-7);">
+      <!-- TÉMOIGNAGES — emplacements réservés. Aucun propos ne doit être
+           publié ici sans être attribué et vérifié auprès de son auteur. -->
+      <div class="col-md-4">
+        <div class="testi__i reveal">
+          <p class="testi__q">Emplacement réservé à un témoignage authentifié.</p>
+          <p class="testi__a">Fonction<span>Nom à renseigner</span></p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="testi__i reveal">
+          <p class="testi__q">Emplacement réservé à un témoignage authentifié.</p>
+          <p class="testi__a">Fonction<span>Nom à renseigner</span></p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="testi__i reveal">
+          <p class="testi__q">Emplacement réservé à un témoignage authentifié.</p>
+          <p class="testi__a">Fonction<span>Nom à renseigner</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 06 · ACTUALITÉS ===================== -->
+<section class="section" id="actualites">
+  <div class="shell">
+    <div class="row" style="margin-bottom: var(--sp-8);">
+      <div class="col-lg-2"><p class="section-num reveal">06</p></div>
+      <div class="col-lg-7">
+        <p class="kicker reveal">Actualités</p>
+        <h2 class="t-d1 reveal">Autour de l'ouvrage.</h2>
+      </div>
+      <div class="col-lg-3 d-flex align-items-end justify-content-lg-end">
+        <a class="link reveal" href="#">Toutes les actualités</a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-10 offset-lg-2">
+        <!-- ACTUALITÉS — trois entrées de démonstration, à alimenter -->
+        <div class="news">
+          <a class="news__i reveal" href="#">
+            <span class="news__date">À venir</span>
+            <span class="news__t">Titre de l'actualité à renseigner</span>
+            <span class="news__cat">Parution</span>
+          </a>
+          <a class="news__i reveal" href="#">
+            <span class="news__date">À venir</span>
+            <span class="news__t">Titre de l'actualité à renseigner</span>
+            <span class="news__cat">Dédicace</span>
+          </a>
+          <a class="news__i reveal" href="#">
+            <span class="news__date">À venir</span>
+            <span class="news__t">Titre de l'actualité à renseigner</span>
+            <span class="news__cat">Presse</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 07 · COMMANDER ===================== -->
+<section class="section section--sunk" id="commander">
+  <div class="shell">
+    <div class="row" style="margin-bottom: var(--sp-8);">
+      <div class="col-lg-2"><p class="section-num reveal">07</p></div>
+      <div class="col-lg-7">
+        <p class="kicker reveal">Se procurer l'ouvrage</p>
+        <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-6);">
+          En librairie<br>et en ligne.
+        </h2>
+        <div class="reveal">
+          <a class="btn-pgy" href="#">
+            Commander en ligne
+            <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-10 offset-lg-2">
+        <!-- POINTS DE VENTE — à renseigner -->
+        <div class="pos row g-0 reveal">
+          <div class="pos__i col-md-4">
+            <h3 class="t-d3">Abidjan</h3>
+            <p class="t-small">Enseigne et adresse à renseigner</p>
+          </div>
+          <div class="pos__i col-md-4">
+            <h3 class="t-d3">Yamoussoukro</h3>
+            <p class="t-small">Enseigne et adresse à renseigner</p>
+          </div>
+          <div class="pos__i col-md-4">
+            <h3 class="t-d3">Paris</h3>
+            <p class="t-small">Enseigne et adresse à renseigner</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ===================== PIED DE PAGE ===================== -->
+<footer class="foot">
+  <div class="shell" style="padding-block: var(--sp-9) var(--sp-7);">
+    <div class="row" style="row-gap: var(--sp-7);">
+      <div class="col-lg-5 col-xl-4">
+        <a class="logo" href="#" aria-label="Philippe Grégoire Yacé — accueil">
+          <span class="logo__mark">PGY</span>
+          <span class="logo__rule" aria-hidden="true"></span>
+          <span class="logo__text"><b>Philippe Grégoire</b><span>YACÉ</span></span>
+        </a>
+      </div>
+      <div class="col-lg-3 foot__col">
+        <p>L'ouvrage</p>
+        <ul>
+          <li><a href="#ouvrage">Le livre</a></li>
+          <li><a href="#">L'auteur</a></li>
+          <li><a href="#">Extraits</a></li>
+          <li><a href="#commander">Commander</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 foot__col">
+        <p>Le personnage</p>
+        <ul>
+          <li><a href="#homme">Biographie</a></li>
+          <li><a href="#reperes">Repères</a></li>
+          <li><a href="#">Héritage</a></li>
+          <li><a href="#galerie">Archives</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 foot__col">
+        <p>Le site</p>
+        <ul>
+          <li><a href="#actualites">Actualités</a></li>
+          <li><a href="#">Événements</a></li>
+          <li><a href="#temoignages">Témoignages</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+
+    <div class="foot__rule" style="margin-block: var(--sp-7) var(--sp-5);"></div>
+
+    <div class="row align-items-center" style="row-gap: var(--sp-3);">
+      <div class="col-md-8">
+        <p class="t-small" style="color: rgba(247,244,238,.5); font-size:.8125rem;">
+          &copy; 2026 — Tous droits réservés. Structure porteuse à renseigner.
+        </p>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <p class="t-small" style="color: rgba(247,244,238,.5); font-size:.8125rem;">
+          Mentions légales · Confidentialité
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
