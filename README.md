@@ -145,8 +145,9 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
 
 ## 5. À fournir avant mise en ligne
 
-- **Logotype** — le verrou de `index.html` est une reconstruction HTML approchée.
-  Remplacer par le SVG officiel (`.logo`, présent dans l'en-tête et le pied).
+- **Logotype** — le verrou `.logo` est une reconstruction HTML approchée. Remplacer
+  par le SVG officiel à deux endroits : `templates/partials/nav.php` et
+  `templates/partials/footer.php`.
 - **Visuels** — les `.svg` de `assets/img/` sont des cadres d'attente générés. Chacun
   affiche la dimension de livraison attendue et son cadrage. Ces valeurs sont calculées
   sur la largeur réelle d'affichage en écran 2× ; le hero est en dérive `scale(1.1)`,
@@ -181,12 +182,57 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
 
 ## 6. Dette connue
 
-La navigation et le pied de page sont **dupliqués à l'identique** dans les trois pages
-(vérifié par empreinte). C'est tenable à trois pages, pas à douze : ils doivent devenir
-des gabarits partagés dès que le socle applicatif est choisi. C'est la première tâche
-de la phase 2.
+La duplication de la navigation et du pied de page — qui figurait ici — **est
+soldée** depuis le passage aux gabarits (voir §2). Ce qu'il reste :
 
-## 7. Couverture du cahier des charges
+- **Pas de couche d'abstraction pour les formulaires.** Le socle n'a encore ni
+  jeton CSRF, ni validation, ni protection anti-soumission massive. À poser
+  **avant** le premier formulaire public, pas après : le formulaire de témoignage
+  est ouvert à tout le monde et porte des propos sur une personne réelle.
+- **Aucun test.** Le socle a été vérifié à la main (codes HTTP, connexion PDO,
+  absence de warning). Ces vérifications ne sont pas rejouables automatiquement.
+- **`reference/` pèse ~70 Mo dans l'arborescence servie.** Verrouillé en 403,
+  mais toujours à exclure explicitement de la règle de déploiement.
+- **L'historique git porte les images non optimisées de l'ancien site** (`.git`
+  fait 58 Mo). Sans conséquence fonctionnelle ; à savoir si le dépôt part un jour
+  sur un hébergement distant.
+
+## 7. État et suite
+
+### Où en est le projet
+
+**Fait** — socle de design complet et documenté ; trois pages publiques (accueil
+avec hero slider, Le livre, Biographie) rendues par le moteur de gabarits ;
+contrôleur frontal, routeur, PDO, mise en page unique ; base `livreyace_sbd` avec
+ses huit tables ; étanchéité des dossiers applicatifs vérifiée sur Apache.
+
+**Non fait** — tout ce qui a besoin d'un back-office ou d'un formulaire.
+
+### Prochaines étapes, dans l'ordre
+
+1. **Back-office** — c'est le gros morceau du choix « PHP à la main », et il
+   débloque tout le reste : authentification sur `utilisateur`
+   (`password_hash`/`password_verify`, session régénérée à la connexion), CRUD
+   actualités / événements / repères, file de modération des témoignages,
+   téléversement dans `medias/` avec contrôle de type réel et non d'extension.
+2. **Couche formulaire** — jeton CSRF, validation, limitation de débit. À faire
+   avant d'exposer le moindre formulaire public (voir §6).
+3. **Pages publiques adossées aux données** — actualités et détail, galerie avec
+   visionneuse, événements, contact. Rapides une fois 1 et 2 posés : le système
+   de composants existe déjà.
+4. **Commande** — le site de référence s'appuyait sur un backend de paiement
+   séparé (`carte.abidjan.net` : mobile money, Visa, Wave, Apaym). Décider s'il
+   est réutilisé ou remplacé **avant** d'écrire le tunnel.
+5. **Phase 3 du CDC** — newsletter, recherche interne, multilinguisme.
+
+### Ce qui bloque, et sur qui
+
+Les contenus. Tout le texte éditorial du site est provisoire et balisé comme tel,
+et **aucune ligne ne peut être publiée sans validation de l'éditeur** — Yacé est
+une figure historique réelle. Voir §5 pour la liste complète des contenus et
+visuels attendus, dimensions comprises.
+
+## 8. Couverture du cahier des charges
 
 Accueil (§4.1) — **complet** : hero slider, accroche, aperçu du livre, teaser
 biographie, frise de repères, témoignages, actualités, CTA commande.
@@ -199,18 +245,23 @@ Biographie (§4.4) — **complet** : contexte historique, biographie structurée
 chapitres avec sommaire latéral collé, frise chronologique filtrable par période et
 dépliable, citations, galerie de portraits.
 
-Transverses (§5) — **partiel** : responsive, accessibilité, structure sémantique,
-métadonnées, schema.org `Book`/`Person`, lazy loading sont en place. Newsletter,
-recherche interne, multilinguisme, partage social et back-office **ne sont pas
-réalisables en HTML statique** — voir ci-dessous.
+Reste à construire — Héritage (§4.5), Galerie/Archives (§4.6), Actualités/Presse
+(§4.7), Témoignages (§4.8), Boutique (§4.9), Événements (§4.10), Contact (§4.11),
+Mentions légales (§4.12).
 
-### Point d'architecture à trancher
+Transverses (§5) — **partiel** : responsive, accessibilité AA vérifiée par mesure,
+structure sémantique, métadonnées, schema.org `Book`/`Person`, lazy loading sont en
+place. Newsletter, recherche interne, multilinguisme et partage social restent à
+faire — ils sont désormais réalisables, le socle dynamique étant en place.
 
-Le CDC demande formulaires de témoignage avec modération, gestion d'actualités et
-d'événements sans intervention technique, commande en ligne avec confirmation par
-email, et recherche interne. **Aucun de ces besoins ne tient en pages statiques.**
+### Le socle applicatif : décision prise
 
-Le site de référence (Abidjan.net) répondait à ce problème avec des gabarits PHP et un
-backend de paiement séparé sur `carte.abidjan.net`. La décision de socle applicatif
-(CMS, framework PHP, ou statique + services externes) conditionne les phases 2 et 3 et
-doit être prise avant de dupliquer les gabarits.
+Le CDC exige un back-office utilisable sans intervention technique, des formulaires
+avec modération, des commandes et une recherche interne — rien de tout cela ne
+tenait en pages statiques.
+
+**Choix retenu : PHP structuré à la main** (contrôleur frontal, routeur, PDO,
+gabarits), plutôt qu'un framework ou un CMS. Motif : garder la racine web sur
+`livreyace/` — Symfony et Laravel imposent une racine en `public/` — et rester dans
+la continuité du site de référence. Contrepartie assumée : le back-office est à
+écrire intégralement, et c'est l'essentiel de la charge restante.
