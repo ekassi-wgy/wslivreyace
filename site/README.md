@@ -53,6 +53,18 @@ template. Une seule animation appuyée : la révélation par masque des titres d
 
 ## 2. Fichiers
 
+Le dépôt sépare deux choses qui n'ont rien à voir :
+
+```
+livreyace/
+├── site/        le nouveau site — c'est ici que tout se passe
+└── reference/   l'ancien site Abidjan.net, consultation seule
+```
+
+`reference/` n'est ni compilé, ni déployé, ni lié depuis `site/`. Il n'est là que
+comme référence de structure et de contenu (arborescence, tunnel de commande,
+intégration des moyens de paiement locaux). Aucun fichier de `site/` n'en dépend.
+
 ```
 site/
 ├── index.html              accueil
