@@ -1,0 +1,28 @@
+# ============================================================================
+# Contrôleur frontal — toute requête qui ne correspond pas à un fichier
+# existant est routée vers index.php.
+# ============================================================================
+
+Options -Indexes -MultiViews
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Les dossiers applicatifs ne sont jamais servis, même en accès direct.
+  RewriteRule ^(config|src|templates|sql|reference)(/|$) - [F,L]
+
+  # Fichiers et dossiers réels : servis tels quels (assets/, medias/).
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Tout le reste passe par le contrôleur frontal.
+  RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+# Ceinture et bretelles : si mod_rewrite venait à manquer, ces fichiers
+# ne doivent toujours pas fuiter.
+<FilesMatch "\.(sql|md|dist|log|ini)$">
+  Require all denied
+</FilesMatch>

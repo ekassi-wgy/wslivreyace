@@ -54,33 +54,60 @@ template. Une seule animation appuyée : la révélation par masque des titres d
 ## 2. Fichiers
 
 Le site occupe la racine : MAMP y pointe directement
-(`DocumentRoot "…/projetsmamp/livreyace"`).
+(`DocumentRoot "…/projetsmamp/livreyace"`). PHP 8.3, MySQL 8, base `livreyace_sbd`.
 
 ```
 livreyace/                  ← racine web
-├── index.html              accueil
-├── le-livre.html           l'ouvrage (CDC §4.2 et §4.3)
-├── biographie.html         le personnage (CDC §4.4)
-├── assets/
-│   ├── css/tokens.css      jetons : couleurs, typo, rythme, mouvement
-│   ├── css/base.css        reset, neutralisation Bootstrap, typographie
-│   ├── css/components.css  navigation, hero, boutons, frise, galerie, pied
-│   ├── js/main.js          navigation, peau du carrousel, apparitions
-│   └── img/*.svg           visuels d'attente — à remplacer
-└── reference/              ancien site Abidjan.net, consultation seule
+├── .htaccess               réécriture vers le contrôleur frontal
+├── index.php               contrôleur frontal : autoload, routes
+├── assets/                 css, js, visuels du thème        [public]
+├── medias/                 fichiers téléversés               [public]
+├── config/                 configuration                     [interdit]
+├── src/
+│   ├── Core/               Config, Database, Router, View    [interdit]
+│   ├── Controller/                                           [interdit]
+│   └── Model/                                                [interdit]
+├── templates/
+│   ├── layout.php          mise en page unique               [interdit]
+│   ├── partials/           navigation, pied                  [interdit]
+│   └── pages/              corps des pages                   [interdit]
+├── sql/                    migrations                        [interdit]
+└── reference/              ancien site Abidjan.net           [interdit]
 ```
 
-### `reference/` est dans la racine web — et c'est verrouillé
+### Socle applicatif
 
-Le dossier de référence se trouve à l'intérieur de l'arborescence servie. Sans
-précaution, l'ancien site Abidjan.net serait accessible sous le domaine Yacé, ses
-gabarits de commande et de paiement compris. Un `reference/.htaccess` porte donc un
-`Require all denied` : Apache refuse toute requête vers ce dossier.
+PHP structuré à la main : contrôleur frontal, routeur à motifs, PDO, gabarits.
+Pas de framework — le choix a été fait d'assumer l'écriture du back-office plutôt
+que d'imposer une racine web en `public/`.
 
-**Cela ne suffit pas au déploiement.** Une synchronisation FTP du dossier entier —
-le workflow historique de ce projet, `server="www.abidjan.net/httpdocs/"` — téléverserait
-quand même 70 Mo de contenu mort. `reference/` doit être explicitement exclu de la
-règle de déploiement, ou sorti du dossier au moment de la mise en ligne.
+Deux protections se recouvrent volontairement : une règle `RewriteRule … [F,L]`
+dans le `.htaccess` racine, **et** un `.htaccess` par dossier applicatif. Si
+`mod_rewrite` venait à manquer sur l'hébergement, les identifiants de base ne
+fuiteraient pas pour autant. Vérifié : `config/config.php` répond 403 et sa réponse
+ne contient aucune occurrence du mot de passe.
+
+`config/config.php` porte les valeurs MAMP locales. Pour la production, créer
+`config/config.local.php` (ignoré par git) retournant un tableau partiel : il est
+fusionné par-dessus.
+
+### La duplication du chrome est soldée
+
+Navigation et pied de page vivaient en trois exemplaires dans les pages statiques.
+Ils sont désormais dans `templates/partials/`, inclus une seule fois par
+`templates/layout.php`. Vérifié sur les trois pages : un seul `<header>`, un seul
+`<main>`, un seul `<footer>` par rendu.
+
+### Base de données
+
+Huit tables, `utf8mb4`, InnoDB — voir `sql/001_schema.sql` :
+`utilisateur`, `actualite`, `evenement`, `temoignage`, `media`, `repere`,
+`commande`, `parametre`.
+
+Deux partis pris qui tiennent au sujet : les témoignages arrivent en
+`statut = 'en_attente'` et rien ne s'affiche sans passage explicite en `'publie'`
+— il s'agit de propos sur une personne réelle. Et `repere.source` existe pour
+imposer le sourçage des faits biographiques exigé au §6 du cahier des charges.
 
 ## 3. Bootstrap : ce qui est conservé, ce qui est démonté
 

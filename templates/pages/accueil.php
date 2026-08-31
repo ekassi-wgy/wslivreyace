@@ -1,89 +1,18 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Philippe Grégoire Yacé — Une destinée (1920-1998)</title>
-<meta name="description" content="Une destinée — la biographie de Philippe Grégoire Yacé (1920-1998), figure de la construction de l'État ivoirien.">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Bodoni Moda : contraste vertical, registre monumental — display uniquement.
-     Jost : géométrique, écho direct du logotype — interface et corps de texte. -->
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="assets/css/tokens.css" rel="stylesheet">
-<link href="assets/css/base.css" rel="stylesheet">
-<link href="assets/css/components.css" rel="stylesheet">
-<link rel="canonical" href="https://example.org/">
-
-<!-- Partage social (CDC §5) — remplacer l'URL absolue et le visuel au déploiement -->
-<meta property="og:type" content="book">
-<meta property="og:locale" content="fr_FR">
-<meta property="og:title" content="Philippe Grégoire Yacé — Une destinée (1920-1998)">
-<meta property="og:description" content="La biographie de Philippe Grégoire Yacé, figure de la construction de l'État ivoirien.">
-<meta property="og:image" content="https://example.org/assets/img/couverture.svg">
-<meta name="twitter:card" content="summary_large_image">
-
-<!-- Données structurées (CDC §5). Seules les données établies sont déclarées ;
-     auteur, éditeur, ISBN et dates précises restent à renseigner. -->
-<script type="application/ld+json">
+<?php
+/** Gabarit de page — le corps seul ; l'en-tête, la navigation et le pied
+    viennent de templates/layout.php. */
+$titre       = 'Philippe Grégoire Yacé — Une destinée (1920-1998)';
+$description = "La biographie de Philippe Grégoire Yacé, figure de la construction de l'État ivoirien.";
+$ld          = <<<'JSONLD'
 {
-  "@context": "https://schema.org",
-  "@type": "Book",
-  "name": "Philippe Grégoire Yacé : une destinée (1920-1998)",
-  "inLanguage": "fr",
-  "about": {
-    "@type": "Person",
-    "name": "Philippe Grégoire Yacé",
-    "birthDate": "1920",
-    "deathDate": "1998",
-    "nationality": "Ivoirienne",
-    "jobTitle": "Président de l'Assemblée nationale de Côte d'Ivoire (1959-1980)"
-  }
+  "@context": "https://schema.org", "@type": "Book",
+  "name": "Philippe Grégoire Yacé : une destinée (1920-1998)", "inLanguage": "fr",
+  "about": { "@type": "Person", "name": "Philippe Grégoire Yacé",
+    "birthDate": "1920", "deathDate": "1998", "nationality": "Ivoirienne",
+    "jobTitle": "Président de l\'Assemblée nationale de Côte d\'Ivoire (1959-1980)" }
 }
-</script>
-</head>
-
-<body>
-<a class="skip-link" href="#main">Aller au contenu</a>
-
-<!-- ===================== NAVIGATION ===================== -->
-<header class="nav-bar">
-  <div class="shell">
-    <div class="nav-bar__row">
-
-      <!-- VERROU LOGOTYPE — reconstruit en HTML faute du fichier source.
-           À remplacer par le SVG officiel : voir README.md § Logotype. -->
-      <a class="logo" href="#" aria-label="Philippe Grégoire Yacé — accueil">
-        <span class="logo__mark">PGY</span>
-        <span class="logo__rule" aria-hidden="true"></span>
-        <span class="logo__text">
-          <b>Philippe Grégoire</b>
-          <span>YACÉ</span>
-        </span>
-      </a>
-
-      <nav aria-label="Navigation principale">
-        <ul class="nav-menu" id="navMenu">
-          <li><a href="le-livre.html">Le livre</a></li>
-          <li><a href="biographie.html">Biographie</a></li>
-          <li><a href="#galerie">Archives</a></li>
-          <li><a href="#actualites">Actualités</a></li>
-          <li><a class="btn-pgy btn-pgy--sm" href="le-livre.html#acheter">Commander</a></li>
-        </ul>
-      </nav>
-
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navMenu" aria-label="Ouvrir le menu">
-        <span></span><span></span>
-      </button>
-
-    </div>
-  </div>
-</header>
-
-<main id="main">
+JSONLD;
+?>
 
 <!-- ===================== HERO ===================== -->
 <section class="hero">
@@ -110,7 +39,7 @@
                 dernières années du siècle.
               </p>
               <div class="hero__cta hero__fade" style="--d:680ms">
-                <a class="btn-pgy" href="le-livre.html">
+                <a class="btn-pgy" href="/le-livre">
                   Découvrir l'ouvrage
                   <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
                 </a>
@@ -138,7 +67,7 @@
                 <em>Texte à compléter par l'éditeur.</em>
               </p>
               <div class="hero__cta hero__fade" style="--d:680ms">
-                <a class="btn-pgy" href="biographie.html">
+                <a class="btn-pgy" href="/biographie">
                   L'homme
                   <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
                 </a>
@@ -164,11 +93,11 @@
                 <em>Descriptif à compléter par l'éditeur.</em>
               </p>
               <div class="hero__cta hero__fade" style="--d:680ms">
-                <a class="btn-pgy" href="le-livre.html#acheter">
+                <a class="btn-pgy" href="/le-livre#acheter">
                   Commander
                   <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
                 </a>
-                <a class="link" href="le-livre.html#acheter">Points de vente</a>
+                <a class="link" href="/le-livre#acheter">Points de vente</a>
               </div>
             </div>
           </div>
@@ -220,7 +149,7 @@
               une position centrale dans la vie institutionnelle du pays.
             </p>
             <p class="reveal" style="margin-top: var(--sp-6);">
-              <a class="link" href="biographie.html">Lire la biographie complète</a>
+              <a class="link" href="/biographie">Lire la biographie complète</a>
             </p>
           </div>
         </div>
@@ -253,7 +182,7 @@
           <div><dt>ISBN</dt><dd>À renseigner</dd></div>
         </dl>
 
-        <a class="btn-pgy reveal" href="le-livre.html#acheter">
+        <a class="btn-pgy reveal" href="/le-livre#acheter">
           Commander l'ouvrage
           <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
         </a>
@@ -345,7 +274,7 @@
         <h2 class="t-d1 reveal">Archives.</h2>
       </div>
       <div class="col-lg-3 d-flex align-items-end justify-content-lg-end">
-        <a class="link reveal" href="biographie.html#chronologie">Voir la chronologie</a>
+        <a class="link reveal" href="/biographie#chronologie">Voir la chronologie</a>
       </div>
     </div>
 
@@ -476,67 +405,3 @@
     </div>
   </div>
 </section>
-
-</main>
-
-<!-- ===================== PIED DE PAGE ===================== -->
-<footer class="foot">
-  <div class="shell" style="padding-block: var(--sp-9) var(--sp-7);">
-    <div class="row" style="row-gap: var(--sp-7);">
-      <div class="col-lg-5 col-xl-4">
-        <a class="logo" href="index.html" aria-label="Philippe Grégoire Yacé — accueil">
-        <span class="logo__mark">PGY</span>
-        <span class="logo__rule" aria-hidden="true"></span>
-        <span class="logo__text"><b>Philippe Grégoire</b><span>YACÉ</span></span>
-      </a>
-      </div>
-      <div class="col-lg-3 foot__col">
-        <p>L'ouvrage</p>
-        <ul>
-          <li><a href="le-livre.html">Le livre</a></li>
-          <li><a href="le-livre.html#auteur">L'auteur</a></li>
-          <li><a href="le-livre.html#extrait">Extraits</a></li>
-          <li><a href="le-livre.html#acheter">Commander</a></li>
-        </ul>
-      </div>
-      <div class="col-lg-2 foot__col">
-        <p>Le personnage</p>
-        <ul>
-          <li><a href="biographie.html">Biographie</a></li>
-          <li><a href="biographie.html#chronologie">Repères</a></li>
-          <li><a href="#">Héritage</a></li>
-          <li><a href="index.html#galerie">Archives</a></li>
-        </ul>
-      </div>
-      <div class="col-lg-2 foot__col">
-        <p>Le site</p>
-        <ul>
-          <li><a href="index.html#actualites">Actualités</a></li>
-          <li><a href="#">Événements</a></li>
-          <li><a href="index.html#temoignages">Témoignages</a></li>
-          <li><a href="#">Contact</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="foot__rule" style="margin-block: var(--sp-7) var(--sp-5);"></div>
-
-    <div class="row align-items-center" style="row-gap: var(--sp-3);">
-      <div class="col-md-8">
-        <p class="t-small" style="color: rgba(247,244,238,.5); font-size:.8125rem;">
-          &copy; 2026 — Tous droits réservés. Structure porteuse à renseigner.
-        </p>
-      </div>
-      <div class="col-md-4 text-md-end">
-        <p class="t-small" style="color: rgba(247,244,238,.5); font-size:.8125rem;">
-          Mentions légales · Confidentialité
-        </p>
-      </div>
-    </div>
-  </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/main.js"></script>
-</body>
-</html>

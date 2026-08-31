@@ -1,68 +1,16 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Le livre — Philippe Grégoire Yacé : une destinée</title>
-<meta name="description" content="Présentation détaillée de l'ouvrage : résumé, fiche technique, sommaire, extraits et points de vente.">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<meta property="og:type" content="article">
-<meta property="og:locale" content="fr_FR">
-<meta property="og:title" content="Le livre — Philippe Grégoire Yacé : une destinée">
-<meta property="og:description" content="Présentation détaillée de l'ouvrage : résumé, fiche technique, sommaire, extraits et points de vente.">
-<meta name="twitter:card" content="summary_large_image">
-
-<script type="application/ld+json">
+<?php
+/** Gabarit de page — le corps seul ; l'en-tête, la navigation et le pied
+    viennent de templates/layout.php. */
+$titre       = 'Le livre — Philippe Grégoire Yacé : une destinée';
+$description = "Présentation détaillée de l'ouvrage : résumé, fiche technique, sommaire, extraits et points de vente.";
+$ld          = <<<'JSONLD'
 {
-  "@context": "https://schema.org",
-  "@type": "Book",
+  "@context": "https://schema.org", "@type": "Book",
   "name": "Philippe Grégoire Yacé : une destinée (1920-1998)",
-  "inLanguage": "fr",
-  "bookFormat": "https://schema.org/Hardcover"
+  "inLanguage": "fr", "bookFormat": "https://schema.org/Hardcover"
 }
-</script>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="assets/css/tokens.css" rel="stylesheet">
-<link href="assets/css/base.css" rel="stylesheet">
-<link href="assets/css/components.css" rel="stylesheet">
-</head>
-
-<body>
-<a class="skip-link" href="#main">Aller au contenu</a>
-
-<header class="nav-bar">
-  <div class="shell">
-    <div class="nav-bar__row">
-      <a class="logo" href="index.html" aria-label="Philippe Grégoire Yacé — accueil">
-        <span class="logo__mark">PGY</span>
-        <span class="logo__rule" aria-hidden="true"></span>
-        <span class="logo__text"><b>Philippe Grégoire</b><span>YACÉ</span></span>
-      </a>
-
-      <nav aria-label="Navigation principale">
-        <ul class="nav-menu" id="navMenu">
-          <li><a href="le-livre.html" aria-current="page">Le livre</a></li>
-          <li><a href="biographie.html">Biographie</a></li>
-          <li><a href="index.html#galerie">Archives</a></li>
-          <li><a href="index.html#actualites">Actualités</a></li>
-          <li><a class="btn-pgy btn-pgy--sm" href="le-livre.html#acheter">Commander</a></li>
-        </ul>
-      </nav>
-
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navMenu" aria-label="Ouvrir le menu">
-        <span></span><span></span>
-      </button>
-
-    </div>
-  </div>
-</header>
-
-<main id="main">
+JSONLD;
+?>
 
 <!-- ===================== EN-TÊTE DE PAGE ===================== -->
 <section class="page-head">
@@ -285,65 +233,3 @@
     </div>
   </div>
 </section>
-</main>
-
-<footer class="foot">
-  <div class="shell" style="padding-block: var(--sp-9) var(--sp-7);">
-    <div class="row" style="row-gap: var(--sp-7);">
-      <div class="col-lg-5 col-xl-4">
-        <a class="logo" href="index.html" aria-label="Philippe Grégoire Yacé — accueil">
-        <span class="logo__mark">PGY</span>
-        <span class="logo__rule" aria-hidden="true"></span>
-        <span class="logo__text"><b>Philippe Grégoire</b><span>YACÉ</span></span>
-      </a>
-      </div>
-      <div class="col-lg-3 foot__col">
-        <p>L'ouvrage</p>
-        <ul>
-          <li><a href="le-livre.html">Le livre</a></li>
-          <li><a href="le-livre.html#auteur">L'auteur</a></li>
-          <li><a href="le-livre.html#extrait">Extraits</a></li>
-          <li><a href="le-livre.html#acheter">Commander</a></li>
-        </ul>
-      </div>
-      <div class="col-lg-2 foot__col">
-        <p>Le personnage</p>
-        <ul>
-          <li><a href="biographie.html">Biographie</a></li>
-          <li><a href="biographie.html#chronologie">Repères</a></li>
-          <li><a href="#">Héritage</a></li>
-          <li><a href="index.html#galerie">Archives</a></li>
-        </ul>
-      </div>
-      <div class="col-lg-2 foot__col">
-        <p>Le site</p>
-        <ul>
-          <li><a href="index.html#actualites">Actualités</a></li>
-          <li><a href="#">Événements</a></li>
-          <li><a href="index.html#temoignages">Témoignages</a></li>
-          <li><a href="#">Contact</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="foot__rule" style="margin-block: var(--sp-7) var(--sp-5);"></div>
-
-    <div class="row align-items-center" style="row-gap: var(--sp-3);">
-      <div class="col-md-8">
-        <p class="t-small" style="color: rgba(247,244,238,.5); font-size:.8125rem;">
-          &copy; 2026 — Tous droits réservés. Structure porteuse à renseigner.
-        </p>
-      </div>
-      <div class="col-md-4 text-md-end">
-        <p class="t-small" style="color: rgba(247,244,238,.5); font-size:.8125rem;">
-          Mentions légales · Confidentialité
-        </p>
-      </div>
-    </div>
-  </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/main.js"></script>
-</body>
-</html>

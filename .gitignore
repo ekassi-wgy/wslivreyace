@@ -21,3 +21,10 @@ media-files.abidjan.net/
 *.bak
 *.swp
 *~
+
+# Surcharge de configuration locale (identifiants de production)
+config/config.local.php
+
+# Fichiers téléversés depuis le back-office
+medias/*
+!medias/.gitkeep
