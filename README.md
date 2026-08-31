@@ -202,9 +202,10 @@ soldée** depuis le passage aux gabarits (voir §2). Ce qu'il reste :
 ### Où en est le projet
 
 **Fait** — socle de design complet et documenté ; trois pages publiques (accueil
-avec hero slider, Le livre, Biographie) rendues par le moteur de gabarits ;
-contrôleur frontal, routeur, PDO, mise en page unique ; base `livreyace_sbd` avec
-ses huit tables ; étanchéité des dossiers applicatifs vérifiée sur Apache.
+avec hero slider, Le livre, Biographie) rendues par le moteur de gabarits, plus une
+page 404 dessinée dans la charte et servie par le routeur ; contrôleur frontal,
+routeur, PDO, mise en page unique ; base `livreyace_sbd` avec ses huit tables ;
+étanchéité des dossiers applicatifs vérifiée sur Apache.
 
 **Non fait** — tout ce qui a besoin d'un back-office ou d'un formulaire.
 
