@@ -1,14 +1,15 @@
-# Archive de sauvegarde (snapshot déc. 2021, contenu déjà présent en clair)
-Archive.zip
-
-# Déchets d'extraction macOS
-__MACOSX/
+# Déchets macOS
 .DS_Store
 ._*
+__MACOSX/
 
-# Métadonnées de synchronisation FTP Dreamweaver (contiennent les chemins serveur)
+# Métadonnées de synchronisation FTP Dreamweaver
 _notes/
 dwsync.xml
+
+# Archives et miroirs de l'ancien site (matière lourde, hors dépôt)
+Archive.zip
+media-files.abidjan.net/
 
 # Éditeurs / IDE
 .idea/

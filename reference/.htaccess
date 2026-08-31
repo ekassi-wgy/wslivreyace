@@ -1,0 +1,12 @@
+# ============================================================================
+# reference/ — ancien site Abidjan.net, matière de consultation uniquement.
+#
+# Ce dossier vit à l'intérieur de la racine web (MAMP pointe sur livreyace/).
+# Sans cette règle, l'ancien site serait servi sous le domaine Yacé — ses
+# gabarits de commande et de paiement compris. Apache refuse ici toute requête.
+#
+# Cela ne dispense PAS d'exclure reference/ du déploiement : une synchro FTP
+# du dossier entier téléverserait 70 Mo de contenu mort sur le serveur.
+# ============================================================================
+
+Require all denied

@@ -53,32 +53,34 @@ template. Une seule animation appuyée : la révélation par masque des titres d
 
 ## 2. Fichiers
 
-Le dépôt sépare deux choses qui n'ont rien à voir :
+Le site occupe la racine : MAMP y pointe directement
+(`DocumentRoot "…/projetsmamp/livreyace"`).
 
 ```
-livreyace/
-├── site/        le nouveau site — c'est ici que tout se passe
-└── reference/   l'ancien site Abidjan.net, consultation seule
-```
-
-`reference/` n'est ni compilé, ni déployé, ni lié depuis `site/`. Il n'est là que
-comme référence de structure et de contenu (arborescence, tunnel de commande,
-intégration des moyens de paiement locaux). Aucun fichier de `site/` n'en dépend.
-
-```
-site/
+livreyace/                  ← racine web
 ├── index.html              accueil
 ├── le-livre.html           l'ouvrage (CDC §4.2 et §4.3)
 ├── biographie.html         le personnage (CDC §4.4)
-└── assets/
-    ├── css/tokens.css      jetons : couleurs, typo, rythme, mouvement
-    ├── css/base.css        reset, neutralisation Bootstrap, typographie
-    ├── css/components.css  navigation, hero, boutons, frise, galerie, pied
-    ├── js/main.js          navigation, peau du carrousel, apparitions
-    └── img/*.svg           visuels d'attente — à remplacer
+├── assets/
+│   ├── css/tokens.css      jetons : couleurs, typo, rythme, mouvement
+│   ├── css/base.css        reset, neutralisation Bootstrap, typographie
+│   ├── css/components.css  navigation, hero, boutons, frise, galerie, pied
+│   ├── js/main.js          navigation, peau du carrousel, apparitions
+│   └── img/*.svg           visuels d'attente — à remplacer
+└── reference/              ancien site Abidjan.net, consultation seule
 ```
 
----
+### `reference/` est dans la racine web — et c'est verrouillé
+
+Le dossier de référence se trouve à l'intérieur de l'arborescence servie. Sans
+précaution, l'ancien site Abidjan.net serait accessible sous le domaine Yacé, ses
+gabarits de commande et de paiement compris. Un `reference/.htaccess` porte donc un
+`Require all denied` : Apache refuse toute requête vers ce dossier.
+
+**Cela ne suffit pas au déploiement.** Une synchronisation FTP du dossier entier —
+le workflow historique de ce projet, `server="www.abidjan.net/httpdocs/"` — téléverserait
+quand même 70 Mo de contenu mort. `reference/` doit être explicitement exclu de la
+règle de déploiement, ou sorti du dossier au moment de la mise en ligne.
 
 ## 3. Bootstrap : ce qui est conservé, ce qui est démonté
 
