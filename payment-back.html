@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Polices -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Italianno&display=swap" rel="stylesheet">
+    <!-- Styles -->
+    <!-- <link rel="stylesheet" href="assets/css/app.css"> -->
+    <link rel="stylesheet" href="./assets/css/landing.css">
+    <!-- <link rel="stylesheet" href="assets/css/styles.min.css">-->
+    <link rel="stylesheet" href="./assets/css/bootstrap.css">
+    <link rel="stylesheet" href="./assets/css/bootstrap-grid.css">
+    <link rel="stylesheet" href="./assets/css/bootstrap-reboot.css">
+    <!-- Styles CDN-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.0/font/bootstrap-icons.css">
+    <link
+            rel="stylesheet"
+            href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"
+            integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V"
+            crossorigin="anonymous"
+    />
+    <title> ABIDJAN.NET UNE HISTOIRE UN AVENIR - Paiement </title>
+
+    <style>
+        .radio-inline{
+            margin-right: 5px;
+        }
+        h4 {
+            text-align: center;
+            font-size: 26px;
+            margin: 30px 0 -15px;
+        }
+    </style>
+
+</head>
+<body>
+<!--nav-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default stick ">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <ul class="navbar-nav mx-auto menu-mod">
+                <li class="logo-menu" >
+                    <a href="http://weblogy.com/fr/" class="navbar-brand">
+                        <img src="./assets/images/logoweblogy.png" alt="" width="100"  class="d-inline-block align-text-top">
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a   class="nav-link active  police-gras-fonce" aria-current="page" href="/livre">Livre</a>
+                </li>
+                <li class="nav-item">
+                    <a   class="nav-link  police-gras-fonce" href="/lesauteurs">Les auteurs</a>
+                </li>
+                <li class="nav-item">
+                    <a   class="nav-link  police-gras-fonce" href="/leprefacier">Le Préfacier</a>
+                </li>
+                <li class="nav-item">
+                    <a   class="nav-link  police-gras-fonce" href="/lesentrepreneurs">Les entrepreneurs</a>
+                </li>
+                <li class="nav-item">
+                    <a   class="nav-link  police-gras-fonce" href="/pointsdistribution">Points de distribution</a>
+                </li>
+                <li class="nav-item">
+                    <a   class="nav-link  police-gras-fonce" href="/videostemoignage">Vidéos témoignages</a>
+                </li>
+                <li class="nav-item">
+                    <a   class="nav-link  police-gras-fonce" href="#">Livre d'or</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link police-gras-fonce" href="#Distibution">Contacts</a>
+                </li>
+                <li class="nav-item bouton-achat-livre btn btn-danger btn-radius">
+                    <a href="https://www.abidjan.net/payment" class="police-gras">
+                        <span class="btn-achat-police-gras"> Précommandez ici </span> <i class="bi bi-cart-fill"></i>
+                    </a>
+                </li>
+                <!--              <button class=" " type="submit" href="https://www.abidjan.net/payment">-->
+
+                <!--              </button>-->
+            </ul>
+        </div>
+    </div>
+</nav>
+<!--nav end-->
+
+<section class="contact section-spacing" style="padding-bottom: 60px; margin-bottom: 20px;">
+    <div class="container">
+        <header class="text-center">
+            <h4>Votre paiement a été effectué avec succès !</h4>
+        </header>
+
+        <div class="row"  style="display: flex;align-items: center;justify-content: center; padding-top: 50px;">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-5 center-block">
+                <img loading="lazy" src="./assets/images/confirmico.gif">
+            </div>
+        </div>
+
+    </div>
+</section>
+<!--Fin Contact -->
+
+<!--Debut Footer-->
+<footer class="site-footer section-spacing">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <p class="scroll-top"><a href="#"> <i class="bi bi-arrow-up"></i> </a></p>
+                <!--Debut icones sociales-->
+                <ul class="social">
+                    <li><a href="https://twitter.com/" target="_blank"> <i class="bi bi-facebook"></i>  </a></li>
+                    <li><a href="https://www.facebook.com/" target="_blank"><i class="bi bi-twitter"></i> </a></li>
+                    <li><a href="https://youtube.com/" target="_blank"> <i class="bi bi-youtube"></i> </a></li>
+                </ul>
+                <!--fin icones sociales-->
+                <small class="police-gras"> © Weblogy Group Ltd. Tous droits réservés</small>
+                <p>
+                    <a href="" data-toggle="modal" data-target="#politique" class="police-gras">Politique de confidentialité</a> |
+                    <a href="" data-toggle="modal" data-target="#cgu" class="police-gras">Conditions d'utilisation </a>
+                </p>
+                <!-- Debut Modal Politique -->
+                <div class="modal fade" id="politique" tabindex="-1" role="dialog" aria-labelledby="myModalLabel-politique" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title" id="myModalLabel-politique">Politique de confidentialité</h4>
+                            </div>
+                            <div class="modal-body text-left">
+                                <p>Lorem ipsum dolor sit amet, consectetur <strong>adipiscing elit</strong>. Nullam iaculis libero non accumsan pharetra. Aenean vel est luctus, rhoncus sapien sit amet, pretium mauris.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam iaculis libero non accumsan pharetra.</p>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam iaculis libero non accumsan pharetra. Aenean vel <strong>est luctus</strong>, rhoncus sapien sit amet, pretium mauris.Lorem ipsum dolor sit amet. </p>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. <strong>Nullam iaculis</strong> libero non accumsan pharetra. Aenean vel est luctus, rhoncus sapien sit amet, pretium mauris.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Fin Modal Politique -->
+                <!-- Debut Modal CGU -->
+                <div class="modal fade" id="cgu" tabindex="-1" role="dialog" aria-labelledby="myModalLabel-cgu" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true bouton-modal">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title" id="myModalLabel-cgu">Conditions d'utilisation</h4>
+                            </div>
+                            <div class="modal-body text-left">
+                                <p>Lorem ipsum dolor sit amet, consectetur <strong>adipiscing elit</strong>. Nullam iaculis libero non accumsan pharetra. Aenean vel est luctus, rhoncus sapien sit amet, pretium mauris.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam iaculis libero non accumsan pharetra.</p>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam iaculis libero non accumsan pharetra. Aenean vel <strong>est luctus</strong>, rhoncus sapien sit amet, pretium mauris.Lorem ipsum dolor sit amet. </p>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. <strong>Nullam iaculis</strong> libero non accumsan pharetra. Aenean vel est luctus, rhoncus sapien sit amet, pretium mauris.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Fin Modal CGU -->
+            </div>
+        </div>
+    </div>
+</footer>
+<!--Fin Footer-->
+
+<script src="assets/js/scripts.min.js"></script>
+<!--        <script src="assets/js/jquery.ajaxchimp.min.js"></script>-->
+<!--        <script src="assets/js/main.js"></script>-->
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="assets/js/loadingoverlay.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+    function choixModePaiement(mode_paiement) {
+
+        var
+            a = document.getElementById("alert1"),
+            b = document.getElementById("alert2"),
+            c = document.getElementById("alert3"),
+            d = document.getElementById("alert4")
+        ;
+
+        if (mode_paiement == 'en_espece') {
+
+            a.style.display = "none";
+            b.style.display = "none";
+            c.style.display = "none";
+            /*d.style.display = "none";*/
+
+        } else if(mode_paiement == 'flooz') {
+
+            a.style.display = "block";
+            b.style.display = "none";
+            c.style.display = "none";
+            /*d.style.display = "none";*/
+
+        } else if(mode_paiement == 'orangemoney') {
+
+            a.style.display = "none";
+            b.style.display = "none";
+            c.style.display = "none";
+            /*d.style.display = "none";*/
+
+        } else if (mode_paiement == 'mtnmobilemoney') {
+
+            a.style.display = "none";
+            b.style.display = "block";
+            c.style.display = "none";
+            /*d.style.display = "none";*/
+
+        } else if (mode_paiement == 'apay') {
+
+            a.style.display = "none";
+            b.style.display = "none";
+            c.style.display = "block";
+            /*d.style.display = "none";*/
+
+        } else {
+
+            a.style.display = "none";
+            b.style.display = "none";
+            c.style.display = "none";
+            /*d.style.display = "none";*/
+        }
+
+        if ($("#destMsisdn").is(":visible")) {
+
+            //document.getElementById("destMsisdn").required = true;
+            //alert ("#destMsisdn est visible");
+            $("#destMsisdn").attr("required", "true");
+
+        }
+        if ($("#destMsisdn").is(":hidden")) {
+
+            //alert ("#destMsisdn est caché");
+            //document.getElementById("destMsisdn").required = false;
+            //document.getElementById('destMsisdn').value="";
+            //$("input").attr("required", "false");
+            $('#destMsisdn').removeAttr('required')
+            $('#destMsisdn').val('');
+
+        }
+
+        if ($("#MSISDN").is(":visible")) {
+            $("#MSISDN").attr("required", "true");
+        }
+        if ($("#MSISDN").is(":hidden")) {
+            $('#MSISDN').removeAttr('required')
+            $('#MSISDN').val('');
+        }
+
+        if ($("#idclient").is(":visible")) {
+            $("#idclient").attr("required", "true");
+        }
+
+        if ($("#idclient").is(":hidden")) {
+            $('#idclient').removeAttr('required')
+            $('#idclient').val('');
+        }
+    }
+
+    function choixDedicace(value) {
+        var
+            a = document.getElementById("alert12")
+        ;
+
+        console.log(value)
+
+        if (value == 'Oui') {
+            a.style.display = "block";
+        } else {
+            a.style.display = "none";
+        }
+    }
+
+    // Empêcher la saisie de textes et autres caractères différents des chiffres
+    function verif_nombre(champ) {
+
+        var chiffres = new RegExp("[0-9]"), verif, points = 0;
+
+        for(x = 0; x < champ.value.length; x++)  {
+            verif = chiffres.test(champ.value.charAt(x));
+            if(champ.value.charAt(x) == "."){points++;}
+            if(points > 1){verif = false; points = 1;}
+            if(verif == false){champ.value = champ.value.substr(0,x) + champ.value.substr(x+1,champ.value.length-x+1); x--;}
+        }
+    }
+
+    function validerPaiement() {
+
+        // alert( $("#nom").val() )
+
+        // Récupérer les valeurs du formulaire pour vérification
+        let
+            nomValue = $("#nom").val(), // document.getElementById("nom").value, // champ requis
+            prenomValue = $("#prenom").val(), // document.getElementById("prenom").value, // champ requis
+            phoneValue = $("#phone").val(), // document.getElementById("phone").value, // champ requis
+            livraisonValue = $("#livraison").val(), // document.getElementById("livraison").value, // champ requis
+            dedicaceValue = $("#dedicace").val(), // document.getElementById("dedicace").value, // champ requis,
+            emailValue = $("#email").val(),
+            quantiteValue = $("#quantite").val(),
+            choixPaiementValue = document.querySelector('input[name="mode_paiement"]:checked').value
+        ;
+
+        //console.log(choixPaiementValue)
+
+        if (
+            nomValue.replace(/\s/g, "") == "" ||
+            prenomValue.replace(/\s/g, "") == "" ||
+            phoneValue.replace(/\s/g, "") == "" ||
+            livraisonValue.replace(/\s/g, "") == "" ||
+            emailValue.replace(/\s/g, "") == "" ||
+            quantiteValue.replace(/\s/g, "") == "" ||
+            choixPaiementValue == ""
+        )  {
+
+            Swal.fire(
+                'Attention !',
+                'Veuillez renseigner tous les champs obligatoires !',
+                'info'
+            )
+
+            return false;
+        }
+
+        if ( quantiteValue <= "0" ) {
+
+            Swal.fire(
+                'Attention !',
+                'Veuillez renseigner une quantité supérieure ou égale à 0 !',
+                'info'
+            )
+
+            return false;
+        }
+
+        // Set datas
+        var datas = new FormData() ;
+        datas.append("Amount", "10") ;
+        datas.append("nom", nomValue) ;
+        datas.append("prenom", prenomValue) ;
+        datas.append("contact", phoneValue) ;
+        datas.append("email", emailValue) ;
+        datas.append("livraison", livraisonValue) ;
+        datas.append("dedicace", dedicaceValue) ;
+        datas.append("mode_paimement", choixPaiementValue) ;
+
+        if ( choixPaiementValue == "mtnmobilemoney" ) {
+
+            let numeroMTNValue = document.getElementById("MSISDN").value ;
+            if (numeroMTNValue.replace(/\s/g, "") == "") {
+
+                Swal.fire(
+                    'Attention !',
+                    'Veuillez renseigner votre numéro MTN money !',
+                    'info'
+                )
+
+                return false;
+            }
+
+            // Call sendDatas() function with parameters
+            datas.append("MSISDN", numeroMTNValue) ;
+            // console.log(datas)
+            sendDatas(datas, choixPaiementValue) ;
+            return false;
+        }
+
+
+        if ( choixPaiementValue == "flooz" ) {
+
+            let numeroFloozValue = document.getElementById("destMsisdn").value ;
+            if (numeroFloozValue.replace(/\s/g, "") == "") {
+
+                Swal.fire(
+                    'Attention !',
+                    'Veuillez renseigner votre numéro Flooz !',
+                    'info'
+                )
+
+                return false;
+            }
+
+            // Call sendDatas() function with parameters
+            sendDatas() ;
+            return false;
+        }
+
+
+        // Call sendDatas() function with parameters
+        sendDatas(datas, choixPaiementValue) ;
+    }
+
+    // Send data to save payment
+    function sendDatas(donnees, choixPaiementValue) {
+        // console.log("Send datas method called") ;
+        var url = "" ;
+        if ( choixPaiementValue == "mtnmobilemoney" ) {
+            url = "https://carte.abidjan.net/livre/mtn-money.php" ;
+        } else if ( choixPaiementValue == "orangemoney" ) {
+            url = "https://carte.abidjan.net/livre/orange-money.php" ;
+        }
+
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": url, // "https://applicarte.abidjan.net/livre/mtn-money.php",
+            "method": "POST",
+            dataType: "json",
+            "timeout": 0,
+            "processData": false,
+            "mimeType": "multipart/form-data",
+            "contentType": false,
+            "data": donnees,
+            beforeSend: function(){
+                $.LoadingOverlay("show", {
+                    image: "",
+                    fontawesome: "fa fa-spinner fa-spin",
+                    maxSize: "50",
+                    background: "rgba(255, 255, 255, 0.7)"
+                });
+            },
+            success: function(response) {},
+            error: function(resultat, statut, error) {},
+            complete: function(resultat, statut) { $.LoadingOverlay("hide"); }
+        }
+
+        $.ajax(settings).done(function(response){
+
+            // console.log(response)
+            Swal.fire(
+                'Info !',
+                response.message,
+                'info'
+            )
+
+            if ( response.ResponseCode == 1000 ) {
+                // MTN money
+                setInterval(()=>{
+
+                    $.ajax({
+                        type: 'POST',
+                        url: 'https://carte.abidjan.net/livre/cronapimtn.php',
+                        dataType: 'json',
+                        cache: true,
+                        global: false,
+                        data: {"code_transaction": response.code_transaction},
+                        success: function(response) {
+                            console.log(response) ;
+                        }
+                    });
+
+                }, 1000) ;
+
+            } else if ( response.ResponseCode == "INITIATED" ) {
+                // Orange money
+                window.location.href = response.payment_url ;
+            }
+
+        });
+    }
+
+</script>
+
+</body>
+</html>

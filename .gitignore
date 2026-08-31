@@ -1,0 +1,22 @@
+# Archive de sauvegarde (snapshot déc. 2021, contenu déjà présent en clair)
+Archive.zip
+
+# Déchets d'extraction macOS
+__MACOSX/
+.DS_Store
+._*
+
+# Métadonnées de synchronisation FTP Dreamweaver (contiennent les chemins serveur)
+_notes/
+dwsync.xml
+
+# Éditeurs / IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# Logs et temporaires
+*.log
+*.bak
+*.swp
+*~

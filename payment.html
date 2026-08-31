@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Polices -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Italianno&display=swap" rel="stylesheet">
+    <!-- Styles -->
+    <!-- <link rel="stylesheet" href="assets/css/app.css"> -->
+    <link rel="stylesheet" href="./assets/css/landing.css">
+    <!-- <link rel="stylesheet" href="assets/css/styles.min.css">-->
+    <link rel="stylesheet" href="./assets/css/bootstrap.css">
+    <link rel="stylesheet" href="./assets/css/bootstrap-grid.css">
+    <link rel="stylesheet" href="./assets/css/bootstrap-reboot.css">
+
+    <!-- Styles CDN-->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.0/font/bootstrap-icons.css">
+    <link
+            rel="stylesheet"
+            href="https://use.fontawesome.com/releases/v5.13.0/css/all.css"
+            integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V"
+            crossorigin="anonymous"
+    />
+
+    <title> ABIDJAN.NET UNE HISTOIRE D'AVENIR - PAIEMENT</title>
+
+    <style>
+
+        section {
+            display: block;
+        }
+
+        .wide-tb-30 {
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+
+        .secure span,
+        .backBtn span {
+            margin-left: 5px;
+        }
+
+        .secure .icon {
+            font-size: 20px;
+            line-height: 20px;
+        }
+
+        .logo .icon {
+            font-size: 32px;
+            line-height: 32px;
+            margin-right: 5px;
+        }
+
+        .item__quantity {
+            position: absolute;
+            right: 50px;
+            top: 30px;
+            font-size: 20px;
+        }
+
+        .item__image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item__image .iphone {
+            /* margin-top: -50px; */
+            margin-left: -100px;
+            width: 200px;
+        }
+
+        .item__details {
+            padding: 30px;
+        }
+
+        .item__title {
+            font-size: 25px;
+            font-weight: 600;
+            color: #dc3545;
+        }
+
+        .item__description p {
+            padding-top: 30px;
+            padding-right: 20px;
+        }
+
+        .icon {
+            font-size: 16px;
+            vertical-align: middle;
+        }
+
+        .shadow {
+            box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+            border-radius: 23px;
+        }
+
+        .row {
+            display: flex;
+        }
+
+        .txt {
+            border-color: #e1e8ee;
+            width: 100%;
+        }
+
+        .input {
+            border-radius: 5px;
+            border-style: solid;
+            border-width: 2px;
+            height: 48px;
+            padding-left: 15px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #5e6977;
+        }
+
+        input[type="text"] {
+            display: initial;
+            padding: 15px;
+        }
+
+        .title {
+            font-size: 14px;
+            padding-bottom: 8px;
+        }
+
+        .field {
+            padding-top: 15px;
+            padding-right: 30px;
+            width: 50%;
+        }
+
+        .field.small {
+            width: auto;
+        }
+
+        .notification .icon {
+            font-size: 28px;
+            color: #7dc855;
+            line-height: 28px;
+            margin-right: 10px;
+        }
+
+        .payment {
+            padding: 20px 0 0 0;
+        }
+
+        .payment__title {
+            margin: 40px 0 20px 0;
+            font-size: 18px;
+            display: flex;
+            text-align: left;
+        }
+
+        .payment__title .icon {
+            margin-right: 10px;
+        }
+
+        .payment__types {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .payment__info {
+            display: flex;
+        }
+
+        .payment__cc {
+            flex: 60%;
+        }
+
+        .payment__type {
+            display: flex;
+            border: 1px solid #d9d9d9;
+            border-radius: 12px;
+            padding: 20px 40px;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: #d9d9d9;
+            transition: all 0.15s ease;
+            margin-right: 20px;
+        }
+
+        .payment__type:hover {
+            -webkit-transform: translateY(-1px);
+            transform: translateY(-1px);
+        }
+
+        .payment__type.active {
+            color: #0a0a0a;
+            background: #f6fcf7;
+            border-color: #7dc855;
+        }
+
+        .payment__type .icon {
+            font-size: 32px;
+            margin-right: 10px;
+        }
+
+        .thankyou .details {
+            opacity: 1;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .thankyou .details h3 {
+            font-weight: 600;
+        }
+
+        .thankyou .details__item {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .thankyou .details__item .icon-xl {
+            font-size: 32px;
+            color: #7dc855;
+            line-height: 32px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<!--nav-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default stick ">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <ul class="navbar-nav mx-auto menu-mod">
+                <li class="logo-menu" >
+                    <a href="http://weblogy.com/fr/" class="navbar-brand">
+                        <img src="./assets/images/logoweblogy.png" alt="" width="100"  class="d-inline-block align-text-top">
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a   class="nav-link active  police-gras-fonce" aria-current="page" href="/livre">Livre</a>
+                </li>
+                <li class="nav-item">
+                    <a   class="nav-link  police-gras-fonce" href="/lesauteurs">Auteurs</a>
+                </li>
+                <li class="nav-item">
+                    <a   class="nav-link  police-gras-fonce" href="/leprefacier">Préfacier</a>
+                </li>
+                <li class="nav-item">
+                    <a   class="nav-link  police-gras-fonce" href="/lesentrepreneurs">Entrepreneurs</a>
+                </li>
+                <li class="nav-item">
+                    <a   class="nav-link  police-gras-fonce" href="/pointsdistribution">Points de distribution</a>
+                </li>
+                <li class="nav-item">
+                    <a   class="nav-link  police-gras-fonce" href="/videostemoignage">Vidéos témoignages</a>
+                </li>
+                <li class="nav-item">
+                    <a   class="nav-link  police-gras-fonce" href="#">Livre d'or</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link police-gras-fonce" href="#Distibution">Contacts</a>
+                </li>
+                <li class="nav-item bouton-achat-livre btn btn-danger btn-radius">
+                    <a href="https://www.abidjan.net/payment" class="police-gras">
+                        <span class="btn-achat-police-gras"> Précommandez ici </span> <i class="bi bi-cart-fill"></i>
+                    </a>
+                </li>
+                <!--              <button class=" " type="submit" href="https://www.abidjan.net/payment">-->
+
+                <!--              </button>-->
+            </ul>
+        </div>
+    </div>
+</nav>
+<!--nav end-->
+
+<section class="wide-tb-30">
+
+    <div class="container">
+        <div class="shadow">
+            <div class="row">
+                <div class="item__image col-lg-6 col-xs-12">
+                    <img class="iphone" src="https://www.abidjan.net/assets/images/cover2.png" alt="">
+                </div>
+                <div class="item__details col-lg-6 col-xs-12">
+                    <div class="item__title">
+                        ABIDJAN.NET
+                    </div>
+                    <div>
+                        UNE HISTOIRE D'AVENIR
+                    </div>
+                    <div class="item__quantity">
+                        5 000 CFA
+                    </div>
+                    <div class="item__description">
+
+                        <p>
+                            Ce livre foisonne d’anecdotes et de moments contés avec verve, par nos deux
+                            entrepreneurs. Je crois que les conseils
+                            qu’ils prodiguent sont pertinents, pour toutes celles et tous ceux qui souhaite devenir
+                            des entrepreneurs en Côte
+                            d’Ivoire
+                            ou ailleurs, quel que soit le secteur d’activité qu’ils choisissent.
+                            […] Ce que Jil-Alexandre et Daniel ont accompli est un message d'espoir pour notre
+                            continent.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container">
+
+        <div class="payment">
+
+            <div class="payment__info">
+                <div class="payment__cc">
+                    <div class="payment__title">
+                        <i class="icon icon-user"></i> Informations Paiement
+                    </div>
+                    <form>
+                        <div class="row">
+
+                            <div class="field col-lg-6">
+                                <div class="title">
+                                    Nom *
+                                </div>
+                                <input type="text" class="input txt" placeholder="" name="name" id="nom" />
+                            </div>
+
+                            <div class="field col-lg-6">
+                                <div class="title">
+                                    Prénom(s) *
+                                </div>
+                                <input type="text" class="input txt" placeholder="" name="prenom" id="prenom" />
+                            </div>
+
+                            <div class="field col-lg-6">
+                                <div class="title">
+                                    Numéro de téléphone *
+                                </div>
+                                <input type="text" class="input txt" placeholder="" name="phone" id="phone"
+                                       maxlength="10" onkeyup="verif_nombre(this);" />
+                            </div>
+
+                            <div class="field col-lg-6">
+                                <div class="title">
+                                    E-mail *
+                                </div>
+                                <input type="email" class="input txt" placeholder="" name="email" id="email" />
+                            </div>
+
+                            <div class="field col-lg-6">
+                                <div class="title">
+                                    Lieu de livraison *
+                                </div>
+                                <input type="text" class="input txt" placeholder="" name="livraison"
+                                       id="livraison" />
+                            </div>
+
+                            <div class="field col-lg-6">
+                                <div class="title">
+                                    La quantité *
+                                </div>
+                                <select class="input txt" name="quantite" id="quantite">
+                                    <option value="1" selected>1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                </select>
+                            </div>
+
+                            <div class="field col-lg-6">
+                                <div class="title">
+                                    Souhaitez-vous une dédicace ?
+                                </div>
+                                <select class="input txt" name="dedicaceQ" id="dedicaceQuestion"
+                                        onchange="dedicaceMode()">
+                                    <option value="" selected>Sélectionnez une réponse</option>
+                                    <option value="Oui">Oui</option>
+                                    <option value="Non">Non</option>
+                                </select>
+                            </div>
+
+                            <div class="field col-lg-6" id="alert12" style="display: none;">
+                                <div class="title">
+                                    Précisez la dédicace
+                                </div>
+                                <input type="text" class="input txt" name="dedicace" id="dedicace"
+                                       placeholder="Précisez ici (Ex: Je souhaite que Jil me dédicace le(s) livre(s))">
+                            </div>
+
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+
+        <div class="payment__title">
+            Mode de Paiement *
+        </div>
+
+        <div class="payment__types row">
+
+            <label class="payment__type col-lg-2 col-md-2 col-sm-4 col-xs-6">
+                <input type="radio" name="mode_paiement" checked="checked" value="VISA"
+                       onchange="choixModePaiement('VISA')">
+                <img src="./assets/images/visa.png" data-at2x="./assets/images/visa.png">
+            </label>
+
+            <label class="payment__type col-lg-2 col-md-2 col-sm-4 col-xs-6">
+                <input type="radio" name="mode_paiement" value="MASTERCARD"
+                       onchange="choixModePaiement('MASTERCARD')">
+                <img src="./assets/images/mastercard.png" data-at2x="./assets/images/mastercard.png">
+            </label>
+
+            <label class="payment__type col-lg-2 col-md-2 col-sm-4 col-xs-6">
+                <input type="radio" name="mode_paiement" value="orangemoney"
+                       onchange="choixModePaiement('orangemoney')">
+                <img src="./assets/images/om.png" data-at2x="./assets/images/om.png">
+            </label>
+
+            <label class="payment__type col-lg-2 col-md-2 col-sm-4 col-xs-6">
+                <input type="radio" name="mode_paiement" value="mtnmobilemoney"
+                       onchange="choixModePaiement('mtnmobilemoney')">
+                <img src="./assets/images/momo.png" data-at2x="./assets/images/momo.png">
+            </label>
+
+            <label class="payment__type col-lg-2 col-md-2 col-sm-4 col-xs-6">
+                <input type="radio" name="mode_paiement" value="flooz" onchange="choixModePaiement('flooz')">
+                <img src="./assets/images/flooz.png" data-at2x="./assets/images/flooz.png">
+            </label>
+
+
+            <!-- Les champs masqués selon le mode de paiement sélectionné -->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 25px;">
+
+                <!-- <div class="form-group" id="alert01" style="">
+                    <div class="row">
+                        <div class="col-sm-12">
+
+                            <label class="radio-inline">
+                                <input type="radio" name="type_card" checked="checked" value="VISA">
+                                <span class="tooltips" href="#">
+                                            VISA
+                                        </span>
+                            </label>
+
+                            <label class="radio-inline">
+                                <input type="radio" name="type_card" value="MASTERCARD">
+                                <span class="tooltips" href="#">
+                                            MASTERCARD
+                                        </span>
+                            </label>
+                        </div>
+                    </div>
+                </div> -->
+
+                <div class="form-group" id="alert1" style="display: none;">
+                    <label for="" class="col-sm-4 control-label"> Votre numéro MOOV * : </label>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <input name="indice" type="text" class="form-control" value="Côte d'Ivoire (+225)"
+                                   disabled="">
+                        </div>
+                        <div class="col-sm-8">
+                            <input name="destMsisdn" type="text" class="form-control" maxlength="10"
+                                   onkeyup="verif_nombre(this);" id="destMsisdn">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" id="alert2" style="display: none;">
+                    <label for="" class="col-sm-4 control-label"> Votre numéro MTN * : </label>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <input name="indice" type="text" class="form-control" value="Côte d'Ivoire (+225)"
+                                   disabled="">
+                        </div>
+                        <div class="col-sm-8">
+                            <input name="MSISDN" type="text" class="form-control" maxlength="10"
+                                   onkeyup="verif_nombre(this);" id="MSISDN">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    </div>
+
+    <div class="container" style="padding-top: 60px; display: flex; justify-content: center;">
+        <a href="javascript:;" class="bouton-message btn btn-danger" onclick="validerPaiement()">
+            SOUMETTRE
+        </a>
+    </div>
+
+    <div class="container">
+        <div id="formVisa"></div>
+    </div>
+
+</section>
+
+<!--Debut Footer-->
+<footer class="site-footer section-spacing">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <p class="scroll-top"><a href="#"> <i class="bi bi-arrow-up"></i> </a></p>
+
+                <!--Debut icones sociales-->
+
+                <ul class="social">
+                    <li><a href="https://twitter.com/" target="_blank"> <i class="bi bi-facebook"></i>  </a></li>
+                    <li><a href="https://www.facebook.com/" target="_blank"><i class="bi bi-twitter"></i> </a></li>
+                    <li><a href="https://youtube.com/" target="_blank"> <i class="bi bi-youtube"></i> </a></li>
+                </ul>
+
+                <!--fin icones sociales-->
+
+                <small class="police-gras"> © Weblogy Group Ltd. Tous droits réservés</small>
+                <p>
+                    <a href="" data-toggle="modal" data-target="#politique" class="police-gras">Politique de confidentialité</a> |
+                    <a href="" data-toggle="modal" data-target="#cgu" class="police-gras">Conditions d'utilisation </a>
+                </p>
+
+                <!-- Debut Modal Politique -->
+                <div class="modal fade" id="politique" tabindex="-1" role="dialog" aria-labelledby="myModalLabel-politique" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title" id="myModalLabel-politique">Politique de confidentialité</h4>
+                            </div>
+                            <div class="modal-body text-left">
+                                <p>Lorem ipsum dolor sit amet, consectetur <strong>adipiscing elit</strong>. Nullam iaculis libero non accumsan pharetra. Aenean vel est luctus, rhoncus sapien sit amet, pretium mauris.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam iaculis libero non accumsan pharetra.</p>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam iaculis libero non accumsan pharetra. Aenean vel <strong>est luctus</strong>, rhoncus sapien sit amet, pretium mauris.Lorem ipsum dolor sit amet. </p>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. <strong>Nullam iaculis</strong> libero non accumsan pharetra. Aenean vel est luctus, rhoncus sapien sit amet, pretium mauris.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Fin Modal Politique -->
+
+                <!-- Debut Modal CGU -->
+                <div class="modal fade" id="cgu" tabindex="-1" role="dialog" aria-labelledby="myModalLabel-cgu" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true bouton-modal">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title" id="myModalLabel-cgu">Conditions d'utilisation</h4>
+                            </div>
+                            <div class="modal-body text-left">
+                                <p>Lorem ipsum dolor sit amet, consectetur <strong>adipiscing elit</strong>. Nullam iaculis libero non accumsan pharetra. Aenean vel est luctus, rhoncus sapien sit amet, pretium mauris.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam iaculis libero non accumsan pharetra.</p>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam iaculis libero non accumsan pharetra. Aenean vel <strong>est luctus</strong>, rhoncus sapien sit amet, pretium mauris.Lorem ipsum dolor sit amet. </p>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. <strong>Nullam iaculis</strong> libero non accumsan pharetra. Aenean vel est luctus, rhoncus sapien sit amet, pretium mauris.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Fin Modal CGU -->
+
+            </div>
+        </div>
+    </div>
+</footer>
+<!--Fin Footer-->
+
+<script src="assets/js/scripts.min.js"></script>
+<!--        <script src="assets/js/jquery.ajaxchimp.min.js"></script>-->
+<!--        <script src="assets/js/main.js"></script>-->
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="assets/js/loadingoverlay.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+    function choixModePaiement(mode_paiement) {
+
+        var
+            a = document.getElementById("alert1"),
+            b = document.getElementById("alert2")
+            //e = document.getElementById("alert01")
+        ;
+
+        if (mode_paiement == 'VISA') {
+
+            a.style.display = "none";
+            b.style.display = "none";
+            //e.style.display = "block";
+            /*d.style.display = "none";*/
+
+        }else if (mode_paiement == 'MASTERCARD') {
+
+            a.style.display = "none";
+            b.style.display = "none";
+            //e.style.display = "block";
+            /*d.style.display = "none";*/
+
+        } else if (mode_paiement == 'flooz') {
+
+            a.style.display = "block";
+            b.style.display = "none";
+            //e.style.display = "none";
+            /*d.style.display = "none";*/
+
+        } else if (mode_paiement == 'orangemoney') {
+
+            a.style.display = "none";
+            b.style.display = "none";
+            //e.style.display = "none";
+            /*d.style.display = "none";*/
+
+        } else if (mode_paiement == 'mtnmobilemoney') {
+
+            a.style.display = "none";
+            b.style.display = "block";
+            //e.style.display = "none";
+            /*d.style.display = "none";*/
+
+        } else {
+
+            a.style.display = "none";
+            b.style.display = "none";
+            //e.style.display = "block";
+            /*d.style.display = "none";*/
+        }
+
+        if ($("#destMsisdn").is(":visible")) {
+
+            //document.getElementById("destMsisdn").required = true;
+            //alert ("#destMsisdn est visible");
+            $("#destMsisdn").attr("required", "true");
+
+        }
+        if ($("#destMsisdn").is(":hidden")) {
+
+            //alert ("#destMsisdn est caché");
+            //document.getElementById("destMsisdn").required = false;
+            //document.getElementById('destMsisdn').value="";
+            //$("input").attr("required", "false");
+            $('#destMsisdn').removeAttr('required')
+            $('#destMsisdn').val('');
+
+        }
+
+        if ($("#MSISDN").is(":visible")) {
+            $("#MSISDN").attr("required", "true");
+        }
+        if ($("#MSISDN").is(":hidden")) {
+            $('#MSISDN').removeAttr('required')
+            $('#MSISDN').val('');
+        }
+
+        if ($("#idclient").is(":visible")) {
+            $("#idclient").attr("required", "true");
+        }
+
+        if ($("#idclient").is(":hidden")) {
+            $('#idclient').removeAttr('required')
+            $('#idclient').val('');
+        }
+    }
+
+    function dedicaceMode() {
+        var
+            a = document.getElementById("alert12")
+        ;
+
+        if ($("#dedicaceQuestion").val() == 'Oui') {
+            a.style.display = "block";
+        } else {
+            a.style.display = "none";
+        }
+    }
+
+    // Empêcher la saisie de textes et autres caractères différents des chiffres
+    function verif_nombre(champ) {
+
+        var chiffres = new RegExp("[0-9]"), verif, points = 0;
+
+        for (x = 0; x < champ.value.length; x++) {
+            verif = chiffres.test(champ.value.charAt(x));
+            if (champ.value.charAt(x) == ".") { points++; }
+            if (points > 1) { verif = false; points = 1; }
+            if (verif == false) { champ.value = champ.value.substr(0, x) + champ.value.substr(x + 1, champ.value.length - x + 1); x--; }
+        }
+    }
+
+    function validerPaiement() {
+
+        // Récupérer les valeurs du formulaire pour vérification
+        let
+            nomValue = $("#nom").val(), // document.getElementById("nom").value, // champ requis
+            prenomValue = $("#prenom").val(), // document.getElementById("prenom").value, // champ requis
+            phoneValue = $("#phone").val(), // document.getElementById("phone").value, // champ requis
+            livraisonValue = $("#livraison").val(), // document.getElementById("livraison").value, // champ requis
+            dedicaceValue = $("#dedicace").val(), // document.getElementById("dedicace").value, // champ requis,
+            emailValue = $("#email").val(),
+            quantiteValue = $("#quantite").val(),
+            choixPaiementValue = document.querySelector('input[name="mode_paiement"]:checked').value
+        ;
+
+
+        if (
+            nomValue.replace(/\s/g, "") == "" ||
+            prenomValue.replace(/\s/g, "") == "" ||
+            phoneValue.replace(/\s/g, "") == "" ||
+            livraisonValue.replace(/\s/g, "") == "" ||
+            emailValue.replace(/\s/g, "") == "" ||
+            quantiteValue.replace(/\s/g, "") == "" ||
+            choixPaiementValue == ""
+        ) {
+
+            Swal.fire(
+                'Attention !',
+                'Veuillez renseigner tous les champs obligatoires !',
+                'info'
+            )
+
+            return false;
+        }
+
+        if (quantiteValue <= "0") {
+
+            Swal.fire(
+                'Attention !',
+                'Veuillez renseigner une quantité supérieure ou égale à 0 !',
+                'info'
+            )
+
+            return false;
+        }
+
+        // Set datas
+        var datas = new FormData();
+        datas.append("Amount", "5000");
+        datas.append("nom", nomValue);
+        datas.append("prenom", prenomValue);
+        datas.append("contact", phoneValue);
+        datas.append("email", emailValue);
+        datas.append("livraison", livraisonValue);
+        datas.append("dedicace", dedicaceValue);
+        datas.append("mode_paimement", choixPaiementValue);
+        datas.append("quantite", $("#quantite").val());
+
+        // MTN money
+        if (choixPaiementValue == "mtnmobilemoney") {
+
+            let numeroMTNValue = document.getElementById("MSISDN").value;
+            if (numeroMTNValue.replace(/\s/g, "") == "") {
+
+                Swal.fire(
+                    'Attention !',
+                    'Veuillez renseigner votre numéro MTN money !',
+                    'info'
+                )
+
+                return false;
+            }
+
+            // Call sendDatas() function with parameters
+            datas.append("MSISDN", numeroMTNValue);
+            sendDatas(datas, choixPaiementValue);
+            return false;
+        }
+
+        // Moov money
+        if (choixPaiementValue == "flooz") {
+
+            let numeroFloozValue = document.getElementById("destMsisdn").value;
+            if (numeroFloozValue.replace(/\s/g, "") == "") {
+
+                Swal.fire(
+                    'Attention !',
+                    'Veuillez renseigner votre numéro Flooz !',
+                    'info'
+                )
+
+                return false;
+            }
+
+            // Call sendDatas() function with parameters
+            datas.append("MSISDN", numeroFloozValue);
+            sendDatas(datas, choixPaiementValue);
+            return false;
+        }
+
+        // Visa ou Mastercard
+        if (choixPaiementValue == "VISA" || choixPaiementValue == "MASTERCARD") {
+
+            // let typeCardValue = document.querySelector('input[name="type_card"]:checked').value;
+            // if (typeCardValue.replace(/\s/g, "") == "") {
+            //
+            //     Swal.fire(
+            //         'Attention !',
+            //         'Veuillez préciser le type de votre carte !',
+            //         'info'
+            //     )
+            //
+            //     return false;
+            // }
+
+            // Call sendDatas() function with parameters
+            datas.append("typecarte", choixPaiementValue);
+            sendDatas(datas, choixPaiementValue);
+            return false;
+        }
+
+        // Orange Money
+        // Call sendDatas() function with parameters
+        sendDatas(datas, choixPaiementValue);
+    }
+
+    // Send data to save payment
+    function sendDatas(donnees, choixPaiementValue) {
+
+        var url = "";
+        if (choixPaiementValue == "mtnmobilemoney") {
+            url = "https://carte.abidjan.net/livre/mtn-money.php";
+        } else if (choixPaiementValue == "orangemoney") {
+            url = "https://carte.abidjan.net/livre/orange-money.php";
+        } else if (choixPaiementValue == "VISA" || choixPaiementValue == "MASTERCARD") {
+            url = "https://carte.abidjan.net/livre/visa.php";
+        } else if (choixPaiementValue == "flooz") {
+            url = "https://carte.abidjan.net/livre/moov-money.php";
+        }
+
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": url, // "https://applicarte.abidjan.net/livre/mtn-money.php",
+            "method": "POST",
+            dataType: "json",
+            "timeout": 0,
+            "processData": false,
+            "mimeType": "multipart/form-data",
+            "contentType": false,
+            "data": donnees,
+            beforeSend: function () {
+                $.LoadingOverlay("show", {
+                    image: "",
+                    fontawesome: "fa fa-spinner fa-spin",
+                    maxSize: "50",
+                    background: "rgba(255, 255, 255, 0.7)"
+                });
+            },
+            success: function (response) { },
+            error: function (resultat, statut, error) { },
+            complete: function (resultat, statut) { $.LoadingOverlay("hide"); }
+        }
+
+        $.ajax(settings).done(function (response) {
+
+            // console.log(response)
+            if (response.ResponseCode == 1000) {
+
+                Swal.fire(
+                    'Info !',
+                    response.message,
+                    'info'
+                )
+
+                // MTN money
+                setInterval(() => {
+
+                    $.ajax({
+                        type: 'POST',
+                        url: 'https://carte.abidjan.net/livre/cronapimtn.php',
+                        dataType: 'json',
+                        cache: true,
+                        global: false,
+                        data: { "code_transaction": response.code_transaction },
+                        success: function (response) {
+                            console.log(response);
+                            if (response.ResponseCode == "01") {
+                                Swal.fire(
+                                    'Info !',
+                                    response.message,
+                                    'info'
+                                )
+
+                                window.location.href = "/payment-response";
+                                return false;
+
+                            } else if (response.ResponseCode == 529) {
+
+                                Swal.fire(
+                                    'Info !',
+                                    response.message,
+                                    'info'
+                                )
+
+                                window.reload();
+                                return false;
+                            }
+                        }
+                    });
+
+                }, 5000);
+
+            } else if (response.ResponseCode == "INITIATED") {
+
+                Swal.fire(
+                    'Info !',
+                    response.message,
+                    'info'
+                )
+
+                // Orange money
+                window.location.href = response.payment_url;
+
+            } else if (response.ResponseCode == "VISA") {
+
+                $("#formVisa").html(response.Content);
+                $(document).ready(function () {
+                    $('#formcomstatus').submit();
+                });
+
+            } else if (response.ResponseCode == 0) {
+
+                Swal.fire(
+                    'Info !',
+                    'Transaction en attente de validation', // response.message,
+                    'info'
+                )
+
+                setInterval(() => {
+
+                    $.ajax({
+                        type: 'POST',
+                        url: 'https://carte.abidjan.net/livre/checkmoov.php',
+                        dataType: 'json',
+                        cache: true,
+                        global: false,
+                        data: { "code_transaction": response.code_transaction },
+                        success: function (response) {
+                            console.log(response);
+
+                            if (response.statusCode == 0) {
+                                Swal.fire(
+                                    'Info !',
+                                    'Transaction validée',
+                                    'info'
+                                )
+
+                                window.location.href = "/payment-response";
+                                return false;
+
+                            } else if (response.statusCode == 49 || response.statusCode == 50 || response.statusCode == 1) {
+
+                                Swal.fire(
+                                    'Info !',
+                                    response.statusDesc,
+                                    'info'
+                                )
+
+                                window.location.reload();
+                                return false;
+
+                            } else {
+
+                                Swal.fire(
+                                    'Info !',
+                                    response.statusDesc,
+                                    'info'
+                                )
+
+                                window.location.reload();
+                                return false;
+                            }
+                        }
+                    });
+
+                }, 5000);
+
+            } else {
+
+                Swal.fire(
+                    'Info !',
+                    'Une erreur est survenue',
+                    'info'
+                )
+            }
+
+        });
+    }
+
+</script>
+
+</body>
+
+</html>
