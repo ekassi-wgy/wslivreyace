@@ -1,0 +1,267 @@
+/* =========================================================================
+   PGY — surcouche du thème Star Admin
+   Chargée APRÈS style.css. Ne réécrit rien du thème : elle ajoute ce que le
+   template n'a pas (marque, en-tête de page, badges de statut de nos tables)
+   et corrige ce qui heurtait la charte (anneau de focus, chasse des titres).
+
+   La palette générale, elle, n'est pas ici : les couleurs du thème étant
+   compilées en dur depuis SCSS, elles ont été substituées directement dans
+   style.css à l'extraction. Voir README §« Le thème d'administration ».
+
+   Typographie : l'admin reste sur Manrope, servie localement. Bodoni et Jost
+   sont la voix publique du site ; les charger ici imposerait un appel à
+   fonts.googleapis.com pour un outil interne, ce qu'on refuse.
+   ========================================================================= */
+
+:root {
+  --pgy-paper:      #F7F4EE;
+  --pgy-paper-high: #FCFAF6;
+  --pgy-paper-sunk: #EFEAE0;
+  --pgy-ink:        #262523;
+  --pgy-ink-2:      #4D4D4D;
+  --pgy-ink-3:      #6B6862;
+  --pgy-ink-deep:   #1E1D1B;
+  --pgy-brass:      #A88B5C;   /* filets et décor — jamais de texte (2,95:1) */
+  --pgy-brass-text: #7D6134;   /* texte et liens (5,28:1 sur papier) */
+  --pgy-brass-soft: #C9B48D;   /* laiton sur fond sombre */
+  --pgy-rule:       #DED7C9;
+}
+
+/* --- Marque ------------------------------------------------------------
+   Le logotype officiel n'est pas encore livré (README §5). En attendant, un
+   verrou typographique : monogramme sur pavé d'encre + filet laiton. Aucun
+   visuel à remplacer plus tard, juste ce bloc. */
+.navbar .navbar-brand-wrapper .brand-logo,
+.navbar .navbar-brand-wrapper .brand-logo-mini {
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  text-decoration: none;
+}
+
+.pgy-monogramme {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  background: var(--pgy-ink-deep);
+  color: var(--pgy-brass-soft);
+  font-weight: 700;
+  font-size: .8125rem;
+  letter-spacing: .04em;
+  border-radius: 3px;
+}
+
+.pgy-marque {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.pgy-marque b {
+  font-size: .9375rem;
+  font-weight: 700;
+  color: var(--pgy-ink);
+  letter-spacing: .01em;
+}
+
+.pgy-marque span {
+  font-size: .6875rem;
+  font-weight: 500;
+  color: var(--pgy-brass-text);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+
+/* En mode icônes seules, seul le monogramme subsiste. */
+.sidebar-icon-only .navbar .navbar-brand-wrapper .brand-logo .pgy-marque {
+  display: none;
+}
+
+/* --- En-tête de page ---------------------------------------------------- */
+.pgy-entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--pgy-rule);
+}
+
+.pgy-entete h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--pgy-ink);
+  /* Les titres français portent des capitales accentuées (É, À) : sous ~1,1
+     d'interlignage, l'accent est rogné par la ligne du dessus. */
+  line-height: 1.15;
+}
+
+.pgy-entete p {
+  margin: .25rem 0 0;
+  font-size: .875rem;
+  color: var(--pgy-ink-3);
+}
+
+.pgy-surtitre {
+  display: block;
+  margin-bottom: .3rem;
+  font-size: .6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--pgy-brass-text);
+}
+
+/* --- Badges de statut ---------------------------------------------------
+   Un par valeur d'énumération du schéma (sql/001_schema.sql). Le libellé
+   porte déjà le sens : la couleur ne fait que le renforcer, elle n'est
+   jamais le seul véhicule de l'information. */
+.pgy-statut {
+  display: inline-block;
+  padding: .2rem .55rem;
+  border-radius: 3px;
+  font-size: .75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.pgy-statut--brouillon  { background: #EFEAE0; color: #5C574E; border-color: #DED7C9; }
+.pgy-statut--publie     { background: #E4EFE6; color: #2F6B3C; border-color: #C3DDC9; }
+.pgy-statut--en_attente { background: #FBF0DA; color: #7A5410; border-color: #EBD9B0; }
+.pgy-statut--refuse     { background: #F7E3E1; color: #8C2F26; border-color: #E9C4C0; }
+.pgy-statut--annule     { background: #F7E3E1; color: #8C2F26; border-color: #E9C4C0; }
+
+/* --- Anneau de focus ----------------------------------------------------
+   Le bleu système du navigateur est le seul reste visible d'un template.
+   Même anneau laiton que le site public. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--pgy-brass-text);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* --- Lien d'évitement, comme sur le site public ------------------------- */
+.pgy-evitement {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 2000;
+  padding: .75rem 1.25rem;
+  background: var(--pgy-ink-deep);
+  color: var(--pgy-paper);
+  text-decoration: none;
+}
+
+.pgy-evitement:focus {
+  left: .5rem;
+  top: .5rem;
+}
+
+/* --- État vide ----------------------------------------------------------
+   Une liste vide en début de projet est la règle, pas l'exception : elle
+   mérite mieux qu'un tableau à zéro ligne. */
+.pgy-vide {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--pgy-ink-3);
+}
+
+.pgy-vide .mdi {
+  font-size: 2.5rem;
+  color: var(--pgy-brass);
+  display: block;
+  margin-bottom: .75rem;
+}
+
+/* --- Ce que le thème mettait en capitales -------------------------------
+   `.card .card-title` porte `text-transform: capitalize`, ce qui donnait
+   « Livraison Du Back-Office » : une convention de titre anglaise, fautive en
+   français, où seul le premier mot prend la majuscule. Et son noir #010101
+   est remplacé par l'encre chaude de la charte. */
+.card .card-title,
+.card .card-title.card-title-dash {
+  text-transform: none;
+  color: var(--pgy-ink);
+}
+
+/* --- Le bleu qui perçait encore -----------------------------------------
+   Deux restes de template : le cyan #05C3FB que Star Admin donne à
+   « secondary » (boutons Annuler, Retour, icônes d'action) et le bleu
+   Bootstrap #0d6efd des liens. Aucun des deux n'est dans la charte, et un
+   bouton d'annulation n'a pas à être plus voyant que celui qui valide. */
+.btn-outline-secondary {
+  --bs-btn-color: var(--pgy-ink-2);
+  --bs-btn-border-color: var(--pgy-rule);
+  --bs-btn-hover-color: var(--pgy-ink);
+  --bs-btn-hover-bg: var(--pgy-paper-sunk);
+  --bs-btn-hover-border-color: var(--pgy-brass);
+  --bs-btn-active-color: var(--pgy-ink);
+  --bs-btn-active-bg: var(--pgy-paper-sunk);
+  --bs-btn-active-border-color: var(--pgy-brass);
+  --bs-btn-disabled-color: var(--pgy-ink-3);
+  --bs-btn-disabled-border-color: var(--pgy-rule);
+  /* style.css reecrit `color` et `border` en dur ligne ~23863, apres le bloc
+     .btn qui les lit dans une variable. Surcharger la variable seule ne
+     suffisait donc pas : il faut redeclarer les proprietes elles-memes. */
+  color: var(--pgy-ink-2);
+  border: 1px solid var(--pgy-rule);
+}
+
+.btn-outline-secondary:hover {
+  background: var(--pgy-paper-sunk);
+  border-color: var(--pgy-brass);
+  color: var(--pgy-ink);
+}
+
+.btn-secondary {
+  --bs-btn-color: var(--pgy-ink);
+  --bs-btn-bg: var(--pgy-paper-sunk);
+  --bs-btn-border-color: var(--pgy-rule);
+  --bs-btn-hover-color: var(--pgy-ink);
+  --bs-btn-hover-bg: #E4DDD0;
+  --bs-btn-hover-border-color: var(--pgy-brass);
+}
+
+:root {
+  --bs-link-color: #7D6134;
+  --bs-link-color-rgb: 125, 97, 52;
+  --bs-link-hover-color: #5F4926;
+  --bs-link-hover-color-rgb: 95, 73, 38;
+}
+
+/* --- Barre latérale : un libellé long ne doit pas être coupé -------------
+   `menu-title` n'avait ni largeur contrainte ni césure ; le cadenas des
+   entrées à venir, poussé à droite, mangeait la fin du texte. */
+.sidebar .nav .nav-item .nav-link .menu-title {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.sidebar .nav .nav-item .nav-link .mdi-lock-outline {
+  flex: 0 0 auto;
+  opacity: .55;
+}
+
+/* --- Rangée de compteurs : repli sous 768 px -----------------------------
+   `.statistics-details` est un `d-flex justify-content-between` sans repli.
+   Le thème s'en tirait avec des libellés courts en anglais (« Page Views ») ;
+   « Témoignages » ou « Événements » débordent de la carte. Constaté sur la
+   troisième colonne à 520 px, coupée net au bord de la carte. */
+.statistics-details {
+  flex-wrap: wrap;
+  gap: 1.25rem 2rem;
+}
+
+.statistics-details > div {
+  min-width: 0;
+}

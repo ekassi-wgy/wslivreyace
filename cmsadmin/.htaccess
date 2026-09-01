@@ -1,0 +1,32 @@
+# ============================================================================
+# Back-office — contrôleur frontal propre à /cmsadmin/.
+#
+# Apache lit ce fichier pour toute requête dont le chemin tombe sous
+# cmsadmin/, et les règles de rewrite d'un sous-dossier REMPLACENT celles du
+# parent (elles ne s'y ajoutent pas, faute de RewriteOptions InheritDown).
+# C'est ce qui permet à l'admin d'avoir ses propres URL sans que le
+# contrôleur frontal de la racine ne s'en mêle.
+# ============================================================================
+
+Options -Indexes -MultiViews
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /cmsadmin/
+
+  # Les assets du thème sont de vrais fichiers : servis tels quels.
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+
+  # Tout le reste — y compris /cmsadmin/ nu — passe par le contrôleur.
+  RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+# Ceinture et bretelles : sans mod_rewrite, la racine de l'admin ne doit
+# toujours pas se transformer en listage de dossier.
+<IfModule !mod_rewrite.c>
+  <Files "index.php">
+    Require all granted
+  </Files>
+</IfModule>

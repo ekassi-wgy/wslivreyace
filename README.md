@@ -59,21 +59,34 @@ Le site occupe la racine : MAMP y pointe directement
 ```
 livreyace/                  ← racine web
 ├── .htaccess               réécriture vers le contrôleur frontal
-├── index.php               contrôleur frontal : autoload, routes
+├── index.php               contrôleur frontal public : routes du site
 ├── assets/                 css, js, visuels du thème        [public]
 ├── medias/                 fichiers téléversés               [public]
+├── cmsadmin/                                                 [public]
+│   ├── .htaccess           réécriture propre au back-office
+│   ├── index.php           contrôleur frontal du back-office
+│   └── assets/             thème d'administration élagué
 ├── config/                 configuration                     [interdit]
 ├── src/
-│   ├── Core/               Config, Database, Router, View    [interdit]
+│   ├── bootstrap.php       autoload + régime d'erreurs       [interdit]
+│   ├── Core/               Config, Database, Router, View,
+│   │                       Admin                             [interdit]
 │   ├── Controller/                                           [interdit]
 │   └── Model/                                                [interdit]
 ├── templates/
-│   ├── layout.php          mise en page unique               [interdit]
+│   ├── layout.php          mise en page du site public       [interdit]
 │   ├── partials/           navigation, pied                  [interdit]
-│   └── pages/              corps des pages                   [interdit]
+│   ├── pages/              corps des pages publiques         [interdit]
+│   └── admin/              mise en page, partials et pages
+│                           du back-office                    [interdit]
 ├── sql/                    migrations                        [interdit]
 └── reference/              ancien site Abidjan.net           [interdit]
 ```
+
+Seuls `cmsadmin/index.php` et `cmsadmin/assets/` sont servis. Toute la logique
+et tous les gabarits de l'admin vivent dans `src/` et `templates/`, déjà
+verrouillés en 403 — le dossier public de l'admin ne contient aucun code
+métier.
 
 ### Socle applicatif
 
@@ -122,6 +135,49 @@ anneau laiton.
 Le carrousel du hero illustre le principe : instance Bootstrap intacte, apparence
 intégralement réécrite (indicateurs numérotés, jauge de progression, révélation par
 masque). Aucune classe Bootstrap n'est visible à l'écran.
+
+### Le thème d'administration
+
+`cmsadmin/assets/` est un extrait de **Star Admin 2 Free** (BootstrapDash, MIT),
+réduit de **56 Mo à 2,6 Mo**. Le template d'origine n'est pas dans le dépôt : il
+vit dans `~/Documents/KP/Templates/staradmin-2-free`.
+
+**Gardé** — `style.css`, le bundle jQuery 3.7.1 + Bootstrap 5.3.2 +
+PerfectScrollbar, les icônes MDI (woff2 seul), DataTables et Chart.js pour les
+lots à venir, et trois comportements d'interface fusionnés en un seul
+`js/admin.js` : repli de la barre latérale, mode icônes, sortie mobile.
+
+**Jeté** — les 12 pages de démonstration, le SCSS et la chaîne gulp, un second
+thème complet (`css/light/`, 713 Ko), les polices Nunito et Roboto (6,2 Mo,
+jamais référencées par le CSS), et neuf bibliothèques d'icônes ou de widgets
+inutilisées, dont `flag-icon-css` à elle seule 6,5 Mo.
+
+**Aucun appel sortant.** Quatre sources ont été coupées : l'`@import` vers
+`fonts.googleapis.com` en tête de `style.css`, remplacé par sept `@font-face`
+sur la Manrope livrée en local ; le bandeau « Buy Now » vers `bootstrapdash.com`
+présent en haut de chaque page, balisage et 57 lignes de CSS ; le crédit du pied
+de page ; et les avatars `via.placeholder.com`. Les `sourceMappingURL` et les
+déclarations pointant sur des visuels que le template ne livre pas ont été
+retirées aussi — elles produisaient des 404 silencieuses.
+
+**La teinte.** Star Admin est compilé depuis SCSS : ses couleurs sont en dur,
+pas en variables CSS. Une surcouche par redéfinition de variables était donc
+impossible ; 399 valeurs hexadécimales ont été substituées directement dans
+`style.css` vers les jetons du projet — indigo `#1F3BB3` → laiton `#7D6134`,
+surface sombre → encre profonde, gris froids → filets chauds. Les couleurs de
+statut (vert, rouge, ambre) sont **conservées** : dans un back-office elles
+portent du sens, elles ne doivent pas se fondre dans la charte.
+
+Le reste vit dans `css/pgy-admin.css`, chargé après : marque, en-tête de page,
+badges de statut adossés aux énumérations du schéma, anneau de focus laiton, et
+trois corrections du thème — `text-transform: capitalize` sur les titres de
+carte (qui donnait « Livraison Du Back-Office », convention anglaise fautive en
+français), le cyan `#05C3FB` des boutons secondaires, et une rangée de
+compteurs qui ne se repliait pas sous 768 px.
+
+L'admin reste sur **Manrope**, servie localement. Bodoni et Jost sont la voix
+publique du site ; les charger ici imposerait un appel à Google Fonts pour un
+outil interne.
 
 ---
 
@@ -189,8 +245,18 @@ soldée** depuis le passage aux gabarits (voir §2). Ce qu'il reste :
   jeton CSRF, ni validation, ni protection anti-soumission massive. À poser
   **avant** le premier formulaire public, pas après : le formulaire de témoignage
   est ouvert à tout le monde et porte des propos sur une personne réelle.
+- **`medias/` n'interdit pas l'exécution de PHP.** Le dossier est public et vide
+  aujourd'hui, donc sans conséquence — mais dès qu'il reçoit des téléversements,
+  un `.php` qu'on y déposerait serait exécuté. Un `.htaccess` y est posé au
+  **lot B**, avant le premier formulaire, pas avant le premier fichier.
 - **Aucun test.** Le socle a été vérifié à la main (codes HTTP, connexion PDO,
-  absence de warning). Ces vérifications ne sont pas rejouables automatiquement.
+  absence de warning, mesure du rendu au navigateur). Ces vérifications ne sont
+  pas rejouables automatiquement.
+- **Le CSS du thème d'administration porte des règles mortes.** Des composants
+  que le back-office n'emploie pas (graphiques de démonstration, menu horizontal,
+  panneau de réglages) gardent leurs styles dans `style.css`. Sans effet visible,
+  mais quelques dizaines de kilo-octets pour rien ; à élaguer une fois les lots C
+  à E écrits, quand on saura ce qui sert vraiment.
 - **`reference/` pèse ~70 Mo dans l'arborescence servie.** Verrouillé en 403,
   mais toujours à exclure explicitement de la règle de déploiement.
 - **L'historique git porte les images non optimisées de l'ancien site** (`.git`
@@ -209,15 +275,43 @@ routeur, PDO, mise en page unique ; base `livreyace_sbd` avec ses huit tables ;
 
 **Non fait** — tout ce qui a besoin d'un back-office ou d'un formulaire.
 
+### Le back-office, lot par lot
+
+Le back-office est livré en cinq lots, validables l'un après l'autre. Les entrées
+verrouillées de la barre latérale correspondent aux lots restants : la forme
+finale de l'outil est visible dès le premier.
+
+| Lot | Objet | État |
+|---|---|---|
+| **A** | Ossature — thème élagué, mise en page, barre latérale, routage `/cmsadmin/` | **livré** |
+| **B** | Authentification — connexion, session, CSRF, validation, garde de route | à venir |
+| **C** | Contenus — actualités, événements, repères | à venir |
+| **D** | Modération et médias — file des témoignages, téléversement contrôlé | à venir |
+| **E** | Pilotage — compteurs réels, paramètres, comptes, commandes | à venir |
+
+Ce que le **lot A** pose : `src/bootstrap.php` (amorçage partagé par les deux
+contrôleurs frontaux), `src/Core/Admin.php` (préfixe d'URL déduit de
+l'emplacement réel du dossier — renommer `cmsadmin` ne demande aucune retouche —
+et arborescence du menu), `Router::introuvable()` pour que l'admin ait sa propre
+404, et un quatrième argument à `View::render` choisissant la mise en page. Le
+site public n'est pas touché : ses trois pages et sa 404 rendent à l'octet près
+comme avant.
+
+Le lot A ne lit ni n'écrit aucune donnée, donc aucune route n'est encore
+protégée. La garde arrive au lot B, avec la session.
+
 ### Prochaines étapes, dans l'ordre
 
 1. **Back-office** — c'est le gros morceau du choix « PHP à la main », et il
-   débloque tout le reste : authentification sur `utilisateur`
-   (`password_hash`/`password_verify`, session régénérée à la connexion), CRUD
-   actualités / événements / repères, file de modération des témoignages,
+   débloque tout le reste. Découpé en cinq lots ci-dessus ; le lot A est livré.
+   Restent l'authentification sur `utilisateur`
+   (`password_hash`/`password_verify`, session régénérée à la connexion), le CRUD
+   actualités / événements / repères, la file de modération des témoignages, et le
    téléversement dans `medias/` avec contrôle de type réel et non d'extension.
-2. **Couche formulaire** — jeton CSRF, validation, limitation de débit. À faire
-   avant d'exposer le moindre formulaire public (voir §6).
+2. **Couche formulaire** — jeton CSRF, validation, limitation de débit. Le CSRF et
+   la validation sont avancés au **lot B** : la page de connexion est elle-même un
+   formulaire, elle ne peut pas les précéder. Ne reste au titre du §6 que la
+   limitation de débit sur les formulaires publics.
 3. **Pages publiques adossées aux données** — actualités et détail, galerie avec
    visionneuse, événements, contact. Rapides une fois 1 et 2 posés : le système
    de composants existe déjà.
