@@ -15,6 +15,13 @@ $ld          = $ld          ?? '';
 <title><?= htmlspecialchars($titre, ENT_QUOTES, 'UTF-8') ?></title>
 <meta name="description" content="<?= htmlspecialchars($description, ENT_QUOTES, 'UTF-8') ?>">
 
+<?php /* Le SVG sert partout où il est compris ; l'.ico à la racine couvre les
+         requêtes automatiques vers /favicon.ico et les navigateurs anciens. */ ?>
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta name="theme-color" content="#A88B5C">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">

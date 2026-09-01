@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Philippe Grégoire Yacé">
+  <title>Philippe Grégoire Yacé — Une destinée</title>
+  <!--
+    Le logotype complet (PGY | PHILIPPE GRÉGOIRE / YACÉ) ne tient pas dans
+    16 px : trois lettres y deviennent une tache. On garde l'initiale du
+    patronyme, la plus tenue géométriquement des trois.
+
+    Registre : la lettre gravée dans une plaque de laiton — la même idée
+    commémorative que la palette (médaille, dorure à chaud, plaque gravée).
+
+    Le laiton porte la tuile plutôt que la lettre, et c'est mesuré : #A88B5C
+    est un ton moyen qui garde 2,6:1 sur un bandeau d'onglets clair et 3,5:1
+    sur un bandeau sombre. Une tuile en encre profonde donnait 13,8:1 sur
+    l'un et 1,5:1 sur l'autre — invisible en thème sombre. L'encre sur le
+    laiton donne 5,2:1, la lettre reste franche à 16 px.
+
+    Le Y est tracé en géométrie pure, jamais en texte : un favicon ne dispose
+    d'aucune police chargée. Traits d'épaisseur constante et terminaisons
+    coupées d'équerre, comme la Jost du logotype.
+  -->
+  <rect width="32" height="32" rx="6" fill="#A88B5C"/>
+  <g fill="none" stroke="#1E1D1B" stroke-width="3.7" stroke-linecap="butt" stroke-linejoin="miter">
+    <path d="M6.8 8 L16 17.6 L25.2 8"/>
+    <path d="M16 16.4 L16 25"/>
+  </g>
+</svg>

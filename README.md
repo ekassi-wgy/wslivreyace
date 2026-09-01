@@ -49,6 +49,37 @@ Courbes lentes en sortie, aucun ressort, aucun dépassement — ce sont des marq
 template. Une seule animation appuyée : la révélation par masque des titres du hero.
 `prefers-reduced-motion` est respecté partout.
 
+### Favicon
+
+Le logotype fait `PGY | PHILIPPE GRÉGOIRE / YACÉ`. À 16 px, trois lettres
+deviennent une tache : le favicon garde donc la seule initiale du patronyme,
+la plus tenue géométriquement des trois. Registre : **la lettre gravée dans une
+plaque de laiton**, prolongement direct de la palette — médaille, dorure à
+chaud, plaque commémorative.
+
+**Le laiton porte la tuile, pas la lettre**, et c'est mesuré. Une tuile en encre
+profonde donnait 13,8:1 contre un bandeau d'onglets clair mais 1,5:1 contre un
+bandeau sombre : invisible en thème sombre. Le laiton `#A88B5C`, ton moyen,
+garde 2,6:1 sur l'un et 3,5:1 sur l'autre. L'encre sur ce laiton donne 5,2:1,
+la lettre reste franche à 16 px.
+
+Le Y est tracé en géométrie pure, jamais en texte : un favicon ne dispose
+d'aucune police chargée. Traits d'épaisseur constante, terminaisons coupées
+d'équerre — la Jost du logotype.
+
+| Fichier | Rôle |
+|---|---|
+| `assets/img/favicon.svg` | source vectorielle, servie aux navigateurs modernes |
+| `assets/img/favicon-32.png` | repli matriciel |
+| `assets/img/apple-touch-icon.svg` | source de la variante iOS : sans arrondi (iOS applique son propre masque) et Y plus rentré |
+| `assets/img/apple-touch-icon.png` | 180 × 180, écran d'accueil iOS |
+| `favicon.ico` | à la racine, pour la requête automatique vers `/favicon.ico` ; 16/32/48 empaquetées en PNG |
+
+Le même jeu sert au site public et au back-office : une seule identité, un seul
+jeu de fichiers. Aucun rasteriseur n'étant installé sur la machine, les PNG sont
+rendus par Chrome à partir du SVG et l'`.ico` est empaqueté par un script Python
+de vingt lignes — le format accepte des PNG tels quels depuis Vista.
+
 ---
 
 ## 2. Fichiers
@@ -202,8 +233,11 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
 ## 5. À fournir avant mise en ligne
 
 - **Logotype** — le verrou `.logo` est une reconstruction HTML approchée. Remplacer
-  par le SVG officiel à deux endroits : `templates/partials/nav.php` et
-  `templates/partials/footer.php`.
+  par le SVG officiel à trois endroits : `templates/partials/nav.php`,
+  `templates/partials/footer.php`, et le monogramme `.pgy-monogramme` de la barre
+  du back-office (`templates/admin/partials/navbar.php`).
+  **Le favicon découle de cette reconstruction** : si le Y officiel a une autre
+  géométrie, redessiner `assets/img/favicon.svg` et regénérer le jeu (voir §1).
 - **Visuels** — les `.svg` de `assets/img/` sont des cadres d'attente générés. Chacun
   affiche la dimension de livraison attendue et son cadrage. Ces valeurs sont calculées
   sur la largeur réelle d'affichage en écran 2× ; le hero est en dérive `scale(1.1)`,

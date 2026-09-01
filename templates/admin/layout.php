@@ -26,6 +26,13 @@ $scripts = $scripts ?? [];   // scripts propres à la page, chargés en fin de c
 <?php /* Le back-office n'a rien à faire dans un index de moteur de recherche. */ ?>
 <meta name="robots" content="noindex, nofollow">
 
+<?php /* Même marque que le site public, servie depuis les mêmes fichiers :
+         une seule identité, un seul jeu d'icônes à maintenir. */ ?>
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta name="theme-color" content="#A88B5C">
+
 <link rel="stylesheet" href="<?= Admin::asset('vendors/mdi/css/materialdesignicons.min.css') ?>">
 <link rel="stylesheet" href="<?= Admin::asset('vendors/css/vendor.bundle.base.css') ?>">
 <link rel="stylesheet" href="<?= Admin::asset('css/style.css') ?>">
