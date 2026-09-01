@@ -1,7 +1,7 @@
 # Philippe Grégoire Yacé — *Une destinée* (1920-1998)
 
 Site éditorial de l'ouvrage. Trois pages publiques livrées, et le back-office en
-cours de construction : **lots A à D1 posés** — ossature de `/cmsadmin/`,
+cours de construction : **lots A à D1 posés, plus une part du lot E** — ossature de `/cmsadmin/`,
 authentification, gestion des actualités, événements et repères, et modération
 des témoignages.
 
@@ -108,10 +108,10 @@ livreyace/                  ← racine web
 │   │                       Validator                         [interdit]
 │   │                       Slug                             [interdit]
 │   ├── Controller/Admin/   Auth, Crud (Actualite, Evenement,
-│   │                       Repere), Temoignage             [interdit]
+│   │                       Repere), Temoignage, Parametre  [interdit]
 │   └── Model/              Modele, Actualite, Evenement,
-│                           Repere, Temoignage, Utilisateur,
-│                           TentativeConnexion                [interdit]
+│                           Repere, Temoignage, Parametre,
+│                           Utilisateur, TentativeConnexion   [interdit]
 ├── templates/
 │   ├── layout.php          mise en page du site public       [interdit]
 │   ├── partials/           navigation, pied                  [interdit]
@@ -263,6 +263,23 @@ les mots de quelqu'un d'autre.
 `auteur_email` et `ip_soumission` restent en base et ne sortent jamais en
 public : la première sert à recontacter le signataire, la seconde à repérer un
 abus.
+
+### Fiche technique et tableau de bord
+
+Les huit valeurs de la fiche technique de l'ouvrage (`parametre`) se saisissent
+depuis l'admin : un changement de prix ou d'ISBN ne demande pas d'intervention
+technique. `Parametre::FICHE_LIVRE` est la source unique — elle décrit les
+champs, leur ordre et leur validation ; en ajouter un ne touche qu'un fichier.
+
+**L'ISBN est vérifié sur sa clé de contrôle**, pas seulement sur sa longueur :
+c'est le numéro qui sert à commander l'ouvrage, un chiffre mal recopié se paie
+en commandes perdues. Un champ vidé redevient `NULL` et non chaîne vide — la
+page publique masque la ligne au lieu de l'afficher en blanc.
+
+Le tableau de bord lit désormais la base. **Ce qu'il met en avant n'est pas le
+volume mais ce qui attend une décision** : témoignages à modérer, repères sans
+source, fiche technique incomplète. Chaque ligne mène à l'écran concerné. Les
+compteurs affichent le nombre publié, le total en dessous.
 
 ### `medias/` n'exécute rien
 
@@ -475,7 +492,8 @@ finale de l'outil est visible dès le premier.
 | **C** | Contenus — actualités, événements, repères | livré |
 | **D1** | Modération — file des témoignages | **livré** |
 | **D2** | Médiathèque — téléversement avec contrôle de type réel, vignettes | à venir |
-| **E** | Pilotage — compteurs réels, paramètres, comptes, commandes | à venir |
+| **E1** | Pilotage — compteurs réels du tableau de bord, fiche technique de l'ouvrage | **livré** |
+| **E2** | Comptes et commandes | à venir |
 
 Ce que le **lot A** pose : `src/bootstrap.php` (amorçage partagé par les deux
 contrôleurs frontaux), `src/Core/Admin.php` (préfixe d'URL déduit de

@@ -12,6 +12,7 @@ declare(strict_types=1);
 use App\Controller\Admin\ActualiteController;
 use App\Controller\Admin\AuthController;
 use App\Controller\Admin\EvenementController;
+use App\Controller\Admin\ParametreController;
 use App\Controller\Admin\RepereController;
 use App\Controller\Admin\TemoignageController;
 use App\Core\Admin;
@@ -83,6 +84,9 @@ $router->get($base . '/temoignages/{id}',                  [TemoignageController
 $router->post($base . '/temoignages/{id}',                 [TemoignageController::class, 'mettreAJour']);
 $router->post($base . '/temoignages/{id}/supprimer',       [TemoignageController::class, 'supprimer']);
 $router->post($base . '/temoignages/{id}/{decision}',      [TemoignageController::class, 'moderer']);
+
+$router->get($base . '/parametres',  [ParametreController::class, 'formulaire']);
+$router->post($base . '/parametres', [ParametreController::class, 'enregistrer']);
 
 $router->introuvable(static function (): void {
     // Une adresse fautive derrière la garde reste une 404 ; l'anonyme, lui, a

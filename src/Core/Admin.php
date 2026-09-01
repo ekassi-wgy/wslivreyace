@@ -97,7 +97,7 @@ final class Admin
                 'cle'    => 'parametres',
                 'titre'  => 'Paramètres',
                 'icone'  => 'mdi-tune-variant',
-                'bientot' => true,
+                'url'    => self::url('/parametres'),
             ],
             [
                 'cle'    => 'comptes',

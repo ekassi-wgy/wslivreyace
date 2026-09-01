@@ -631,3 +631,45 @@ textarea.form-control::placeholder {
 }
 
 .pgy-temoignage__actions form { margin: 0; }
+
+/* --- Tableau de bord : « à traiter » (lot E) ----------------------------- */
+.pgy-afaire { display: grid; gap: .5rem; margin-top: 1rem; }
+
+.pgy-afaire__item {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  padding: .85rem 1rem;
+  border: 1px solid var(--pgy-rule);
+  border-left: 3px solid var(--pgy-brass);
+  border-radius: 6px;
+  background: var(--pgy-paper);
+  color: var(--pgy-ink);
+  text-decoration: none;
+}
+
+.pgy-afaire__item:hover {
+  background: var(--pgy-paper-sunk);
+  border-left-color: var(--pgy-brass-text);
+  color: var(--pgy-ink);
+}
+
+.pgy-afaire__item > .mdi:first-child {
+  font-size: 1.4rem;
+  color: var(--pgy-brass-text);
+  flex: 0 0 auto;
+}
+
+.pgy-afaire__item span { display: flex; flex-direction: column; min-width: 0; }
+.pgy-afaire__item strong { font-size: .9375rem; }
+.pgy-afaire__item em { font-style: normal; font-size: .8125rem; color: var(--pgy-ink-3); }
+.pgy-afaire__fleche { margin-left: auto; color: var(--pgy-ink-3); flex: 0 0 auto; }
+
+/* Un compteur est un lien vers l'écran correspondant, pas un chiffre inerte. */
+.pgy-compteur { color: inherit; text-decoration: none; }
+.pgy-compteur:hover { color: var(--pgy-brass-text); text-decoration: underline; }
+
+.pgy-liste-notes { margin: 0; padding-left: 1.1rem; }
+.pgy-liste-notes li { margin-bottom: .55rem; font-size: .875rem; line-height: 1.55; color: var(--pgy-ink-3); }
+.pgy-liste-notes li strong { color: var(--pgy-ink); }
+.pgy-liste-notes code { color: var(--pgy-brass-text); font-size: .8125rem; }
