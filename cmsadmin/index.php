@@ -13,6 +13,7 @@ use App\Controller\Admin\ActualiteController;
 use App\Controller\Admin\AuthController;
 use App\Controller\Admin\EvenementController;
 use App\Controller\Admin\RepereController;
+use App\Controller\Admin\TemoignageController;
 use App\Core\Admin;
 use App\Core\Auth;
 use App\Core\Session;
@@ -71,6 +72,17 @@ $crud = static function (string $chemin, string $controleur, string $creation) u
 $crud('/actualites', ActualiteController::class, 'nouvelle');
 $crud('/evenements', EvenementController::class, 'nouveau');
 $crud('/reperes',    RepereController::class,    'nouveau');
+
+/**
+ * Modération des témoignages. Pas le même jeu de routes que les contenus : on
+ * ne crée pas un témoignage depuis l'admin, on décide de celui qu'on reçoit.
+ * `{decision}` vaut publier, refuser ou reprendre.
+ */
+$router->get($base . '/temoignages',                       [TemoignageController::class, 'liste']);
+$router->get($base . '/temoignages/{id}',                  [TemoignageController::class, 'formulaire']);
+$router->post($base . '/temoignages/{id}',                 [TemoignageController::class, 'mettreAJour']);
+$router->post($base . '/temoignages/{id}/supprimer',       [TemoignageController::class, 'supprimer']);
+$router->post($base . '/temoignages/{id}/{decision}',      [TemoignageController::class, 'moderer']);
 
 $router->introuvable(static function (): void {
     // Une adresse fautive derrière la garde reste une 404 ; l'anonyme, lui, a

@@ -1,8 +1,9 @@
 # Philippe Grégoire Yacé — *Une destinée* (1920-1998)
 
 Site éditorial de l'ouvrage. Trois pages publiques livrées, et le back-office en
-cours de construction : **lots A, B et C posés** — ossature de `/cmsadmin/`,
-authentification, et la gestion des actualités, événements et repères.
+cours de construction : **lots A à D1 posés** — ossature de `/cmsadmin/`,
+authentification, gestion des actualités, événements et repères, et modération
+des témoignages.
 
 ---
 
@@ -106,10 +107,10 @@ livreyace/                  ← racine web
 │   │                       Admin, Session, Csrf, Auth,
 │   │                       Validator                         [interdit]
 │   │                       Slug                             [interdit]
-│   ├── Controller/Admin/   Auth + Crud (Actualite,
-│   │                       Evenement, Repere)                [interdit]
+│   ├── Controller/Admin/   Auth, Crud (Actualite, Evenement,
+│   │                       Repere), Temoignage             [interdit]
 │   └── Model/              Modele, Actualite, Evenement,
-│                           Repere, Utilisateur,
+│                           Repere, Temoignage, Utilisateur,
 │                           TentativeConnexion                [interdit]
 ├── templates/
 │   ├── layout.php          mise en page du site public       [interdit]
@@ -235,6 +236,33 @@ que d'un clic malheureux ; le garde-fou réel est côté serveur.
 **DataTables** est chargé sur les listes seulement, avec ses libellés écrits en
 français dans `js/listes.js` : le greffon va normalement chercher sa traduction
 sur un CDN, ce que l'admin s'interdit.
+
+### La file de modération
+
+Les témoignages ne suivent pas la mécanique des contenus, et ne réutilisent donc
+pas `CrudController` : on ne crée pas un témoignage depuis l'admin, on en reçoit
+et on décide. Le verbe central est « publier » ou « refuser ».
+
+Ils sont présentés **en cartes et non en tableau** : un témoignage se lit avant
+d'être jugé, et une ligne tronquée n'est pas lisible. La décision se prend sous
+le texte, au moment où on vient de le lire. Un filet de couleur en bord de carte
+donne l'état sans qu'il faille lire chaque badge, et seules les actions qui
+changent quelque chose sont proposées — un bouton sans effet est un bouton qu'on
+finit par cliquer.
+
+**Qui a décidé, et quand, est conservé** (`modere_le`, `modere_par`). Sur des
+propos publiés au nom d'un tiers, la question « qui a validé ceci ? » doit avoir
+une réponse.
+
+**Ce que le formulaire de correction peut toucher se limite à trois champs** :
+nom, qualité, texte. Le statut, l'adresse du signataire et la trace de
+modération ne sont pas assignables — vérifié, un POST qui les porte les laisse
+intacts. Une bannière rappelle que la correction porte sur la forme : ce sont
+les mots de quelqu'un d'autre.
+
+`auteur_email` et `ip_soumission` restent en base et ne sortent jamais en
+public : la première sert à recontacter le signataire, la seconde à repérer un
+abus.
 
 ### `medias/` n'exécute rien
 
@@ -444,8 +472,9 @@ finale de l'outil est visible dès le premier.
 |---|---|---|
 | **A** | Ossature — thème élagué, mise en page, barre latérale, routage `/cmsadmin/` | livré |
 | **B** | Authentification — connexion, session, CSRF, validation, garde de route | livré |
-| **C** | Contenus — actualités, événements, repères | **livré** |
-| **D** | Modération et médias — file des témoignages, téléversement contrôlé | à venir |
+| **C** | Contenus — actualités, événements, repères | livré |
+| **D1** | Modération — file des témoignages | **livré** |
+| **D2** | Médiathèque — téléversement avec contrôle de type réel, vignettes | à venir |
 | **E** | Pilotage — compteurs réels, paramètres, comptes, commandes | à venir |
 
 Ce que le **lot A** pose : `src/bootstrap.php` (amorçage partagé par les deux

@@ -78,7 +78,7 @@ final class Admin
                 'cle'    => 'temoignages',
                 'titre'  => 'Témoignages',
                 'icone'  => 'mdi-comment-check-outline',
-                'bientot' => true,
+                'url'    => self::url('/temoignages'),
             ],
             [
                 'cle'    => 'medias',

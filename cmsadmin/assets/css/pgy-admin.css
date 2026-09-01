@@ -524,3 +524,110 @@ textarea.form-control::placeholder {
   color: var(--pgy-ink-3);
   opacity: 1;   /* Firefox applique sinon une transparence par-dessus. */
 }
+
+/* --- File de modération (lot D) ------------------------------------------
+   Des cartes et non un tableau : un témoignage se lit avant d'être jugé, et
+   une ligne tronquée n'est pas lisible. La décision se prend sous le texte. */
+.pgy-onglets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--pgy-rule);
+  padding-bottom: .75rem;
+}
+
+.pgy-onglet {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .4rem .85rem;
+  border-radius: 4px;
+  font-size: .875rem;
+  font-weight: 500;
+  color: var(--pgy-ink-2);
+  text-decoration: none;
+}
+
+.pgy-onglet:hover { background: var(--pgy-paper-sunk); color: var(--pgy-ink); }
+
+.pgy-onglet.is-actif {
+  background: var(--pgy-ink-deep);
+  color: var(--pgy-paper);
+}
+
+.pgy-onglet__n {
+  min-width: 1.4rem;
+  padding: 0 .3rem;
+  border-radius: 999px;
+  background: var(--pgy-paper-sunk);
+  color: var(--pgy-ink-2);
+  font-size: .75rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.pgy-onglet.is-actif .pgy-onglet__n {
+  background: var(--pgy-brass-soft);
+  color: var(--pgy-ink-deep);
+}
+
+.pgy-temoignage { margin-bottom: 1rem; }
+
+/* Un filet de couleur en bord de carte : l'état se voit en parcourant la file,
+   sans avoir à lire chaque badge.
+
+   Le sélecteur porte `.card` parce que le thème pose `.card.card-rounded {
+   border: none }` — spécificité 0,2,0 contre 0,1,0 pour une classe seule. Sans
+   ce doublement, la règle ci-dessous ne peignait rien du tout. */
+.card.pgy-temoignage--en_attente { border-left: 3px solid #C9A227; }
+.card.pgy-temoignage--publie     { border-left: 3px solid #4F8A5B; }
+.card.pgy-temoignage--refuse     { border-left: 3px solid #A8564C; }
+
+.pgy-temoignage__tete {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: .85rem;
+}
+
+.pgy-temoignage__nom {
+  margin: 0;
+  font-weight: 700;
+  color: var(--pgy-ink);
+}
+
+.pgy-temoignage__qualite {
+  margin: .1rem 0 0;
+  font-size: .875rem;
+  color: var(--pgy-ink-3);
+}
+
+.pgy-temoignage__texte {
+  margin: 0 0 .85rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--pgy-brass);
+  color: var(--pgy-ink);
+  line-height: 1.65;
+}
+
+.pgy-temoignage__meta {
+  margin: 0 0 .85rem;
+  font-size: .8125rem;
+  color: var(--pgy-ink-3);
+}
+
+.pgy-temoignage__prive {
+  font-style: italic;
+  opacity: .8;
+}
+
+.pgy-temoignage__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  align-items: center;
+}
+
+.pgy-temoignage__actions form { margin: 0; }
