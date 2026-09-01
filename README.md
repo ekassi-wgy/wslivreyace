@@ -1,9 +1,10 @@
 # Philippe Grégoire Yacé — *Une destinée* (1920-1998)
 
-Site éditorial de l'ouvrage. Trois pages publiques livrées, et le back-office en
-cours de construction : **lots A à D1 posés, plus une part du lot E** — ossature de `/cmsadmin/`,
-authentification, gestion des actualités, événements et repères, et modération
-des témoignages.
+Site éditorial de l'ouvrage. Trois pages publiques livrées, et le back-office aux
+cinq septièmes : ossature de `/cmsadmin/`, authentification, gestion des
+actualités, événements et repères, modération des témoignages, fiche technique
+de l'ouvrage et tableau de bord. **Restent la médiathèque, et les écrans comptes
+et commandes.**
 
 ---
 
@@ -481,19 +482,24 @@ routeur, PDO, mise en page unique ; base `livreyace_sbd` avec ses huit tables ;
 
 ### Le back-office, lot par lot
 
-Le back-office est livré en cinq lots, validables l'un après l'autre. Les entrées
-verrouillées de la barre latérale correspondent aux lots restants : la forme
-finale de l'outil est visible dès le premier.
+Le back-office est livré par lots, validables l'un après l'autre — cinq posés,
+deux restants. Les entrées verrouillées de la barre latérale correspondent aux
+lots à venir : la forme finale de l'outil est visible dès le premier.
+
+Les lots D et E ont été coupés en deux en cours de route. Ce n'est pas un
+changement de plan : la médiathèque pèse à elle seule autant que tout le lot C,
+et la mêler à la modération aurait donné une livraison qu'on ne peut pas
+valider d'un bloc.
 
 | Lot | Objet | État |
 |---|---|---|
 | **A** | Ossature — thème élagué, mise en page, barre latérale, routage `/cmsadmin/` | livré |
 | **B** | Authentification — connexion, session, CSRF, validation, garde de route | livré |
 | **C** | Contenus — actualités, événements, repères | livré |
-| **D1** | Modération — file des témoignages | **livré** |
-| **D2** | Médiathèque — téléversement avec contrôle de type réel, vignettes | à venir |
-| **E1** | Pilotage — compteurs réels du tableau de bord, fiche technique de l'ouvrage | **livré** |
-| **E2** | Comptes et commandes | à venir |
+| **D1** | Modération — file des témoignages | livré |
+| **D2** | Médiathèque — téléversement avec contrôle de type réel, vignettes | **à venir** |
+| **E1** | Pilotage — compteurs réels du tableau de bord, fiche technique de l'ouvrage | livré |
+| **E2** | Comptes et commandes | **à venir** |
 
 Ce que le **lot A** pose : `src/bootstrap.php` (amorçage partagé par les deux
 contrôleurs frontaux), `src/Core/Admin.php` (préfixe d'URL déduit de
@@ -509,11 +515,12 @@ protégée. La garde arrive au lot B, avec la session.
 ### Prochaines étapes, dans l'ordre
 
 1. **Back-office** — c'est le gros morceau du choix « PHP à la main », et il
-   débloque tout le reste. Découpé en cinq lots ci-dessus ; le lot A est livré.
-   Restent l'authentification sur `utilisateur`
-   (`password_hash`/`password_verify`, session régénérée à la connexion), le CRUD
-   actualités / événements / repères, la file de modération des témoignages, et le
-   téléversement dans `medias/` avec contrôle de type réel et non d'extension.
+   débloque tout le reste. Découpé en lots ci-dessus, dont cinq sont livrés :
+   ossature, authentification, contenus, modération des témoignages, fiche
+   technique et compteurs. **Restent deux morceaux** — la médiathèque
+   (téléversement dans `medias/` avec contrôle de type réel et non d'extension,
+   vignettes, branchement des images sur les fiches), et les écrans comptes et
+   commandes.
 2. **Couche formulaire** — jeton CSRF, validation, limitation de débit. Le CSRF et
    la validation sont avancés au **lot B** : la page de connexion est elle-même un
    formulaire, elle ne peut pas les précéder. Ne reste au titre du §6 que la
@@ -549,6 +556,16 @@ dépliable, citations, galerie de portraits.
 Reste à construire — Héritage (§4.5), Galerie/Archives (§4.6), Actualités/Presse
 (§4.7), Témoignages (§4.8), Boutique (§4.9), Événements (§4.10), Contact (§4.11),
 Mentions légales (§4.12).
+
+Nuance sur trois d'entre elles : **actualités, témoignages et événements ont
+désormais leur back-office** — les données se saisissent, se modèrent et se
+publient. Seules manquent les pages publiques qui les afficheront, et elles
+seront rapides : il n'y a plus qu'à lire ce qui existe. Galerie/Archives attend
+en revanche la médiathèque, qui n'est pas écrite.
+
+La fiche technique de l'ouvrage (§4.2) est éditable depuis l'admin mais **six de
+ses huit valeurs sont vides** : elles font partie des contenus attendus de
+l'éditeur (voir §5).
 
 Transverses (§5) — **partiel** : responsive, accessibilité AA vérifiée par mesure,
 structure sémantique, métadonnées, schema.org `Book`/`Person`, lazy loading sont en
