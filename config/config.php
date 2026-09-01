@@ -18,6 +18,13 @@ $config = [
     'app' => [
         // À passer à false en production : conditionne l'affichage des erreurs.
         'debug'   => true,
+        // Adresse publique du site, sans barre finale. Sert aux URL absolues
+        // — canonical, og:image — qui ne peuvent pas être relatives.
+        // En production : 'url' => 'https://philippeyace.ci' dans
+        // config/config.local.php. Laissée vide ici, le socle retombe sur
+        // l'hôte de la requête, ce qui convient au poste de développement mais
+        // pas à un serveur public : HTTP_HOST est fourni par le client.
+        'url'     => '',
         'nom'     => 'Philippe Grégoire Yacé — Une destinée',
         'medias'  => __DIR__ . '/../medias',
     ],

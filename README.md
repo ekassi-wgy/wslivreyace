@@ -77,6 +77,7 @@ d'équerre — la Jost du logotype.
 | `assets/img/apple-touch-icon.svg` | source de la variante iOS : sans arrondi (iOS applique son propre masque) et Y plus rentré |
 | `assets/img/apple-touch-icon.png` | 180 × 180, écran d'accueil iOS |
 | `favicon.ico` | à la racine, pour la requête automatique vers `/favicon.ico` ; 16/32/48 empaquetées en PNG |
+| `assets/img/og-image.svg` → `.jpg` | 1200 × 630, aperçu de partage social. Typographique à dessein : un placard composé de texte se distingue au premier coup d'œil d'une photographie livrée, ce qui évite qu'il reste en place par inadvertance |
 
 Le même jeu sert au site public et au back-office : une seule identité, un seul
 jeu de fichiers. Aucun rasteriseur n'étant installé sur la machine, les PNG sont
@@ -89,6 +90,18 @@ de vingt lignes — le format accepte des PNG tels quels depuis Vista.
 
 Le site occupe la racine : MAMP y pointe directement
 (`DocumentRoot "…/projetsmamp/livreyace"`). PHP 8.3, MySQL 8, base `livreyace_sbd`.
+
+**Prérequis serveur : PHP 8.1 minimum.** Le type de retour `never` (cinq
+méthodes des contrôleurs d'admin) est apparu en 8.1 ; `str_starts_with` et
+`match` exigent 8.0. En dessous, le site public tourne mais le back-office tombe
+en erreur fatale dès la page de connexion — l'autoload étant paresseux, les
+fichiers fautifs ne se chargent qu'à ce moment-là. PHP 8.3 est recommandé :
+c'est la version de développement, et 8.0 n'est plus maintenu depuis
+novembre 2023.
+
+Le schéma emploie la collation `utf8mb4_0900_ai_ci`, propre à **MySQL 8**. Sur
+MariaDB, la remplacer par `utf8mb4_unicode_ci` dans les deux fichiers de
+`sql/` — c'est la seule syntaxe non portable du projet.
 
 ```
 livreyace/                  ← racine web
@@ -143,6 +156,23 @@ ne contient aucune occurrence du mot de passe.
 `config/config.php` porte les valeurs MAMP locales. Pour la production, créer
 `config/config.local.php` (ignoré par git) retournant un tableau partiel : il est
 fusionné par-dessus.
+
+### URL absolues
+
+`canonical` et `og:image` ne peuvent pas être relatifs : un chemin y est ignoré
+par les moteurs comme par les aperçus de partage. `App\Core\Site` les
+construit à partir de `app.url`, posée en configuration.
+
+**Jamais depuis `HTTP_HOST`**, sauf repli explicite de développement : cet
+en-tête est fourni par le client, et un `Host:` forgé ferait pointer le
+canonical d'une page vers un domaine tiers — exactement ce qu'un canonical est
+censé empêcher. Vérifié : configuration posée, une requête portant un `Host`
+falsifié rend malgré tout la bonne adresse.
+
+La chaîne de requête est retirée du canonical : deux adresses qui ne diffèrent
+que par un paramètre de suivi désignent la même page.
+
+Le back-office n'en porte pas — il est en `noindex`.
 
 ### Authentification et formulaires
 
@@ -436,7 +466,14 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
 - **Contenus** — tout le texte éditorial est balisé provisoire. **Les dates de la frise
   et les citations doivent être validées avant publication** : Yacé est une figure
   historique réelle, aucun propos ne doit lui être attribué sans source.
-- **URL absolue** — `og:image` et `canonical` pointent sur `example.org`.
+- **Visuel de partage définitif** — `assets/img/og-image.jpg` est un placard
+  typographique provisoire (1200 × 630). La version finale portera la couverture
+  de l'ouvrage ou le portrait ; le sujet doit tenir dans les 80 % centraux, les
+  vignettes carrées de certaines plateformes rognant les bords.
+- **Adresse publique** — poser `'url' => 'https://…'` dans la section `app` de
+  `config/config.local.php`. Sans elle, `canonical` et `og:image` retombent sur
+  l'hôte de la requête : acceptable en développement, pas sur un serveur public
+  (voir « URL absolues » au §2).
 
 ---
 

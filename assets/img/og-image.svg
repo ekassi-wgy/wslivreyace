@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <title>Philippe Grégoire Yacé — Une destinée</title>
+  <!--
+    Visuel d'aperçu affiché quand un lien du site est partagé.
+
+    Provisoire, et typographique à dessein : la version définitive portera la
+    couverture de l'ouvrage ou le portrait (voir README §5). Un aperçu composé
+    de texte se distingue au premier coup d'oeil d'une photographie livrée,
+    ce qui évite qu'il reste en place par inadvertance.
+
+    Tout est en tracé et en géométrie, jamais en <text> dépendant d'une police
+    installée : le fichier est rastérisé une fois, mais la source doit rester
+    reproductible sur n'importe quelle machine.
+
+    1200 x 630 est le format attendu par les principales plateformes. Le sujet
+    tient dans les 80 % centraux, les vignettes carrées rognant les bords.
+  -->
+  <rect width="1200" height="630" fill="#1E1D1B"/>
+
+  <!-- Filet de laiton en pied, rappel de la plaque commemorative. -->
+  <rect x="0" y="614" width="1200" height="6" fill="#A88B5C"/>
+
+  <!-- Monogramme, meme geometrie que le favicon : plaque laiton, Y en encre. -->
+  <g transform="translate(120 118)">
+    <rect width="96" height="96" rx="18" fill="#A88B5C"/>
+    <g fill="none" stroke="#1E1D1B" stroke-width="11.1" stroke-linecap="butt" stroke-linejoin="miter">
+      <path d="M20.4 24 L48 52.8 L75.6 24"/>
+      <path d="M48 49.2 L48 75"/>
+    </g>
+  </g>
+
+  <!-- Surtitre -->
+  <g fill="#C9B48D">
+    <rect x="120" y="268" width="290" height="3"/>
+  </g>
+  <text x="120" y="256" fill="#C9B48D" font-family="Georgia, 'Times New Roman', serif"
+        font-size="26" letter-spacing="6">1920 — 1998</text>
+
+  <!-- Titre -->
+  <text x="120" y="372" fill="#F7F4EE" font-family="Georgia, 'Times New Roman', serif"
+        font-size="88" font-weight="400">Philippe Grégoire Yacé</text>
+
+  <!-- Sous-titre -->
+  <text x="120" y="452" fill="#C9B48D" font-family="Georgia, 'Times New Roman', serif"
+        font-size="52" font-style="italic">Une destinée</text>
+
+  <!-- Mention de pied -->
+  <text x="120" y="546" fill="#8C8880" font-family="Helvetica, Arial, sans-serif"
+        font-size="24" letter-spacing="3">SITE ÉDITORIAL DE L'OUVRAGE</text>
+</svg>
