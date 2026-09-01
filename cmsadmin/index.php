@@ -9,7 +9,10 @@ declare(strict_types=1);
  * gabarits — est celui du site public : rien n'est réécrit pour l'admin.
  */
 
+use App\Controller\Admin\ActualiteController;
 use App\Controller\Admin\AuthController;
+use App\Controller\Admin\EvenementController;
+use App\Controller\Admin\RepereController;
 use App\Core\Admin;
 use App\Core\Auth;
 use App\Core\Session;
@@ -48,13 +51,26 @@ $router->get($base . '/', static fn() => View::admin('tableau-de-bord', [
 ]));
 
 /**
- * Page témoin du lot A : elle sert à vérifier la mise en page sur un contenu
- * quelconque. Elle disparaîtra quand les vraies pages existeront.
+ * Écrans de contenu — un jeu de six routes par entité.
+ *
+ * `/nouvelle` et `/nouveau` sont déclarés AVANT `/{id}` : le routeur retient le
+ * premier motif qui correspond, et `{id}` accepte aussi bien des lettres que
+ * des chiffres. Déclaré après, `/actualites/nouvelle` serait compris comme une
+ * fiche d'identifiant « nouvelle ».
  */
-$router->get($base . '/exemple', static fn() => View::admin('exemple', [
-    'titre' => 'Page d\'exemple',
-    'actif' => '',
-]));
+$crud = static function (string $chemin, string $controleur, string $creation) use ($router, $base): void {
+    $router->get($base . $chemin,                     [$controleur, 'liste']);
+    $router->get($base . $chemin . '/' . $creation,   [$controleur, 'formulaireCreation']);
+    $router->post($base . $chemin,                    [$controleur, 'enregistrer']);
+    $router->get($base . $chemin . '/{id}',           [$controleur, 'formulaireEdition']);
+    $router->post($base . $chemin . '/{id}',          [$controleur, 'mettreAJour']);
+    $router->post($base . $chemin . '/{id}/statut',   [$controleur, 'basculerStatut']);
+    $router->post($base . $chemin . '/{id}/supprimer',[$controleur, 'supprimer']);
+};
+
+$crud('/actualites', ActualiteController::class, 'nouvelle');
+$crud('/evenements', EvenementController::class, 'nouveau');
+$crud('/reperes',    RepereController::class,    'nouveau');
 
 $router->introuvable(static function (): void {
     // Une adresse fautive derrière la garde reste une 404 ; l'anonyme, lui, a

@@ -1,8 +1,8 @@
 # Philippe Grégoire Yacé — *Une destinée* (1920-1998)
 
 Site éditorial de l'ouvrage. Trois pages publiques livrées, et le back-office en
-cours de construction : **lots A et B posés** — ossature de `/cmsadmin/`,
-authentification, session, CSRF, validation.
+cours de construction : **lots A, B et C posés** — ossature de `/cmsadmin/`,
+authentification, et la gestion des actualités, événements et repères.
 
 ---
 
@@ -105,8 +105,12 @@ livreyace/                  ← racine web
 │   ├── Core/               Config, Database, Router, View,
 │   │                       Admin, Session, Csrf, Auth,
 │   │                       Validator                         [interdit]
-│   ├── Controller/Admin/   AuthController                    [interdit]
-│   └── Model/              Utilisateur, TentativeConnexion   [interdit]
+│   │                       Slug                             [interdit]
+│   ├── Controller/Admin/   Auth + Crud (Actualite,
+│   │                       Evenement, Repere)                [interdit]
+│   └── Model/              Modele, Actualite, Evenement,
+│                           Repere, Utilisateur,
+│                           TentativeConnexion                [interdit]
 ├── templates/
 │   ├── layout.php          mise en page du site public       [interdit]
 │   ├── partials/           navigation, pied                  [interdit]
@@ -192,6 +196,46 @@ de bon offrirait à un tiers le moyen d'interdire l'accès à l'éditeur légiti
 échouant assez souvent. Seul `REMOTE_ADDR` est lu, jamais `X-Forwarded-For` —
 cet en-tête vient du client et se falsifie.
 
+### Les écrans de contenu
+
+Trois entités — actualités, événements, repères — partagent une même mécanique :
+`Modele` pour le SQL, `CrudController` pour le déroulé (lister, créer, modifier,
+publier, supprimer). Ne varient que les champs, les règles et les libellés.
+
+**Rien n'entre en base par accident.** `Modele::ASSIGNABLES` est une liste
+blanche de colonnes : une clé glissée dans un POST qui n'y figure pas est
+écartée avant la requête. Vérifié — un POST portant `id=999` et
+`cree_le=1900-01-01` laisse la ligne intacte.
+
+**Les règles qui portent sur le fond**, pas seulement sur la forme :
+
+- un **repère publié doit être sourcé** — c'est le §6 du cahier des charges, pas
+  une commodité technique. La liste affiche en tête le nombre d'entrées sans
+  source ;
+- une **actualité publiée doit porter une date** : la page publique classe par
+  `publie_le`, une entrée sans date s'y rangerait n'importe où ;
+- un article de **catégorie « presse » exige son organe** ;
+- un **événement publié doit indiquer sa ville**, et sa fin ne peut pas précéder
+  son début ;
+- l'**année de classement d'un repère doit tomber dans la période choisie** :
+  les bornes sont reprises des filtres de la frise publique, les laisser diverger
+  ferait apparaître l'entrée sous un filtre où elle n'a rien à faire.
+
+**Slugs.** Translittération explicite plutôt que `iconv('ASCII//TRANSLIT')`, qui
+dépend de la locale du serveur : « Séance de dédicace à Abidjan » donne
+`seance-de-dedicace-a-abidjan` partout. Le slug se décline en `-2` s'il est
+pris, mais **pas** quand on réenregistre une fiche sans changer son titre — sinon
+les URL déjà partagées casseraient à chaque modification.
+
+**Suppression et publication passent par POST avec jeton**, jamais par un lien :
+un lien se déclenche par un préchargement de navigateur ou une balise sur un
+site tiers, et il n'y a pas de corbeille. La confirmation JavaScript ne protège
+que d'un clic malheureux ; le garde-fou réel est côté serveur.
+
+**DataTables** est chargé sur les listes seulement, avec ses libellés écrits en
+français dans `js/listes.js` : le greffon va normalement chercher sa traduction
+sur un CDN, ce que l'admin s'interdit.
+
 ### `medias/` n'exécute rien
 
 Le dossier reçoit des fichiers déposés par un utilisateur ; un fichier déposé ne
@@ -274,10 +318,17 @@ portent du sens, elles ne doivent pas se fondre dans la charte.
 
 Le reste vit dans `css/pgy-admin.css`, chargé après : marque, en-tête de page,
 badges de statut adossés aux énumérations du schéma, anneau de focus laiton, et
-trois corrections du thème — `text-transform: capitalize` sur les titres de
-carte (qui donnait « Livraison Du Back-Office », convention anglaise fautive en
-français), le cyan `#05C3FB` des boutons secondaires, et une rangée de
-compteurs qui ne se repliait pas sous 768 px.
+six corrections du thème. Trois de mise : `text-transform: capitalize` sur les
+titres de carte (qui donnait « Livraison Du Back-Office », convention anglaise
+fautive en français), le cyan `#05C3FB` des boutons secondaires, et une rangée
+de compteurs qui ne se repliait pas sous 768 px. Trois relevées à la mesure, pas
+à l'œil :
+
+| Défaut du thème | Effet | Mesuré |
+|---|---|---|
+| `height: 2.75rem` groupé sur `.form-control` | un `<textarea rows="12">` s'affichait sur une seule ligne — le corps d'une actualité se saisissait dans une fente | hauteur calculée au navigateur |
+| `color: #c9c8c8` sur les `select` | la valeur choisie était plus pâle que son libellé ; un « Brouillon » ressemblait à un champ vide | **1,60:1** → 14,69:1 |
+| même gris sur les `::placeholder` | nos indications de saisie (« https://… », « 1959, v. 1945 ») étaient invisibles | **1,60:1** → 5,33:1 |
 
 L'admin reste sur **Manrope**, servie localement. Bodoni et Jost sont la voix
 publique du site ; les charger ici imposerait un appel à Google Fonts pour un
@@ -356,6 +407,10 @@ soldée** depuis le passage aux gabarits (voir §2). Ce qu'il reste :
 - **Aucun test.** Le socle a été vérifié à la main (codes HTTP, connexion PDO,
   absence de warning, mesure du rendu au navigateur). Ces vérifications ne sont
   pas rejouables automatiquement.
+- **Pas d'éditeur enrichi ni de téléversement d'image sur les fiches.** Le corps
+  d'une actualité se saisit en texte brut, une ligne vide séparant deux
+  paragraphes. La colonne `image` existe en base mais aucun écran ne la remplit :
+  elle attend la médiathèque du lot D.
 - **Le CSS du thème d'administration porte des règles mortes.** Des composants
   que le back-office n'emploie pas (graphiques de démonstration, menu horizontal,
   panneau de réglages) gardent leurs styles dans `style.css`. Sans effet visible,
@@ -388,8 +443,8 @@ finale de l'outil est visible dès le premier.
 | Lot | Objet | État |
 |---|---|---|
 | **A** | Ossature — thème élagué, mise en page, barre latérale, routage `/cmsadmin/` | livré |
-| **B** | Authentification — connexion, session, CSRF, validation, garde de route | **livré** |
-| **C** | Contenus — actualités, événements, repères | à venir |
+| **B** | Authentification — connexion, session, CSRF, validation, garde de route | livré |
+| **C** | Contenus — actualités, événements, repères | **livré** |
 | **D** | Modération et médias — file des témoignages, téléversement contrôlé | à venir |
 | **E** | Pilotage — compteurs réels, paramètres, comptes, commandes | à venir |
 

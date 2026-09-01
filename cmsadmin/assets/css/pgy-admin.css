@@ -356,3 +356,171 @@
 .pgy-messages .alert:last-child {
   margin-bottom: 0;
 }
+
+/* --- Écrans de contenu (lot C) ------------------------------------------- */
+
+/* Astérisque des champs obligatoires : le laiton texte, jamais le rouge —
+   un champ à remplir n'est pas une erreur. */
+.pgy-requis {
+  color: var(--pgy-brass-text);
+  font-weight: 700;
+}
+
+.pgy-lien-fiche {
+  color: var(--pgy-ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pgy-lien-fiche:hover {
+  color: var(--pgy-brass-text);
+  text-decoration: underline;
+}
+
+/* Mention secondaire d'une cellule : organe de presse, lieu, « passé ». */
+.pgy-sous {
+  display: block;
+  font-size: .8125rem;
+  font-weight: 400;
+  color: var(--pgy-ink-3);
+}
+
+/* Les trois boutons d'action d'une ligne, alignés sans que les <form> qui les
+   portent n'introduisent de retour à la ligne. */
+.pgy-actions {
+  display: flex;
+  gap: .375rem;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.pgy-actions form {
+  margin: 0;
+  display: inline-flex;
+}
+
+.pgy-actions .btn {
+  line-height: 1;
+  padding: .375rem .5rem;
+}
+
+.pgy-table td,
+.pgy-table th {
+  vertical-align: middle;
+}
+
+.pgy-table td:last-child,
+.pgy-table th:last-child {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* --- Barre d'enregistrement, en pied de formulaire ----------------------- */
+.pgy-barre-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem;
+  padding: 1.15rem 1.5rem;
+  margin-bottom: 2rem;
+  background: var(--pgy-paper-high);
+  border: 1px solid var(--pgy-rule);
+  border-radius: 8px;
+}
+
+.pgy-barre-actions__info {
+  margin-left: auto;
+  font-size: .8125rem;
+  color: var(--pgy-ink-3);
+}
+
+.pgy-barre-actions code {
+  color: var(--pgy-brass-text);
+  background: var(--pgy-brass-wash, rgba(168, 139, 92, .1));
+  padding: .1rem .35rem;
+  border-radius: 3px;
+}
+
+/* --- DataTables : recoller ses commandes à la charte ---------------------
+   Le greffon pose ses propres champs et sa pagination, stylés pour Bootstrap 4
+   et son bleu. Sans ces règles, la recherche et les numéros de page sont les
+   deux seuls éléments bleus de tout le back-office. */
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+  border: 1px solid var(--pgy-rule);
+  border-radius: 4px;
+  padding: .3rem .5rem;
+  background: var(--pgy-paper-high);
+  color: var(--pgy-ink);
+}
+
+.dataTables_wrapper .dataTables_filter input:focus {
+  outline: 2px solid var(--pgy-brass-text);
+  outline-offset: 1px;
+}
+
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_length {
+  color: var(--pgy-ink-3);
+  font-size: .875rem;
+}
+
+.dataTables_wrapper .page-link {
+  color: var(--pgy-ink-2);
+  border-color: var(--pgy-rule);
+  background: transparent;
+}
+
+.dataTables_wrapper .page-item.active .page-link {
+  background: var(--pgy-brass-text);
+  border-color: var(--pgy-brass-text);
+  color: #fff;
+}
+
+.dataTables_wrapper .page-link:hover {
+  background: var(--pgy-paper-sunk);
+  border-color: var(--pgy-brass);
+  color: var(--pgy-ink);
+}
+
+/* --- Zones de texte : rendre son effet à `rows` ---------------------------
+   Le thème groupe `.form-control` et `.form-select` sous une hauteur fixe de
+   2,75 rem, calibrée pour une ligne. Un `<textarea rows="12">` s'affichait
+   donc sur une seule ligne : le corps d'une actualité se saisissait dans une
+   fente. `height: auto` rend la main à l'attribut `rows`. */
+textarea.form-control {
+  height: auto;
+  min-height: 2.75rem;
+  line-height: 1.55;
+  padding-top: .55rem;
+  padding-bottom: .55rem;
+}
+
+/* --- Listes déroulantes : rendre le texte lisible ------------------------
+   Le thème pose `color: #c9c8c8` sur les `select`, ce qui donne 1,6:1 sur le
+   papier : la valeur choisie était plus pâle que le libellé au-dessus, et un
+   « Brouillon » ressemblait à un champ vide. Mesuré au navigateur, pas
+   supposé. L'encre du projet donne 14:1. */
+select.form-control,
+select.form-select,
+.form-select {
+  color: var(--pgy-ink);
+}
+
+.form-select option {
+  color: var(--pgy-ink);
+  background: var(--pgy-paper-high);
+}
+
+/* --- Textes d'aide dans les champs ---------------------------------------
+   Même gris #c9c8c8 sur les `::placeholder`, soit 1,6:1. Nos formulaires s'en
+   servent pour de vraies indications — « https://… », « 1959, v. 1945 » — et
+   une indication invisible ne sert à rien. L'encre secondaire donne 5,3:1 :
+   nettement en retrait du texte saisi, mais lisible. */
+.form-control::placeholder,
+.form-select::placeholder,
+textarea.form-control::placeholder {
+  color: var(--pgy-ink-3);
+  opacity: 1;   /* Firefox applique sinon une transparence par-dessus. */
+}

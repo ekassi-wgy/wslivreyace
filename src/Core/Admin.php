@@ -59,19 +59,19 @@ final class Admin
                 'cle'    => 'actualites',
                 'titre'  => 'Actualités',
                 'icone'  => 'mdi-newspaper-variant-outline',
-                'bientot' => true,
+                'url'    => self::url('/actualites'),
             ],
             [
                 'cle'    => 'evenements',
                 'titre'  => 'Événements',
                 'icone'  => 'mdi-calendar-star',
-                'bientot' => true,
+                'url'    => self::url('/evenements'),
             ],
             [
                 'cle'    => 'reperes',
                 'titre'  => 'Repères',
                 'icone'  => 'mdi-timeline-text-outline',
-                'bientot' => true,
+                'url'    => self::url('/reperes'),
             ],
             ['rubrique' => 'Modération'],
             [

@@ -99,6 +99,28 @@ final class Validator
         return $this;
     }
 
+    /**
+     * Adresse web absolue.
+     *
+     * Le schéma est exigé et restreint à http/https : `FILTER_VALIDATE_URL`
+     * accepte `javascript:alert(1)` comme une URL parfaitement valide, et cette
+     * valeur finit dans un attribut `href` de la page publique.
+     */
+    public function url(string $champ, string $libelle): self
+    {
+        $v = $this->valeur($champ);
+        if ($v === '') {
+            return $this;
+        }
+
+        $schema = strtolower((string) parse_url($v, PHP_URL_SCHEME));
+
+        if (!filter_var($v, FILTER_VALIDATE_URL) || !in_array($schema, ['http', 'https'], true)) {
+            $this->erreur($champ, "« $libelle » doit être une adresse web commençant par http:// ou https://.");
+        }
+        return $this;
+    }
+
     /** Date au format `AAAA-MM-JJ`, et réellement existante. */
     public function date(string $champ, string $libelle): self
     {

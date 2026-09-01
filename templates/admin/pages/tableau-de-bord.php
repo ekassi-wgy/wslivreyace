@@ -11,9 +11,9 @@ use App\Core\Admin;
 use App\Core\View;
 
 $lots = [
-    ['A', 'Ossature',                'Thème élagué, mise en page, barre latérale, routage',        'en cours'],
-    ['B', 'Authentification',        'Connexion, session, jeton CSRF, validation, garde de route', 'à venir'],
-    ['C', 'Contenus',                'Actualités, événements, repères biographiques',              'à venir'],
+    ['A', 'Ossature',                'Thème élagué, mise en page, barre latérale, routage',        'livré'],
+    ['B', 'Authentification',        'Connexion, session, jeton CSRF, validation, garde de route', 'livré'],
+    ['C', 'Contenus',                'Actualités, événements, repères biographiques',              'livré'],
     ['D', 'Modération et médias',    'File des témoignages, téléversement contrôlé',               'à venir'],
     ['E', 'Pilotage',                'Compteurs réels, paramètres, comptes, commandes',            'à venir'],
 ];
@@ -25,8 +25,8 @@ $lots = [
     <h1>Tableau de bord</h1>
     <p>Philippe Grégoire Yacé — <i>Une destinée</i></p>
   </div>
-  <a class="btn btn-primary" href="<?= Admin::url('/exemple') ?>">
-    <i class="mdi mdi-palette-outline me-1"></i> Voir les composants
+  <a class="btn btn-primary" href="<?= Admin::url('/actualites') ?>">
+    <i class="mdi mdi-newspaper-variant-outline me-1" aria-hidden="true"></i> Gérer les actualités
   </a>
 </div>
 
@@ -76,7 +76,7 @@ $lots = [
                   <td class="fw-semibold"><?= View::e($objet) ?></td>
                   <td class="text-muted"><?= View::e($detail) ?></td>
                   <td>
-                    <span class="pgy-statut pgy-statut--<?= $etat === 'en cours' ? 'publie' : 'brouillon' ?>">
+                    <span class="pgy-statut pgy-statut--<?= $etat === 'livré' ? 'publie' : 'brouillon' ?>">
                       <?= View::e($etat) ?>
                     </span>
                   </td>

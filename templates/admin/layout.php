@@ -17,6 +17,7 @@ use App\Core\View;
 $titre  = $titre  ?? 'Administration';
 $actif  = $actif  ?? '';
 $scripts = $scripts ?? [];   // scripts propres à la page, chargés en fin de corps
+$styles  = $styles  ?? [];   // feuilles propres à la page (DataTables, p. ex.)
 
 $utilisateur = Auth::utilisateur();
 $messages    = Session::messages();
@@ -41,6 +42,11 @@ $messages    = Session::messages();
 <link rel="stylesheet" href="<?= Admin::asset('vendors/mdi/css/materialdesignicons.min.css') ?>">
 <link rel="stylesheet" href="<?= Admin::asset('vendors/css/vendor.bundle.base.css') ?>">
 <link rel="stylesheet" href="<?= Admin::asset('css/style.css') ?>">
+<?php /* Les feuilles de page passent AVANT la surcouche : celle-ci doit
+         pouvoir corriger ce qu'un greffon impose. */ ?>
+<?php foreach ($styles as $f): ?>
+<link rel="stylesheet" href="<?= View::e($f) ?>">
+<?php endforeach; ?>
 <link rel="stylesheet" href="<?= Admin::asset('css/pgy-admin.css') ?>">
 </head>
 
