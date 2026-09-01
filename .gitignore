@@ -25,6 +25,10 @@ media-files.abidjan.net/
 # Surcharge de configuration locale (identifiants de production)
 config/config.local.php
 
-# Fichiers téléversés depuis le back-office
+# Fichiers téléversés depuis le back-office. Le dossier reste versionné pour
+# deux fichiers seulement : le témoin de présence, et la règle qui interdit
+# l'exécution de ce qui y sera déposé — sans elle en production, le premier
+# .php téléversé s'exécuterait.
 medias/*
 !medias/.gitkeep
+!medias/.htaccess

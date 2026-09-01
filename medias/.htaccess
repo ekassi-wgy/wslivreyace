@@ -1,0 +1,33 @@
+# ============================================================================
+# Fichiers téléversés depuis le back-office.
+#
+# Ce dossier est public : ses images doivent être servies. Mais il reçoit des
+# fichiers déposés par un utilisateur, et un fichier déposé ne doit JAMAIS être
+# exécuté. Sans cette règle, un .php téléversé — sous une extension trompeuse
+# ou par un contrôle de type défaillant — s'exécuterait avec les droits du site.
+#
+# Le contrôle de type au téléversement (lot D) est la première barrière ;
+# celle-ci est la seconde, et elle tient même si la première cède.
+# ============================================================================
+
+Options -Indexes -ExecCGI
+
+# Neutralise tous les gestionnaires : PHP, CGI, SSI.
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phps .cgi .pl .py .shtml
+RemoveType    .php .phtml .php3 .php4 .php5 .php7 .php8 .phps .cgi .pl .py .shtml
+
+<IfModule mod_php.c>
+  php_flag engine off
+</IfModule>
+
+# Ceinture et bretelles : quel que soit le module PHP en place, ces fichiers
+# ne sont pas servis du tout.
+<FilesMatch "\.(php|phtml|php[0-9]|phps|cgi|pl|py|sh|shtml|htaccess)$">
+  Require all denied
+</FilesMatch>
+
+# Un fichier téléversé est une donnée, jamais un script : on force le
+# téléchargement plutôt que l'interprétation pour tout ce qui n'est pas image.
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+</IfModule>

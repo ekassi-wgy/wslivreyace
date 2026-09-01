@@ -265,3 +265,94 @@
 .statistics-details > div {
   min-width: 0;
 }
+
+/* --- Écran sans chrome : connexion --------------------------------------
+   Le thème livre des pages d'authentification, mais elles s'appuient sur des
+   fonds photographiques que la version gratuite ne fournit pas — les
+   déclarations pointaient dans le vide et ont été retirées à l'extraction.
+   Celui-ci est écrit de zéro : une carte sur papier, rien d'autre. */
+.pgy-nu {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--pgy-paper);
+  display: flex;
+}
+
+.pgy-nu__centre {
+  margin: auto;
+  padding: 2rem 1.25rem;
+  width: 100%;
+  max-width: 26rem;
+}
+
+.pgy-nu__carte {
+  background: var(--pgy-paper-high);
+  border: 1px solid var(--pgy-rule);
+  border-radius: 8px;
+  padding: 2rem 1.75rem;
+  /* Ombre chaude et non grise : une ombre neutre refroidit le papier. */
+  box-shadow: 0 1px 2px rgba(38, 37, 35, .04), 0 12px 28px rgba(38, 37, 35, .07);
+}
+
+.pgy-nu__marque {
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  margin-bottom: 1.75rem;
+  text-decoration: none;
+}
+
+.pgy-nu__titre {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--pgy-ink);
+  line-height: 1.15;
+}
+
+.pgy-nu__intro {
+  margin: .35rem 0 1.5rem;
+  font-size: .875rem;
+  color: var(--pgy-ink-3);
+}
+
+.pgy-nu__note {
+  margin: 1.5rem 0 0;
+  padding-top: 1.15rem;
+  border-top: 1px solid var(--pgy-rule);
+  font-size: .8125rem;
+  line-height: 1.5;
+  color: var(--pgy-ink-3);
+}
+
+.pgy-nu__pied {
+  margin: 1.25rem 0 0;
+  text-align: center;
+  font-size: .8125rem;
+}
+
+.pgy-nu__pied a {
+  color: var(--pgy-ink-3);
+  text-decoration: none;
+}
+
+.pgy-nu__pied a:hover {
+  color: var(--pgy-brass-text);
+  text-decoration: underline;
+}
+
+/* Le thème colore `.is-invalid` en rouge Bootstrap ; on garde le rouge, il
+   porte du sens, mais le message doit rester lisible sur papier chaud. */
+.pgy-nu .invalid-feedback {
+  font-size: .8125rem;
+  color: #8C2F26;
+}
+
+/* --- Bandeau des messages ----------------------------------------------- */
+.pgy-messages {
+  margin-bottom: 1.5rem;
+}
+
+.pgy-messages .alert:last-child {
+  margin-bottom: 0;
+}

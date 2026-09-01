@@ -10,7 +10,7 @@ DirectoryIndex index.php
   RewriteEngine On
 
   # Les dossiers applicatifs ne sont jamais servis, même en accès direct.
-  RewriteRule ^(config|src|templates|sql|reference)(/|$) - [F,L]
+  RewriteRule ^(config|src|templates|sql|reference|bin)(/|$) - [F,L]
 
   # Fichiers et dossiers réels : servis tels quels (assets/, medias/).
   RewriteCond %{REQUEST_FILENAME} -f [OR]

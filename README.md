@@ -1,7 +1,8 @@
 # Philippe Grégoire Yacé — *Une destinée* (1920-1998)
 
-Site éditorial de l'ouvrage. Livraison en cours : **socle de design + page d'accueil**
-(phase 1 du cahier des charges).
+Site éditorial de l'ouvrage. Trois pages publiques livrées, et le back-office en
+cours de construction : **lots A et B posés** — ossature de `/cmsadmin/`,
+authentification, session, CSRF, validation.
 
 ---
 
@@ -97,13 +98,15 @@ livreyace/                  ← racine web
 │   ├── .htaccess           réécriture propre au back-office
 │   ├── index.php           contrôleur frontal du back-office
 │   └── assets/             thème d'administration élagué
+├── bin/                    scripts en ligne de commande      [interdit]
 ├── config/                 configuration                     [interdit]
 ├── src/
 │   ├── bootstrap.php       autoload + régime d'erreurs       [interdit]
 │   ├── Core/               Config, Database, Router, View,
-│   │                       Admin                             [interdit]
-│   ├── Controller/                                           [interdit]
-│   └── Model/                                                [interdit]
+│   │                       Admin, Session, Csrf, Auth,
+│   │                       Validator                         [interdit]
+│   ├── Controller/Admin/   AuthController                    [interdit]
+│   └── Model/              Utilisateur, TentativeConnexion   [interdit]
 ├── templates/
 │   ├── layout.php          mise en page du site public       [interdit]
 │   ├── partials/           navigation, pied                  [interdit]
@@ -135,6 +138,72 @@ ne contient aucune occurrence du mot de passe.
 `config/config.local.php` (ignoré par git) retournant un tableau partiel : il est
 fusionné par-dessus.
 
+### Authentification et formulaires
+
+**Comptes.** Créés en ligne de commande, jamais par une page web : une page
+d'installation qui crée le premier administrateur est ouverte par définition, et
+il suffit de l'oublier en ligne pour offrir le site.
+
+```
+php bin/compte.php creer <adresse> <nom> [admin|editeur]
+php bin/compte.php motdepasse <adresse>
+php bin/compte.php lister
+```
+
+Le mot de passe est demandé sans écho, jamais passé en argument — il serait
+lisible dans l'historique du shell et dans la liste des processus. Douze
+caractères minimum, `password_hash()` en bcrypt, coût 12.
+
+**Session.** Nom et chemin de cookie propres au back-office (`pgyadmin`,
+`/cmsadmin`) : le cookie d'administration ne part donc jamais avec une requête
+vers une page publique. `HttpOnly`, `SameSite=Lax`, `Secure` dès que le site est
+en HTTPS. `use_strict_mode` est forcé à 1 — sans lui, un identifiant de session
+choisi par un tiers est accepté, ce qui suffit à une fixation de session.
+L'identifiant est régénéré à la connexion. Deux bornes d'expiration : 2 h
+d'inactivité, 12 h en absolu.
+
+**CSRF.** Un jeton par session et non par formulaire : deux onglets ouverts sur
+deux formulaires doivent pouvoir être soumis dans n'importe quel ordre.
+Comparaison par `hash_equals`. Le jeton est renouvelé à la connexion, en même
+temps que l'identifiant de session. Un POST sans jeton valable répond 419. La
+déconnexion elle-même passe par POST : en GET, une balise `<img>` sur un site
+tiers suffirait à déconnecter l'éditeur au passage.
+
+**Garde.** Posée une fois dans `cmsadmin/index.php`, avant le routage, et par
+liste blanche : seuls `/connexion` et `/deconnexion` sont ouverts, tout le reste
+exige une session. Une route ajoutée plus tard et oubliée est donc protégée par
+défaut — l'inverse, une liste de routes à protéger, fait qu'un oubli ouvre une
+page.
+
+**Ce que la réponse ne dit pas.** Adresse inconnue, mot de passe faux et compte
+désactivé donnent le même message. Et la même durée : quand l'adresse n'existe
+pas, `password_verify` est quand même exécuté contre une empreinte leurre, sans
+quoi la réponse arriverait en 0,2 ms au lieu de 217 ms et l'écart suffirait à
+dresser la liste des comptes. Le leurre est un vrai hachage au coût courant ;
+une chaîne inventée serait rejetée comme malformée et rouvrirait l'écart.
+
+**Essais successifs.** Table `tentative_connexion`, fenêtre glissante de
+15 minutes : 5 échecs sur une même adresse, 15 depuis une même IP. Deux plafonds
+parce qu'ils couvrent deux attaques — le forçage d'un compte visé, et le balayage
+d'un dictionnaire d'adresses. Une connexion réussie remet le compteur à zéro,
+sinon l'éditeur qui s'est trompé quatre fois resterait à un essai du blocage
+pendant un quart d'heure. Le blocage est toujours temporaire : verrouiller pour
+de bon offrirait à un tiers le moyen d'interdire l'accès à l'éditeur légitime en
+échouant assez souvent. Seul `REMOTE_ADDR` est lu, jamais `X-Forwarded-For` —
+cet en-tête vient du client et se falsifie.
+
+### `medias/` n'exécute rien
+
+Le dossier reçoit des fichiers déposés par un utilisateur ; un fichier déposé ne
+doit jamais être exécuté. `medias/.htaccess` retire les gestionnaires PHP, CGI et
+SSI, coupe le moteur PHP, refuse les extensions sensibles et pose `nosniff`.
+
+Vérifié : un `.php` déposé répond 403 ; un `.php.jpg` — la contournement
+classique par double extension — sort en source brute, non interprétée ; une
+vraie image est servie normalement. Le contrôle de type au téléversement
+(lot D) reste la première barrière, celle-ci est la seconde et tient si la
+première cède.
+
 ### La duplication du chrome est soldée
 
 Navigation et pied de page vivaient en trois exemplaires dans les pages statiques.
@@ -146,7 +215,11 @@ Ils sont désormais dans `templates/partials/`, inclus une seule fois par
 
 Huit tables, `utf8mb4`, InnoDB — voir `sql/001_schema.sql` :
 `utilisateur`, `actualite`, `evenement`, `temoignage`, `media`, `repere`,
-`commande`, `parametre`.
+`commande`, `parametre`. Plus `tentative_connexion` (`sql/002_auth.sql`), le
+compteur glissant des essais de connexion.
+
+Les migrations s'appliquent dans l'ordre de leur numéro ; il n'y a pas encore de
+table de suivi, le projet en est à deux fichiers.
 
 Deux partis pris qui tiennent au sujet : les témoignages arrivent en
 `statut = 'en_attente'` et rien ne s'affiche sans passage explicite en `'publie'`
@@ -275,14 +348,11 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
 La duplication de la navigation et du pied de page — qui figurait ici — **est
 soldée** depuis le passage aux gabarits (voir §2). Ce qu'il reste :
 
-- **Pas de couche d'abstraction pour les formulaires.** Le socle n'a encore ni
-  jeton CSRF, ni validation, ni protection anti-soumission massive. À poser
-  **avant** le premier formulaire public, pas après : le formulaire de témoignage
-  est ouvert à tout le monde et porte des propos sur une personne réelle.
-- **`medias/` n'interdit pas l'exécution de PHP.** Le dossier est public et vide
-  aujourd'hui, donc sans conséquence — mais dès qu'il reçoit des téléversements,
-  un `.php` qu'on y déposerait serait exécuté. Un `.htaccess` y est posé au
-  **lot B**, avant le premier formulaire, pas avant le premier fichier.
+- **La limitation de débit ne couvre que la connexion.** Le jeton CSRF et la
+  validation sont posés (voir §2) et servent déjà tout le back-office ; le
+  comptage d'essais, lui, ne protège que `/cmsadmin/connexion`. Le formulaire de
+  témoignage sera ouvert à tout le monde et portera des propos sur une personne
+  réelle : il lui faut son propre plafond avant d'être exposé.
 - **Aucun test.** Le socle a été vérifié à la main (codes HTTP, connexion PDO,
   absence de warning, mesure du rendu au navigateur). Ces vérifications ne sont
   pas rejouables automatiquement.
@@ -317,8 +387,8 @@ finale de l'outil est visible dès le premier.
 
 | Lot | Objet | État |
 |---|---|---|
-| **A** | Ossature — thème élagué, mise en page, barre latérale, routage `/cmsadmin/` | **livré** |
-| **B** | Authentification — connexion, session, CSRF, validation, garde de route | à venir |
+| **A** | Ossature — thème élagué, mise en page, barre latérale, routage `/cmsadmin/` | livré |
+| **B** | Authentification — connexion, session, CSRF, validation, garde de route | **livré** |
 | **C** | Contenus — actualités, événements, repères | à venir |
 | **D** | Modération et médias — file des témoignages, téléversement contrôlé | à venir |
 | **E** | Pilotage — compteurs réels, paramètres, comptes, commandes | à venir |

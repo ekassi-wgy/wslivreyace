@@ -8,12 +8,14 @@
  * charges ; tout a été retiré plutôt que laissé en décor inerte.
  *
  * Ce qui reste : la marque, le bouton de repli de la barre latérale, le
- * raccourci vers le site public, et le menu du compte — dont le contenu réel
- * (nom, déconnexion) sera branché au lot B.
+ * raccourci vers le site public, et le menu du compte.
  */
 
 use App\Core\Admin;
+use App\Core\Csrf;
 use App\Core\View;
+
+$utilisateur = $utilisateur ?? null;
 ?>
 <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
 
@@ -59,12 +61,19 @@ use App\Core\View;
           <div class="dropdown-header">
             <p class="mb-0 fw-semibold"><?= View::e($utilisateur['nom'] ?? 'Non connecté') ?></p>
             <p class="fw-light text-muted mb-0 small"><?= View::e($utilisateur['email'] ?? '—') ?></p>
+            <?php if (($utilisateur['role'] ?? '') === 'admin'): ?>
+              <span class="pgy-statut pgy-statut--publie mt-2 d-inline-block">administrateur</span>
+            <?php endif; ?>
           </div>
           <div class="dropdown-divider"></div>
-          <?php /* Cible réelle posée au lot B, avec la session. */ ?>
-          <a class="dropdown-item disabled" aria-disabled="true">
-            <i class="dropdown-item-icon mdi mdi-power me-2"></i>Se déconnecter
-          </a>
+          <?php /* En POST et non en lien : une balise <img src="…/deconnexion">
+                   sur un site tiers suffirait sinon à déconnecter l'éditeur. */ ?>
+          <form method="post" action="<?= Admin::url('/deconnexion') ?>" class="px-2 pb-1">
+            <?= Csrf::champ() ?>
+            <button type="submit" class="dropdown-item px-2">
+              <i class="dropdown-item-icon mdi mdi-power me-2"></i>Se déconnecter
+            </button>
+          </form>
         </div>
       </li>
     </ul>

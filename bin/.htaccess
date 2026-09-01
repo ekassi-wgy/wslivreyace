@@ -1,0 +1,4 @@
+# Scripts de maintenance en ligne de commande. Rien ici n'est destiné au web ;
+# la règle du .htaccess racine couvre déjà ce dossier, celle-ci tient si
+# mod_rewrite venait à manquer.
+Require all denied

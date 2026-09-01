@@ -32,7 +32,7 @@ final class Router
      * revenait à ce que `/cmsadmin/` déclaré ne réponde jamais, l'URL entrante
      * arrivant dépouillée de sa barre finale.
      */
-    private static function normalise(string $chemin): string
+    public static function normalise(string $chemin): string
     {
         return '/' . trim($chemin, '/');
     }

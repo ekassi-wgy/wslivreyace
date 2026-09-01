@@ -10,11 +10,16 @@
  */
 
 use App\Core\Admin;
+use App\Core\Auth;
+use App\Core\Session;
 use App\Core\View;
 
 $titre  = $titre  ?? 'Administration';
 $actif  = $actif  ?? '';
 $scripts = $scripts ?? [];   // scripts propres à la page, chargés en fin de corps
+
+$utilisateur = Auth::utilisateur();
+$messages    = Session::messages();
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -51,6 +56,15 @@ $scripts = $scripts ?? [];   // scripts propres à la page, chargés en fin de c
 
     <div class="main-panel">
       <div class="content-wrapper" id="contenu">
+        <?php if ($messages !== []): ?>
+          <div class="pgy-messages">
+            <?php foreach ($messages as $m): ?>
+              <div class="alert alert-<?= $m['type'] === 'succes' ? 'success' : ($m['type'] === 'erreur' ? 'danger' : 'info') ?>" role="alert">
+                <?= View::e($m['texte']) ?>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
         <?= $contenu ?>
       </div>
       <?php require __DIR__ . '/partials/footer.php'; ?>
