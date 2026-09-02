@@ -834,6 +834,59 @@ charte et servie par le routeur.
 phase 3 du CDC. Tout ce qui reste est du côté visiteur : il n'y a plus une seule
 ligne de back-office à écrire.
 
+### Ce qui est en ligne, et ce qu'il faut y porter
+
+Le dépôt et le serveur ne sont pas au même point. **Le site en ligne est à
+l'état du 1er septembre** — dernier commit déployé : « Partage social :
+canonical, og:image ». Tout ce qui suit dans cette section est écrit, testé et
+commité, mais pas encore en production.
+
+**Trois migrations à jouer, dans cet ordre**, et une seule fois :
+
+| Fichier | Ce qu'il apporte |
+|---|---|
+| `sql/003_media.sql` | le poids du fichier et l'unicité du chemin sur `media` (lot D2) |
+| `sql/004_commande.sql` | provenance du paiement, code de transaction, note et trace de remise (lot E2) |
+| `sql/005_soumission.sql` | le journal des soumissions publiques (limitation de débit) |
+
+**`001_schema.sql` ne se rejoue jamais sur une base installée.** Il a été mis à
+jour pour qu'une installation neuve n'ait pas à rejouer l'historique, mais ses
+`CREATE TABLE IF NOT EXISTS` ne toucheraient pas des tables existantes : les
+nouvelles colonnes n'arriveraient pas, et la base paraîtrait à jour sans l'être.
+
+`003` et `004` sont des `ALTER TABLE` : les rejouer lève `Duplicate column
+name`. Cette requête dit où en est une base — trois zéros avant, trois `1`
+après :
+
+```sql
+SELECT 'octets sur media' AS controle, COUNT(*) AS present
+  FROM information_schema.columns
+ WHERE table_schema = DATABASE() AND table_name = 'media' AND column_name = 'octets'
+UNION ALL SELECT 'passerelle sur commande', COUNT(*)
+  FROM information_schema.columns
+ WHERE table_schema = DATABASE() AND table_name = 'commande' AND column_name = 'passerelle'
+UNION ALL SELECT 'table soumission_publique', COUNT(*)
+  FROM information_schema.tables
+ WHERE table_schema = DATABASE() AND table_name = 'soumission_publique';
+```
+
+Depuis la bascule de collation (voir §2), les trois fichiers se chargent aussi
+bien sous MySQL que sous MariaDB — il n'y a plus de ligne à corriger avant
+d'envoyer.
+
+**Côté fichiers**, trois points qu'un dépôt ne règle pas tout seul :
+
+- **`medias/` doit exister et être accessible en écriture** par le serveur.
+  Son `.htaccess` doit partir avec, c'est lui qui empêche l'exécution de ce qui
+  y sera déposé — attention aux clients FTP qui masquent les fichiers commençant
+  par un point.
+- **`config/config.local.php` est ignoré par git** : il se crée à la main sur le
+  serveur, avec les identifiants de production, `'debug' => false` et surtout
+  `'url' => 'https://…'`. Sans cette dernière, `canonical` et `og:image`
+  retombent sur l'en-tête `Host` de la requête, que le client choisit.
+- **`reference/` n'a rien à faire en production** : 70 Mo verrouillés en 403,
+  à exclure explicitement de la règle de déploiement.
+
 ### Le back-office, lot par lot
 
 Le back-office est livré par lots, validables l'un après l'autre. **Les sept
