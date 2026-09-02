@@ -274,16 +274,47 @@ JSONLD;
         <h2 class="t-d1 reveal">Archives.</h2>
       </div>
       <div class="col-lg-3 d-flex align-items-end justify-content-lg-end">
-        <a class="link reveal" href="/biographie#chronologie">Voir la chronologie</a>
+        <a class="link reveal" href="/archives">Toutes les archives</a>
       </div>
     </div>
 
-    <div class="gal">
-      <a class="gal__i reveal" href="#"><img loading="lazy" decoding="async" src="assets/img/gal-1.svg" alt="Archive — visuel provisoire"></a>
-      <a class="gal__i reveal" href="#"><img loading="lazy" decoding="async" src="assets/img/gal-2.svg" alt="Archive — visuel provisoire"></a>
-      <a class="gal__i reveal" href="#"><img loading="lazy" decoding="async" src="assets/img/gal-3.svg" alt="Archive — visuel provisoire"></a>
-      <a class="gal__i reveal" href="#"><img loading="lazy" decoding="async" src="assets/img/gal-4.svg" alt="Archive — visuel provisoire"></a>
-    </div>
+    <?php
+    /* Les quatre premières archives publiées, dans l'ordre de la médiathèque.
+       La planche complète et sa visionneuse vivent sur /archives : l'accueil
+       n'en montre que la trame. */
+    $planche = App\Model\Media::listerPubliees(null, 4);
+    $trame   = ['large', 'haut', 'carre', 'pano'];
+    ?>
+
+    <?php if ($planche === []): ?>
+
+      <div class="row">
+        <div class="col-lg-7">
+          <p class="t-lead reveal">
+            <em>Les archives seront publiées ici.</em> Photographies, documents
+            officiels et coupures&nbsp;: chaque pièce paraîtra avec sa légende et
+            son crédit.
+          </p>
+        </div>
+      </div>
+
+    <?php else: ?>
+
+      <ul class="gal">
+        <?php foreach ($planche as $i => $img): ?>
+          <li class="gal__i gal__i--<?= $trame[$i % count($trame)] ?> reveal">
+            <a class="gal__lien" href="/archives">
+              <?php $srcset = App\Model\Media::srcset($img); ?>
+              <img loading="lazy" decoding="async"
+                   src="<?= App\Core\View::e(App\Model\Media::urlVignette((string) $img['fichier'])) ?>"
+                   <?= $srcset === '' ? '' : 'srcset="' . App\Core\View::e($srcset) . '" sizes="(max-width: 767px) 50vw, 45vw"' ?>
+                   alt="<?= App\Core\View::e(App\Model\Media::alternative($img)) ?>">
+            </a>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+
+    <?php endif; ?>
   </div>
 </section>
 

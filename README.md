@@ -3,10 +3,11 @@
 Site éditorial de l'ouvrage. **Le back-office est complet** : ossature de
 `/cmsadmin/`, authentification, actualités, événements, repères, modération des
 témoignages, fiche technique, tableau de bord, médiathèque, commandes et
-comptes. Côté public, six pages : accueil, Le livre, Biographie, **Témoignages**
-— la première adossée aux données, et le premier formulaire ouvert — et
-**Actualités : la liste, la fiche par slug et la revue de presse**. **Restent
-les autres pages publiques et le tunnel de commande.**
+comptes, **et la boîte de réception du formulaire de contact**. Côté public,
+onze pages : accueil, Le livre, Biographie, **Témoignages**, **Actualités**
+(liste, fiche par slug, revue de presse), **Archives** avec sa visionneuse,
+**Événements** (agenda et fiche), **Contact** et **Mentions légales**.
+**Restent Héritage et le tunnel de commande.**
 
 ---
 
@@ -149,14 +150,16 @@ livreyace/                  ← racine web
 │   │                       Admin, Session, Csrf, Auth,
 │   │                       Validator, Slug, Site, DateFr,
 │   │                       Televersement, Paiement, Debit    [interdit]
-│   ├── Controller/         Actualite, Temoignage (public)    [interdit]
+│   ├── Controller/         Actualite, Archive, Contact,
+│   │                       Evenement, Temoignage (public)    [interdit]
 │   ├── Controller/Admin/   Auth, Crud (Actualite, Evenement,
-│   │                       Repere), Temoignage, Media,
-│   │                       Commande, Compte, Parametre       [interdit]
+│   │                       Repere), Temoignage, Message,
+│   │                       Media, Commande, Compte,
+│   │                       Parametre                         [interdit]
 │   └── Model/              Modele, Actualite, Evenement,
-│                           Repere, Temoignage, Media,
-│                           Commande, Parametre, Utilisateur,
-│                           TentativeConnexion                [interdit]
+│                           Repere, Temoignage, Message,
+│                           Media, Commande, Parametre,
+│                           Utilisateur, TentativeConnexion    [interdit]
 ├── templates/
 │   ├── layout.php          mise en page du site public       [interdit]
 │   ├── partials/           navigation, pied, symbole du logo [interdit]
@@ -475,6 +478,167 @@ dernières publiées et renvoie vers la page. Quand il n'y en a aucune, ni l'un 
 l'autre ne fabrique de fausse actualité — comme pour les témoignages, ils le
 disent.
 
+### La galerie d'archives et sa visionneuse
+
+La page publique de la médiathèque (CDC §4.6). Elle ne décide de rien : l'ordre
+est celui que l'éditeur a posé dans la planche du back-office, les catégories
+sont les siennes, et une image passe en public par le seul fait d'être publiée.
+**Il n'y a pas de second réglage « galerie »** — un deuxième endroit où décider
+l'ordre finirait par contredire le premier.
+
+**La visionneuse est un `<dialog>` natif.** Le navigateur y porte le piège au
+clavier, la fermeture par Échap, le fond inerte et le retour du focus sur la
+tuile d'origine : quatre choses régulièrement ratées quand on les réécrit. Le
+reste — l'image, la légende, le passage d'une pièce à la suivante — tient en
+une soixantaine de lignes dans `main.js`. Bootstrap est chargé sur toutes les
+pages et sa boîte modale aurait fait l'affaire, mais la règle posée avec le
+carrousel tient : on garde son moteur là où il apporte quelque chose, et ici la
+plateforme le fait déjà.
+
+**Chaque tuile est un lien vers l'image, pas un bouton.** Sans JavaScript, la
+galerie reste entièrement parcourable — on clique, l'image s'ouvre. La
+visionneuse intercepte ce lien quand elle peut ; les clics avec modificateur
+(nouvel onglet) lui échappent volontairement.
+
+**Deux tailles dérivées au lieu d'une**, et c'est la dette que le lot D2 avait
+laissée ouverte. La vignette (600 px) sert les planches et les tuiles ; une
+taille moyenne (1600 px) sert la visionneuse et le second cran du `srcset` sur
+écran 2×. Sans elle, ouvrir une archive téléchargeait le fichier d'origine —
+jusqu'à 8 Mio de scan pour regarder une photo sur un téléphone. Les chemins
+étant **déduits du nom** et jamais stockés, l'ajout n'a demandé **aucune
+migration** ; un dérivé absent retombe sur l'original.
+
+**Le fichier d'origine n'est servi nulle part en public**, sauf dans un cas
+précis : quand il n'a pas de taille moyenne. Ce n'est pas une approximation
+mais une garantie — la moyenne n'est justement pas fabriquée quand l'image tient
+déjà dans 1600 px. Son absence dit donc que l'original est léger. L'inverse,
+laisser l'original en dernier cran d'un `srcset`, enverrait un scan de plusieurs
+mégaoctets à un grand écran pour afficher une tuile, et une planche en compte
+des dizaines.
+
+Les largeurs du `srcset` sont **calculées et non devinées** : une tuile carrée
+et une tuile panoramique n'ont pas la même largeur pour un même côté maximal,
+et un `w` faux ferait choisir au navigateur le mauvais fichier.
+
+**La légende et le crédit sortent avec l'image**, sur la tuile au survol et dans
+la visionneuse en clair. Une archive publiée est une archive créditée — c'est
+la règle du §6 du cahier des charges, et l'écran de publication du back-office
+la fait déjà respecter à la saisie.
+
+### L'agenda des événements
+
+Une page, deux temps (CDC §4.10) : ce qui vient, puis ce qui a eu lieu. L'ordre
+s'inverse entre les deux — le prochain rendez-vous d'abord, le dernier souvenir
+d'abord — parce que ce sont deux questions différentes posées à la même liste.
+Et l'ordre s'inverse aussi par rapport au back-office : un agenda répond à
+« qu'est-ce qui arrive ensuite ? », une liste d'administration à « qu'ai-je
+saisi en dernier ? ».
+
+**Un événement annulé n'est pas un brouillon.** Il a été annoncé, quelqu'un l'a
+peut-être noté dans son agenda ; le retirer en silence laisserait cette personne
+se déplacer. Il reste donc affiché tant qu'il n'est pas passé — filet rouge,
+titre barré, mention en clair — et sa fiche l'annonce avant l'adresse, pour
+celui qui l'ouvre justement pour vérifier l'adresse. Une fois la date franchie,
+il disparaît : un rendez-vous qui n'a pas eu lieu n'a rien à archiver, et le
+laisser dans les passés le ferait lire comme un événement qui s'est tenu.
+
+**Le lien d'inscription ne survit ni à l'annulation ni à la date.** Proposer de
+s'inscrire à un rendez-vous qui n'aura pas lieu, ou qui a eu lieu, est pire que
+ne rien proposer.
+
+**Le partage entre à venir et passés se fait en SQL, avec `NOW()`.** PHP et
+MySQL peuvent ne pas porter le même fuseau ; prendre l'heure des deux côtés
+ferait dépendre le classement de leur écart. Une seule horloge tranche. Et la
+bascule accorde le jour entier : `fin_le` est facultative, une dédicace d'un
+après-midi saisie sans heure de fin ne doit pas passer aux archives à l'instant
+où elle commence.
+
+**Les dates s'écrivent comme on les dit.** `App\Core\DateFr` a gagné les
+heures et les intervalles : « 14 mars 2026, de 18 h 30 à 21 h », « du 14 au
+16 mars 2026 », « du 28 décembre 2025 au 3 janvier 2026 ». La langue a une forme
+pour chaque cas et les employer est ce qui sépare un agenda d'un tableau de base
+de données. Deux détails qui ne se voient que s'ils manquent : la lettre h
+entourée d'espaces insécables — « 18h30 » est de l'anglais mal traduit — et
+**minuit qui vaut « heure non précisée » et ne s'affiche pas**. Le champ de
+saisie impose une heure ; celui qui ne la connaît pas encore laisse 00:00, et
+« à 0 h » serait une information fausse plutôt qu'absente.
+
+Le balisage `Event` porte `eventStatus`, qui n'est pas décoratif : c'est par lui
+qu'un moteur ou un agenda tiers apprend qu'un rendez-vous annoncé n'aura pas
+lieu.
+
+### Le contact, et où vont les messages
+
+Second formulaire ouvert du site (CDC §4.11), et il ne réinvente rien : session
+ouverte route par route, jeton CSRF, plafond de débit, champ leurre, délai
+minimal, saisie renvoyée en cas d'échec — tout vient des témoignages. Le barème
+`contact` était même déjà déclaré dans `Debit::BAREMES`, avant qu'aucun
+formulaire ne l'emploie.
+
+**Les messages sont écrits en base, jamais envoyés par courriel, et c'est la
+décision principale du lot.** `mail()` sur un hébergement mutualisé échoue en
+silence ou finit en indésirable, sans que personne l'apprenne — et un message
+perdu est pire que pas de formulaire du tout. La base est donc la source de
+vérité. Une notification pourra s'ajouter par-dessus le jour où un SMTP sera
+configuré ; elle ne remplacera pas le stockage.
+
+**Conséquence assumée : le back-office gagne un écran, alors qu'il avait été
+déclaré entier.** Une boîte que personne ne peut ouvrir ne sert à rien. Elle
+reprend la présentation de la file de modération — des cartes, parce qu'un
+message se lit avant qu'on en fasse quelque chose — avec deux différences de
+fond : l'adresse du correspondant y est la donnée utile, tout l'objet de
+l'écran étant de pouvoir répondre ; et il n'y a rien à corriger, ces messages ne
+paraîtront jamais en public. Deux verbes seulement, « traité » et « supprimer ».
+Qui a traité et quand est conservé : sur une boîte partagée, sans cette trace,
+deux personnes répondent au même message.
+
+**Répondre se fait dans le logiciel de courrier**, par un lien `mailto:` à
+l'objet prérempli. Écrire un envoi depuis le back-office demanderait la
+configuration SMTP qui manque précisément.
+
+**Le motif est une liste fermée**, pas un champ libre : il sert au tri de la
+boîte, et « Objet : bonjour » ne trie rien.
+
+**Il n'y a pas de corbeille**, et les mentions légales le disent au visiteur :
+un message est conservé le temps d'y répondre, puis supprimé.
+
+### Les mentions légales, écrites d'après le code
+
+Un seul document (CDC §4.12), pas deux : la politique de confidentialité est
+une section des mentions légales. Deux pages qui se renvoient l'une à l'autre
+finissent par se contredire.
+
+**Les sections « données », « cookies » et « services tiers » décrivent le
+comportement réel du site, relevé dans le code — elles ne sont pas recopiées
+d'un modèle.** C'est ce qui les rend vérifiables :
+
+- **un seul cookie**, `pgy`, posé sur les deux pages qui portent un formulaire
+  et nulle part ailleurs. Vérifié à l'en-tête HTTP : `/contact` en dépose un,
+  `/mentions-legales` aucun. La page peut donc affirmer qu'il n'y a rien à
+  accepter ni à refuser, et le site se passer de bandeau ;
+- **aucune mesure d'audience**, aucun cookie publicitaire ;
+- **deux domaines tiers**, dits en clair : Google Fonts pour les polices et
+  jsDelivr pour Bootstrap. Afficher une page transmet l'adresse IP du visiteur à
+  ces deux services. C'est vrai, donc c'est écrit ; héberger les polices
+  soi-même supprimerait le premier transfert, et c'est noté en dette ;
+- **ce que chaque formulaire collecte**, champ par champ, et pourquoi :
+  l'adresse électronique d'un témoignage sert à recontacter le signataire avant
+  publication et ne paraît jamais ; l'IP sert au plafond anti-abus et son
+  journal est purgé au bout d'un jour.
+
+Ce qui relève de l'état civil de la structure éditrice — raison sociale,
+immatriculation, directeur de la publication, hébergeur — **ne s'invente pas** et
+reste balisé comme à fournir, en italique comme le reste du texte provisoire du
+site. Voir le §5.
+
+**Les coordonnées vivent dans `config/config.php`**, pas dans un gabarit : elles
+paraissent à trois endroits — page Contact, mentions légales, pied de page — et
+une adresse recopiée trois fois finit par diverger. Pas en base non plus : ce
+sont des constantes d'organisation, pas du contenu éditorial ; les mettre dans
+`parametre` demanderait un écran d'administration pour une valeur qu'on touche
+tous les cinq ans. Une valeur vide ne s'affiche pas, la page se referme
+proprement sur ce qui manque.
+
 ### Les écrans de contenu
 
 Trois entités — actualités, événements, repères — partagent une même mécanique :
@@ -704,18 +868,19 @@ Ils sont désormais dans `templates/partials/`, inclus une seule fois par
 
 ### Base de données
 
-Huit tables, `utf8mb4`, InnoDB — voir `sql/001_schema.sql` :
+Neuf tables, `utf8mb4`, InnoDB — voir `sql/001_schema.sql` :
 `utilisateur`, `actualite`, `evenement`, `temoignage`, `media`, `repere`,
-`commande`, `parametre`. Plus deux compteurs glissants :
+`commande`, `message`, `parametre`. Plus deux compteurs glissants :
 `tentative_connexion` (`sql/002_auth.sql`) pour les essais de connexion, et
 `soumission_publique` (`sql/005_soumission.sql`) pour les formulaires publics.
 
 Les migrations s'appliquent dans l'ordre de leur numéro ; il n'y a pas encore de
-table de suivi, le projet en est à cinq fichiers. `sql/003_media.sql` ajoute à
+table de suivi, le projet en est à six fichiers. `sql/003_media.sql` ajoute à
 `media` le poids du fichier et l'unicité de son chemin ; `sql/004_commande.sql`
 ajoute à `commande` la provenance du paiement, le code de transaction, la note de
 suivi et la trace de remise ; `sql/005_soumission.sql` crée le journal des
-soumissions publiques. Tout est reporté dans `001_schema.sql` pour qu'une
+soumissions publiques ; `sql/006_message.sql` crée la table des messages du
+formulaire de contact. Tout est reporté dans `001_schema.sql` pour qu'une
 installation neuve n'ait pas à rejouer l'historique.
 
 Deux partis pris qui tiennent au sujet : les témoignages arrivent en
@@ -832,13 +997,19 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
   |---|---|---|
   | `hero-1/2/3.svg` | **2000 × 2600 px** | portrait, sujet décentré à droite |
   | `couverture.svg` | **1200 × 1550 px** | ratio 240 × 310 mm |
-  | `portrait.svg` | **1400 × 1750 px** | buste |
+  | ~~`portrait.svg`~~ → `portrait.webp` | **1400 × 1750 px** | buste — **livré** |
   | `auteur.svg` | **1000 × 1250 px** | portrait 4:5 |
   | `extrait-1/2.svg` | **1500 × 1000 px** | double page |
-  | `gal-1.svg` | **1800 × 1350 px** | paysage 4:3 |
-  | `gal-2.svg` | **1300 × 1730 px** | portrait 3:4 |
-  | `gal-3.svg` | **1100 × 1100 px** | carré |
-  | `gal-4.svg` | **2000 × 1125 px** | panoramique 16:9 |
+  | ~~`gal-1` à `gal-4.svg`~~ | — | **retirés** : les archives passent par la médiathèque |
+
+  **Les quatre cadres d'attente de la galerie ont disparu du thème.** Depuis F3,
+  la planche d'archives, l'aperçu de l'accueil et les portraits de la biographie
+  lisent la médiathèque : c'est le back-office qui fournit les images, avec leur
+  légende et leur crédit, et non plus un fichier posé dans `assets/`. Les
+  dimensions n'y sont donc plus imposées — la trame recadre en `object-fit:
+  cover` selon quatre proportions qui se répètent (4:3, 3:4, 1:1, 16:9). Ce qu'il
+  faut savoir en déposant : **le sujet doit tenir au centre**, un cadrage serré
+  sur un bord sera coupé sur au moins une des quatre.
 
   Les visuels du hero sont recadrés en `object-fit: cover` sur un panneau vertical :
   **prévoir le sujet dans la moitié droite**, la gauche étant recouverte par le voile
@@ -848,6 +1019,26 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
   Traitement homogène des archives : le CSS applique déjà
   `grayscale(1) contrast(1.04) sepia(0.14)`, ce qui unifie des sources d'origines
   diverses sans retouche préalable (CDC §6).
+
+  **Le premier visuel réel est arrivé** : le portrait de jeunesse, en tête de la
+  biographie, aux dimensions exactes qu'annonçait le cadre d'attente. Il est
+  servi en WebP — le format que la médiathèque accepte déjà — sans repli JPEG :
+  tous les navigateurs le comprennent depuis 2020, et un second fichier pour une
+  part de marché résiduelle se paierait à chaque déploiement. Il est **réencodé
+  depuis le JPEG d'origine en qualité 80, ce qui le fait passer de 467 à 50
+  kilo-octets** — neuf fois moins pour une différence invisible à l'écran, même
+  en zoom sur les lunettes, et à plus forte raison sous le filtre du CSS. Sur des
+  connexions mobiles ouest-africaines, l'écart n'est pas cosmétique (CDC §5).
+
+  Ce portrait vit dans le thème et non dans la médiathèque, parce que son
+  emplacement est fixe : c'est une pièce du gabarit, pas une archive que
+  l'éditeur choisit. Les archives qu'on remplace ou qu'on complète passent, elles,
+  par le back-office.
+
+  **Son crédit reste à obtenir** — fonds, photographe ou détenteur des droits —
+  et un commentaire le rappelle dans le gabarit. La règle du §6 du cahier des
+  charges vaut ici comme pour les images de la médiathèque, à ceci près
+  qu'aucun écran ne la fait respecter sur un fichier du thème.
 - **Archives photographiques** — elles ne passent plus par le dépôt : elles se
   déposent dans le back-office, rubrique Médiathèque (JPEG, PNG ou WebP, 8 Mo par
   fichier). **Chaque image demande son crédit** — fonds, photographe ou détenteur
@@ -860,10 +1051,34 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
   typographique provisoire (1200 × 630). La version finale portera la couverture
   de l'ouvrage ou le portrait ; le sujet doit tenir dans les 80 % centraux, les
   vignettes carrées de certaines plateformes rognant les bords.
-- **Adresse publique** — poser `'url' => 'https://…'` dans la section `app` de
-  `config/config.local.php`. Sans elle, `canonical` et `og:image` retombent sur
-  l'hôte de la requête : acceptable en développement, pas sur un serveur public
-  (voir « URL absolues » au §2).
+- **Adresse publique** — **le domaine est arrêté : `https://www.philippeyace.ci`**.
+  Il reste à le poser en `'url'` dans la section `app` de
+  `config/config.local.php`, sur le serveur. Il n'est volontairement pas écrit
+  dans `config/config.php` : le poste de développement rendrait alors des
+  `canonical` pointant vers la production. Sans cette valeur, `canonical` et
+  `og:image` retombent sur l'hôte de la requête, acceptable en développement,
+  pas sur un serveur public (voir « URL absolues » au §2).
+- **Mentions légales — l'état civil de l'éditeur.** La page est écrite et
+  publiée&nbsp;; quatre informations qui ne s'inventent pas y sont balisées en
+  italique et doivent être fournies avant mise en ligne, la loi imposant de les
+  publier :
+
+  | Manquant | Qui le fournit |
+  |---|---|
+  | Raison sociale, forme juridique, immatriculation (RCCM) | la structure éditrice |
+  | Nom et qualité du **directeur de la publication** | la structure éditrice |
+  | Nom, adresse postale et téléphone de **l'hébergeur** | connu au choix du prestataire |
+  | Capital social, si la forme juridique l'impose | la structure éditrice |
+
+  Les coordonnées, elles, sont posées et vérifiées : adresse à Cocody
+  Ambassade, `contact@philippeyace.ci`, +225 05 64 00 00 80. Elles vivent dans
+  `config/config.php`, en un seul endroit pour les trois pages qui les
+  affichent.
+
+  **À revoir le jour où la boutique ouvrira** : la section « données
+  personnelles » décrit les deux formulaires existants. Un tunnel de commande
+  collectera une adresse de livraison et un identifiant de transaction, qu'il
+  faudra y déclarer.
 
 ---
 
@@ -874,6 +1089,12 @@ et du pied de page, depuis le passage aux gabarits, et la limitation de débit d
 formulaires publics, posée avant qu'aucun formulaire ne soit exposé (voir §2 pour
 les deux). Ce qu'il reste :
 
+- **Deux ressources chargées depuis des domaines tiers.** Les polices viennent
+  de Google Fonts, Bootstrap de jsDelivr : afficher une page transmet l'adresse
+  IP du visiteur à ces deux services. C'est dit dans les mentions légales, mais
+  le dire ne le supprime pas. Héberger les deux fichiers de polices dans
+  `assets/` réglerait le premier cas — quelques dizaines de kilo-octets, une
+  règle `@font-face`, et une dépendance de moins au moment du rendu.
 - **Aucun test.** Le socle a été vérifié à la main (codes HTTP, connexion PDO,
   absence de warning, mesure du rendu au navigateur). Ces vérifications ne sont
   pas rejouables automatiquement.
@@ -886,9 +1107,16 @@ les deux). Ce qu'il reste :
 - **La médiathèque ne recadre ni ne remplace.** Une image mal cadrée se retaille
   hors du site, et changer le fichier d'une fiche demande d'en déposer un autre
   puis de supprimer le premier — un remplacement en place changerait sans le dire
-  ce que montrent les pages qui l'affichent. Une seule vignette est produite
-  (600 px) : la galerie publique voudra sans doute un jeu de tailles et un
-  `srcset`, à décider quand elle sera écrite.
+  ce que montrent les pages qui l'affichent. ~~Une seule vignette est produite
+  (600 px)~~ — **soldé avec la galerie** : deux tailles sont désormais fabriquées
+  au dépôt, 600 et 1600 px, et les tuiles portent un `srcset` (voir §2).
+
+  Reste, pour les fichiers déjà déposés : ils n'ont pas de taille moyenne, et
+  personne ne la leur fabriquera. Le repli les couvre — ils sont servis en
+  original —, ce qui est sans conséquence tant que la médiathèque est vide,
+  comme c'est le cas aujourd'hui. Si des archives sont déposées avant une
+  évolution des tailles, il faudra un script de rattrapage : une boucle sur
+  `media`, l'appel du fabricant, rien de plus.
 - **Le CSS du thème d'administration porte des règles mortes.** Des composants
   que le back-office n'emploie pas (graphiques de démonstration, menu horizontal,
   panneau de réglages) gardent leurs styles dans `style.css`. Sans effet visible,
@@ -905,11 +1133,13 @@ les deux). Ce qu'il reste :
   plafond, mais un robot patient qui les franchit et reste sous cinq envois par
   heure passe. C'est assumé : la file de modération est là pour ça, et rien ne
   paraît sans décision humaine.
-- **Aucune pagination sur les listes publiques.** La liste des actualités et la
-  revue de presse rendent tout ce qui est publié. C'est le bon choix pour des
-  dizaines d'entrées — et la question se reposera au-delà de la centaine, ou le
-  jour où la galerie d'archives arrivera, elle qui pèsera des images et non des
-  lignes de texte.
+- **Aucune pagination sur les listes publiques.** Actualités, revue de presse,
+  galerie et agenda rendent tout ce qui est publié. C'est le bon choix pour des
+  dizaines d'entrées, et la galerie s'en tire mieux qu'on ne pourrait le croire :
+  ses tuiles sont en `loading="lazy"`, un navigateur ne télécharge que ce qui
+  approche de l'écran. La question se reposera au-delà de la centaine de pièces,
+  où c'est le poids du HTML et la longueur de la planche qui gêneront, pas les
+  images.
 - **Pas d'export des commandes.** Ni CSV ni impression : la comptabilité devra
   relire l'écran ou la base. À voir quand il y aura des commandes.
 - **`reference/` pèse ~70 Mo dans l'arborescence servie.** Verrouillé en 403,
@@ -924,43 +1154,70 @@ les deux). Ce qu'il reste :
 
 **Le socle** — direction artistique complète et documentée, logotype officiel
 intégré et jeu d'icônes dérivé de sa lettre ; contrôleur frontal, routeur, PDO,
-mise en page unique ; base `livreyace_sbd`, dix tables ; étanchéité des dossiers
-applicatifs vérifiée sur Apache.
+mise en page unique ; base `livreyace_sbd`, onze tables ; étanchéité des
+dossiers applicatifs vérifiée sur Apache. Deux briques transverses s'y sont
+ajoutées avec les lots publics : `App\Core\DateFr`, qui écrit les dates en
+français sans dépendre de la machine, et `View::paragraphes`, qui rend échappé
+tout corps de texte saisi au back-office.
 
 **Le back-office** — **entier**, ses sept lots livrés : de l'ossature aux
 comptes et commandes, en passant par les contenus, la modération, la médiathèque
 et le pilotage. Un éditeur peut aujourd'hui tout saisir, tout modérer et tout
-publier sans intervention technique.
+publier sans intervention technique. **Un huitième écran s'y est ajouté après
+coup**, avec le lot public F4 : la boîte de réception du formulaire de contact.
+Ce n'était pas prévu, et la raison est écrite au §2 — les messages sont stockés
+plutôt qu'envoyés par courriel, et une boîte que personne ne peut ouvrir ne sert
+à rien.
 
 **La couche formulaire** — **complète** : jeton CSRF et validation depuis le
 lot B, limitation de débit des formulaires publics, session côté visiteur
 ouverte route par route, et les pièges à robots posés avec le premier
 formulaire.
 
-**Le site public** — cinq entrées du cahier des charges sur onze : accueil, Le
-livre, Biographie, Témoignages et Actualités/Presse. Six pages en tout, la
-dernière entrée en portant trois — la liste, la fiche par slug et la revue de
-presse. Plus une 404 dessinée dans la charte, servie par le routeur comme par
+**Le site public** — neuf entrées du cahier des charges sur onze : accueil, Le
+livre, Biographie, Témoignages, Actualités/Presse, Galerie/Archives,
+Événements, Contact et Mentions légales. Onze pages en tout, les entrées
+portant parfois plusieurs adresses — liste, fiche par slug, revue de presse,
+agenda. Plus une 404 dessinée dans la charte, servie par le routeur comme par
 une fiche introuvable.
 
-**Non fait** — les six entrées publiques restantes, le tunnel de commande, et la
-phase 3 du CDC. Tout ce qui reste est du côté visiteur : il n'y a plus une seule
-ligne de back-office à écrire.
+**Non fait** — Héritage, le tunnel de commande et la phase 3 du CDC. Héritage
+n'attend rien de technique, tout de la matière éditoriale ; **le tunnel de
+commande est le seul chantier de code qui reste.**
+
+**Ce qui manque n'est donc plus du travail de développement, à une exception
+près.** Le site attend des contenus — textes validés, visuels d'archives, fiche
+technique de l'ouvrage — et quatre informations légales que seule la structure
+éditrice peut fournir. Voir §5, et « Ce qui bloque » plus bas.
 
 ### Ce qui est en ligne, et ce qu'il faut y porter
 
-Le dépôt et le serveur ne sont pas au même point. **Le site en ligne est à
-l'état du 1er septembre** — dernier commit déployé : « Partage social :
-canonical, og:image ». Tout ce qui suit dans cette section est écrit, testé et
-commité, mais pas encore en production.
+Le dépôt et le serveur ne sont pas au même point, et **l'écart s'est creusé** :
+le site en ligne est toujours à l'état du 1er septembre — dernier commit
+déployé, « Partage social : canonical, og:image ». Depuis, quatre lots publics
+ont été écrits et testés en local sans être déployés :
 
-**Trois migrations à jouer, dans cet ordre**, et une seule fois :
+| Lot | Ce qui manque en ligne |
+|---|---|
+| **F1** | Témoignages — page publique, formulaire, aperçu sur l'accueil |
+| **F2** | Actualités — liste, fiche par slug, revue de presse |
+| **F3** | Archives et sa visionneuse, agenda des événements, seconde taille d'image |
+| **F4** | Contact, mentions légales, boîte de réception au back-office |
+
+S'y ajoute le **portrait de la biographie**, premier visuel réel du site.
+
+En clair : **le serveur montre aujourd'hui quatre pages, le dépôt en porte
+onze.** Tout ce qui suit dans cette section est écrit, testé et commité, mais
+pas encore en production.
+
+**Quatre migrations à jouer, dans cet ordre**, et une seule fois :
 
 | Fichier | Ce qu'il apporte |
 |---|---|
 | `sql/003_media.sql` | le poids du fichier et l'unicité du chemin sur `media` (lot D2) |
 | `sql/004_commande.sql` | provenance du paiement, code de transaction, note et trace de remise (lot E2) |
 | `sql/005_soumission.sql` | le journal des soumissions publiques (limitation de débit) |
+| `sql/006_message.sql` | la table des messages du formulaire de contact (lot F4) |
 
 **`001_schema.sql` ne se rejoue jamais sur une base installée.** Il a été mis à
 jour pour qu'une installation neuve n'ait pas à rejouer l'historique, mais ses
@@ -968,7 +1225,9 @@ jour pour qu'une installation neuve n'ait pas à rejouer l'historique, mais ses
 nouvelles colonnes n'arriveraient pas, et la base paraîtrait à jour sans l'être.
 
 `003` et `004` sont des `ALTER TABLE` : les rejouer lève `Duplicate column
-name`. Cette requête dit où en est une base — trois zéros avant, trois `1`
+name`. `005` et `006` créent des tables en `IF NOT EXISTS` : les rejouer ne
+casse rien, mais ne rattrape rien non plus si la table existe sous une autre
+forme. Cette requête dit où en est une base — quatre zéros avant, quatre `1`
 après :
 
 ```sql
@@ -980,10 +1239,13 @@ UNION ALL SELECT 'passerelle sur commande', COUNT(*)
  WHERE table_schema = DATABASE() AND table_name = 'commande' AND column_name = 'passerelle'
 UNION ALL SELECT 'table soumission_publique', COUNT(*)
   FROM information_schema.tables
- WHERE table_schema = DATABASE() AND table_name = 'soumission_publique';
+ WHERE table_schema = DATABASE() AND table_name = 'soumission_publique'
+UNION ALL SELECT 'table message', COUNT(*)
+  FROM information_schema.tables
+ WHERE table_schema = DATABASE() AND table_name = 'message';
 ```
 
-Depuis la bascule de collation (voir §2), les trois fichiers se chargent aussi
+Depuis la bascule de collation (voir §2), les quatre fichiers se chargent aussi
 bien sous MySQL que sous MariaDB — il n'y a plus de ligne à corriger avant
 d'envoyer.
 
@@ -995,18 +1257,28 @@ d'envoyer.
   par un point.
 - **`config/config.local.php` est ignoré par git** : il se crée à la main sur le
   serveur, avec les identifiants de production, `'debug' => false` et surtout
-  `'url' => 'https://…'`. Sans cette dernière, `canonical` et `og:image`
-  retombent sur l'en-tête `Host` de la requête, que le client choisit.
+  `'url' => 'https://www.philippeyace.ci'` — le domaine est arrêté depuis le lot
+  F4. Sans cette dernière valeur, `canonical` et `og:image` retombent sur
+  l'en-tête `Host` de la requête, que le client choisit.
+- **Les coordonnées publiques sont dans `config/config.php`**, donc dans le
+  dépôt : adresse, courriel, téléphone, domaine. Elles alimentent la page
+  Contact, les mentions légales et le pied de page. Les corriger se fait à un
+  seul endroit ; les surcharger sur le serveur reste possible par
+  `config.local.php`, qui est fusionné par-dessus.
 - **`reference/` n'a rien à faire en production** : 70 Mo verrouillés en 403,
   à exclure explicitement de la règle de déploiement.
 
 ### Le back-office, lot par lot
 
 Le back-office est livré par lots, validables l'un après l'autre. **Les sept
-sont posés.** Pendant la construction, les entrées non encore écrites restaient
-visibles dans la barre latérale, verrouillées : la forme finale de l'outil se
-voyait dès le premier lot. Il n'en reste aucune — le mécanisme, lui, reste en
-place pour la suite.
+sont posés**, et un huitième écran s'est ajouté hors plan avec le lot public F4
+— la boîte de réception du formulaire de contact, conséquence directe du choix
+de stocker les messages plutôt que de les envoyer par courriel (voir §2).
+
+Pendant la construction, les entrées non encore écrites restaient visibles dans
+la barre latérale, verrouillées : la forme finale de l'outil se voyait dès le
+premier lot. Il n'en reste aucune — le mécanisme, lui, reste en place pour la
+suite, et c'est par lui que « Messages » a pris place sous « Témoignages ».
 
 Les lots D et E ont été coupés en deux en cours de route. Ce n'est pas un
 changement de plan : la médiathèque pèse à elle seule autant que tout le lot C,
@@ -1022,6 +1294,7 @@ valider d'un bloc.
 | **D2** | Médiathèque — téléversement avec contrôle de type réel, vignettes | livré |
 | **E1** | Pilotage — compteurs réels du tableau de bord, fiche technique de l'ouvrage | livré |
 | **E2** | Comptes et commandes | livré |
+| **—** | Boîte de réception des messages — venue avec le lot public F4 | livré |
 
 Ce que le **lot A** pose : `src/bootstrap.php` (amorçage partagé par les deux
 contrôleurs frontaux), `src/Core/Admin.php` (préfixe d'URL déduit de
@@ -1059,68 +1332,93 @@ en lecture comme en écriture — vérifié, un éditeur qui poste sur
 ### Le site public, lot par lot
 
 Même méthode que pour le back-office : des tranches validables l'une après
-l'autre, dans l'ordre où les dépendances tombent. Le découpage ci-dessous est une
-proposition, pas un engagement — seul F1 est livré.
+l'autre, dans l'ordre où les dépendances tombent. Le découpage était une
+proposition au moment où il a été écrit ; **les quatre lots sont livrés**.
 
 | Lot | Objet | État |
 |---|---|---|
 | **F1** | Témoignages — page publique, formulaire de dépôt, aperçu sur l'accueil | livré |
 | **F2** | Actualités — liste, détail par slug, revue de presse | livré |
-| **F3** | Galerie/Archives avec visionneuse, et Événements | à venir |
-| **F4** | Contact et mentions légales | à venir |
+| **F3** | Galerie/Archives avec visionneuse, et Événements | livré |
+| **F4** | Contact et mentions légales | livré |
 
-**F1 en premier, et ce n'était pas un hasard** : c'est la seule tranche
+**F1 en premier, et ce n'était pas un hasard** : c'était la seule tranche
 verticale complète qui restait — écriture, validation, modération, affichage —
-et elle porte la plomberie que les suivantes réutiliseront. F2 et F3 ne font que
-lire ce que le back-office remplit déjà ; F4 réutilisera le formulaire de F1,
-son barème de débit étant même déjà déclaré.
+et elle portait la plomberie que les suivantes ont reprise. F2 et F3 n'ont fait
+que lire ce que le back-office remplissait déjà ; F4 a repris le formulaire de
+F1, dont le barème de débit était même déjà déclaré.
 
-**Ce que F2 a laissé derrière lui**, et dont F3 hérite sans avoir à l'écrire :
+**Ce que F2 a laissé derrière lui**, et dont F3 a hérité sans avoir à l'écrire :
 `App\Core\DateFr` pour les dates en français, `View::paragraphes` pour les
 corps de texte saisis en clair, l'image de partage choisie par page, et le
 patron d'une page publique adossée à une entité — liste filtrée par lien, fiche
-par slug, 404 pour un brouillon. Les événements suivent exactement la même
-forme.
+par slug, 404 pour un brouillon. Les événements ont suivi exactement la même
+forme, et la prévision s'est vérifiée : F3 n'a eu à inventer que ce qui lui est
+propre — la trame de la planche, la visionneuse, les heures et les intervalles
+de dates, la seconde taille d'image.
 
-Restent en dehors de ce découpage : **Héritage** (§4.5), qui n'attend rien de
-technique mais tout de la matière éditoriale, et la **Boutique** (§4.9), qui est
-le tunnel de commande — voir ci-dessous.
+**Ce que F3 laisse à son tour :** les tailles dérivées et le `srcset` de
+`App\Model\Media`, les heures et intervalles de `DateFr`, et une visionneuse
+qui ne tient à rien d'autre qu'à une liste de tuiles — elle resservira le jour
+où une fiche portera plusieurs images.
+
+**F4 a tenu sa promesse à une exception près.** Le formulaire de contact est
+bien celui des témoignages, repris tel quel jusqu'au barème de débit déjà
+déclaré. Ce qui n'était pas prévu, c'est la destination des messages : les
+envoyer par courriel aurait été plus court, mais `mail()` échoue en silence sur
+un mutualisé. Ils sont donc stockés, et le back-office a gagné un écran.
+Les quatre lots publics sont livrés.
+
+Restent en dehors de ce découpage, et ce sont les deux seules pages publiques
+qui manquent : **Héritage** (§4.5), qui n'attend rien de technique mais tout de
+la matière éditoriale, et la **Boutique** (§4.9), qui est le tunnel de commande
+— voir ci-dessous.
 
 ### Prochaines étapes, dans l'ordre
 
 Le back-office et la couche formulaire, qui occupaient les deux premières places
 de cette liste, sont faits. Ce qui reste :
 
-1. **Les pages publiques restantes** — lots F3 et F4 ci-dessus, puis Héritage.
-   Rapides : les données se saisissent déjà, le système de composants existe, il
-   n'y a plus qu'à lire ce qui est en base — F2 vient de le montrer, et il n'a
-   demandé aucune migration.
-2. **Le tunnel de commande** — la passerelle est arrêtée (`carte.abidjan.net`,
-   voir §2) et décrite en un seul endroit. Il suppose la page boutique, donc le
-   point 1. Il créera les commandes que l'écran de suivi attend, avec leur code
-   de transaction.
+1. **Héritage** (§4.5), la dernière page publique hors boutique. Rien n'y bloque
+   techniquement : elle attend la matière éditoriale, et elle seule.
+2. **La boutique et son tunnel de commande** — la passerelle est arrêtée
+   (`carte.abidjan.net`, voir §2) et décrite en un seul endroit. C'est désormais
+   le seul chantier de code qui reste : la page publique de vente, puis le
+   tunnel, qui créera les commandes que l'écran de suivi attend depuis le lot E2,
+   avec leur code de transaction. Indépendant du point 1.
 3. **Phase 3 du CDC** — newsletter, recherche interne, multilinguisme.
 
-**Une décision de moins.** L'entrée « Actualités » de la barre de navigation
-pointait sur l'ancre de l'accueil ; elle mène désormais à la page, et la revue
-de presse a pris place dans le pied. Reste la question de fond, non bloquante :
-quelles pages entrent dans une barre qui porte quatre entrées et le bouton de
-commande — Témoignages n'y figure toujours pas. S'y ajoute, inchangée, celle
-d'ouvrir ou non la saisie manuelle d'une commande, pour celles qui se
-prendraient au téléphone ou en dédicace (voir §6).
+**La navigation, maintenant que toutes les pages existent.** Les entrées qui
+pointaient sur des ancres de l'accueil — Actualités, Archives — mènent à leurs
+pages, et le pied porte la carte complète : revue de presse, événements,
+contact, mentions légales. La barre du haut garde ses quatre entrées et le
+bouton de commande ; **Témoignages, Événements et Contact n'y figurent pas**, et
+c'est la question de fond qui reste ouverte — elle se tranchera mieux
+maintenant que le site est complet qu'elle ne se serait tranchée au début.
+S'y ajoute, inchangée, celle d'ouvrir ou non la saisie manuelle d'une commande,
+pour celles qui se prendraient au téléphone ou en dédicace (voir §6).
 
 ### Ce qui bloque, et sur qui
 
-**Les contenus, et eux seuls désormais.** Le logotype, qui ouvrait la liste des
-livrables attendus au §5, est arrivé et intégré ; il ne reste plus rien de
-technique en attente d'un tiers.
+**Les contenus et l'état civil de l'éditeur, et eux seuls désormais.** Le
+logotype, qui ouvrait la liste des livrables attendus au §5, est arrivé et
+intégré ; il ne reste plus rien de technique en attente d'un tiers.
 
 Tout le texte éditorial du site est provisoire et balisé comme tel, et **aucune
 ligne ne peut être publiée sans validation de l'éditeur** — Yacé est une figure
-historique réelle. S'y ajoutent les visuels d'archives, la fiche technique de
-l'ouvrage — six de ses huit valeurs sont vides — et l'adresse publique à poser
-en configuration avant toute mise en ligne. Voir §5 pour la liste complète,
-dimensions comprises.
+historique réelle. S'y ajoutent les visuels d'archives — le portrait de la
+biographie est arrivé, il attend son crédit ; les autres cadres d'attente sont
+toujours en place —, la fiche technique de l'ouvrage — six de ses huit valeurs
+sont vides — et l'adresse publique à poser en configuration sur le serveur : le
+domaine est connu, `https://www.philippeyace.ci`, mais il ne peut pas vivre
+dans le dépôt.
+
+**Depuis le lot F4, une part de ce qui manque est légale et non éditoriale** :
+la page des mentions est écrite, mais l'identité de la structure éditrice, son
+immatriculation, le directeur de la publication et l'hébergeur y restent à
+fournir. La loi impose de les publier, et ce sont les seules informations du
+site qu'aucun travail technique ne peut produire. Voir §5 pour la liste
+complète, dimensions comprises.
 
 ## 8. Couverture du cahier des charges
 
@@ -1143,16 +1441,24 @@ Témoignages (§4.8) — **complet** : page publique, formulaire de dépôt, fil
 modération, et l'aperçu des trois derniers validés sur l'accueil. La chaîne
 entière tourne, du visiteur qui écrit au modérateur qui décide.
 
-Reste à construire, côté public — Héritage (§4.5), Galerie/Archives (§4.6),
-Boutique (§4.9), Événements (§4.10), Contact (§4.11), Mentions légales (§4.12).
-**Le back-office de tout cela existe** ; ce sont les pages qui manquent.
+Galerie/Archives (§4.6) — **complet** : la planche filtrable par catégorie, sa
+visionneuse au clavier, la légende et le crédit sur chaque pièce. L'accueil en
+montre les quatre premières.
 
-Nuance sur deux d'entre elles : **événements et archives ont leur back-office** —
-les données se saisissent, s'illustrent et se publient. Seules manquent les
-pages qui les afficheront, et elles seront rapides : il n'y a plus qu'à lire ce
-qui existe, comme les actualités viennent de le montrer. Galerie/Archives
-comprise : la médiathèque est écrite, ses images portent légende, crédit,
-catégorie et rang, et une image publiée est une image créditée.
+Événements (§4.10) — **complet** : l'agenda en deux temps, la fiche par slug
+avec son balisage `Event`, et les rendez-vous annulés qui restent affichés et le
+disent.
+
+Contact (§4.11) — **complet** : coordonnées, formulaire de contact avec ses
+quatre barrières, et la boîte de réception côté administration.
+
+Mentions légales (§4.12) — **complet quant à la page**, et vérifiable : les
+sections données, cookies et services tiers décrivent le comportement réel du
+site. Manquent quatre informations d'état civil que seule la structure éditrice
+peut fournir (voir §5).
+
+Reste à construire, côté public — Héritage (§4.5) et Boutique (§4.9). La
+première attend du texte, la seconde est le tunnel de commande.
 
 La **boutique (§4.9)** est le cas à part : son écran de suivi est livré et la
 passerelle est arrêtée (`carte.abidjan.net`), mais le tunnel de paiement reste à

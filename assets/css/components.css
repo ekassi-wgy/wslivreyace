@@ -406,10 +406,123 @@
   transition: transform 1.2s var(--ease-out), filter var(--dur-3) var(--ease);
 }
 .gal__i:hover img { transform: scale(1.045); filter: grayscale(1) contrast(1.08) sepia(0.05); }
-.gal__i:nth-child(1) { grid-column: span 7; aspect-ratio: 4 / 3; }
-.gal__i:nth-child(2) { grid-column: span 5; aspect-ratio: 3 / 4; align-self: end; }
-.gal__i:nth-child(3) { grid-column: span 4; aspect-ratio: 1; }
-.gal__i:nth-child(4) { grid-column: span 8; aspect-ratio: 16 / 9; }
+
+/* Les quatre proportions de la trame. Nommees plutot que posees par
+   nth-child : sur la planche complete elles se repetent par cycles de quatre,
+   et une regle de position n'aurait pas su le dire. */
+.gal__i--large { grid-column: span 7; aspect-ratio: 4 / 3; }
+.gal__i--haut  { grid-column: span 5; aspect-ratio: 3 / 4; align-self: end; }
+.gal__i--carre { grid-column: span 4; aspect-ratio: 1; }
+.gal__i--pano  { grid-column: span 8; aspect-ratio: 16 / 9; }
+
+/* La planche publique est une liste : le puce et le retrait natifs sautent,
+   la semantique reste. */
+.gal { list-style: none; margin: 0; padding: 0; }
+.gal__lien { display: block; width: 100%; height: 100%; position: relative; }
+
+/* Legende en surimpression, revelee au survol et au focus clavier. Le degrade
+   part du bas : pose a plat, un voile uniforme eteindrait l'image. */
+.gal__legende {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: var(--sp-6) var(--sp-4) var(--sp-4);
+  background: linear-gradient(to top, rgba(30, 29, 27, 0.82), rgba(30, 29, 27, 0));
+  color: var(--paper);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--dur-2) var(--ease), transform var(--dur-2) var(--ease);
+}
+.gal__lien:hover .gal__legende,
+.gal__lien:focus-visible .gal__legende { opacity: 1; transform: none; }
+
+.gal__quand {
+  display: block;
+  margin-bottom: var(--sp-1);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brass-soft);
+}
+
+@media (max-width: 767.98px) {
+  /* Deux tuiles par ligne au lieu de la trame : a cette largeur, un panorama
+     de 8 colonnes sur 12 ne se distingue plus d'un carre. */
+  .gal__i--large, .gal__i--haut, .gal__i--carre, .gal__i--pano { grid-column: span 6; }
+  .gal__i--pano, .gal__i--large { aspect-ratio: 4 / 3; }
+  /* Sans survol, la legende ne se revele jamais : elle reste posee. */
+  .gal__legende { opacity: 1; transform: none; }
+}
+
+/* --- Visionneuse d'archives ---------------------------------------------
+   Un <dialog> natif : le navigateur porte le piege au clavier, Echap, le fond
+   inerte et le retour du focus. Ne reste ici que l'habillage.
+   ------------------------------------------------------------------------ */
+.vis {
+  width: min(100vw, 1600px);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: clamp(1rem, 3vw, 3rem);
+  border: 0;
+  background: var(--ink-deep);
+  color: var(--paper);
+  overflow: hidden;
+}
+.vis::backdrop { background: rgba(20, 19, 18, 0.94); }
+
+.vis[open] {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: var(--sp-5);
+}
+
+/* La piece occupe la case et se contient dedans. `object-fit` plutot qu'un
+   max-height en pourcentage : la hauteur d'un pourcentage dans une case de
+   grille ne se resout pas toujours, et l'image debordait alors sous la
+   legende. Ici la boite est imposee, l'image s'y inscrit. */
+.vis__cadre { min-height: 0; }
+.vis__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Pas de filtre : la tuile porte le traitement de la charte, la visionneuse
+     montre la piece telle qu'elle est. */
+}
+
+.vis__pied { text-align: center; max-width: 70ch; margin-inline: auto; }
+.vis__legende { margin: 0 0 var(--sp-2); font-size: 0.9375rem; line-height: 1.6; }
+.vis__meta {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-5);
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--brass-soft);
+}
+.vis__compte { font-variant-numeric: tabular-nums; color: rgba(247, 244, 238, 0.55); }
+
+.vis__btn, .vis__fermer {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  color: rgba(247, 244, 238, 0.7);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--dur-1) var(--ease), background var(--dur-1) var(--ease);
+}
+.vis__btn:hover, .vis__fermer:hover { color: var(--paper); background: rgba(247, 244, 238, 0.08); }
+
+.vis__btn--prec { left: var(--sp-3); top: 50%; transform: translateY(-50%); }
+.vis__btn--suiv { right: var(--sp-3); top: 50%; transform: translateY(-50%); }
+.vis__fermer { top: var(--sp-3); right: var(--sp-3); }
+.vis__btn[hidden] { display: none; }
 
 /* --- Citation ---------------------------------------------------------- */
 .quote {
@@ -807,6 +920,15 @@
   color: var(--brass-text);
 }
 
+/* Le lieu d'un evenement occupe la meme place que l'organe de presse d'une
+   actualite, mais garde sa casse : une adresse se recopie. */
+.article__lieu {
+  padding-left: var(--sp-4);
+  border-left: 1px solid var(--rule-strong);
+  font-size: var(--fs-small);
+  color: var(--ink-2);
+}
+
 .article__figure { margin: 0 0 clamp(2.5rem, 5vw, 4rem); }
 
 .article__legende {
@@ -846,6 +968,82 @@
   margin-top: clamp(2.5rem, 5vw, 4rem);
   padding-top: var(--sp-5);
   border-top: 1px solid var(--rule);
+}
+
+/* --- Agenda (CDC §4.10) ---------------------------------------------------
+   Le cartouche de date porte le quantieme en grand : c'est l'idiome de
+   l'agenda imprime, et il permet de balayer la page sans lire les titres.
+   ------------------------------------------------------------------------ */
+.agenda { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+.agenda__i { border-bottom: 1px solid var(--rule); }
+
+.agenda__lien {
+  display: grid;
+  grid-template-columns: minmax(4.5rem, 5.5rem) 1fr auto;
+  gap: clamp(1.25rem, 3vw, 3rem);
+  align-items: center;
+  padding-block: clamp(1.5rem, 2.6vw, 2.25rem);
+  transition: background var(--dur-2) var(--ease);
+}
+.agenda__lien:hover { background: var(--brass-wash); }
+
+.agenda__quand { text-align: center; line-height: 1.1; }
+.agenda__jour {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--dur-2) var(--ease);
+}
+.agenda__lien:hover .agenda__jour { color: var(--brass-text); }
+.agenda__mois {
+  display: block;
+  margin-top: var(--sp-1);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brass-text);
+}
+.agenda__an { display: block; font-size: 0.6875rem; color: var(--ink-3); }
+
+.agenda__corps { display: grid; gap: var(--sp-2); }
+.agenda__t {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 1.6vw, 1.45rem);
+  line-height: 1.28;
+  transition: color var(--dur-2) var(--ease);
+}
+.agenda__lien:hover .agenda__t { color: var(--brass-text); }
+.agenda__lieu {
+  font-size: 0.75rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.agenda__horaire { font-size: 0.9375rem; color: var(--ink-3); }
+
+.agenda__etat {
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+/* L'annulation se lit avant le titre : filet rouge au bord, mention en clair,
+   et le titre barre. Un badge seul se rate. */
+.agenda__i.est-annule { border-left: 2px solid #8C2F26; }
+.agenda__i.est-annule .agenda__lien { padding-left: var(--sp-4); }
+.agenda__i.est-annule .agenda__t { text-decoration: line-through; color: var(--ink-3); }
+.agenda__etat--annule { color: #8C2F26; }
+
+/* Les rendez-vous passes reculent d'un ton : ils sont la pour memoire. */
+.agenda--passe .agenda__jour { color: var(--ink-3); }
+
+@media (max-width: 767.98px) {
+  .agenda__lien { grid-template-columns: 3.5rem 1fr; row-gap: var(--sp-2); }
+  .agenda__etat { grid-column: 2; justify-self: start; }
 }
 
 /* --- Revue de presse ------------------------------------------------------
@@ -950,6 +1148,37 @@ textarea.champ__saisie { resize: vertical; min-height: 9rem; }
 /* Le bandeau vit en haut de <main>, hors de toute section : il lui faut son
    propre espace vertical. */
 main > .shell > .avis:first-child { margin-top: var(--sp-7); }
+
+/* --- Coordonnees (CDC §4.11) ---------------------------------------------
+   Quatre blocs de meme poids : personne ne cherche « l'information la plus
+   importante » sur une page de contact, on y cherche celle dont on a besoin.
+   ------------------------------------------------------------------------ */
+.coord { padding-top: var(--sp-5); border-top: 1px solid var(--rule-strong); }
+
+.coord__titre {
+  margin-bottom: var(--sp-3);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brass-text);
+}
+
+.coord__valeur {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 1.35vw, 1.2rem);
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+/* La colonne « reponse » porte une phrase, pas une donnee : elle se lit dans
+   la police de texte courant, sinon elle se lirait comme une adresse. */
+.coord__valeur--texte {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--ink-3);
+}
 
 /* --- Note laterale -------------------------------------------------------- */
 .note {

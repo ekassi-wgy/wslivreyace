@@ -20,6 +20,7 @@ use App\Model\Actualite;
 use App\Model\Commande;
 use App\Model\Evenement;
 use App\Model\Media;
+use App\Model\Message;
 use App\Model\Parametre;
 use App\Model\Repere;
 use App\Model\Temoignage;
@@ -34,6 +35,7 @@ $compteurs = [
 
 // Ce qui attend quelqu'un.
 $enAttente  = Temoignage::compter('en_attente');
+$aRepondre  = Message::compter('nouveau');
 $sansSource = (int) (Database::one(
     "SELECT COUNT(*) AS n FROM repere WHERE source IS NULL OR source = ''"
 )['n'] ?? 0);
@@ -52,6 +54,14 @@ if ($enAttente > 0) {
         sprintf('%d témoignage%s à modérer', $enAttente, $enAttente > 1 ? 's' : ''),
         'Des propos sur une personne réelle attendent une décision.',
         Admin::url('/temoignages?statut=en_attente'),
+    ];
+}
+if ($aRepondre > 0) {
+    $aFaire[] = [
+        'mdi-email-alert-outline',
+        sprintf('%d message%s à traiter', $aRepondre, $aRepondre > 1 ? 's' : ''),
+        "Quelqu'un attend une réponse : ces messages ne partent par courriel à personne.",
+        Admin::url('/messages?statut=nouveau'),
     ];
 }
 if ($sansSource > 0) {

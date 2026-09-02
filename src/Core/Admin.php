@@ -86,6 +86,12 @@ final class Admin
                 'icone'  => 'mdi-comment-check-outline',
                 'url'    => self::url('/temoignages'),
             ],
+            [
+                'cle'    => 'messages',
+                'titre'  => 'Messages',
+                'icone'  => 'mdi-email-outline',
+                'url'    => self::url('/messages'),
+            ],
             ['rubrique' => 'Administration'],
             [
                 'cle'    => 'commandes',

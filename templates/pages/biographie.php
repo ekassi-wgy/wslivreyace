@@ -26,9 +26,15 @@ JSONLD;
         </p>
       </div>
       <div class="col-lg-4 offset-lg-1">
+        <?php /* Photographie d'archive. Pas de `loading="lazy"` ici : l'image
+                 est au-dessus de la ligne de flottaison et candidate au plus
+                 grand rendu de la page — la différer retarderait précisément
+                 ce qu'on mesure. CRÉDIT À OBTENIR avant mise en ligne (§5) :
+                 fonds, photographe ou détenteur des droits. */ ?>
         <span class="frame reveal">
-          <img loading="lazy" decoding="async" src="assets/img/portrait.svg"
-               width="1400" height="1750" alt="Portrait de Philippe Grégoire Yacé — visuel provisoire">
+          <img decoding="async" fetchpriority="high" src="/assets/img/portrait.webp"
+               width="1400" height="1750"
+               alt="Philippe Grégoire Yacé jeune homme, en veste claire et lunettes rondes — photographie d'archive">
         </span>
       </div>
     </div>
@@ -284,16 +290,46 @@ JSONLD;
         <h2 class="t-d1 reveal">Images d'époque.</h2>
       </div>
       <div class="col-lg-3 d-flex align-items-end justify-content-lg-end">
-        <a class="link reveal" href="/#galerie">Toute la photothèque</a>
+        <a class="link reveal" href="/archives?categorie=portrait">Toute la photothèque</a>
       </div>
     </div>
 
-    <div class="gal">
-      <a class="gal__i reveal" href="#"><img loading="lazy" decoding="async" src="assets/img/gal-1.svg" width="1800" height="1350" alt="Archive — visuel provisoire"></a>
-      <a class="gal__i reveal" href="#"><img loading="lazy" decoding="async" src="assets/img/gal-2.svg" width="1300" height="1730" alt="Archive — visuel provisoire"></a>
-      <a class="gal__i reveal" href="#"><img loading="lazy" decoding="async" src="assets/img/gal-3.svg" width="1100" height="1100" alt="Archive — visuel provisoire"></a>
-      <a class="gal__i reveal" href="#"><img loading="lazy" decoding="async" src="assets/img/gal-4.svg" width="2000" height="1125" alt="Archive — visuel provisoire"></a>
-    </div>
+    <?php
+    /* Les portraits de la médiathèque, catégorie « portrait » : c'est la même
+       matière que la galerie d'archives, vue par une entrée. La planche
+       complète et sa visionneuse vivent sur /archives. */
+    $portraits = App\Model\Media::listerPubliees('portrait', 4);
+    $trame     = ['large', 'haut', 'carre', 'pano'];
+    ?>
+
+    <?php if ($portraits === []): ?>
+
+      <div class="row">
+        <div class="col-lg-7">
+          <p class="t-lead reveal">
+            <em>Les portraits d'époque paraîtront ici</em>, à mesure que les
+            archives sont numérisées et leurs droits vérifiés.
+          </p>
+        </div>
+      </div>
+
+    <?php else: ?>
+
+      <ul class="gal">
+        <?php foreach ($portraits as $i => $img): ?>
+          <li class="gal__i gal__i--<?= $trame[$i % count($trame)] ?> reveal">
+            <a class="gal__lien" href="/archives?categorie=portrait">
+              <?php $srcset = App\Model\Media::srcset($img); ?>
+              <img loading="lazy" decoding="async"
+                   src="<?= App\Core\View::e(App\Model\Media::urlVignette((string) $img['fichier'])) ?>"
+                   <?= $srcset === '' ? '' : 'srcset="' . App\Core\View::e($srcset) . '" sizes="(max-width: 767px) 50vw, 45vw"' ?>
+                   alt="<?= App\Core\View::e(App\Model\Media::alternative($img)) ?>">
+            </a>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+
+    <?php endif; ?>
   </div>
 </section>
 

@@ -3,7 +3,7 @@
 $liens = [
     'livre'    => ['/le-livre',    "Le livre"],
     'bio'      => ['/biographie',  "Biographie"],
-    'archives' => ['/#galerie',    "Archives"],
+    'archives' => ['/archives',    "Archives"],
     'actus'    => ['/actualites',  "Actualités"],
 ];
 $page = $page ?? '';

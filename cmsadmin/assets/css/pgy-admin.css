@@ -144,6 +144,8 @@
 .pgy-statut--publie     { background: #E4EFE6; color: #2F6B3C; border-color: #C3DDC9; }
 .pgy-statut--en_attente { background: #FBF0DA; color: #7A5410; border-color: #EBD9B0; }
 .pgy-statut--refuse     { background: #F7E3E1; color: #8C2F26; border-color: #E9C4C0; }
+.pgy-statut--nouveau    { background: #FBF0DA; color: #7A5410; border-color: #EBD9B0; }
+.pgy-statut--traite     { background: #E4EFE6; color: #2F6B3C; border-color: #C3DDC9; }
 .pgy-statut--annule     { background: #F7E3E1; color: #8C2F26; border-color: #E9C4C0; }
 
 /* Commandes (lot E2). « Initiée » attend comme « en attente », « payée » est un
@@ -588,7 +590,11 @@ textarea.form-control::placeholder {
   color: var(--pgy-ink-deep);
 }
 
-.pgy-temoignage { margin-bottom: 1rem; }
+/* La file de moderation et la boite de reception partagent ce dessin : deux
+   piles de textes recus qu'on lit avant de decider. Les selecteurs sont
+   groupes plutot que dupliques — une correction de l'un vaut pour l'autre. */
+.pgy-temoignage,
+.pgy-courrier { margin-bottom: 1rem; }
 
 /* Un filet de couleur en bord de carte : l'état se voit en parcourant la file,
    sans avoir à lire chaque badge.
@@ -599,8 +605,11 @@ textarea.form-control::placeholder {
 .card.pgy-temoignage--en_attente { border-left: 3px solid #C9A227; }
 .card.pgy-temoignage--publie     { border-left: 3px solid #4F8A5B; }
 .card.pgy-temoignage--refuse     { border-left: 3px solid #A8564C; }
+.card.pgy-courrier--nouveau       { border-left: 3px solid #C9A227; }
+.card.pgy-courrier--traite        { border-left: 3px solid #4F8A5B; }
 
-.pgy-temoignage__tete {
+.pgy-temoignage__tete,
+.pgy-courrier__tete {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -608,19 +617,22 @@ textarea.form-control::placeholder {
   margin-bottom: .85rem;
 }
 
-.pgy-temoignage__nom {
+.pgy-temoignage__nom,
+.pgy-courrier__nom {
   margin: 0;
   font-weight: 700;
   color: var(--pgy-ink);
 }
 
-.pgy-temoignage__qualite {
+.pgy-temoignage__qualite,
+.pgy-courrier__qualite {
   margin: .1rem 0 0;
   font-size: .875rem;
   color: var(--pgy-ink-3);
 }
 
-.pgy-temoignage__texte {
+.pgy-temoignage__texte,
+.pgy-courrier__texte {
   margin: 0 0 .85rem;
   padding-left: 1rem;
   border-left: 2px solid var(--pgy-brass);
@@ -628,7 +640,8 @@ textarea.form-control::placeholder {
   line-height: 1.65;
 }
 
-.pgy-temoignage__meta {
+.pgy-temoignage__meta,
+.pgy-courrier__meta {
   margin: 0 0 .85rem;
   font-size: .8125rem;
   color: var(--pgy-ink-3);
@@ -639,14 +652,16 @@ textarea.form-control::placeholder {
   opacity: .8;
 }
 
-.pgy-temoignage__actions {
+.pgy-temoignage__actions,
+.pgy-courrier__actions {
   display: flex;
   flex-wrap: wrap;
   gap: .4rem;
   align-items: center;
 }
 
-.pgy-temoignage__actions form { margin: 0; }
+.pgy-temoignage__actions form,
+.pgy-courrier__actions form { margin: 0; }
 
 /* --- Tableau de bord : « à traiter » (lot E) ----------------------------- */
 .pgy-afaire { display: grid; gap: .5rem; margin-top: 1rem; }

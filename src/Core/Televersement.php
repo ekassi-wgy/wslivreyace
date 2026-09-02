@@ -36,8 +36,21 @@ final class Televersement
      */
     public const PIXELS_MAX = 40_000_000;           // 40 Mpx
 
-    /** Côté maximal de la vignette, en pixels d'image (écrans 2× compris). */
-    public const COTE_VIGNETTE = 600;
+    /**
+     * Tailles dérivées, par suffixe de nom de fichier.
+     *
+     * **Deux, et pas une.** La vignette (600 px) sert les planches du
+     * back-office et les tuiles de la galerie ; la taille moyenne (1600 px)
+     * sert la visionneuse d'archives et le second cran du `srcset` des tuiles
+     * sur écran 2×. Sans elle, ouvrir une archive dans la visionneuse
+     * téléchargerait le fichier d'origine — jusqu'à 8 Mio de scan pour
+     * regarder une photo sur un téléphone.
+     *
+     * Les chemins sont **déduits du nom du fichier d'origine**, jamais
+     * stockés : ajouter une taille ne demande donc aucune migration, et un
+     * dérivé absent retombe sur l'original (voir `App\Model\Media`).
+     */
+    public const DERIVEES = ['vignette' => 600, 'moyen' => 1600];
 
     /**
      * Formats acceptés, indexés par la constante que rend `getimagesize`.
@@ -150,7 +163,7 @@ final class Televersement
 
         $relatif = $mois . '/' . $nom;
 
-        self::fabriquerVignette($dossier . '/' . $nom, $mesure[2], $largeur, $hauteur);
+        self::fabriquerDerivees($dossier . '/' . $nom, $mesure[2], $largeur, $hauteur);
 
         return [
             'fichier' => $relatif,
@@ -161,15 +174,23 @@ final class Televersement
     }
 
     /**
-     * Vignette carrée-boîte : l'image est réduite pour tenir dans un carré de
-     * COTE_VIGNETTE, sans recadrage — une photo d'archive perd son sens si on
-     * lui coupe la moitié du sujet.
+     * Fabrique les tailles dérivées : réduction dans un carré, sans recadrage
+     * — une photo d'archive perd son sens si on lui coupe la moitié du sujet.
+     *
+     * La source n'est décodée qu'une fois pour les deux tailles : sur un scan
+     * de plusieurs mégapixels, le décodage coûte davantage que les deux
+     * réductions réunies.
+     *
+     * **Une taille plus grande que l'original n'est pas fabriquée.** Agrandir
+     * ne rend aucun détail et produirait un JPEG plus lourd que le fichier
+     * qu'il remplace ; l'appelant retombe sur l'original, qui est déjà à la
+     * bonne échelle.
      *
      * L'échec n'annule pas le dépôt : la médiathèque retombe alors sur
      * l'original, et l'éditeur ne perd pas son fichier pour une extension
      * absente du serveur.
      */
-    private static function fabriquerVignette(string $absolu, int $type, int $largeur, int $hauteur): void
+    private static function fabriquerDerivees(string $absolu, int $type, int $largeur, int $hauteur): void
     {
         if (!function_exists('imagecreatetruecolor')) {
             return;   // GD absente : l'original fera office de vignette.
@@ -210,21 +231,30 @@ final class Televersement
                 }
             }
 
-            $ratio = min(self::COTE_VIGNETTE / max($largeur, 1), self::COTE_VIGNETTE / max($hauteur, 1), 1);
-            $l = max(1, (int) round($largeur * $ratio));
-            $h = max(1, (int) round($hauteur * $ratio));
+            foreach (self::DERIVEES as $suffixe => $cote) {
+                $ratio = min($cote / max($largeur, 1), $cote / max($hauteur, 1), 1);
 
-            $vignette = imagecreatetruecolor($l, $h);
+                // Ratio de 1 : l'original tient déjà dans le carré demandé.
+                if ($ratio >= 1.0) {
+                    continue;
+                }
 
-            // La vignette sort en JPEG, qui ignore la transparence : sans ce
-            // fond, une zone transparente de PNG virerait au noir.
-            $blanc = imagecolorallocate($vignette, 255, 255, 255);
-            imagefilledrectangle($vignette, 0, 0, $l, $h, $blanc);
-            imagecopyresampled($vignette, $source, 0, 0, 0, 0, $l, $h, $largeur, $hauteur);
+                $l = max(1, (int) round($largeur * $ratio));
+                $h = max(1, (int) round($hauteur * $ratio));
 
-            imagejpeg($vignette, self::absoluVignette($absolu), 82);
+                $derivee = imagecreatetruecolor($l, $h);
 
-            imagedestroy($vignette);
+                // Les dérivées sortent en JPEG, qui ignore la transparence :
+                // sans ce fond, une zone transparente de PNG virerait au noir.
+                $blanc = imagecolorallocate($derivee, 255, 255, 255);
+                imagefilledrectangle($derivee, 0, 0, $l, $h, $blanc);
+                imagecopyresampled($derivee, $source, 0, 0, 0, 0, $l, $h, $largeur, $hauteur);
+
+                imagejpeg($derivee, self::absoluDerivee($absolu, $suffixe), 82);
+
+                imagedestroy($derivee);
+            }
+
             imagedestroy($source);
         } catch (\Throwable) {
             // Image tronquée, mémoire insuffisante : l'original reste valable.
@@ -273,21 +303,45 @@ final class Televersement
         return $absolu;
     }
 
-    /** Chemin relatif de la vignette d'un fichier. Déduit, jamais stocké. */
+    /** Chemin relatif d'une taille dérivée. Déduit du nom, jamais stocké. */
+    public static function relatifDerivee(string $relatif, string $suffixe): string
+    {
+        return preg_replace('/\.[^.]+$/', '', $relatif) . '-' . $suffixe . '.jpg';
+    }
+
+    /** Chemin relatif de la vignette (600 px). */
     public static function relatifVignette(string $relatif): string
     {
-        return preg_replace('/\.[^.]+$/', '', $relatif) . '-vignette.jpg';
+        return self::relatifDerivee($relatif, 'vignette');
     }
 
-    private static function absoluVignette(string $absolu): string
+    /** Chemin relatif de la taille moyenne (1600 px), servie à la visionneuse. */
+    public static function relatifMoyen(string $relatif): string
     {
-        return preg_replace('/\.[^.]+$/', '', $absolu) . '-vignette.jpg';
+        return self::relatifDerivee($relatif, 'moyen');
     }
 
-    /** Supprime le fichier et sa vignette. Silencieux si l'un manque déjà. */
+    private static function absoluDerivee(string $absolu, string $suffixe): string
+    {
+        return preg_replace('/\.[^.]+$/', '', $absolu) . '-' . $suffixe . '.jpg';
+    }
+
+    /**
+     * Supprime le fichier et toutes ses tailles dérivées.
+     *
+     * La liste est parcourue depuis `DERIVEES` : ajouter une taille demain
+     * n'oubliera pas de la nettoyer — un dérivé orphelin resterait sur le
+     * disque pour toujours, aucune ligne ne le désignant plus.
+     */
     public static function supprimer(string $relatif): void
     {
-        foreach ([$relatif, self::relatifVignette($relatif)] as $cible) {
+        $cibles = [$relatif];
+
+        foreach (array_keys(self::DERIVEES) as $suffixe) {
+            $cibles[] = self::relatifDerivee($relatif, $suffixe);
+        }
+
+        foreach ($cibles as $cible) {
             $absolu = self::chemin($cible);
             if ($absolu !== null) {
                 unlink($absolu);

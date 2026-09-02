@@ -142,6 +142,26 @@ CREATE TABLE IF NOT EXISTS commande (
     REFERENCES utilisateur (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --- Messages du formulaire de contact (CDC §4.11) ---------------------------
+-- Une table plutôt qu'un envoi de courriel : `mail()` sur un mutualisé échoue
+-- en silence, et un message perdu est pire que pas de formulaire du tout.
+CREATE TABLE IF NOT EXISTS message (
+  id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  nom           VARCHAR(160) NOT NULL,
+  email         VARCHAR(180) NOT NULL,      -- exigée : sans elle, pas de réponse
+  sujet         ENUM('ouvrage','commande','presse','archives','autre')
+                NOT NULL DEFAULT 'autre',
+  contenu       TEXT NOT NULL,
+  statut        ENUM('nouveau','traite') NOT NULL DEFAULT 'nouveau',
+  recu_le       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  traite_le     DATETIME NULL,
+  traite_par    INT UNSIGNED NULL,
+  ip_soumission VARBINARY(16) NULL,         -- anti-abus, jamais affichée en public
+  KEY ix_message_statut (statut, recu_le),
+  CONSTRAINT fk_message_traite_par FOREIGN KEY (traite_par)
+    REFERENCES utilisateur (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- --- Journal des soumissions publiques (limitation de débit) ----------------
 -- Témoignage, contact : le nombre d'envois d'un même visiteur est borné par
 -- heure. Distincte de tentative_connexion, qui compte des échecs et non des

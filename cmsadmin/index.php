@@ -15,6 +15,7 @@ use App\Controller\Admin\CommandeController;
 use App\Controller\Admin\CompteController;
 use App\Controller\Admin\EvenementController;
 use App\Controller\Admin\MediaController;
+use App\Controller\Admin\MessageController;
 use App\Controller\Admin\ParametreController;
 use App\Controller\Admin\RepereController;
 use App\Controller\Admin\TemoignageController;
@@ -87,6 +88,15 @@ $router->get($base . '/temoignages/{id}',                  [TemoignageController
 $router->post($base . '/temoignages/{id}',                 [TemoignageController::class, 'mettreAJour']);
 $router->post($base . '/temoignages/{id}/supprimer',       [TemoignageController::class, 'supprimer']);
 $router->post($base . '/temoignages/{id}/{decision}',      [TemoignageController::class, 'moderer']);
+
+/**
+ * Messages du formulaire de contact. Deux verbes seulement — marquer traité,
+ * supprimer : un message ne se crée pas depuis l'admin, et ne se corrige pas
+ * non plus, puisqu'il ne sera jamais publié.
+ */
+$router->get($base . '/messages',                    [MessageController::class, 'liste']);
+$router->post($base . '/messages/{id}/supprimer',    [MessageController::class, 'supprimer']);
+$router->post($base . '/messages/{id}/{statut}',     [MessageController::class, 'marquer']);
 
 /**
  * Médiathèque. Encore un jeu de routes à part, et pour la même raison que la
