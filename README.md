@@ -605,9 +605,10 @@ ses huit valeurs sont vides** : elles font partie des contenus attendus de
 l'éditeur (voir §5).
 
 Transverses (§5) — **partiel** : responsive, accessibilité AA vérifiée par mesure,
-structure sémantique, métadonnées, schema.org `Book`/`Person`, lazy loading sont en
-place. Newsletter, recherche interne, multilinguisme et partage social restent à
-faire — ils sont désormais réalisables, le socle dynamique étant en place.
+structure sémantique, métadonnées, schema.org `Book`/`Person`, lazy loading et
+partage social — canonical, Open Graph, Twitter Card — sont en place. Newsletter,
+recherche interne et multilinguisme restent à faire ; ils sont désormais
+réalisables, le socle dynamique étant en place.
 
 ### Le socle applicatif : décision prise
 
