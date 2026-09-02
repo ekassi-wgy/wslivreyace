@@ -69,6 +69,23 @@ $ld          = $ld          ?? '';
 <?php require __DIR__ . '/partials/nav.php'; ?>
 
 <main id="main">
+<?php
+/**
+ * Bandeau des messages. Il ne s'affiche que sur les pages qui ont ouvert une
+ * session — aujourd'hui les témoignages, demain le contact : ailleurs,
+ * $_SESSION n'existe pas et la lecture n'a rien à consommer.
+ */
+$messages = session_status() === PHP_SESSION_ACTIVE ? App\Core\Session::messages() : [];
+?>
+<?php if ($messages !== []): ?>
+  <div class="shell" id="message">
+    <?php foreach ($messages as $m): ?>
+      <p class="avis avis--<?= $m['type'] === 'succes' ? 'succes' : 'refus' ?>" role="status">
+        <?= App\Core\View::e($m['texte']) ?>
+      </p>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>
 <?= $contenu ?>
 </main>
 

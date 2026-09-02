@@ -297,32 +297,58 @@ JSONLD;
         <h2 class="t-d1 reveal">Ce qu'ils en disent.</h2>
       </div>
       <div class="col-lg-3 d-flex align-items-end justify-content-lg-end">
-        <a class="link reveal" href="#">Déposer un témoignage</a>
+        <a class="link reveal" href="/temoignages#deposer">Déposer un témoignage</a>
       </div>
     </div>
 
-    <div class="row" style="row-gap: var(--sp-7);">
-      <!-- TÉMOIGNAGES — emplacements réservés. Aucun propos ne doit être
-           publié ici sans être attribué et vérifié auprès de son auteur. -->
-      <div class="col-md-4">
-        <div class="testi__i reveal">
-          <p class="testi__q">Emplacement réservé à un témoignage authentifié.</p>
-          <p class="testi__a">Fonction<span>Nom à renseigner</span></p>
+    <?php
+    /* Les trois derniers témoignages validés. Rien ici n'est écrit en dur :
+       ce qui s'affiche a été relu et publié depuis la file de modération, et
+       la page /temoignages porte la liste complète. */
+    $apercu = App\Model\Temoignage::listerPubliees(3);
+    ?>
+
+    <?php if ($apercu === []): ?>
+
+      <div class="row">
+        <div class="col-lg-7">
+          <p class="t-lead reveal">
+            <em>Les premiers témoignages seront affichés ici.</em> Vous avez connu
+            Philippe Grégoire Yacé, de près ou de loin&nbsp;? Votre souvenir a sa place.
+          </p>
+          <p class="reveal" style="margin-top: var(--sp-5);">
+            <a class="btn-pgy btn-pgy--ghost" href="/temoignages#deposer">
+              Déposer un témoignage <span class="btn-pgy__arrow" aria-hidden="true">→</span>
+            </a>
+          </p>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="testi__i reveal">
-          <p class="testi__q">Emplacement réservé à un témoignage authentifié.</p>
-          <p class="testi__a">Fonction<span>Nom à renseigner</span></p>
+
+    <?php else: ?>
+
+      <div class="row" style="row-gap: var(--sp-7);">
+        <?php foreach ($apercu as $t): ?>
+          <div class="col-md-4">
+            <div class="testi__i reveal">
+              <?php /* Coupé à 260 caractères : la page dédiée porte le texte
+                       entier, l'accueil n'en montre que l'entrée. */ ?>
+              <p class="testi__q"><?= App\Core\View::e(mb_strimwidth((string) $t['contenu'], 0, 260, '…')) ?></p>
+              <p class="testi__a">
+                <?= App\Core\View::e($t['auteur_fonction'] ?? 'Témoignage') ?>
+                <span><?= App\Core\View::e($t['auteur_nom']) ?></span>
+              </p>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+
+      <div class="row" style="margin-top: var(--sp-7);">
+        <div class="col-12">
+          <a class="link reveal" href="/temoignages">Lire tous les témoignages</a>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="testi__i reveal">
-          <p class="testi__q">Emplacement réservé à un témoignage authentifié.</p>
-          <p class="testi__a">Fonction<span>Nom à renseigner</span></p>
-        </div>
-      </div>
-    </div>
+
+    <?php endif; ?>
   </div>
 </section>
 

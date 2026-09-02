@@ -1,10 +1,11 @@
 # Philippe Grégoire Yacé — *Une destinée* (1920-1998)
 
-Site éditorial de l'ouvrage. Trois pages publiques livrées, et **le back-office
-est complet** : ossature de `/cmsadmin/`, authentification, actualités,
-événements, repères, modération des témoignages, fiche technique, tableau de
-bord, médiathèque, commandes et comptes. **Restent les pages publiques adossées
-aux données, et le tunnel de commande.**
+Site éditorial de l'ouvrage. **Le back-office est complet** : ossature de
+`/cmsadmin/`, authentification, actualités, événements, repères, modération des
+témoignages, fiche technique, tableau de bord, médiathèque, commandes et
+comptes. Côté public, quatre pages : accueil, Le livre, Biographie, et
+**Témoignages — la première adossée aux données, et le premier formulaire
+ouvert**. **Restent les autres pages publiques et le tunnel de commande.**
 
 ---
 
@@ -134,6 +135,7 @@ livreyace/                  ← racine web
 │   │                       Admin, Session, Csrf, Auth,
 │   │                       Validator, Slug, Site,
 │   │                       Televersement, Paiement, Debit    [interdit]
+│   ├── Controller/         Temoignage (public)               [interdit]
 │   ├── Controller/Admin/   Auth, Crud (Actualite, Evenement,
 │   │                       Repere), Temoignage, Media,
 │   │                       Commande, Compte, Parametre       [interdit]
@@ -314,6 +316,48 @@ s'écrira avec le formulaire qu'il protège, pas avant.
 Vérifié : plafond atteint au sixième envoi, cloisonnement par action et par
 adresse (IPv4 et IPv6), fenêtre qui glisse, attente annoncée exacte à la minute,
 action inconnue rejetée, purge d'un jour à l'écriture.
+
+### La page des témoignages, et le premier écrit public
+
+Première page publique adossée aux données, et premier formulaire ouvert à tout
+le monde (CDC §4.8). Elle boucle une chaîne écrite en trois fois : le visiteur
+dépose, la file de modération (lot D1) décide, la page affiche.
+
+**La session n'est ouverte que sur ces deux routes**, `GET` et `POST
+/temoignages`. Un site qui pose un cookie à chaque visiteur, pour un formulaire
+que la plupart ne rencontreront jamais, s'impose une bannière de consentement
+pour rien. Vérifié : l'accueil ne dépose aucun cookie, la page des témoignages
+en dépose un.
+
+**Quatre barrières, dans cet ordre.** Le jeton CSRF d'abord — un POST sans jeton
+répond 419 sans rien lire. Le plafond de débit ensuite, avant toute écriture :
+cinq envois par heure et par adresse. La soumission est alors comptée, valide ou
+non, puis seulement la validation. Enfin les deux pièges à robots : un champ
+leurre masqué et retiré aux lecteurs d'écran, et un délai minimal de trois
+secondes entre l'affichage du formulaire et son envoi, mesuré en session — un
+champ caché se réécrit, la session non.
+
+**Les refus sont dits, jamais silencieux.** L'usage veut qu'on fasse croire au
+robot que son envoi est passé ; on ne l'a pas suivi. Quelqu'un qui vient
+d'écrire dix lignes sur un proche et qui a déclenché un piège doit pouvoir
+renvoyer son texte — perdre son témoignage en lui laissant croire qu'il est
+parti serait pire que tout ce que le piège évite. La saisie est donc renvoyée
+avec la page, dans les cinq cas d'échec.
+
+**L'adresse électronique est exigée et ne paraît jamais.** Le modérateur doit
+pouvoir revenir vers le signataire avant de publier des propos sous son nom.
+C'est écrit sur le formulaire, à côté du champ. Côté lecture,
+`Temoignage::listerPubliees()` énumère ses colonnes au lieu d'un `SELECT *` :
+`auteur_email` et `ip_soumission` ne peuvent pas fuir dans une vue par
+distraction.
+
+**Après écriture, redirection** (303) : sans elle, un rafraîchissement de page
+redéposerait le même témoignage. Le message de confirmation passe par la
+session, le temps de la redirection.
+
+L'accueil montre les trois derniers témoignages validés, coupés à 260
+caractères, et renvoie vers la page. Quand il n'y en a aucun, ni l'un ni l'autre
+ne montre de faux témoignage : ils invitent à déposer le premier.
 
 ### Les écrans de contenu
 
@@ -737,10 +781,11 @@ les deux). Ce qu'il reste :
   vide jusque-là — et aucune saisie manuelle n'est ouverte, faute d'avoir été
   demandée. Si l'éditeur prend des commandes au téléphone ou en dédicace, c'est
   un formulaire à ajouter, avec ses propres modes de paiement.
-- **Le débit est borné, le spam ne l'est pas.** `Debit` compte les envois ; il
-  ne dit rien de leur contenu. Un robot qui reste sous cinq par heure passe. Le
-  piège à robots — champ leurre, délai minimal de remplissage — s'écrira avec le
-  premier formulaire public, avec lui et pas avant.
+- **Le spam reste possible, en petite quantité.** Le formulaire des témoignages
+  porte désormais ses deux pièges — champ leurre et délai minimal — et son
+  plafond, mais un robot patient qui les franchit et reste sous cinq envois par
+  heure passe. C'est assumé : la file de modération est là pour ça, et rien ne
+  paraît sans décision humaine.
 - **Pas d'export des commandes.** Ni CSV ni impression : la comptabilité devra
   relire l'écran ou la base. À voir quand il y aura des commandes.
 - **`reference/` pèse ~70 Mo dans l'arborescence servie.** Verrouillé en 403,
@@ -760,9 +805,11 @@ routeur, PDO, mise en page unique ; base `livreyace_sbd` avec ses huit tables ;
 étanchéité des dossiers applicatifs vérifiée sur Apache ; **le back-office
 entier**, ses sept lots livrés.
 
-**Non fait** — les pages publiques qui liront les données saisies, le tunnel de
-commande, et la phase 3 (newsletter, recherche, multilinguisme). Autrement dit :
-tout est désormais du côté visiteur.
+**Non fait** — les pages publiques restantes, le tunnel de commande, et la
+phase 3 (newsletter, recherche, multilinguisme). La première page adossée aux
+données — Témoignages — est livrée, et avec elle toute la plomberie qu'un
+formulaire public demande : session côté visiteur, jeton, plafond, pièges,
+renvoi de la saisie.
 
 ### Le back-office, lot par lot
 
@@ -833,11 +880,12 @@ en lecture comme en écriture — vérifié, un éditeur qui poste sur
    s'impose une bannière pour rien. `Session::demarrer('pgy', '/')` sur la seule
    route qui en a besoin.
 
-1. **Pages publiques adossées aux données** — actualités et détail, galerie avec
-   visionneuse, événements, témoignages, contact. Rapides : les données se
-   saisissent déjà, le système de composants existe, il n'y a plus qu'à lire ce
-   qui existe. Le formulaire de témoignage est le premier à écrire : il a sa file
-   de modération, sa validation et son plafond, tout l'attend.
+1. **Pages publiques adossées aux données.** ~~Témoignages~~ — **fait**, page et
+   formulaire (voir §2). Restent, par ordre de facilité décroissante :
+   actualités (liste et détail par slug), galerie et archives avec visionneuse,
+   événements, contact, Héritage, mentions légales. Les quatre premières ne font
+   que lire ce que le back-office remplit déjà ; contact réutilisera la plomberie
+   du formulaire des témoignages, son barème de débit est même déjà déclaré.
 2. **Tunnel de commande** — la passerelle est arrêtée (`carte.abidjan.net`, voir
    §2) et décrite en un seul endroit. Le tunnel suppose la page boutique, donc
    le point 1. Il créera les commandes que l'écran de suivi attend, avec leur
@@ -864,18 +912,21 @@ Biographie (§4.4) — **complet** : contexte historique, biographie structurée
 chapitres avec sommaire latéral collé, frise chronologique filtrable par période et
 dépliable, citations, galerie de portraits.
 
-Reste à construire, côté public — Héritage (§4.5), Galerie/Archives (§4.6),
-Actualités/Presse (§4.7), Témoignages (§4.8), Boutique (§4.9), Événements
-(§4.10), Contact (§4.11), Mentions légales (§4.12). **Le back-office de tout
-cela existe** ; ce sont les pages qui manquent.
+Témoignages (§4.8) — **complet** : page publique, formulaire de dépôt, file de
+modération, et l'aperçu des trois derniers validés sur l'accueil. La chaîne
+entière tourne, du visiteur qui écrit au modérateur qui décide.
 
-Nuance sur quatre d'entre elles : **actualités, témoignages, événements et
-archives ont désormais leur back-office** — les données se saisissent, se
-modèrent, s'illustrent et se publient. Seules manquent les pages publiques qui
-les afficheront, et elles seront rapides : il n'y a plus qu'à lire ce qui existe.
-Galerie/Archives comprise, désormais : la médiathèque est écrite, ses images
-portent légende, crédit, catégorie et rang, et une image publiée est une image
-créditée.
+Reste à construire, côté public — Héritage (§4.5), Galerie/Archives (§4.6),
+Actualités/Presse (§4.7), Boutique (§4.9), Événements (§4.10), Contact (§4.11),
+Mentions légales (§4.12). **Le back-office de tout cela existe** ; ce sont les
+pages qui manquent.
+
+Nuance sur trois d'entre elles : **actualités, événements et archives ont leur
+back-office** — les données se saisissent, s'illustrent et se publient. Seules
+manquent les pages qui les afficheront, et elles seront rapides : il n'y a plus
+qu'à lire ce qui existe. Galerie/Archives comprise : la médiathèque est écrite,
+ses images portent légende, crédit, catégorie et rang, et une image publiée est
+une image créditée.
 
 La **boutique (§4.9)** est le cas à part : son écran de suivi est livré et la
 passerelle est arrêtée (`carte.abidjan.net`), mais le tunnel de paiement reste à

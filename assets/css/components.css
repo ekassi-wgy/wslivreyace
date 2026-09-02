@@ -697,3 +697,151 @@
   .toc li { flex-wrap: wrap; }
   .toc__lead { display: none; }
 }
+
+/* --- Temoignages publies (CDC §4.8) --------------------------------------
+   Sur la page dediee, les temoignages sont longs : ils se lisent en colonne
+   large, pas en trois colonnes serrees comme les citations de l'accueil.
+   D'ou une liste et non une grille — le filet de gauche fait la citation.
+   ------------------------------------------------------------------------ */
+.temoins { display: grid; gap: var(--sp-8); max-width: 52rem; }
+
+.temoin { margin: 0; }
+
+.temoin__texte {
+  margin: 0 0 var(--sp-4);
+  padding-left: var(--sp-5);
+  border-left: 2px solid var(--brass);
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 1.35vw, 1.25rem);
+  line-height: 1.62;
+  color: var(--ink);
+}
+
+.temoin__signature {
+  padding-left: var(--sp-5);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brass-text);
+}
+
+.temoin__signature span {
+  display: block;
+  margin-top: var(--sp-1);
+  font-size: 0.875rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-3);
+}
+
+/* --- Formulaires publics -------------------------------------------------
+   Premier formulaire ouvert du site. Le champ est un trait de plume : une
+   ligne de base epaisse plutot qu'une boite fermee, pour rester dans le
+   registre du papier. Le fond ne change qu'au focus.
+   ------------------------------------------------------------------------ */
+.formulaire { display: grid; gap: var(--sp-6); max-width: 34rem; }
+
+.champ { display: grid; gap: var(--sp-2); }
+
+.champ__titre {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.champ__requis { color: var(--brass-text); }
+
+.champ__saisie {
+  width: 100%;
+  padding: 0.7rem 0.2rem;
+  border: 0;
+  border-bottom: 1px solid var(--rule-strong);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  transition: border-color var(--dur-2) var(--ease), background var(--dur-2) var(--ease);
+}
+
+.champ__saisie::placeholder { color: var(--ink-3); opacity: .7; }
+
+.champ__saisie:hover { border-bottom-color: var(--ink-3); }
+
+.champ__saisie:focus,
+.champ__saisie:focus-visible {
+  border-bottom-color: var(--brass-text);
+  background: var(--paper-high);
+  color: var(--ink);
+}
+
+textarea.champ__saisie { resize: vertical; min-height: 9rem; }
+
+.champ__saisie.est-fautif { border-bottom-color: #8C2F26; border-bottom-width: 2px; }
+
+.champ__aide {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+.champ__erreur {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #8C2F26;
+}
+
+/* Le champ leurre du piege a robots. Retire de l'ecran sans display:none, que
+   certains automates savent lire pour l'ignorer. */
+.leurre {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --- Avis (confirmation, refus) ------------------------------------------ */
+.avis {
+  margin: 0 0 var(--sp-5);
+  padding: var(--sp-4) var(--sp-5);
+  border-left: 3px solid var(--brass);
+  background: var(--paper-high);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--ink);
+  max-width: 52rem;
+}
+
+.avis--succes { border-left-color: #2F6B3C; }
+.avis--refus  { border-left-color: #8C2F26; }
+
+/* Le bandeau vit en haut de <main>, hors de toute section : il lui faut son
+   propre espace vertical. */
+main > .shell > .avis:first-child { margin-top: var(--sp-7); }
+
+/* --- Note laterale -------------------------------------------------------- */
+.note {
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--rule-strong);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+.note p { margin-bottom: var(--sp-4); }
+.note p:last-child { margin-bottom: 0; }
+
+.note__titre {
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brass-text);
+}
+
+.note__pied { font-size: 0.8125rem; color: var(--ink-3); }

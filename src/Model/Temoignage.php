@@ -59,6 +59,69 @@ final class Temoignage extends Modele
         return Database::all($sql, $params);
     }
 
+    /**
+     * Les témoignages publiés, pour le site.
+     *
+     * Les colonnes sont énumérées, et c'est la ligne la plus importante de
+     * cette classe : `auteur_email` et `ip_soumission` ne doivent jamais
+     * sortir en public, et un `SELECT *` les emporterait dans la vue à la
+     * première distraction. Ce qui n'est pas nommé ici ne peut pas fuir.
+     *
+     * L'ordre suit la date de modération et non celle de soumission : c'est
+     * le moment où le témoignage est devenu public qui compte, un texte reçu
+     * il y a six mois et validé hier arrive en tête.
+     *
+     * @return array<int,array<string,mixed>>
+     */
+    public static function listerPubliees(?int $limite = null): array
+    {
+        $sql = "SELECT auteur_nom, auteur_fonction, contenu, modere_le
+                  FROM temoignage
+                 WHERE statut = 'publie'
+                 ORDER BY modere_le DESC, id DESC";
+
+        // Entier casté, jamais un paramètre lié : MySQL refuse un placeholder
+        // dans LIMIT quand les requêtes préparées ne sont pas émulées.
+        if ($limite !== null) {
+            $sql .= ' LIMIT ' . max(1, $limite);
+        }
+
+        return Database::all($sql);
+    }
+
+    /**
+     * Dépôt par le formulaire public.
+     *
+     * Le statut est écrit ici et n'est pas un paramètre : un témoignage déposé
+     * arrive en attente, toujours, et aucun appelant ne peut en décider
+     * autrement. C'est la même raison qui fait que `statut` n'est pas dans
+     * ASSIGNABLES.
+     *
+     * L'IP est relevée pour repérer un abus, jamais affichée. Comme pour les
+     * tentatives de connexion, `REMOTE_ADDR` seul : `X-Forwarded-For` vient du
+     * client et se falsifie.
+     *
+     * @param array{auteur_nom:string,auteur_fonction:?string,auteur_email:?string,contenu:string} $donnees
+     */
+    public static function deposer(array $donnees): int
+    {
+        $pdo = Database::pdo();
+
+        $pdo->prepare(
+            "INSERT INTO temoignage
+                (auteur_nom, auteur_fonction, auteur_email, contenu, statut, ip_soumission)
+             VALUES (?, ?, ?, ?, 'en_attente', ?)"
+        )->execute([
+            $donnees['auteur_nom'],
+            $donnees['auteur_fonction'] ?? null,
+            $donnees['auteur_email'] ?? null,
+            $donnees['contenu'],
+            inet_pton($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0') ?: inet_pton('0.0.0.0'),
+        ]);
+
+        return (int) $pdo->lastInsertId();
+    }
+
     /** @return array<string,int> nombre par statut, plus 'tous' */
     public static function compteurs(): array
     {

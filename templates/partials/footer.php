@@ -29,7 +29,7 @@
         <ul>
           <li><a href="/#actualites">Actualités</a></li>
           <li><a href="#">Événements</a></li>
-          <li><a href="/#temoignages">Témoignages</a></li>
+          <li><a href="/temoignages">Témoignages</a></li>
           <li><a href="#">Contact</a></li>
         </ul>
       </div>
