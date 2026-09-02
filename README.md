@@ -113,9 +113,22 @@ fichiers fautifs ne se chargent qu'à ce moment-là. PHP 8.3 est recommandé :
 c'est la version de développement, et 8.0 n'est plus maintenu depuis
 novembre 2023.
 
-Le schéma emploie la collation `utf8mb4_0900_ai_ci`, propre à **MySQL 8**. Sur
-MariaDB, la remplacer par `utf8mb4_unicode_ci` dans les deux fichiers de
-`sql/` — c'est la seule syntaxe non portable du projet.
+**Collation : deux valeurs, et c'est délibéré.** Les fichiers de `sql/` déclarent
+tous `utf8mb4_unicode_ci` — c'est la version qui part en ligne, et elle se charge
+aussi bien sur MySQL 5.7, MySQL 8 que sur **MariaDB**. La base de développement,
+créée sous MySQL 8, garde `utf8mb4_0900_ai_ci` : rien ne demande de la refaire.
+
+L'écart est réel mais sans conséquence ici : les deux collations sont
+insensibles à la casse et aux accents, elles ne diffèrent que par la version
+d'Unicode qui les fonde (9.0.0 contre 4.0.0), sur des caractères que le français
+n'emploie pas. Ce qu'il ne faut pas faire, en revanche, c'est écrire du code qui
+dépende d'un ordre de tri à la lettre près : il pourrait différer entre les deux
+machines. Aucun classement du projet n'est dans ce cas — les listes se trient sur
+des dates, des identifiants ou des rangs numériques.
+
+`utf8mb4_0900_ai_ci` reste donc admis **en local**, et interdit dans un fichier
+destiné au serveur : un hébergement mutualisé sous MariaDB refuse le fichier
+entier, pas seulement la ligne fautive.
 
 ```
 livreyace/                  ← racine web

@@ -20,4 +20,4 @@ CREATE TABLE IF NOT EXISTS soumission_publique (
   ip        VARBINARY(16) NOT NULL,      -- inet_pton : couvre IPv4 et IPv6
   soumis_le DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY ix_soumission_debit (action, ip, soumis_le)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

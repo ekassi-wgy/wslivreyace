@@ -1,7 +1,14 @@
 -- ============================================================================
 -- Philippe Grégoire Yacé — schéma initial
--- MySQL 8, InnoDB, utf8mb4. Les libellés d'énumération sont en français
--- pour rester lisibles depuis phpMyAdmin par un non-développeur.
+-- InnoDB, utf8mb4. Les libellés d'énumération sont en français pour rester
+-- lisibles depuis phpMyAdmin par un non-développeur.
+--
+-- Collation : utf8mb4_unicode_ci, et non utf8mb4_0900_ai_ci. La seconde est
+-- meilleure — Unicode 9.0.0 contre 4.0.0 — mais elle n'existe que sur MySQL 8 :
+-- un hébergement mutualisé sous MariaDB refuse le fichier entier. Ces fichiers
+-- doivent pouvoir se charger partout sans être relus ligne à ligne.
+-- La base de développement, elle, garde la collation que MySQL 8 lui a donnée.
+-- Voir README §2.
 -- ============================================================================
 
 SET NAMES utf8mb4;
@@ -16,7 +23,7 @@ CREATE TABLE IF NOT EXISTS utilisateur (
   actif         TINYINT(1) NOT NULL DEFAULT 1,
   cree_le       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uk_utilisateur_email (email)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --- Actualités et revue de presse (CDC §4.7) -------------------------------
 CREATE TABLE IF NOT EXISTS actualite (
@@ -35,7 +42,7 @@ CREATE TABLE IF NOT EXISTS actualite (
   maj_le      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY uk_actualite_slug (slug),
   KEY ix_actualite_public (statut, publie_le)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --- Événements (CDC §4.10) -------------------------------------------------
 CREATE TABLE IF NOT EXISTS evenement (
@@ -54,7 +61,7 @@ CREATE TABLE IF NOT EXISTS evenement (
   maj_le       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY uk_evenement_slug (slug),
   KEY ix_evenement_public (statut, debut_le)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --- Témoignages du public, avec modération (CDC §4.8) ----------------------
 -- Rien n'est publié sans passage explicite en 'publie' par un modérateur :
@@ -73,7 +80,7 @@ CREATE TABLE IF NOT EXISTS temoignage (
   KEY ix_temoignage_statut (statut, soumis_le),
   CONSTRAINT fk_temoignage_moderateur FOREIGN KEY (modere_par)
     REFERENCES utilisateur (id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --- Photothèque et archives (CDC §4.6) -------------------------------------
 CREATE TABLE IF NOT EXISTS media (
@@ -92,7 +99,7 @@ CREATE TABLE IF NOT EXISTS media (
   cree_le    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uk_media_fichier (fichier),
   KEY ix_media_public (statut, categorie, ordre)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --- Repères chronologiques (CDC §4.4) --------------------------------------
 CREATE TABLE IF NOT EXISTS repere (
@@ -105,7 +112,7 @@ CREATE TABLE IF NOT EXISTS repere (
   source   VARCHAR(300) NULL,             -- sourçage exigé par le CDC §6
   statut   ENUM('brouillon','publie') NOT NULL DEFAULT 'brouillon',
   KEY ix_repere_public (statut, tri)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --- Commandes (CDC §4.9) ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS commande (
@@ -133,7 +140,7 @@ CREATE TABLE IF NOT EXISTS commande (
   KEY ix_commande_statut (statut, cree_le),
   CONSTRAINT fk_commande_remise FOREIGN KEY (remise_par)
     REFERENCES utilisateur (id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --- Journal des soumissions publiques (limitation de débit) ----------------
 -- Témoignage, contact : le nombre d'envois d'un même visiteur est borné par
@@ -145,14 +152,14 @@ CREATE TABLE IF NOT EXISTS soumission_publique (
   ip        VARBINARY(16) NOT NULL,      -- inet_pton : couvre IPv4 et IPv6
   soumis_le DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY ix_soumission_debit (action, ip, soumis_le)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --- Contenus éditables et réglages -----------------------------------------
 CREATE TABLE IF NOT EXISTS parametre (
   cle     VARCHAR(80) NOT NULL PRIMARY KEY,
   valeur  TEXT NULL,
   libelle VARCHAR(200) NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Fiche technique de l'ouvrage : éditable sans toucher au code (CDC §4.2).
 INSERT IGNORE INTO parametre (cle, valeur, libelle) VALUES

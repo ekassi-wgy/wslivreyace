@@ -16,4 +16,4 @@ CREATE TABLE IF NOT EXISTS tentative_connexion (
   tentee_le   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY ix_tentative_ip (ip, tentee_le),
   KEY ix_tentative_identifiant (identifiant, tentee_le)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
