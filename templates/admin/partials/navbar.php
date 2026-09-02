@@ -28,14 +28,14 @@ $utilisateur = $utilisateur ?? null;
     </div>
     <div>
       <a class="navbar-brand brand-logo" href="<?= Admin::url('/') ?>">
-        <span class="pgy-monogramme" aria-hidden="true">PGY</span>
+        <?php require __DIR__ . '/monogramme.php'; ?>
         <span class="pgy-marque">
           <b>Une destinée</b>
           <span>Administration</span>
         </span>
       </a>
       <a class="navbar-brand brand-logo-mini" href="<?= Admin::url('/') ?>">
-        <span class="pgy-monogramme" aria-hidden="true">PGY</span>
+        <?php require __DIR__ . '/monogramme.php'; ?>
       </a>
     </div>
   </div>

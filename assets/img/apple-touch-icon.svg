@@ -1,14 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Philippe Grégoire Yacé">
   <title>Philippe Grégoire Yacé — Une destinée</title>
   <!--
-    Variante pour l'écran d'accueil iOS. Deux écarts avec le favicon :
-    aucun arrondi, parce qu'iOS applique son propre masque par-dessus et
-    arrondirait une seconde fois ; et un Y un peu plus rentré, le masque
-    système mordant sur les bords de l'image fournie.
+    Variante pour l'écran d'accueil iOS. Deux écarts avec le favicon : aucun
+    arrondi, parce qu'iOS applique son propre masque et arrondirait une seconde
+    fois ; et une lettre un peu plus rentrée, le masque système mordant sur les
+    bords de l'image fournie.
+
+    Même Y officiel, même façon de le placer — par transformation, sans toucher
+    au tracé livré. Cible : 82 px de haut, centrée.
   -->
   <rect width="180" height="180" fill="#A88B5C"/>
-  <g fill="none" stroke="#1E1D1B" stroke-width="19" stroke-linecap="butt" stroke-linejoin="miter">
-    <path d="M50 55 L90 96 L130 55"/>
-    <path d="M90 90 L90 126"/>
+  <g transform="translate(90 90) scale(0.201) translate(-1390.5 -1229)" fill="#1E1D1B">
+    <path d="M1437.4,1288.34V1433h-94.48V1287.17l-158-262.42h100.3l109,181.36,109-181.36H1596Z"/>
   </g>
 </svg>

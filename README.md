@@ -12,18 +12,25 @@ aux données, et le tunnel de commande.**
 
 ### Palette
 
-Le logotype est **strictement monochrome** (un seul gris, `#4D4D4D`). Il fournit donc
-l'axe neutre de la palette, mais aucune couleur d'accent. Le **laiton patiné** a été
-choisi et validé pour ce rôle : registre commémoratif — dorure à chaud sur reliure,
-médaille, plaque gravée — qui répond à la stature du sujet sans jamais concurrencer
-le gris du logo.
+Le logotype est **strictement monochrome** : le fichier de marque officiel porte un
+seul gris, `#595959`. Il fournit donc l'axe neutre de la palette, mais aucune couleur
+d'accent. Le **laiton patiné** a été choisi et validé pour ce rôle : registre
+commémoratif — dorure à chaud sur reliure, médaille, plaque gravée — qui répond à la
+stature du sujet sans jamais concurrencer le gris du logo.
+
+**Le gris officiel n'écrit jamais.** `--ink-2` vaut `#4D4D4D` et non `#595959`, et
+l'écart est mesuré : le gris de marque tombe à 6,38:1 sur le papier, en dessous du
+AAA que ce ton tient pour le corps de texte (7,70:1). Le logo, lui, ne porte aucune
+couleur en dur — il est servi en `currentColor` et prend l'encre de son contexte,
+l'encre dans l'en-tête, le papier dans le pied.
 
 | Rôle | Jeton | Valeur | Part |
 |---|---|---|---|
 | Papier | `--paper` | `#F7F4EE` | ~60 % |
 | Papier en retrait | `--paper-sunk` | `#EFEAE0` | — |
 | Encre | `--ink` | `#262523` | ~30 % |
-| Gris du logo | `--ink-2` | `#4D4D4D` | rappel identitaire |
+| Gris de rappel | `--ink-2` | `#4D4D4D` | rappel identitaire |
+| Gris du fichier de marque | — | `#595959` | référence, jamais employée telle quelle |
 | Laiton — décor | `--brass` | `#A88B5C` | ~10 % |
 | Laiton — texte | `--brass-text` | `#7D6134` | ~10 % |
 
@@ -41,7 +48,9 @@ et non `#FFF`, l'encre un noir chaud et non `#000`.
 - **Bodoni Moda** (display) — contraste vertical élevé, empattements filiformes.
   Registre monumental. Réservé aux grandes tailles : sous 24 px son contraste casse.
 - **Jost** (interface et corps de texte) — géométrique, écho direct du logotype :
-  mêmes coupes franches, même construction circulaire.
+  mêmes coupes franches, même construction circulaire. Le pari a tenu : le
+  logotype officiel, livré après coup, porte lui aussi une géométrique à
+  terminaisons droites. Le système typographique n'a eu à bouger d'aucun cran.
 
 L'interlignage des titres ne descend pas sous ~1,06 : le français capitalise des
 lettres accentuées (É, À, Ê) et un interlignage plus serré mutile l'accent.
@@ -54,11 +63,12 @@ template. Une seule animation appuyée : la révélation par masque des titres d
 
 ### Favicon
 
-Le logotype fait `PGY | PHILIPPE GRÉGOIRE / YACÉ`. À 16 px, trois lettres
-deviennent une tache : le favicon garde donc la seule initiale du patronyme,
-la plus tenue géométriquement des trois. Registre : **la lettre gravée dans une
-plaque de laiton**, prolongement direct de la palette — médaille, dorure à
-chaud, plaque commémorative.
+Le logotype officiel est un **portrait au trait suivi du nom**. À 16 px, le visage
+se remplit et devient une tache — vérifié au rendu. Le favicon garde donc la seule
+initiale du patronyme, et depuis la livraison du logo c'est le **Y officiel**,
+découpé dans le mot YACÉ du fichier de marque, et non plus une lettre redessinée.
+Registre inchangé : **la lettre gravée dans une plaque de laiton**, prolongement
+direct de la palette — médaille, dorure à chaud, plaque commémorative.
 
 **Le laiton porte la tuile, pas la lettre**, et c'est mesuré. Une tuile en encre
 profonde donnait 13,8:1 contre un bandeau d'onglets clair mais 1,5:1 contre un
@@ -66,9 +76,11 @@ bandeau sombre : invisible en thème sombre. Le laiton `#A88B5C`, ton moyen,
 garde 2,6:1 sur l'un et 3,5:1 sur l'autre. L'encre sur ce laiton donne 5,2:1,
 la lettre reste franche à 16 px.
 
-Le Y est tracé en géométrie pure, jamais en texte : un favicon ne dispose
-d'aucune police chargée. Traits d'épaisseur constante, terminaisons coupées
-d'équerre — la Jost du logotype.
+Le Y vient du fichier de marque, jamais d'une police : un favicon n'en a aucune
+de chargée. Il est **posé par transformation plutôt que réécrit** — boîte d'origine
+`1185 1025 411 408`, centrée et mise à l'échelle — de sorte que le tracé reste au
+caractère près celui du logo livré. La même lettre tient la tuile de marque du
+back-office, où le portrait ne passait pas à 36 px.
 
 | Fichier | Rôle |
 |---|---|
@@ -77,6 +89,7 @@ d'équerre — la Jost du logotype.
 | `assets/img/apple-touch-icon.svg` | source de la variante iOS : sans arrondi (iOS applique son propre masque) et Y plus rentré |
 | `assets/img/apple-touch-icon.png` | 180 × 180, écran d'accueil iOS |
 | `favicon.ico` | à la racine, pour la requête automatique vers `/favicon.ico` ; 16/32/48 empaquetées en PNG |
+| `assets/img/logo.svg` | logotype officiel, recadré sur la boîte réelle du dessin et passé en `currentColor` ; source du `<symbol>` servi aux pages |
 | `assets/img/og-image.svg` → `.jpg` | 1200 × 630, aperçu de partage social. Typographique à dessein : un placard composé de texte se distingue au premier coup d'œil d'une photographie livrée, ce qui évite qu'il reste en place par inadvertance |
 
 Le même jeu sert au site public et au back-office : une seule identité, un seul
@@ -130,7 +143,7 @@ livreyace/                  ← racine web
 │                           TentativeConnexion                [interdit]
 ├── templates/
 │   ├── layout.php          mise en page du site public       [interdit]
-│   ├── partials/           navigation, pied                  [interdit]
+│   ├── partials/           navigation, pied, symbole du logo [interdit]
 │   ├── pages/              corps des pages publiques         [interdit]
 │   └── admin/              mise en page, partials et pages
 │                           du back-office                    [interdit]
@@ -232,6 +245,40 @@ pendant un quart d'heure. Le blocage est toujours temporaire : verrouiller pour
 de bon offrirait à un tiers le moyen d'interdire l'accès à l'éditeur légitime en
 échouant assez souvent. Seul `REMOTE_ADDR` est lu, jamais `X-Forwarded-For` —
 cet en-tête vient du client et se falsifie.
+
+### Le logotype, servi une fois pour deux emplacements
+
+Le logo officiel est un portrait au trait suivi du nom : **15 Ko de tracés**, dont
+12,5 pour le seul visage. Il paraît deux fois par page, en-tête et pied.
+
+Il est donc défini une fois en `<symbol>` (`templates/partials/logo-symbole.php`,
+inclus par la mise en page) et rappelé deux fois par `<use href="#pgy-logo">` :
+un seul dessin, deux instances. Vérifié sur la page servie — un `id="pgy-logo"`,
+deux `<use>`, vingt-et-un tracés et non quarante-deux.
+
+**Pourquoi pas `<img src="logo.svg">`**, qui serait mis en cache par le
+navigateur : une image externe n'hérite pas de la couleur du texte. Le logo doit
+passer de l'encre de l'en-tête au papier du pied ; en `<img>`, il faudrait deux
+fichiers de 17 Ko à garder d'équerre.
+
+**`fill` est porté par le `<symbol>`**, pas par chaque tracé. C'est une propriété
+héritée : dans l'arbre d'ombre d'un `<use>`, elle se résout contre la couleur du
+contexte appelant. L'oublier laisse le logo en noir par défaut — invisible sur le
+pied sombre, ce qui est exactement arrivé au premier essai.
+
+Trois retouches ont été faites au fichier livré, aucune sur le dessin :
+le **cadre** (le `viewBox` de 3000 × 2000 ne contenait le dessin que dans sa bande
+centrale ; recadré sur la boîte réelle, `193 530 2613 941`, mesurée au navigateur),
+la **couleur** (`fill:#595959` dans un bloc `<style>` avec une classe `.cls-1` →
+`fill="currentColor"` sur la racine), et les **identifiants** (`id="Calque_1"`
+retiré — deux exemplaires par page, deux `id` identiques se télescopent).
+
+**Le rapport a changé la barre.** Le verrou reconstruit était un bloc typographique
+de 6,4:1 ; le logo officiel fait 2,78:1. À hauteur égale il serait trois fois moins
+large, et illisible. Il est donc posé à 48 px de haut dans l'en-tête (38 px une
+fois la barre réduite au défilement) et 64 px dans le pied. À 38 px, la ligne
+« PHILIPPE GRÉGOIRE » n'est plus lisible mais le nom et le portrait le restent —
+c'est le plancher acceptable, mesuré au rendu.
 
 ### Limitation de débit des formulaires publics
 
@@ -603,12 +650,19 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
 
 ## 5. À fournir avant mise en ligne
 
-- **Logotype** — le verrou `.logo` est une reconstruction HTML approchée. Remplacer
-  par le SVG officiel à trois endroits : `templates/partials/nav.php`,
-  `templates/partials/footer.php`, et le monogramme `.pgy-monogramme` de la barre
-  du back-office (`templates/admin/partials/navbar.php`).
-  **Le favicon découle de cette reconstruction** : si le Y officiel a une autre
-  géométrie, redessiner `assets/img/favicon.svg` et regénérer le jeu (voir §1).
+- ~~**Logotype**~~ — **livré et intégré.** Le verrou HTML a disparu des quatre
+  emplacements où il vivait : en-tête, pied, barre du back-office et écran de
+  connexion. Le favicon et l'icône iOS ont été redessinés autour du Y officiel et
+  tout le jeu régénéré — `favicon.svg`, `favicon-32.png`, `apple-touch-icon.svg`
+  et `.png`, `favicon.ico` (16/32/48). Voir §1 et §2.
+
+  Deux remarques à renvoyer au studio, sans urgence : le fichier livré porte
+  `fill:#595959` dans un bloc `<style>` avec une classe `.cls-1`, et un
+  `id="Calque_1"` — trois choses qu'un logo inséré deux fois par page ne peut pas
+  garder telles quelles (voir §2, « Le logotype, servi une fois »). Et son
+  `viewBox` de 3000 × 2000 laissait un tiers de vide au-dessus et au-dessous du
+  dessin. Rien de bloquant : les trois ont été corrigés à l'intégration, sans
+  toucher à un seul tracé.
 - **Visuels** — les `.svg` de `assets/img/` sont des cadres d'attente générés. Chacun
   affiche la dimension de livraison attendue et son cadrage. Ces valeurs sont calculées
   sur la largeur réelle d'affichage en écran 2× ; le hero est en dérive `scale(1.1)`,

@@ -1,9 +1,11 @@
 /* =========================================================================
    PGY — Jetons de design
-   Source chromatique : le logo est strictement monochrome (gris #4D4D4D).
-   Il fournit donc l'axe neutre (papier + encre). Le laiton patine est
-   l'accent choisi : registre commemoratif, dorure a chaud, plaque gravee.
-   Aucune couleur brute du logo n'est employee en grande surface.
+   Source chromatique : le logo est strictement monochrome. Le fichier de
+   marque officiel porte #595959 ; il fournit l'axe neutre (papier + encre)
+   et aucune couleur d'accent. Le laiton patine est l'accent choisi :
+   registre commemoratif, dorure a chaud, plaque gravee.
+   Aucune couleur brute du logo n'est employee en grande surface — le logo
+   lui-meme est servi en currentColor et prend l'encre de son contexte.
    ========================================================================= */
 
 :root {
@@ -17,7 +19,12 @@
   /* --- Encre — 30 % -------------------------------------------------------
      Noir chaud desature, jamais #000 : le noir pur cisaille sur papier chaud. */
   --ink:          #262523;   /* titres et corps          13.98:1 sur papier */
-  --ink-2:        #4D4D4D;   /* gris exact du logo        7.79:1 — rappel */
+  --ink-2:        #4D4D4D;   /* gris de rappel            7.70:1
+                                Voisin du #595959 du fichier de marque, mais
+                                pas identique : celui-ci tombe a 6.38:1 sur
+                                papier, en dessous du AAA que ce ton tient
+                                pour le corps de texte. Le gris officiel reste
+                                la reference de la marque, il n'ecrit pas. */
   --ink-3:        #6B6862;   /* texte secondaire          5.12:1 */
   --ink-deep:     #1E1D1B;   /* fond des sections sombres */
 

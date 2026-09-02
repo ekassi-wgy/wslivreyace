@@ -35,31 +35,27 @@
   gap: var(--sp-6);
 }
 
-/* Verrou du logotype. A remplacer par le SVG officiel — voir README. */
-.logo { display: flex; align-items: center; gap: 0.9rem; color: var(--ink); }
-.logo__mark {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: 1.5rem;
-  letter-spacing: 0.02em;
-  line-height: 1;
-}
-.logo__rule { width: 1px; height: 30px; background: var(--rule-strong); }
-.logo__text { line-height: 1.15; }
-.logo__text b {
+/* Logotype officiel : un portrait au trait suivi du nom, defini une seule fois
+   en <symbol> dans la mise en page et rappele ici par <use>.
+
+   Aucune couleur n'est posee sur le dessin : il est en currentColor et prend
+   celle de son contexte — l'encre dans l'en-tete, le papier dans le pied.
+
+   Le rapport est celui de la boite reelle du dessin livre (2613 x 941), tenu
+   par aspect-ratio plutot que par un viewBox recopie dans deux gabarits : une
+   seule valeur a corriger si la marque evolue. */
+.logo { display: inline-flex; align-items: center; color: var(--ink); }
+.logo__svg {
   display: block;
-  font-weight: 300;
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--ink-3);
+  height: 48px;
+  width: auto;
+  aspect-ratio: 2613 / 941;
+  transition: height var(--dur-2) var(--ease);
 }
-.logo__text span {
-  display: block;
-  font-weight: 600;
-  font-size: 1.0625rem;
-  letter-spacing: 0.06em;
-}
+
+/* En-tete reduit au defilement : le logo suit, sinon la barre garderait la
+   hauteur qu'elle vient de perdre. */
+.nav-bar.is-stuck .logo__svg { height: 38px; }
 
 .nav-menu {
   display: flex;
@@ -440,9 +436,11 @@
 
 /* --- Pied de page ------------------------------------------------------ */
 .foot { background: var(--ink-deep); color: rgba(247, 244, 238, 0.68); }
+/* Sur le pied sombre, le meme dessin en papier — c'est tout ce que demande
+   currentColor. Un peu plus grand : la place ne manque pas, et le portrait y
+   gagne. */
 .foot .logo { color: var(--paper); }
-.foot .logo__rule { background: var(--rule-dark); }
-.foot .logo__text b { color: var(--brass-soft); }
+.foot .logo__svg { height: 64px; }
 .foot a { color: rgba(247, 244, 238, 0.68); transition: color var(--dur-1) var(--ease); }
 .foot a:hover { color: var(--brass-soft); }
 .foot__rule { height: 1px; background: var(--rule-dark); }

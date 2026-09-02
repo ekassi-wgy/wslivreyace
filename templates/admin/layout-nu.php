@@ -37,7 +37,7 @@ $messages = Session::messages();
   <div class="pgy-nu__carte">
 
     <a class="pgy-nu__marque" href="/">
-      <span class="pgy-monogramme" aria-hidden="true">PGY</span>
+      <?php require __DIR__ . '/partials/monogramme.php'; ?>
       <span class="pgy-marque">
         <b>Une destinée</b>
         <span>Administration</span>

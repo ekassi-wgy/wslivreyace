@@ -64,6 +64,8 @@ $ld          = $ld          ?? '';
 <body>
 <a class="skip-link" href="#main">Aller au contenu</a>
 
+<?php require __DIR__ . '/partials/logo-symbole.php'; ?>
+
 <?php require __DIR__ . '/partials/nav.php'; ?>
 
 <main id="main">

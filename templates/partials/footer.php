@@ -3,9 +3,7 @@
     <div class="row" style="row-gap: var(--sp-7);">
       <div class="col-lg-5 col-xl-4">
         <a class="logo" href="/" aria-label="Philippe Grégoire Yacé — accueil">
-          <span class="logo__mark">PGY</span>
-          <span class="logo__rule" aria-hidden="true"></span>
-          <span class="logo__text"><b>Philippe Grégoire</b><span>YACÉ</span></span>
+          <svg class="logo__svg" aria-hidden="true" focusable="false"><use href="#pgy-logo"></use></svg>
         </a>
       </div>
       <div class="col-lg-3 foot__col">

@@ -1,26 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Philippe Grégoire Yacé">
   <title>Philippe Grégoire Yacé — Une destinée</title>
   <!--
-    Le logotype complet (PGY | PHILIPPE GRÉGOIRE / YACÉ) ne tient pas dans
-    16 px : trois lettres y deviennent une tache. On garde l'initiale du
-    patronyme, la plus tenue géométriquement des trois.
+    Le logotype officiel est un portrait au trait suivi du nom : à 16 px, le
+    visage devient une tache et le nom un pâté. On garde donc l'initiale du
+    patronyme — mais, depuis la livraison du logo, c'est le **Y officiel**,
+    découpé dans le mot YACÉ du fichier de marque, et non plus une lettre
+    redessinée à la main.
 
-    Registre : la lettre gravée dans une plaque de laiton — la même idée
-    commémorative que la palette (médaille, dorure à chaud, plaque gravée).
+    Registre inchangé : la lettre gravée dans une plaque de laiton — dorure à
+    chaud, médaille, plaque commémorative.
 
     Le laiton porte la tuile plutôt que la lettre, et c'est mesuré : #A88B5C
     est un ton moyen qui garde 2,6:1 sur un bandeau d'onglets clair et 3,5:1
-    sur un bandeau sombre. Une tuile en encre profonde donnait 13,8:1 sur
-    l'un et 1,5:1 sur l'autre — invisible en thème sombre. L'encre sur le
-    laiton donne 5,2:1, la lettre reste franche à 16 px.
+    sur un bandeau sombre. Une tuile en encre profonde donnait 13,8:1 sur l'un
+    et 1,5:1 sur l'autre — invisible en thème sombre. L'encre sur le laiton
+    donne 5,2:1, la lettre reste franche à 16 px.
 
-    Le Y est tracé en géométrie pure, jamais en texte : un favicon ne dispose
-    d'aucune police chargée. Traits d'épaisseur constante et terminaisons
-    coupées d'équerre, comme la Jost du logotype.
+    Le Y est posé par transformation plutôt que par réécriture de ses
+    coordonnées : le tracé reste au caractère près celui du logo livré.
+    Boîte d'origine : 1185 1025 411 408. Cible : 18 px de haut, centrée.
   -->
   <rect width="32" height="32" rx="6" fill="#A88B5C"/>
-  <g fill="none" stroke="#1E1D1B" stroke-width="3.7" stroke-linecap="butt" stroke-linejoin="miter">
-    <path d="M6.8 8 L16 17.6 L25.2 8"/>
-    <path d="M16 16.4 L16 25"/>
+  <g transform="translate(16 16) scale(0.0441) translate(-1390.5 -1229)" fill="#1E1D1B">
+    <path d="M1437.4,1288.34V1433h-94.48V1287.17l-158-262.42h100.3l109,181.36,109-181.36H1596Z"/>
   </g>
 </svg>

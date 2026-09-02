@@ -53,6 +53,14 @@
   border-radius: 3px;
 }
 
+/* La tuile de marque porte le Y du logotype ; celle du menu du compte porte
+   l'initiale de la personne connectée, en texte. Même tuile, deux contenus. */
+.pgy-monogramme__y {
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
 .pgy-marque {
   display: flex;
   flex-direction: column;
