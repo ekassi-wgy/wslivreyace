@@ -120,7 +120,7 @@ livreyace/                  ← racine web
 │   ├── Core/               Config, Database, Router, View,
 │   │                       Admin, Session, Csrf, Auth,
 │   │                       Validator, Slug, Site,
-│   │                       Televersement, Paiement           [interdit]
+│   │                       Televersement, Paiement, Debit    [interdit]
 │   ├── Controller/Admin/   Auth, Crud (Actualite, Evenement,
 │   │                       Repere), Temoignage, Media,
 │   │                       Commande, Compte, Parametre       [interdit]
@@ -232,6 +232,41 @@ pendant un quart d'heure. Le blocage est toujours temporaire : verrouiller pour
 de bon offrirait à un tiers le moyen d'interdire l'accès à l'éditeur légitime en
 échouant assez souvent. Seul `REMOTE_ADDR` est lu, jamais `X-Forwarded-For` —
 cet en-tête vient du client et se falsifie.
+
+### Limitation de débit des formulaires publics
+
+Le comptage d'essais du lot B ne protège que la connexion. Les formulaires
+ouverts à tout le monde — témoignage, contact — ont désormais le leur,
+`App\Core\Debit`, posé **avant** qu'aucun ne soit exposé.
+
+**Deux compteurs, et non un seul, parce que ce n'est pas la même unité de
+compte.** À la connexion, on compte les échecs, et une réussite remet le
+compteur à zéro : l'éditeur qui se trompe quatre fois avant d'entrer ne doit pas
+rester à un essai du blocage pendant un quart d'heure. Sur un formulaire public,
+on compte les soumissions, réussies comprises — ce qu'on borne, c'est le nombre
+de témoignages qu'un même visiteur dépose dans l'heure. Les fusionner aurait
+demandé un drapeau à chaque appel pour servir un seul des deux appelants.
+
+**Toute soumission compte, valide ou non.** Ne compter que celles qui passent la
+validation rendrait le contournement gratuit : il suffirait d'envoyer des
+formulaires fautifs. D'où un plafond assez haut pour absorber les fautes de
+saisie — cinq par heure et par action, réglés dans `Debit::BAREMES`, en liste
+blanche : une action non déclarée lève une exception au lieu de passer sans
+plafond.
+
+**La clé est l'IP, lue dans `REMOTE_ADDR` seul**, jamais `X-Forwarded-For` —
+cet en-tête vient du client, et le lire ici permettrait de repartir de zéro à
+chaque envoi en changeant une chaîne de caractères. Contrepartie assumée : une
+adresse partagée partage son plafond ; l'alternative, un compteur en session, se
+remet à zéro en vidant ses cookies.
+
+**Ce que ce n'est pas.** Un filtre anti-spam : un robot qui reste sous le plafond
+passe. Le piège à robots — champ leurre, délai minimal de remplissage —
+s'écrira avec le formulaire qu'il protège, pas avant.
+
+Vérifié : plafond atteint au sixième envoi, cloisonnement par action et par
+adresse (IPv4 et IPv6), fenêtre qui glisse, attente annoncée exacte à la minute,
+action inconnue rejetée, purge d'un jour à l'écriture.
 
 ### Les écrans de contenu
 
@@ -464,14 +499,16 @@ Ils sont désormais dans `templates/partials/`, inclus une seule fois par
 
 Huit tables, `utf8mb4`, InnoDB — voir `sql/001_schema.sql` :
 `utilisateur`, `actualite`, `evenement`, `temoignage`, `media`, `repere`,
-`commande`, `parametre`. Plus `tentative_connexion` (`sql/002_auth.sql`), le
-compteur glissant des essais de connexion.
+`commande`, `parametre`. Plus deux compteurs glissants :
+`tentative_connexion` (`sql/002_auth.sql`) pour les essais de connexion, et
+`soumission_publique` (`sql/005_soumission.sql`) pour les formulaires publics.
 
 Les migrations s'appliquent dans l'ordre de leur numéro ; il n'y a pas encore de
-table de suivi, le projet en est à quatre fichiers. `sql/003_media.sql` ajoute à
+table de suivi, le projet en est à cinq fichiers. `sql/003_media.sql` ajoute à
 `media` le poids du fichier et l'unicité de son chemin ; `sql/004_commande.sql`
 ajoute à `commande` la provenance du paiement, le code de transaction, la note de
-suivi et la trace de remise. Tout est reporté dans `001_schema.sql` pour qu'une
+suivi et la trace de remise ; `sql/005_soumission.sql` crée le journal des
+soumissions publiques. Tout est reporté dans `001_schema.sql` pour qu'une
 installation neuve n'ait pas à rejouer l'historique.
 
 Deux partis pris qui tiennent au sujet : les témoignages arrivent en
@@ -618,14 +655,11 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
 
 ## 6. Dette connue
 
-La duplication de la navigation et du pied de page — qui figurait ici — **est
-soldée** depuis le passage aux gabarits (voir §2). Ce qu'il reste :
+Deux lignes qui figuraient ici sont **soldées** : la duplication de la navigation
+et du pied de page, depuis le passage aux gabarits, et la limitation de débit des
+formulaires publics, posée avant qu'aucun formulaire ne soit exposé (voir §2 pour
+les deux). Ce qu'il reste :
 
-- **La limitation de débit ne couvre que la connexion.** Le jeton CSRF et la
-  validation sont posés (voir §2) et servent déjà tout le back-office ; le
-  comptage d'essais, lui, ne protège que `/cmsadmin/connexion`. Le formulaire de
-  témoignage sera ouvert à tout le monde et portera des propos sur une personne
-  réelle : il lui faut son propre plafond avant d'être exposé.
 - **Aucun test.** Le socle a été vérifié à la main (codes HTTP, connexion PDO,
   absence de warning, mesure du rendu au navigateur). Ces vérifications ne sont
   pas rejouables automatiquement.
@@ -649,6 +683,10 @@ soldée** depuis le passage aux gabarits (voir §2). Ce qu'il reste :
   vide jusque-là — et aucune saisie manuelle n'est ouverte, faute d'avoir été
   demandée. Si l'éditeur prend des commandes au téléphone ou en dédicace, c'est
   un formulaire à ajouter, avec ses propres modes de paiement.
+- **Le débit est borné, le spam ne l'est pas.** `Debit` compte les envois ; il
+  ne dit rien de leur contenu. Un robot qui reste sous cinq par heure passe. Le
+  piège à robots — champ leurre, délai minimal de remplissage — s'écrira avec le
+  premier formulaire public, avec lui et pas avant.
 - **Pas d'export des commandes.** Ni CSV ni impression : la comptabilité devra
   relire l'écran ou la base. À voir quand il y aura des commandes.
 - **`reference/` pèse ~70 Mo dans l'arborescence servie.** Verrouillé en 403,
@@ -669,9 +707,8 @@ routeur, PDO, mise en page unique ; base `livreyace_sbd` avec ses huit tables ;
 entier**, ses sept lots livrés.
 
 **Non fait** — les pages publiques qui liront les données saisies, le tunnel de
-commande, la limitation de débit sur les formulaires publics, et la phase 3
-(newsletter, recherche, multilinguisme). Autrement dit : tout est désormais du
-côté visiteur.
+commande, et la phase 3 (newsletter, recherche, multilinguisme). Autrement dit :
+tout est désormais du côté visiteur.
 
 ### Le back-office, lot par lot
 
@@ -734,21 +771,24 @@ en lecture comme en écriture — vérifié, un éditeur qui poste sur
 ~~1. **Back-office**~~ — **fait**, les sept lots sont livrés. C'était le gros
    morceau du choix « PHP à la main », et il débloque tout le reste.
 
-1. **Couche formulaire** — il ne reste que la **limitation de débit sur les
-   formulaires publics**. Le jeton CSRF et la validation sont posés depuis le
-   lot B et servent tout le back-office ; le comptage d'essais, lui, ne protège
-   que la connexion. Le formulaire de témoignage sera ouvert à tout le monde et
-   portera des propos sur une personne réelle : il lui faut son plafond avant
-   d'être exposé.
-2. **Pages publiques adossées aux données** — actualités et détail, galerie avec
+~~1. **Couche formulaire**~~ — **faite**. Jeton CSRF et validation depuis le
+   lot B, limitation de débit des formulaires publics depuis. Il reste à
+   **ouvrir la session publique** au moment où le premier formulaire s'écrira :
+   elle n'est volontairement pas démarrée aujourd'hui, un site qui pose un
+   cookie à chaque visiteur pour un formulaire qu'il n'a pas encore rencontré
+   s'impose une bannière pour rien. `Session::demarrer('pgy', '/')` sur la seule
+   route qui en a besoin.
+
+1. **Pages publiques adossées aux données** — actualités et détail, galerie avec
    visionneuse, événements, témoignages, contact. Rapides : les données se
    saisissent déjà, le système de composants existe, il n'y a plus qu'à lire ce
-   qui existe.
-3. **Tunnel de commande** — la passerelle est arrêtée (`carte.abidjan.net`, voir
+   qui existe. Le formulaire de témoignage est le premier à écrire : il a sa file
+   de modération, sa validation et son plafond, tout l'attend.
+2. **Tunnel de commande** — la passerelle est arrêtée (`carte.abidjan.net`, voir
    §2) et décrite en un seul endroit. Le tunnel suppose la page boutique, donc
-   le point 2. Il créera les commandes que l'écran de suivi attend, avec leur
+   le point 1. Il créera les commandes que l'écran de suivi attend, avec leur
    code de transaction.
-4. **Phase 3 du CDC** — newsletter, recherche interne, multilinguisme.
+3. **Phase 3 du CDC** — newsletter, recherche interne, multilinguisme.
 
 ### Ce qui bloque, et sur qui
 

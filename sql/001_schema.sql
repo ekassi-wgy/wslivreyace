@@ -135,6 +135,18 @@ CREATE TABLE IF NOT EXISTS commande (
     REFERENCES utilisateur (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- --- Journal des soumissions publiques (limitation de débit) ----------------
+-- Témoignage, contact : le nombre d'envois d'un même visiteur est borné par
+-- heure. Distincte de tentative_connexion, qui compte des échecs et non des
+-- soumissions. Voir App\Core\Debit.
+CREATE TABLE IF NOT EXISTS soumission_publique (
+  id        INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  action    VARCHAR(40) NOT NULL,        -- 'temoignage', 'contact'
+  ip        VARBINARY(16) NOT NULL,      -- inet_pton : couvre IPv4 et IPv6
+  soumis_le DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY ix_soumission_debit (action, ip, soumis_le)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 -- --- Contenus éditables et réglages -----------------------------------------
 CREATE TABLE IF NOT EXISTS parametre (
   cle     VARCHAR(80) NOT NULL PRIMARY KEY,
