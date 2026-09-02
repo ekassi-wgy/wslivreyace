@@ -12,6 +12,7 @@ use App\Core\Database;
 use App\Core\View;
 use App\Model\Actualite;
 use App\Model\Evenement;
+use App\Model\Media;
 use App\Model\Parametre;
 use App\Model\Repere;
 use App\Model\Temoignage;
@@ -21,12 +22,16 @@ $compteurs = [
     ['Événements',  Evenement::compter('publie'),  Evenement::compter(),  '/evenements'],
     ['Repères',     Repere::compter('publie'),     Repere::compter(),     '/reperes'],
     ['Témoignages', Temoignage::compter('publie'), Temoignage::compter(), '/temoignages'],
+    ['Médias',      Media::compter('publie'),      Media::compter(),      '/medias'],
 ];
 
 // Ce qui attend quelqu'un.
 $enAttente  = Temoignage::compter('en_attente');
 $sansSource = (int) (Database::one(
     "SELECT COUNT(*) AS n FROM repere WHERE source IS NULL OR source = ''"
+)['n'] ?? 0);
+$sansCredit = (int) (Database::one(
+    "SELECT COUNT(*) AS n FROM media WHERE credit IS NULL OR credit = ''"
 )['n'] ?? 0);
 $ficheTotal   = count(Parametre::FICHE_LIVRE);
 $ficheRemplie = Parametre::ficheRemplie();
@@ -46,6 +51,14 @@ if ($sansSource > 0) {
         sprintf('%d repère%s sans source', $sansSource, $sansSource > 1 ? 's' : ''),
         'Ils ne pourront pas être publiés tant que la référence manque (CDC §6).',
         Admin::url('/reperes'),
+    ];
+}
+if ($sansCredit > 0) {
+    $aFaire[] = [
+        'mdi-image-off-outline',
+        sprintf('%d image%s sans crédit', $sansCredit, $sansCredit > 1 ? 's' : ''),
+        'Elles ne peuvent pas être publiées tant que la provenance manque (CDC §6).',
+        Admin::url('/medias'),
     ];
 }
 if ($ficheRemplie < $ficheTotal) {
@@ -135,8 +148,6 @@ if ($ficheRemplie < $ficheTotal) {
         Les entrées verrouillées de la barre latérale.
       </p>
       <ul class="pgy-liste-notes mt-3">
-        <li><strong>Médiathèque</strong> — téléversement des archives avec contrôle
-            de type réel, vignettes, et branchement des images sur les fiches.</li>
         <li><strong>Commandes</strong> — suppose d'avoir tranché sur le backend de
             paiement avant d'écrire le tunnel.</li>
         <li><strong>Comptes</strong> — la création se fait en ligne de commande

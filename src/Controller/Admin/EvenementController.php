@@ -28,6 +28,7 @@ final class EvenementController extends CrudController
             'titre_edition'  => "Modifier l'événement",
             'feminin'        => false,
             'gabarit'        => 'evenements',
+            'media'          => true,
         ];
     }
 
@@ -64,6 +65,8 @@ final class EvenementController extends CrudController
             $v->erreur('ville', 'Un événement publié doit indiquer sa ville.');
         }
 
+        static::validerImage($v);
+
         return $v;
     }
 
@@ -73,6 +76,7 @@ final class EvenementController extends CrudController
             'titre'           => $v->valeur('titre'),
             'slug'            => Slug::unique(Evenement::table(), $v->valeur('titre'), $id),
             'description'     => static::ouNull($v->valeur('description')),
+            'image'           => static::ouNull($v->valeur('image')),
             'lieu'            => static::ouNull($v->valeur('lieu')),
             'ville'           => static::ouNull($v->valeur('ville')),
             'debut_le'        => static::horodatage($v->valeur('debut_le')),

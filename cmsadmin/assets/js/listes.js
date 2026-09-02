@@ -1,5 +1,5 @@
 /**
- * Écrans de liste : tri, recherche, pagination, confirmation de suppression.
+ * Écrans de liste : tri, recherche, pagination.
  *
  * DataTables est livré avec ses libellés en anglais et charge normalement sa
  * traduction depuis un CDN. L'admin n'émet aucune requête sortante : les
@@ -51,19 +51,6 @@
           orderable: false
         }]
       });
-    });
-
-    /**
-     * Suppression : demander confirmation.
-     *
-     * Le garde-fou réel est côté serveur — POST et jeton CSRF. Celui-ci ne
-     * protège que d'un clic malheureux, et il ne doit pas être le seul :
-     * JavaScript désactivé, la suppression reste possible et c'est voulu.
-     */
-    $(document).on('submit', 'form[data-confirmation]', function (e) {
-      if (!window.confirm($(this).data('confirmation'))) {
-        e.preventDefault();
-      }
     });
 
   });

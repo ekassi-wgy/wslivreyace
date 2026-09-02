@@ -28,6 +28,7 @@ final class ActualiteController extends CrudController
             'titre_edition'  => "Modifier l'actualité",
             'feminin'        => true,
             'gabarit'        => 'actualites',
+            'media'          => true,
         ];
     }
 
@@ -56,6 +57,7 @@ final class ActualiteController extends CrudController
         }
 
         $v->url('source_url', 'Lien vers la source');
+        static::validerImage($v);
 
         return $v;
     }
@@ -67,6 +69,7 @@ final class ActualiteController extends CrudController
             'slug'       => Slug::unique(Actualite::table(), $v->valeur('titre'), $id),
             'categorie'  => $v->valeur('categorie', 'parution'),
             'chapo'      => static::ouNull($v->valeur('chapo')),
+            'image'      => static::ouNull($v->valeur('image')),
             'contenu'    => static::ouNull($v->valeur('contenu')),
             'source'     => static::ouNull($v->valeur('source')),
             'source_url' => static::ouNull($v->valeur('source_url')),

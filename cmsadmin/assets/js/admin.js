@@ -36,6 +36,22 @@
     $('[data-bs-toggle="offcanvas"]').on('click', function () {
       $('.sidebar-offcanvas').toggleClass('active');
     });
+
+    /**
+     * Suppression : demander confirmation.
+     *
+     * Posé ici et non sur les écrans de liste : la médiathèque supprime depuis
+     * une planche et depuis une fiche, ni l'une ni l'autre n'étant un tableau.
+     *
+     * Le garde-fou réel est côté serveur — POST et jeton CSRF. Celui-ci ne
+     * protège que d'un clic malheureux, et il ne doit pas être le seul :
+     * JavaScript désactivé, la suppression reste possible et c'est voulu.
+     */
+    $(document).on('submit', 'form[data-confirmation]', function (e) {
+      if (!window.confirm($(this).data('confirmation'))) {
+        e.preventDefault();
+      }
+    });
   });
 
   // Mode icônes seules : le sous-menu se déploie au survol, jamais au toucher.

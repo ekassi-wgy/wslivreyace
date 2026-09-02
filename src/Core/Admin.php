@@ -73,18 +73,18 @@ final class Admin
                 'icone'  => 'mdi-timeline-text-outline',
                 'url'    => self::url('/reperes'),
             ],
+            [
+                'cle'    => 'medias',
+                'titre'  => 'Médiathèque',
+                'icone'  => 'mdi-image-multiple-outline',
+                'url'    => self::url('/medias'),
+            ],
             ['rubrique' => 'Modération'],
             [
                 'cle'    => 'temoignages',
                 'titre'  => 'Témoignages',
                 'icone'  => 'mdi-comment-check-outline',
                 'url'    => self::url('/temoignages'),
-            ],
-            [
-                'cle'    => 'medias',
-                'titre'  => 'Médiathèque',
-                'icone'  => 'mdi-image-multiple-outline',
-                'bientot' => true,
             ],
             ['rubrique' => 'Administration'],
             [

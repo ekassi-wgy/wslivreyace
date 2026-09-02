@@ -1,10 +1,10 @@
 # Philippe Grégoire Yacé — *Une destinée* (1920-1998)
 
 Site éditorial de l'ouvrage. Trois pages publiques livrées, et le back-office aux
-cinq septièmes : ossature de `/cmsadmin/`, authentification, gestion des
+six septièmes : ossature de `/cmsadmin/`, authentification, gestion des
 actualités, événements et repères, modération des témoignages, fiche technique
-de l'ouvrage et tableau de bord. **Restent la médiathèque, et les écrans comptes
-et commandes.**
+de l'ouvrage, tableau de bord et médiathèque. **Restent les écrans comptes et
+commandes.**
 
 ---
 
@@ -119,13 +119,15 @@ livreyace/                  ← racine web
 │   ├── bootstrap.php       autoload + régime d'erreurs       [interdit]
 │   ├── Core/               Config, Database, Router, View,
 │   │                       Admin, Session, Csrf, Auth,
-│   │                       Validator                         [interdit]
-│   │                       Slug                             [interdit]
+│   │                       Validator, Slug, Site,
+│   │                       Televersement                     [interdit]
 │   ├── Controller/Admin/   Auth, Crud (Actualite, Evenement,
-│   │                       Repere), Temoignage, Parametre  [interdit]
+│   │                       Repere), Temoignage, Media,
+│   │                       Parametre                         [interdit]
 │   └── Model/              Modele, Actualite, Evenement,
-│                           Repere, Temoignage, Parametre,
-│                           Utilisateur, TentativeConnexion   [interdit]
+│                           Repere, Temoignage, Media,
+│                           Parametre, Utilisateur,
+│                           TentativeConnexion                [interdit]
 ├── templates/
 │   ├── layout.php          mise en page du site public       [interdit]
 │   ├── partials/           navigation, pied                  [interdit]
@@ -312,6 +314,65 @@ volume mais ce qui attend une décision** : témoignages à modérer, repères s
 source, fiche technique incomplète. Chaque ligne mène à l'écran concerné. Les
 compteurs affichent le nombre publié, le total en dessous.
 
+### La médiathèque
+
+Troisième mécanique du back-office, après les contenus et la modération, et
+encore une fois distincte : **on ne crée pas un média par un formulaire, on en
+dépose un fichier**. `MediaController` ne dérive donc pas de `CrudController`.
+Le dépôt se fait par lot — des archives arrivent par dizaines, en une enveloppe
+— et les métadonnées se complètent ensuite, fiche par fiche. Un fichier refusé
+n'annule pas les autres : sur vingt scans, celui qui dépasse la taille ne doit
+pas faire recommencer les dix-neuf qui sont passés.
+
+**Le type est lu dans les octets, jamais dans l'extension.** `getimagesize`
+d'abord, puis `finfo` en contre-épreuve : les deux doivent désigner le même
+format, et il doit figurer parmi JPEG, PNG et WebP. Vérifié — un script PHP
+renommé en `.jpg` est refusé au dépôt, avec un message qui le dit.
+
+**Le nom de destination est fabriqué**, jamais reçu : slug du nom d'origine, huit
+caractères aléatoires, extension du format réellement détecté. Le nom du client
+ne survit pas au dépôt, ce qui règle d'un coup les `../`, les caractères de
+contrôle, les doubles extensions et les collisions. Les fichiers sont rangés par
+mois (`medias/2026/09/…`) : un dossier plat de plusieurs milliers d'archives
+n'est plus manipulable, ni en FTP ni en sauvegarde.
+
+**Trois plafonds**, et ils ne disent pas la même chose : 8 Mio par fichier
+(applicatif), 40 mégapixels par image — un PNG de 40 Ko peut déclarer
+30 000 × 30 000 pixels et réclamer des gigaoctets à l'ouverture — et 20 fichiers
+par dépôt. Quand c'est le serveur qui tranche, c'est sa limite qui est annoncée,
+la plus petite de `upload_max_filesize` et `post_max_size`.
+
+**Un envoi coupé par `post_max_size` est reconnu comme tel.** PHP vide alors
+`$_POST` sans le dire, jeton CSRF compris : la vérification du dépassement passe
+donc **avant** celle du jeton, sinon un envoi trop lourd s'annoncerait comme une
+session expirée. Vérifié en simulant l'état exact que PHP produit.
+
+**Vignettes** en 600 px de côté, générées par GD, calées sur l'orientation EXIF —
+scanners et téléphones l'écrivent dans les métadonnées plutôt que dans les
+pixels ; le navigateur en tient compte sur l'original, GD non, et un portrait
+serait sorti couché. La transparence d'un PNG est aplatie sur blanc, le JPEG ne
+la connaissant pas. L'échec de la vignette n'annule pas le dépôt : la
+médiathèque retombe sur l'original.
+
+**Le crédit conditionne la publication** (CDC §6) : une archive sans mention de
+provenance engage l'éditeur. La règle vaut pour le formulaire comme pour la
+bascule depuis la planche — un raccourci ne doit pas être une porte dérobée. Le
+manque se signale sur la vignette et remonte au tableau de bord.
+
+**La suppression efface le fichier, sa vignette, et détache les fiches** qui
+l'affichaient. `actualite.image` porte un chemin et non une clé étrangère :
+aucune contrainte de base ne le ferait, et l'actualité garderait le chemin d'un
+fichier effacé.
+
+**Le sélecteur d'image des fiches** montre la planche, pas une liste de noms de
+fichiers. La valeur soumise est le chemin — la page publique n'aura aucune
+jointure à faire — et elle est revalidée à l'enregistrement : forme du chemin,
+puis présence en base. Vérifié : `../../config/config.php` est refusé, un chemin
+bien formé mais inconnu aussi.
+
+L'entrée « Médiathèque » du menu est passée de la rubrique « Modération », où le
+découpage en lots l'avait mise, à « Contenus », qui est sa place.
+
 ### `medias/` n'exécute rien
 
 Le dossier reçoit des fichiers déposés par un utilisateur ; un fichier déposé ne
@@ -321,8 +382,8 @@ SSI, coupe le moteur PHP, refuse les extensions sensibles et pose `nosniff`.
 Vérifié : un `.php` déposé répond 403 ; un `.php.jpg` — la contournement
 classique par double extension — sort en source brute, non interprétée ; une
 vraie image est servie normalement. Le contrôle de type au téléversement
-(lot D) reste la première barrière, celle-ci est la seconde et tient si la
-première cède.
+(`App\Core\Televersement`, voir ci-dessus) est la première barrière, celle-ci
+est la seconde et tient si la première cède.
 
 ### La duplication du chrome est soldée
 
@@ -339,7 +400,10 @@ Huit tables, `utf8mb4`, InnoDB — voir `sql/001_schema.sql` :
 compteur glissant des essais de connexion.
 
 Les migrations s'appliquent dans l'ordre de leur numéro ; il n'y a pas encore de
-table de suivi, le projet en est à deux fichiers.
+table de suivi, le projet en est à trois fichiers. `sql/003_media.sql` ajoute à
+`media` le poids du fichier et l'unicité de son chemin ; les deux sont reportés
+dans `001_schema.sql` pour qu'une installation neuve n'ait pas à rejouer
+l'historique.
 
 Deux partis pris qui tiennent au sujet : les témoignages arrivent en
 `statut = 'en_attente'` et rien ne s'affiche sans passage explicite en `'publie'`
@@ -463,6 +527,11 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
   Traitement homogène des archives : le CSS applique déjà
   `grayscale(1) contrast(1.04) sepia(0.14)`, ce qui unifie des sources d'origines
   diverses sans retouche préalable (CDC §6).
+- **Archives photographiques** — elles ne passent plus par le dépôt : elles se
+  déposent dans le back-office, rubrique Médiathèque (JPEG, PNG ou WebP, 8 Mo par
+  fichier). **Chaque image demande son crédit** — fonds, photographe ou détenteur
+  des droits — sans quoi elle ne peut pas être publiée, et une légende, qui sert
+  aussi de texte de remplacement aux lecteurs d'écran.
 - **Contenus** — tout le texte éditorial est balisé provisoire. **Les dates de la frise
   et les citations doivent être validées avant publication** : Yacé est une figure
   historique réelle, aucun propos ne doit lui être attribué sans source.
@@ -490,15 +559,20 @@ soldée** depuis le passage aux gabarits (voir §2). Ce qu'il reste :
 - **Aucun test.** Le socle a été vérifié à la main (codes HTTP, connexion PDO,
   absence de warning, mesure du rendu au navigateur). Ces vérifications ne sont
   pas rejouables automatiquement.
-- **Pas d'éditeur enrichi ni de téléversement d'image sur les fiches.** Le corps
-  d'une actualité se saisit en texte brut, une ligne vide séparant deux
-  paragraphes. La colonne `image` existe en base mais aucun écran ne la remplit :
-  elle attend la médiathèque du lot D.
+- **Pas d'éditeur enrichi.** Le corps d'une actualité se saisit en texte brut,
+  une ligne vide séparant deux paragraphes. L'illustration, elle, se choisit
+  désormais dans la médiathèque (lot D2).
+- **La médiathèque ne recadre ni ne remplace.** Une image mal cadrée se retaille
+  hors du site, et changer le fichier d'une fiche demande d'en déposer un autre
+  puis de supprimer le premier — un remplacement en place changerait sans le dire
+  ce que montrent les pages qui l'affichent. Une seule vignette est produite
+  (600 px) : la galerie publique voudra sans doute un jeu de tailles et un
+  `srcset`, à décider quand elle sera écrite.
 - **Le CSS du thème d'administration porte des règles mortes.** Des composants
   que le back-office n'emploie pas (graphiques de démonstration, menu horizontal,
   panneau de réglages) gardent leurs styles dans `style.css`. Sans effet visible,
-  mais quelques dizaines de kilo-octets pour rien ; à élaguer une fois les lots C
-  à E écrits, quand on saura ce qui sert vraiment.
+  mais quelques dizaines de kilo-octets pour rien ; à élaguer une fois le lot E2
+  écrit, quand on saura ce qui sert vraiment.
 - **`reference/` pèse ~70 Mo dans l'arborescence servie.** Verrouillé en 403,
   mais toujours à exclure explicitement de la règle de déploiement.
 - **L'historique git porte les images non optimisées de l'ancien site** (`.git`
@@ -519,8 +593,8 @@ routeur, PDO, mise en page unique ; base `livreyace_sbd` avec ses huit tables ;
 
 ### Le back-office, lot par lot
 
-Le back-office est livré par lots, validables l'un après l'autre — cinq posés,
-deux restants. Les entrées verrouillées de la barre latérale correspondent aux
+Le back-office est livré par lots, validables l'un après l'autre — six posés,
+un restant. Les entrées verrouillées de la barre latérale correspondent aux
 lots à venir : la forme finale de l'outil est visible dès le premier.
 
 Les lots D et E ont été coupés en deux en cours de route. Ce n'est pas un
@@ -534,7 +608,7 @@ valider d'un bloc.
 | **B** | Authentification — connexion, session, CSRF, validation, garde de route | livré |
 | **C** | Contenus — actualités, événements, repères | livré |
 | **D1** | Modération — file des témoignages | livré |
-| **D2** | Médiathèque — téléversement avec contrôle de type réel, vignettes | **à venir** |
+| **D2** | Médiathèque — téléversement avec contrôle de type réel, vignettes | livré |
 | **E1** | Pilotage — compteurs réels du tableau de bord, fiche technique de l'ouvrage | livré |
 | **E2** | Comptes et commandes | **à venir** |
 
@@ -549,15 +623,25 @@ comme avant.
 Le lot A ne lit ni n'écrit aucune donnée, donc aucune route n'est encore
 protégée. La garde arrive au lot B, avec la session.
 
+Ce que le **lot D2** pose : `src/Core/Televersement.php` (réception d'un fichier
+— type réel, plafonds, nom fabriqué, vignette, suppression), `App\Model\Media`,
+`MediaController` et ses six routes, la planche et la fiche d'image, le
+sélecteur d'illustration des actualités et des événements, et
+`sql/003_media.sql`. Le détail des barrières est au §2, « La médiathèque ».
+
+Deux corrections de voisinage sont passées avec lui : la confirmation de
+suppression a quitté `js/listes.js` pour `js/admin.js` — la médiathèque supprime
+depuis une planche et depuis une fiche, ni l'une ni l'autre n'étant un tableau —
+et l'entrée « Médiathèque » du menu est remontée sous « Contenus ».
+
 ### Prochaines étapes, dans l'ordre
 
 1. **Back-office** — c'est le gros morceau du choix « PHP à la main », et il
-   débloque tout le reste. Découpé en lots ci-dessus, dont cinq sont livrés :
+   débloque tout le reste. Découpé en lots ci-dessus, dont six sont livrés :
    ossature, authentification, contenus, modération des témoignages, fiche
-   technique et compteurs. **Restent deux morceaux** — la médiathèque
-   (téléversement dans `medias/` avec contrôle de type réel et non d'extension,
-   vignettes, branchement des images sur les fiches), et les écrans comptes et
-   commandes.
+   technique et compteurs, médiathèque. **Reste un morceau** — les écrans
+   comptes et commandes, le second supposant d'avoir tranché sur le backend de
+   paiement (point 4).
 2. **Couche formulaire** — jeton CSRF, validation, limitation de débit. Le CSRF et
    la validation sont avancés au **lot B** : la page de connexion est elle-même un
    formulaire, elle ne peut pas les précéder. Ne reste au titre du §6 que la
@@ -594,11 +678,13 @@ Reste à construire — Héritage (§4.5), Galerie/Archives (§4.6), Actualités
 (§4.7), Témoignages (§4.8), Boutique (§4.9), Événements (§4.10), Contact (§4.11),
 Mentions légales (§4.12).
 
-Nuance sur trois d'entre elles : **actualités, témoignages et événements ont
-désormais leur back-office** — les données se saisissent, se modèrent et se
-publient. Seules manquent les pages publiques qui les afficheront, et elles
-seront rapides : il n'y a plus qu'à lire ce qui existe. Galerie/Archives attend
-en revanche la médiathèque, qui n'est pas écrite.
+Nuance sur quatre d'entre elles : **actualités, témoignages, événements et
+archives ont désormais leur back-office** — les données se saisissent, se
+modèrent, s'illustrent et se publient. Seules manquent les pages publiques qui
+les afficheront, et elles seront rapides : il n'y a plus qu'à lire ce qui existe.
+Galerie/Archives comprise, désormais : la médiathèque est écrite, ses images
+portent légende, crédit, catégorie et rang, et une image publiée est une image
+créditée.
 
 La fiche technique de l'ouvrage (§4.2) est éditable depuis l'admin mais **six de
 ses huit valeurs sont vides** : elles font partie des contenus attendus de

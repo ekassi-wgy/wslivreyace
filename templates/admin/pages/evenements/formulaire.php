@@ -86,6 +86,13 @@ $valeurs['fin_le']   = $pourChamp($valeurs, 'fin_le');
         ]); ?>
       </div></div>
 
+      <div class="card card-rounded mb-3"><div class="card-body">
+        <h4 class="card-title card-title-dash">Illustration</h4>
+        <?php champ_media($valeurs, $erreurs, 'image', 'Image', $medias, [
+            'aide' => 'Choisie dans la médiathèque. Déposez-la d\'abord si elle n\'y est pas.',
+        ]); ?>
+      </div></div>
+
       <div class="card card-rounded"><div class="card-body">
         <h4 class="card-title card-title-dash">Publication</h4>
         <?php champ_choix($valeurs, $erreurs, 'statut', 'Statut', Evenement::STATUTS, ['defaut' => 'brouillon']); ?>
@@ -108,3 +115,6 @@ $valeurs['fin_le']   = $pourChamp($valeurs, 'fin_le');
     <?php endif; ?>
   </div>
 </form>
+
+<?php /* La boîte de dialogue du sélecteur, hors du formulaire. */ ?>
+<?php require dirname(__DIR__, 2) . '/partials/selecteur-media.php'; ?>

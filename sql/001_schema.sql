@@ -86,9 +86,11 @@ CREATE TABLE IF NOT EXISTS media (
   categorie  ENUM('portrait','officiel','prive','document','presse') NOT NULL DEFAULT 'portrait',
   largeur    SMALLINT UNSIGNED NULL,
   hauteur    SMALLINT UNSIGNED NULL,
+  octets     INT UNSIGNED NULL,           -- poids du fichier, affiché à l'éditeur
   ordre      SMALLINT NOT NULL DEFAULT 0,
   statut     ENUM('brouillon','publie') NOT NULL DEFAULT 'brouillon',
   cree_le    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_media_fichier (fichier),
   KEY ix_media_public (statut, categorie, ordre)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 

@@ -6,8 +6,10 @@ namespace App\Controller\Admin;
 use App\Core\Admin;
 use App\Core\Csrf;
 use App\Core\Session;
+use App\Core\Televersement;
 use App\Core\Validator;
 use App\Core\View;
+use App\Model\Media;
 
 /**
  * Déroulé commun aux écrans de contenu : lister, créer, modifier, supprimer,
@@ -32,10 +34,14 @@ abstract class CrudController
      * que composés : « Nouvelle actualité » contre « Nouvel événement »
      * contre « Nouveau repère » — trois accords que rien ne dérive d'un genre.
      *
+     * `media` ouvre le sélecteur d'illustration sur la fiche : la planche de
+     * la médiathèque est alors chargée avec le formulaire. Les repères n'en
+     * portent pas — une frise chronologique est du texte.
+     *
      * @return array{
      *   cle: string, chemin: string, singulier: string, pluriel: string,
      *   titre_creation: string, titre_edition: string,
-     *   feminin: bool, gabarit: string
+     *   feminin: bool, gabarit: string, media?: bool
      * }
      */
     abstract protected static function config(): array;
@@ -192,6 +198,8 @@ abstract class CrudController
         $c = static::config();
         $edition = $ligne !== null;
 
+        $avecMedia = !empty($c['media']);
+
         View::admin($c['gabarit'] . '/formulaire', [
             'titre'   => $edition ? $c['titre_edition'] : $c['titre_creation'],
             'actif'   => $c['cle'],
@@ -200,6 +208,10 @@ abstract class CrudController
             'valeurs' => $valeurs,
             'erreurs' => $erreurs,
             'config'  => $c,
+            // La planche entière, vignettes comprises : le sélecteur montre
+            // les images, un menu déroulant de noms de fichiers ne dirait rien.
+            'medias'  => $avecMedia ? Media::listerPar() : [],
+            'scripts' => $avecMedia ? [Admin::asset('js/medias.js')] : [],
         ], $erreurs === [] ? 200 : 422);
 
         exit;
@@ -231,6 +243,28 @@ abstract class CrudController
     protected static function ouNull(string $valeur): ?string
     {
         return $valeur === '' ? null : $valeur;
+    }
+
+    /**
+     * L'image choisie existe-t-elle toujours ?
+     *
+     * Le champ porte un chemin de fichier, soumis par un contrôle caché : il
+     * se réécrit aussi bien qu'un autre. La forme est vérifiée, puis la
+     * présence en base — sans quoi une fiche pourrait afficher n'importe quel
+     * chemin, ou pointer sur une image supprimée entre l'ouverture du
+     * formulaire et son enregistrement.
+     */
+    protected static function validerImage(Validator $v, string $champ = 'image'): void
+    {
+        $chemin = $v->valeur($champ);
+
+        if ($chemin === '') {
+            return;
+        }
+
+        if (!Televersement::formeValide($chemin) || Media::parFichier($chemin) === null) {
+            $v->erreur($champ, "L'image choisie n'est plus dans la médiathèque. Choisissez-en une autre.");
+        }
     }
 
     private static function rediriger(string $chemin): never

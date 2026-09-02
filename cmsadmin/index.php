@@ -12,6 +12,7 @@ declare(strict_types=1);
 use App\Controller\Admin\ActualiteController;
 use App\Controller\Admin\AuthController;
 use App\Controller\Admin\EvenementController;
+use App\Controller\Admin\MediaController;
 use App\Controller\Admin\ParametreController;
 use App\Controller\Admin\RepereController;
 use App\Controller\Admin\TemoignageController;
@@ -84,6 +85,18 @@ $router->get($base . '/temoignages/{id}',                  [TemoignageController
 $router->post($base . '/temoignages/{id}',                 [TemoignageController::class, 'mettreAJour']);
 $router->post($base . '/temoignages/{id}/supprimer',       [TemoignageController::class, 'supprimer']);
 $router->post($base . '/temoignages/{id}/{decision}',      [TemoignageController::class, 'moderer']);
+
+/**
+ * Médiathèque. Encore un jeu de routes à part, et pour la même raison que la
+ * modération : la création n'est pas un formulaire mais un dépôt de fichiers,
+ * d'où l'absence de route `/nouveau`. Le POST sur `/medias` reçoit le lot.
+ */
+$router->get($base . '/medias',                 [MediaController::class, 'liste']);
+$router->post($base . '/medias',                [MediaController::class, 'televerser']);
+$router->get($base . '/medias/{id}',            [MediaController::class, 'formulaire']);
+$router->post($base . '/medias/{id}',           [MediaController::class, 'mettreAJour']);
+$router->post($base . '/medias/{id}/statut',    [MediaController::class, 'basculerStatut']);
+$router->post($base . '/medias/{id}/supprimer', [MediaController::class, 'supprimer']);
 
 $router->get($base . '/parametres',  [ParametreController::class, 'formulaire']);
 $router->post($base . '/parametres', [ParametreController::class, 'enregistrer']);
