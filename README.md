@@ -798,18 +798,28 @@ les deux). Ce qu'il reste :
 
 ### Où en est le projet
 
-**Fait** — socle de design complet et documenté ; trois pages publiques (accueil
-avec hero slider, Le livre, Biographie) rendues par le moteur de gabarits, plus une
-page 404 dessinée dans la charte et servie par le routeur ; contrôleur frontal,
-routeur, PDO, mise en page unique ; base `livreyace_sbd` avec ses huit tables ;
-étanchéité des dossiers applicatifs vérifiée sur Apache ; **le back-office
-entier**, ses sept lots livrés.
+**Le socle** — direction artistique complète et documentée, logotype officiel
+intégré et jeu d'icônes dérivé de sa lettre ; contrôleur frontal, routeur, PDO,
+mise en page unique ; base `livreyace_sbd`, dix tables ; étanchéité des dossiers
+applicatifs vérifiée sur Apache.
 
-**Non fait** — les pages publiques restantes, le tunnel de commande, et la
-phase 3 (newsletter, recherche, multilinguisme). La première page adossée aux
-données — Témoignages — est livrée, et avec elle toute la plomberie qu'un
-formulaire public demande : session côté visiteur, jeton, plafond, pièges,
-renvoi de la saisie.
+**Le back-office** — **entier**, ses sept lots livrés : de l'ossature aux
+comptes et commandes, en passant par les contenus, la modération, la médiathèque
+et le pilotage. Un éditeur peut aujourd'hui tout saisir, tout modérer et tout
+publier sans intervention technique.
+
+**La couche formulaire** — **complète** : jeton CSRF et validation depuis le
+lot B, limitation de débit des formulaires publics, session côté visiteur
+ouverte route par route, et les pièges à robots posés avec le premier
+formulaire.
+
+**Le site public** — quatre pages sur onze : accueil, Le livre, Biographie, et
+Témoignages, la première adossée aux données. Plus une 404 dessinée dans la
+charte et servie par le routeur.
+
+**Non fait** — les sept pages publiques restantes, le tunnel de commande, et la
+phase 3 du CDC. Tout ce qui reste est du côté visiteur : il n'y a plus une seule
+ligne de back-office à écrire.
 
 ### Le back-office, lot par lot
 
@@ -867,37 +877,61 @@ connecté pouvait tout faire. Deux écrans en dépendent désormais, et la garde
 en lecture comme en écriture — vérifié, un éditeur qui poste sur
 `/comptes/{id}/actif` obtient 403 et la base ne bouge pas.
 
+### Le site public, lot par lot
+
+Même méthode que pour le back-office : des tranches validables l'une après
+l'autre, dans l'ordre où les dépendances tombent. Le découpage ci-dessous est une
+proposition, pas un engagement — seul F1 est livré.
+
+| Lot | Objet | État |
+|---|---|---|
+| **F1** | Témoignages — page publique, formulaire de dépôt, aperçu sur l'accueil | livré |
+| **F2** | Actualités — liste, détail par slug, revue de presse | à venir |
+| **F3** | Galerie/Archives avec visionneuse, et Événements | à venir |
+| **F4** | Contact et mentions légales | à venir |
+
+**F1 en premier, et ce n'était pas un hasard** : c'est la seule tranche
+verticale complète qui restait — écriture, validation, modération, affichage —
+et elle porte la plomberie que les suivantes réutiliseront. F2 et F3 ne font que
+lire ce que le back-office remplit déjà ; F4 réutilisera le formulaire de F1,
+son barème de débit étant même déjà déclaré.
+
+Restent en dehors de ce découpage : **Héritage** (§4.5), qui n'attend rien de
+technique mais tout de la matière éditoriale, et la **Boutique** (§4.9), qui est
+le tunnel de commande — voir ci-dessous.
+
 ### Prochaines étapes, dans l'ordre
 
-~~1. **Back-office**~~ — **fait**, les sept lots sont livrés. C'était le gros
-   morceau du choix « PHP à la main », et il débloque tout le reste.
+Le back-office et la couche formulaire, qui occupaient les deux premières places
+de cette liste, sont faits. Ce qui reste :
 
-~~1. **Couche formulaire**~~ — **faite**. Jeton CSRF et validation depuis le
-   lot B, limitation de débit des formulaires publics depuis. Il reste à
-   **ouvrir la session publique** au moment où le premier formulaire s'écrira :
-   elle n'est volontairement pas démarrée aujourd'hui, un site qui pose un
-   cookie à chaque visiteur pour un formulaire qu'il n'a pas encore rencontré
-   s'impose une bannière pour rien. `Session::demarrer('pgy', '/')` sur la seule
-   route qui en a besoin.
-
-1. **Pages publiques adossées aux données.** ~~Témoignages~~ — **fait**, page et
-   formulaire (voir §2). Restent, par ordre de facilité décroissante :
-   actualités (liste et détail par slug), galerie et archives avec visionneuse,
-   événements, contact, Héritage, mentions légales. Les quatre premières ne font
-   que lire ce que le back-office remplit déjà ; contact réutilisera la plomberie
-   du formulaire des témoignages, son barème de débit est même déjà déclaré.
-2. **Tunnel de commande** — la passerelle est arrêtée (`carte.abidjan.net`, voir
-   §2) et décrite en un seul endroit. Le tunnel suppose la page boutique, donc
-   le point 1. Il créera les commandes que l'écran de suivi attend, avec leur
-   code de transaction.
+1. **Les pages publiques restantes** — lots F2 à F4 ci-dessus, puis Héritage.
+   Rapides : les données se saisissent déjà, le système de composants existe, il
+   n'y a plus qu'à lire ce qui est en base.
+2. **Le tunnel de commande** — la passerelle est arrêtée (`carte.abidjan.net`,
+   voir §2) et décrite en un seul endroit. Il suppose la page boutique, donc le
+   point 1. Il créera les commandes que l'écran de suivi attend, avec leur code
+   de transaction.
 3. **Phase 3 du CDC** — newsletter, recherche interne, multilinguisme.
+
+Deux décisions à prendre en chemin, aucune bloquante aujourd'hui : quelles pages
+font entrer la barre de navigation, qui porte quatre entrées et le bouton de
+commande — Témoignages n'y figure pas, et Actualités voudra sans doute sa place
+avant elle ; et ouvrir ou non la saisie manuelle d'une commande, pour celles qui
+se prendraient au téléphone ou en dédicace (voir §6).
 
 ### Ce qui bloque, et sur qui
 
-Les contenus. Tout le texte éditorial du site est provisoire et balisé comme tel,
-et **aucune ligne ne peut être publiée sans validation de l'éditeur** — Yacé est
-une figure historique réelle. Voir §5 pour la liste complète des contenus et
-visuels attendus, dimensions comprises.
+**Les contenus, et eux seuls désormais.** Le logotype, qui ouvrait la liste des
+livrables attendus au §5, est arrivé et intégré ; il ne reste plus rien de
+technique en attente d'un tiers.
+
+Tout le texte éditorial du site est provisoire et balisé comme tel, et **aucune
+ligne ne peut être publiée sans validation de l'éditeur** — Yacé est une figure
+historique réelle. S'y ajoutent les visuels d'archives, la fiche technique de
+l'ouvrage — six de ses huit valeurs sont vides — et l'adresse publique à poser
+en configuration avant toute mise en ligne. Voir §5 pour la liste complète,
+dimensions comprises.
 
 ## 8. Couverture du cahier des charges
 
