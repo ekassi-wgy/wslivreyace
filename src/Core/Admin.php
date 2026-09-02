@@ -91,7 +91,8 @@ final class Admin
                 'cle'    => 'commandes',
                 'titre'  => 'Commandes',
                 'icone'  => 'mdi-package-variant-closed',
-                'bientot' => true,
+                'url'    => self::url('/commandes'),
+                'role'   => 'admin',
             ],
             [
                 'cle'    => 'parametres',
@@ -103,8 +104,41 @@ final class Admin
                 'cle'    => 'comptes',
                 'titre'  => 'Comptes',
                 'icone'  => 'mdi-account-key-outline',
-                'bientot' => true,
+                'url'    => self::url('/comptes'),
+                'role'   => 'admin',
             ],
         ];
+    }
+
+    /**
+     * Le menu tel qu'un compte donné a le droit de le voir.
+     *
+     * Une entrée réservée aux administrateurs est retirée pour les autres, et
+     * non affichée grisée : un verrou dit « pas encore construit », ce qui
+     * serait faux ici. Les rubriques qui se retrouveraient vides tombent avec
+     * leurs entrées — un intertitre sans rien dessous fait croire à un bogue.
+     *
+     * @return array<int,array<string,mixed>>
+     */
+    public static function menuPour(bool $estAdmin): array
+    {
+        $entrees = array_values(array_filter(
+            self::menu(),
+            static fn(array $e): bool => $estAdmin || ($e['role'] ?? '') !== 'admin'
+        ));
+
+        $garde = [];
+        foreach ($entrees as $i => $entree) {
+            $suivante = $entrees[$i + 1] ?? null;
+
+            // Une rubrique n'est gardée que si une entrée la suit.
+            if (isset($entree['rubrique']) && ($suivante === null || isset($suivante['rubrique']))) {
+                continue;
+            }
+
+            $garde[] = $entree;
+        }
+
+        return $garde;
     }
 }

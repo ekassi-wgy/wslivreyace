@@ -138,6 +138,14 @@
 .pgy-statut--refuse     { background: #F7E3E1; color: #8C2F26; border-color: #E9C4C0; }
 .pgy-statut--annule     { background: #F7E3E1; color: #8C2F26; border-color: #E9C4C0; }
 
+/* Commandes (lot E2). « Initiée » attend comme « en attente », « payée » est un
+   feu vert, « échouée » un refus, et « remise » se distingue de « payée » : le
+   parcours est fini, d'où le laiton plutôt qu'un second vert. */
+.pgy-statut--initiee    { background: #FBF0DA; color: #7A5410; border-color: #EBD9B0; }
+.pgy-statut--payee      { background: #E4EFE6; color: #2F6B3C; border-color: #C3DDC9; }
+.pgy-statut--echouee    { background: #F7E3E1; color: #8C2F26; border-color: #E9C4C0; }
+.pgy-statut--remise     { background: #EFE7D8; color: #6B5121; border-color: #DECFAE; }
+
 /* --- Anneau de focus ----------------------------------------------------
    Le bleu système du navigateur est le seul reste visible d'un template.
    Même anneau laiton que le site public. */
@@ -883,4 +891,44 @@ textarea.form-control::placeholder {
   -webkit-box-orient: vertical;
   overflow: hidden;
   line-height: 1.3;
+}
+
+/* --- Fiches en lecture seule (lot E2) ------------------------------------
+   Une commande ne se modifie pas : elle se lit. Un <dl> en deux colonnes dit
+   cela mieux qu'une pile de champs désactivés, qui donnerait l'impression
+   d'un formulaire cassé.
+   ------------------------------------------------------------------------ */
+.pgy-donnees {
+  display: grid;
+  grid-template-columns: minmax(7rem, max-content) 1fr;
+  gap: .45rem 1rem;
+  margin: 1rem 0 0;
+}
+
+.pgy-donnees dt {
+  font-weight: 600;
+  font-size: .8125rem;
+  color: var(--pgy-ink-3);
+  text-transform: none;
+}
+
+.pgy-donnees dd {
+  margin: 0;
+  color: var(--pgy-ink);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pgy-donnees a { color: var(--pgy-brass-text); }
+
+.pgy-donnees code {
+  color: var(--pgy-brass-text);
+  font-size: .8125rem;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 575.98px) {
+  /* Sous 576 px, les deux colonnes se marchent dessus : on empile. */
+  .pgy-donnees { grid-template-columns: 1fr; gap: .1rem; }
+  .pgy-donnees dd { margin-bottom: .5rem; }
 }

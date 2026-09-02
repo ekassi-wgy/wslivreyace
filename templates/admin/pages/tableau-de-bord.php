@@ -5,12 +5,19 @@
  * Les compteurs sont lus en base. Ce qui est mis en avant n'est pas le volume
  * mais ce qui attend une décision : un témoignage en attente et un repère sans
  * source sont des choses à faire, pas des statistiques.
+ *
+ * Ce qui touche aux commandes n'apparaît que pour un administrateur — un
+ * éditeur n'a pas accès à l'écran, lui montrer le compte des commandes à
+ * remettre lui donnerait une tâche qu'il ne peut pas ouvrir.
  */
 
 use App\Core\Admin;
 use App\Core\Database;
+use App\Core\Paiement;
 use App\Core\View;
+use App\Core\Auth;
 use App\Model\Actualite;
+use App\Model\Commande;
 use App\Model\Evenement;
 use App\Model\Media;
 use App\Model\Parametre;
@@ -30,6 +37,8 @@ $enAttente  = Temoignage::compter('en_attente');
 $sansSource = (int) (Database::one(
     "SELECT COUNT(*) AS n FROM repere WHERE source IS NULL OR source = ''"
 )['n'] ?? 0);
+$estAdmin   = Auth::estAdmin();
+$aRemettre  = $estAdmin ? Commande::aRemettre() : 0;
 $sansCredit = (int) (Database::one(
     "SELECT COUNT(*) AS n FROM media WHERE credit IS NULL OR credit = ''"
 )['n'] ?? 0);
@@ -51,6 +60,14 @@ if ($sansSource > 0) {
         sprintf('%d repère%s sans source', $sansSource, $sansSource > 1 ? 's' : ''),
         'Ils ne pourront pas être publiés tant que la référence manque (CDC §6).',
         Admin::url('/reperes'),
+    ];
+}
+if ($aRemettre > 0) {
+    $aFaire[] = [
+        'mdi-package-variant-closed',
+        sprintf('%d commande%s payée%s à remettre', $aRemettre, $aRemettre > 1 ? 's' : '', $aRemettre > 1 ? 's' : ''),
+        'Le client a payé et attend son exemplaire.',
+        Admin::url('/commandes?statut=payee'),
     ];
 }
 if ($sansCredit > 0) {
@@ -145,13 +162,15 @@ if ($ficheRemplie < $ficheTotal) {
     <div class="card card-rounded"><div class="card-body">
       <h4 class="card-title card-title-dash">Ce qui reste à construire</h4>
       <p class="card-subtitle card-subtitle-dash">
-        Les entrées verrouillées de la barre latérale.
+        Le back-office est complet ; ce qui suit est du côté public.
       </p>
       <ul class="pgy-liste-notes mt-3">
-        <li><strong>Commandes</strong> — suppose d'avoir tranché sur le backend de
-            paiement avant d'écrire le tunnel.</li>
-        <li><strong>Comptes</strong> — la création se fait en ligne de commande
-            (<code>php bin/compte.php</code>) en attendant l'écran.</li>
+        <li><strong>Pages publiques adossées aux données</strong> — actualités,
+            galerie, événements, témoignages, contact. Les données se saisissent
+            déjà ici : il n'y a plus qu'à les afficher.</li>
+        <li><strong>Tunnel de commande</strong> — la passerelle est arrêtée
+            (<?= View::e(Paiement::nom()) ?>) ; le tunnel suppose les pages
+            publiques de la boutique.</li>
       </ul>
     </div></div>
   </div>

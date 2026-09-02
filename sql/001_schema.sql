@@ -118,13 +118,21 @@ CREATE TABLE IF NOT EXISTS commande (
   montant       DECIMAL(10,2) NOT NULL,
   devise        CHAR(3) NOT NULL DEFAULT 'XOF',
   mode_paiement VARCHAR(40) NULL,
+  passerelle    VARCHAR(60) NULL,           -- d'où vient le paiement ; peut changer
+  transaction_ref VARCHAR(80) NULL,         -- code rendu par la passerelle
   livraison     ENUM('retrait','livraison') NOT NULL DEFAULT 'retrait',
   adresse       VARCHAR(500) NULL,
+  note          VARCHAR(500) NULL,          -- annotation interne de suivi
   statut        ENUM('initiee','payee','echouee','remise') NOT NULL DEFAULT 'initiee',
   cree_le       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   maj_le        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  remise_le     DATETIME NULL,
+  remise_par    INT UNSIGNED NULL,
   UNIQUE KEY uk_commande_reference (reference),
-  KEY ix_commande_statut (statut, cree_le)
+  UNIQUE KEY uk_commande_transaction (transaction_ref),
+  KEY ix_commande_statut (statut, cree_le),
+  CONSTRAINT fk_commande_remise FOREIGN KEY (remise_par)
+    REFERENCES utilisateur (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --- Contenus éditables et réglages -----------------------------------------

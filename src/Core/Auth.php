@@ -123,6 +123,28 @@ final class Auth
         exit;
     }
 
+    /**
+     * Interrompt la requête si le compte connecté n'est pas administrateur.
+     *
+     * Deux écrans en dépendent : les comptes — un éditeur qui se donne le rôle
+     * admin n'aurait plus de rôle du tout — et les commandes, qui portent des
+     * noms, des adresses et des numéros de téléphone de clients. Le principe
+     * est celui du moindre accès : l'éditeur travaille sur les contenus, pas
+     * sur les personnes.
+     *
+     * Posée dans l'action et non dans la garde de route : celle-ci s'exécute
+     * avant le routage et ne sait pas encore quel écran est demandé.
+     */
+    public static function exigerAdmin(): void
+    {
+        if (self::estAdmin()) {
+            return;
+        }
+
+        View::admin('403', ['titre' => 'Accès refusé', 'actif' => ''], 403);
+        exit;
+    }
+
     /** Chemin où revenir après connexion, vérifié puis consommé. */
     public static function destinationApresConnexion(): string
     {

@@ -1,10 +1,10 @@
 # Philippe Grégoire Yacé — *Une destinée* (1920-1998)
 
-Site éditorial de l'ouvrage. Trois pages publiques livrées, et le back-office aux
-six septièmes : ossature de `/cmsadmin/`, authentification, gestion des
-actualités, événements et repères, modération des témoignages, fiche technique
-de l'ouvrage, tableau de bord et médiathèque. **Restent les écrans comptes et
-commandes.**
+Site éditorial de l'ouvrage. Trois pages publiques livrées, et **le back-office
+est complet** : ossature de `/cmsadmin/`, authentification, actualités,
+événements, repères, modération des témoignages, fiche technique, tableau de
+bord, médiathèque, commandes et comptes. **Restent les pages publiques adossées
+aux données, et le tunnel de commande.**
 
 ---
 
@@ -120,13 +120,13 @@ livreyace/                  ← racine web
 │   ├── Core/               Config, Database, Router, View,
 │   │                       Admin, Session, Csrf, Auth,
 │   │                       Validator, Slug, Site,
-│   │                       Televersement                     [interdit]
+│   │                       Televersement, Paiement           [interdit]
 │   ├── Controller/Admin/   Auth, Crud (Actualite, Evenement,
 │   │                       Repere), Temoignage, Media,
-│   │                       Parametre                         [interdit]
+│   │                       Commande, Compte, Parametre       [interdit]
 │   └── Model/              Modele, Actualite, Evenement,
 │                           Repere, Temoignage, Media,
-│                           Parametre, Utilisateur,
+│                           Commande, Parametre, Utilisateur,
 │                           TentativeConnexion                [interdit]
 ├── templates/
 │   ├── layout.php          mise en page du site public       [interdit]
@@ -178,9 +178,12 @@ Le back-office n'en porte pas — il est en `noindex`.
 
 ### Authentification et formulaires
 
-**Comptes.** Créés en ligne de commande, jamais par une page web : une page
-d'installation qui crée le premier administrateur est ouverte par définition, et
-il suffit de l'oublier en ligne pour offrir le site.
+**Comptes.** Le **premier** administrateur se crée en ligne de commande, jamais
+par une page web : une page d'installation qui crée le premier compte est
+ouverte par définition, et il suffit de l'oublier en ligne pour offrir le site.
+La ligne de commande reste aussi la porte de secours quand plus personne ne peut
+se connecter. Les comptes suivants se gèrent depuis l'écran du lot E2 (voir
+« Les comptes » plus bas).
 
 ```
 php bin/compte.php creer <adresse> <nom> [admin|editeur]
@@ -297,6 +300,71 @@ les mots de quelqu'un d'autre.
 public : la première sert à recontacter le signataire, la seconde à repérer un
 abus.
 
+### Les commandes et la passerelle
+
+**Décision prise : carte.abidjan.net**, le backend de paiement du site de
+référence — mobile money (Orange, MTN, Moov), Wave, Visa/Mastercard, APaym et
+Visa QR. Il est en service, il connaît la zone et ses moyens de paiement ; le
+remplacer avant d'avoir vendu un exemplaire coûterait un chantier pour rien.
+**Elle peut changer**, et c'est pourquoi ce qu'on sait d'elle tient en un
+endroit : `config/config.php` porte l'hôte et le nom, `App\Core\Paiement` porte
+les points d'entrée de chaque mode. Le site de référence, lui, écrivait ses sept
+adresses en dur dans le JavaScript de trois pages.
+
+`commande.passerelle` est une colonne et non une constante : le jour où une
+commande naîtra ailleurs, les anciennes doivent continuer à dire d'où elles
+viennent, sans quoi on ne saura plus où aller vérifier un paiement contesté.
+
+**L'écran ne crée ni ne supprime de commande.** Une commande naît du tunnel de
+paiement — qui reste à écrire, il suppose les pages publiques de la boutique — et
+elle reste : c'est une pièce comptable. L'administration en fait trois choses :
+constater un paiement, marquer une remise, annoter.
+
+**Le statut suit un chemin, pas un menu déroulant.** Initiée → payée ou échouée ;
+payée → remise ; échouée et remise sont terminales. La transition demandée est
+vérifiée contre `Commande::SUITES`, donc une URL forgée n'y change rien. Le
+back-office ne décide pas d'un paiement, il en prend acte : « constater le
+paiement » se fait après l'avoir vu chez la passerelle, qui fait foi.
+
+**Le corps de la fiche est en lecture seule**, et seule la note de suivi
+s'écrit — `ASSIGNABLES` ne contient qu'elle. Corriger un montant ou un nom ici
+ferait diverger la commande de ce que la passerelle a gardé. Qui a marqué la
+remise, et quand, est conservé, comme pour la modération.
+
+Les recettes sont totalisées **par devise** : la passerelle en accepte
+plusieurs, et additionner des francs CFA et des euros ne voudrait rien dire.
+
+### Les comptes
+
+L'écran reprend ce que faisait `bin/compte.php` pour l'usage courant : ajouter un
+éditeur, changer un rôle, réinitialiser un mot de passe.
+
+**Aucune suppression, seulement la désactivation.** Un compte a modéré des
+témoignages et remis des commandes ; l'effacer viderait ces traces de leur nom, et
+la question « qui a validé ceci ? » perdrait sa réponse. Un compte désactivé ne
+peut plus se connecter, et `Auth` relisant son état à chaque requête, une session
+ouverte tombe à la requête suivante.
+
+**Trois manœuvres sont refusées**, toutes pour la même raison — elles
+laisseraient le back-office sans personne pour y entrer : se désactiver soi-même,
+se retirer son propre rôle d'administrateur, et retirer le dernier administrateur
+actif. Vérifié sur les trois chemins, formulaire comme bascule de liste.
+
+**Le mot de passe est fabriqué par défaut**, et affiché une seule fois. Un mot de
+passe choisi à la volée pour quelqu'un d'autre est faible par construction, et il
+finit recopié dans un courriel. Celui-ci sort de `random_bytes`, dans un alphabet
+sans caractères confondables — O/0, I/l/1 — parce qu'il sera dicté ou recopié.
+
+**Deux rôles.** L'éditeur travaille sur les contenus, la médiathèque et la
+modération. L'administrateur a en plus les comptes — on y distribue les droits —
+et les commandes, qui portent des noms, des adresses et des numéros de téléphone
+de clients. `Auth::exigerAdmin()` garde les deux écrans, en lecture comme en
+écriture, et les entrées correspondantes sont **retirées** du menu d'un éditeur
+plutôt que grisées : un verrou dirait « pas encore construit », ce qui serait
+faux. Un éditeur qui force l'adresse obtient une **403** et non une 404 : le
+back-office n'a rien à cacher à ses propres utilisateurs, l'écran existe, il faut
+un autre rôle.
+
 ### Fiche technique et tableau de bord
 
 Les huit valeurs de la fiche technique de l'ouvrage (`parametre`) se saisissent
@@ -400,10 +468,11 @@ Huit tables, `utf8mb4`, InnoDB — voir `sql/001_schema.sql` :
 compteur glissant des essais de connexion.
 
 Les migrations s'appliquent dans l'ordre de leur numéro ; il n'y a pas encore de
-table de suivi, le projet en est à trois fichiers. `sql/003_media.sql` ajoute à
-`media` le poids du fichier et l'unicité de son chemin ; les deux sont reportés
-dans `001_schema.sql` pour qu'une installation neuve n'ait pas à rejouer
-l'historique.
+table de suivi, le projet en est à quatre fichiers. `sql/003_media.sql` ajoute à
+`media` le poids du fichier et l'unicité de son chemin ; `sql/004_commande.sql`
+ajoute à `commande` la provenance du paiement, le code de transaction, la note de
+suivi et la trace de remise. Tout est reporté dans `001_schema.sql` pour qu'une
+installation neuve n'ait pas à rejouer l'historique.
 
 Deux partis pris qui tiennent au sujet : les témoignages arrivent en
 `statut = 'en_attente'` et rien ne s'affiche sans passage explicite en `'publie'`
@@ -431,8 +500,9 @@ réduit de **56 Mo à 2,6 Mo**. Le template d'origine n'est pas dans le dépôt 
 vit dans `~/Documents/KP/Templates/staradmin-2-free`.
 
 **Gardé** — `style.css`, le bundle jQuery 3.7.1 + Bootstrap 5.3.2 +
-PerfectScrollbar, les icônes MDI (woff2 seul), DataTables et Chart.js pour les
-lots à venir, et trois comportements d'interface fusionnés en un seul
+PerfectScrollbar, les icônes MDI (woff2 seul), DataTables (listes d'actualités,
+d'événements, de repères et de commandes) et Chart.js — ce dernier n'est encore
+employé nulle part —, et trois comportements d'interface fusionnés en un seul
 `js/admin.js` : repli de la barre latérale, mode icônes, sortie mobile.
 
 **Jeté** — les 12 pages de démonstration, le SCSS et la chaîne gulp, un second
@@ -571,8 +641,16 @@ soldée** depuis le passage aux gabarits (voir §2). Ce qu'il reste :
 - **Le CSS du thème d'administration porte des règles mortes.** Des composants
   que le back-office n'emploie pas (graphiques de démonstration, menu horizontal,
   panneau de réglages) gardent leurs styles dans `style.css`. Sans effet visible,
-  mais quelques dizaines de kilo-octets pour rien ; à élaguer une fois le lot E2
-  écrit, quand on saura ce qui sert vraiment.
+  mais quelques dizaines de kilo-octets pour rien. Les sept lots étant écrits, on
+  sait maintenant ce qui sert : l'élagage est faisable, il n'attend plus rien.
+- **Le tunnel de commande n'est pas écrit.** L'écran de suivi existe et la
+  passerelle est arrêtée, mais rien ne crée encore de commande : il faut les
+  pages publiques de la boutique d'abord. Conséquence pratique, l'écran restera
+  vide jusque-là — et aucune saisie manuelle n'est ouverte, faute d'avoir été
+  demandée. Si l'éditeur prend des commandes au téléphone ou en dédicace, c'est
+  un formulaire à ajouter, avec ses propres modes de paiement.
+- **Pas d'export des commandes.** Ni CSV ni impression : la comptabilité devra
+  relire l'écran ou la base. À voir quand il y aura des commandes.
 - **`reference/` pèse ~70 Mo dans l'arborescence servie.** Verrouillé en 403,
   mais toujours à exclure explicitement de la règle de déploiement.
 - **L'historique git porte les images non optimisées de l'ancien site** (`.git`
@@ -587,15 +665,21 @@ soldée** depuis le passage aux gabarits (voir §2). Ce qu'il reste :
 avec hero slider, Le livre, Biographie) rendues par le moteur de gabarits, plus une
 page 404 dessinée dans la charte et servie par le routeur ; contrôleur frontal,
 routeur, PDO, mise en page unique ; base `livreyace_sbd` avec ses huit tables ;
-étanchéité des dossiers applicatifs vérifiée sur Apache.
+étanchéité des dossiers applicatifs vérifiée sur Apache ; **le back-office
+entier**, ses sept lots livrés.
 
-**Non fait** — tout ce qui a besoin d'un back-office ou d'un formulaire.
+**Non fait** — les pages publiques qui liront les données saisies, le tunnel de
+commande, la limitation de débit sur les formulaires publics, et la phase 3
+(newsletter, recherche, multilinguisme). Autrement dit : tout est désormais du
+côté visiteur.
 
 ### Le back-office, lot par lot
 
-Le back-office est livré par lots, validables l'un après l'autre — six posés,
-un restant. Les entrées verrouillées de la barre latérale correspondent aux
-lots à venir : la forme finale de l'outil est visible dès le premier.
+Le back-office est livré par lots, validables l'un après l'autre. **Les sept
+sont posés.** Pendant la construction, les entrées non encore écrites restaient
+visibles dans la barre latérale, verrouillées : la forme finale de l'outil se
+voyait dès le premier lot. Il n'en reste aucune — le mécanisme, lui, reste en
+place pour la suite.
 
 Les lots D et E ont été coupés en deux en cours de route. Ce n'est pas un
 changement de plan : la médiathèque pèse à elle seule autant que tout le lot C,
@@ -610,7 +694,7 @@ valider d'un bloc.
 | **D1** | Modération — file des témoignages | livré |
 | **D2** | Médiathèque — téléversement avec contrôle de type réel, vignettes | livré |
 | **E1** | Pilotage — compteurs réels du tableau de bord, fiche technique de l'ouvrage | livré |
-| **E2** | Comptes et commandes | **à venir** |
+| **E2** | Comptes et commandes | livré |
 
 Ce que le **lot A** pose : `src/bootstrap.php` (amorçage partagé par les deux
 contrôleurs frontaux), `src/Core/Admin.php` (préfixe d'URL déduit de
@@ -634,25 +718,37 @@ suppression a quitté `js/listes.js` pour `js/admin.js` — la médiathèque sup
 depuis une planche et depuis une fiche, ni l'une ni l'autre n'étant un tableau —
 et l'entrée « Médiathèque » du menu est remontée sous « Contenus ».
 
+Ce que le **lot E2** pose : `App\Core\Paiement` (la passerelle en un seul
+endroit), `App\Model\Commande` et son écran de suivi, `CompteController` et la
+gestion des comptes, `Auth::exigerAdmin()` avec la 403 qui va avec, le filtrage
+du menu par rôle, et `sql/004_commande.sql`. Le détail est au §2, « Les commandes
+et la passerelle » et « Les comptes ».
+
+C'est le lot qui introduit la **distinction de rôles** : jusque-là, tout compte
+connecté pouvait tout faire. Deux écrans en dépendent désormais, et la garde vaut
+en lecture comme en écriture — vérifié, un éditeur qui poste sur
+`/comptes/{id}/actif` obtient 403 et la base ne bouge pas.
+
 ### Prochaines étapes, dans l'ordre
 
-1. **Back-office** — c'est le gros morceau du choix « PHP à la main », et il
-   débloque tout le reste. Découpé en lots ci-dessus, dont six sont livrés :
-   ossature, authentification, contenus, modération des témoignages, fiche
-   technique et compteurs, médiathèque. **Reste un morceau** — les écrans
-   comptes et commandes, le second supposant d'avoir tranché sur le backend de
-   paiement (point 4).
-2. **Couche formulaire** — jeton CSRF, validation, limitation de débit. Le CSRF et
-   la validation sont avancés au **lot B** : la page de connexion est elle-même un
-   formulaire, elle ne peut pas les précéder. Ne reste au titre du §6 que la
-   limitation de débit sur les formulaires publics.
-3. **Pages publiques adossées aux données** — actualités et détail, galerie avec
-   visionneuse, événements, contact. Rapides une fois 1 et 2 posés : le système
-   de composants existe déjà.
-4. **Commande** — le site de référence s'appuyait sur un backend de paiement
-   séparé (`carte.abidjan.net` : mobile money, Visa, Wave, Apaym). Décider s'il
-   est réutilisé ou remplacé **avant** d'écrire le tunnel.
-5. **Phase 3 du CDC** — newsletter, recherche interne, multilinguisme.
+~~1. **Back-office**~~ — **fait**, les sept lots sont livrés. C'était le gros
+   morceau du choix « PHP à la main », et il débloque tout le reste.
+
+1. **Couche formulaire** — il ne reste que la **limitation de débit sur les
+   formulaires publics**. Le jeton CSRF et la validation sont posés depuis le
+   lot B et servent tout le back-office ; le comptage d'essais, lui, ne protège
+   que la connexion. Le formulaire de témoignage sera ouvert à tout le monde et
+   portera des propos sur une personne réelle : il lui faut son plafond avant
+   d'être exposé.
+2. **Pages publiques adossées aux données** — actualités et détail, galerie avec
+   visionneuse, événements, témoignages, contact. Rapides : les données se
+   saisissent déjà, le système de composants existe, il n'y a plus qu'à lire ce
+   qui existe.
+3. **Tunnel de commande** — la passerelle est arrêtée (`carte.abidjan.net`, voir
+   §2) et décrite en un seul endroit. Le tunnel suppose la page boutique, donc
+   le point 2. Il créera les commandes que l'écran de suivi attend, avec leur
+   code de transaction.
+4. **Phase 3 du CDC** — newsletter, recherche interne, multilinguisme.
 
 ### Ce qui bloque, et sur qui
 
@@ -674,9 +770,10 @@ Biographie (§4.4) — **complet** : contexte historique, biographie structurée
 chapitres avec sommaire latéral collé, frise chronologique filtrable par période et
 dépliable, citations, galerie de portraits.
 
-Reste à construire — Héritage (§4.5), Galerie/Archives (§4.6), Actualités/Presse
-(§4.7), Témoignages (§4.8), Boutique (§4.9), Événements (§4.10), Contact (§4.11),
-Mentions légales (§4.12).
+Reste à construire, côté public — Héritage (§4.5), Galerie/Archives (§4.6),
+Actualités/Presse (§4.7), Témoignages (§4.8), Boutique (§4.9), Événements
+(§4.10), Contact (§4.11), Mentions légales (§4.12). **Le back-office de tout
+cela existe** ; ce sont les pages qui manquent.
 
 Nuance sur quatre d'entre elles : **actualités, témoignages, événements et
 archives ont désormais leur back-office** — les données se saisissent, se
@@ -685,6 +782,11 @@ les afficheront, et elles seront rapides : il n'y a plus qu'à lire ce qui exist
 Galerie/Archives comprise, désormais : la médiathèque est écrite, ses images
 portent légende, crédit, catégorie et rang, et une image publiée est une image
 créditée.
+
+La **boutique (§4.9)** est le cas à part : son écran de suivi est livré et la
+passerelle est arrêtée (`carte.abidjan.net`), mais le tunnel de paiement reste à
+écrire — il suppose la page publique. Tant qu'il n'existe pas, aucune commande
+n'entre en base et l'écran reste vide, ce qui est normal et non un défaut.
 
 La fiche technique de l'ouvrage (§4.2) est éditable depuis l'admin mais **six de
 ses huit valeurs sont vides** : elles font partie des contenus attendus de

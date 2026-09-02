@@ -7,19 +7,23 @@
  * l'URL ; nos URL n'ont pas d'extension et PHP connaît la route, donc la
  * classe `active` est posée ici, au rendu.
  *
- * Les entrées `bientot` sont les pages des lots C à E. Elles restent
- * affichées, désactivées : le back-office montre sa forme finale dès le
- * premier lot, et l'ordre des livraisons se lit d'un coup d'œil.
+ * Les entrées `bientot` — il n'en reste plus, tous les lots étant livrés —
+ * s'affichaient désactivées : le back-office montrait sa forme finale dès le
+ * premier lot. Le mécanisme reste en place pour la suite.
+ *
+ * Les entrées réservées aux administrateurs sont retirées du menu d'un
+ * éditeur, pas grisées : elles existent, il n'y a simplement pas accès.
  */
 
 use App\Core\Admin;
+use App\Core\Auth;
 use App\Core\View;
 
 $actif = $actif ?? '';
 ?>
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
   <ul class="nav">
-    <?php foreach (Admin::menu() as $entree): ?>
+    <?php foreach (Admin::menuPour(Auth::estAdmin()) as $entree): ?>
 
       <?php if (isset($entree['rubrique'])): ?>
         <li class="nav-item nav-category"><?= View::e($entree['rubrique']) ?></li>

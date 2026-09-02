@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 use App\Controller\Admin\ActualiteController;
 use App\Controller\Admin\AuthController;
+use App\Controller\Admin\CommandeController;
+use App\Controller\Admin\CompteController;
 use App\Controller\Admin\EvenementController;
 use App\Controller\Admin\MediaController;
 use App\Controller\Admin\ParametreController;
@@ -100,6 +102,31 @@ $router->post($base . '/medias/{id}/supprimer', [MediaController::class, 'suppri
 
 $router->get($base . '/parametres',  [ParametreController::class, 'formulaire']);
 $router->post($base . '/parametres', [ParametreController::class, 'enregistrer']);
+
+/**
+ * Commandes. Ni création ni suppression : une commande naît du tunnel de
+ * paiement et reste — c'est une pièce comptable. L'administration constate,
+ * remet, annote.
+ *
+ * `/note` est déclaré avant `/{statut}`, qui accepterait « note » comme un
+ * statut à atteindre. Même règle que `/nouvelle` face à `/{id}`.
+ */
+$router->get($base . '/commandes',                [CommandeController::class, 'liste']);
+$router->get($base . '/commandes/{id}',           [CommandeController::class, 'fiche']);
+$router->post($base . '/commandes/{id}/note',     [CommandeController::class, 'annoter']);
+$router->post($base . '/commandes/{id}/{statut}', [CommandeController::class, 'avancer']);
+
+/**
+ * Comptes. Pas de route de suppression : un compte se désactive, sans quoi les
+ * traces de modération et de remise perdraient le nom de qui a décidé.
+ */
+$router->get($base . '/comptes',                  [CompteController::class, 'liste']);
+$router->get($base . '/comptes/nouveau',          [CompteController::class, 'formulaireCreation']);
+$router->post($base . '/comptes',                 [CompteController::class, 'creer']);
+$router->get($base . '/comptes/{id}',             [CompteController::class, 'formulaireEdition']);
+$router->post($base . '/comptes/{id}',            [CompteController::class, 'mettreAJour']);
+$router->post($base . '/comptes/{id}/motdepasse', [CompteController::class, 'reinitialiser']);
+$router->post($base . '/comptes/{id}/actif',      [CompteController::class, 'basculerActif']);
 
 $router->introuvable(static function (): void {
     // Une adresse fautive derrière la garde reste une 404 ; l'anonyme, lui, a

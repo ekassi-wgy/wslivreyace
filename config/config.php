@@ -28,6 +28,14 @@ $config = [
         'nom'     => 'Philippe Grégoire Yacé — Une destinée',
         'medias'  => __DIR__ . '/../medias',
     ],
+    // Passerelle de paiement retenue : celle du site de référence. Elle peut
+    // changer — c'est pourquoi l'hôte est ici et non dans le code. Voir
+    // App\Core\Paiement, qui porte les points d'entrée de chaque mode.
+    'paiement' => [
+        'passerelle' => 'carte.abidjan.net',
+        'nom'        => 'Carte Abidjan.net',
+        'base'       => 'https://carte.abidjan.net',
+    ],
 ];
 
 $local = __DIR__ . '/config.local.php';
