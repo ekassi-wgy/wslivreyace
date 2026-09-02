@@ -9,6 +9,7 @@ declare(strict_types=1);
  * amorçage.
  */
 
+use App\Controller\ActualiteController;
 use App\Controller\TemoignageController;
 use App\Core\Router;
 use App\Core\View;
@@ -20,6 +21,16 @@ $router = new Router();
 $router->get('/',            fn() => View::render('pages/accueil',    ['page' => 'accueil']));
 $router->get('/le-livre',    fn() => View::render('pages/livre',      ['page' => 'livre']));
 $router->get('/biographie',  fn() => View::render('pages/biographie', ['page' => 'bio']));
+
+/**
+ * Actualités (CDC §4.7). La revue de presse a son adresse propre : ce n'est
+ * pas un filtre de la liste mais une autre lecture de la même matière — voir
+ * le contrôleur. Aucune de ces trois routes n'ouvre de session : elles ne
+ * font que lire.
+ */
+$router->get('/actualites',        [ActualiteController::class, 'liste']);
+$router->get('/revue-de-presse',   [ActualiteController::class, 'presse']);
+$router->get('/actualites/{slug}', [ActualiteController::class, 'detail']);
 
 /**
  * Témoignages : la première page publique adossée aux données, et le premier

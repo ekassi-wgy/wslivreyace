@@ -56,4 +56,41 @@ final class View
     {
         return htmlspecialchars((string) $v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
+
+    /**
+     * Un texte saisi au back-office, rendu en paragraphes.
+     *
+     * Les corps de texte du site — actualités, descriptions d'événements —
+     * sont saisis en texte brut : une ligne vide sépare deux paragraphes,
+     * c'est ce que dit l'aide du champ. Ils sont **échappés**, jamais servis
+     * tels quels : un éditeur n'écrit pas de HTML, et une balise qui
+     * apparaîtrait dans le champ viendrait d'ailleurs que de lui. C'est aussi
+     * ce qui fait qu'un compte d'édition compromis ne peut pas injecter de
+     * script dans une page publique.
+     *
+     * Les retours simples à l'intérieur d'un paragraphe sont conservés en
+     * `<br>` : une adresse, une liste courte ou un titre d'ouvrage se saisit
+     * ligne à ligne.
+     */
+    public static function paragraphes(?string $texte, string $classe = ''): string
+    {
+        $texte = trim(str_replace("\r\n", "\n", (string) $texte));
+
+        if ($texte === '') {
+            return '';
+        }
+
+        $attribut = $classe === '' ? '' : ' class="' . self::e($classe) . '"';
+        $html = '';
+
+        foreach (preg_split("/\n[ \t]*\n+/", $texte) ?: [] as $bloc) {
+            $bloc = trim($bloc);
+
+            if ($bloc !== '') {
+                $html .= '<p' . $attribut . '>' . nl2br(self::e($bloc)) . "</p>\n";
+            }
+        }
+
+        return $html;
+    }
 }

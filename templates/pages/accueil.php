@@ -362,30 +362,42 @@ JSONLD;
         <h2 class="t-d1 reveal">Autour de l'ouvrage.</h2>
       </div>
       <div class="col-lg-3 d-flex align-items-end justify-content-lg-end">
-        <a class="link reveal" href="#">Toutes les actualités</a>
+        <a class="link reveal" href="/actualites">Toutes les actualités</a>
       </div>
     </div>
 
+    <?php
+    /* Les trois dernières actualités publiées. Comme pour les témoignages,
+       rien n'est écrit en dur : la page /actualites porte la liste entière. */
+    $dernieres = App\Model\Actualite::listerPubliees(null, 3);
+    ?>
+
     <div class="row">
       <div class="col-lg-10 offset-lg-2">
-        <!-- ACTUALITÉS — trois entrées de démonstration, à alimenter -->
-        <div class="news">
-          <a class="news__i reveal" href="#">
-            <span class="news__date">À venir</span>
-            <span class="news__t">Titre de l'actualité à renseigner</span>
-            <span class="news__cat">Parution</span>
-          </a>
-          <a class="news__i reveal" href="#">
-            <span class="news__date">À venir</span>
-            <span class="news__t">Titre de l'actualité à renseigner</span>
-            <span class="news__cat">Dédicace</span>
-          </a>
-          <a class="news__i reveal" href="#">
-            <span class="news__date">À venir</span>
-            <span class="news__t">Titre de l'actualité à renseigner</span>
-            <span class="news__cat">Presse</span>
-          </a>
-        </div>
+
+        <?php if ($dernieres === []): ?>
+
+          <p class="t-lead reveal">
+            <em>Les actualités paraîtront ici.</em> Parutions, dédicaces et
+            rendez-vous autour de l'ouvrage&nbsp;: rien n'est encore publié.
+          </p>
+
+        <?php else: ?>
+
+          <div class="news">
+            <?php foreach ($dernieres as $a): ?>
+              <a class="news__i reveal" href="/actualites/<?= App\Core\View::e((string) $a['slug']) ?>">
+                <time class="news__date" datetime="<?= App\Core\View::e(App\Core\DateFr::iso((string) $a['publie_le'])) ?>">
+                  <?= App\Core\DateFr::longue((string) $a['publie_le']) ?>
+                </time>
+                <span class="news__t"><?= App\Core\View::e((string) $a['titre']) ?></span>
+                <span class="news__cat"><?= App\Core\View::e(App\Model\Actualite::categorie((string) $a['categorie'])) ?></span>
+              </a>
+            <?php endforeach; ?>
+          </div>
+
+        <?php endif; ?>
+
       </div>
     </div>
   </div>

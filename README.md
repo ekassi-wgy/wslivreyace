@@ -3,9 +3,10 @@
 Site éditorial de l'ouvrage. **Le back-office est complet** : ossature de
 `/cmsadmin/`, authentification, actualités, événements, repères, modération des
 témoignages, fiche technique, tableau de bord, médiathèque, commandes et
-comptes. Côté public, quatre pages : accueil, Le livre, Biographie, et
-**Témoignages — la première adossée aux données, et le premier formulaire
-ouvert**. **Restent les autres pages publiques et le tunnel de commande.**
+comptes. Côté public, six pages : accueil, Le livre, Biographie, **Témoignages**
+— la première adossée aux données, et le premier formulaire ouvert — et
+**Actualités : la liste, la fiche par slug et la revue de presse**. **Restent
+les autres pages publiques et le tunnel de commande.**
 
 ---
 
@@ -146,9 +147,9 @@ livreyace/                  ← racine web
 │   ├── bootstrap.php       autoload + régime d'erreurs       [interdit]
 │   ├── Core/               Config, Database, Router, View,
 │   │                       Admin, Session, Csrf, Auth,
-│   │                       Validator, Slug, Site,
+│   │                       Validator, Slug, Site, DateFr,
 │   │                       Televersement, Paiement, Debit    [interdit]
-│   ├── Controller/         Temoignage (public)               [interdit]
+│   ├── Controller/         Actualite, Temoignage (public)    [interdit]
 │   ├── Controller/Admin/   Auth, Crud (Actualite, Evenement,
 │   │                       Repere), Temoignage, Media,
 │   │                       Commande, Compte, Parametre       [interdit]
@@ -200,7 +201,15 @@ censé empêcher. Vérifié : configuration posée, une requête portant un `Hos
 falsifié rend malgré tout la bonne adresse.
 
 La chaîne de requête est retirée du canonical : deux adresses qui ne diffèrent
-que par un paramètre de suivi désignent la même page.
+que par un paramètre de suivi désignent la même page. C'est ce qui fait que les
+vues filtrées des actualités — `/actualites?categorie=dedicace` — désignent
+toutes `/actualites` : la ressource est la même, seul le point de vue change.
+
+**L'image de partage se choisit par page.** Le placard typographique reste le
+défaut du site ; une actualité illustrée passe la sienne, avec les dimensions
+que la médiathèque connaît. Elles ne sont écrites que si on les connaît :
+annoncer 1200 × 630 pour une image d'archive qui n'y ressemble pas donne un
+aperçu rogné de travers, ce qui est pire que pas de dimensions du tout.
 
 Le back-office n'en porte pas — il est en `noindex`.
 
@@ -371,6 +380,100 @@ session, le temps de la redirection.
 L'accueil montre les trois derniers témoignages validés, coupés à 260
 caractères, et renvoie vers la page. Quand il n'y en a aucun, ni l'un ni l'autre
 ne montre de faux témoignage : ils invitent à déposer le premier.
+
+### Les actualités, la fiche et la revue de presse
+
+Trois pages en lecture seule (CDC §4.7), les premières à servir un contenu
+rédigé au back-office : la liste `/actualites`, la fiche `/actualites/{slug}` et
+la revue de presse `/revue-de-presse`. **Aucune n'ouvre de session** — la règle
+posée avec les témoignages tient : un cookie n'apparaît que sur les routes qui
+en ont besoin. Vérifié : la page des actualités ne dépose rien, celle des
+témoignages dépose toujours son jeton.
+
+**La revue de presse est une page, pas un filtre de plus.** Une coupure de
+presse n'est pas une actualité du site : elle renvoie à un texte publié
+ailleurs, et ce qui l'identifie est l'organe qui l'a publiée, pas la date à
+laquelle on l'a saisie. Elle se lit donc comme une bibliographie — organe,
+millésime, titre — là où la liste d'actualités se lit comme un fil. Les articles
+de presse restent malgré tout dans la liste générale : ils font partie de ce qui
+se passe autour de l'ouvrage, et les en retirer surprendrait l'éditeur qui vient
+d'en publier un. Ce qui disparaît de la barre de filtres, en revanche, c'est la
+pastille « Presse » : elle ferait doublon avec la page dédiée, qui prend sa
+place au même endroit.
+
+**Les filtres sont des liens, pas des boutons.** Chaque vue a son adresse, elle
+se partage et le retour arrière y ramène. La frise de la biographie filtre en
+JavaScript parce qu'elle déplie du contenu déjà chargé ; ici c'est une autre
+requête, elle mérite une URL. Seules paraissent les catégories qui ont au moins
+une entrée — un onglet qui donne sur une liste vide est un lien mort. Une
+catégorie inconnue affiche la liste entière plutôt qu'une 404 : la ressource
+existe, seul le point de vue est illisible, et un cul-de-sac serait
+disproportionné pour un lien mal recopié.
+
+**Un brouillon n'existe pas pour le site, même quand son adresse est connue** —
+un slug se devine. La fiche répond 404 dans ce cas comme pour un slug inconnu,
+et sans distinguer les deux : dire « cette page existe mais n'est pas publiée »
+renseignerait sur le contenu du back-office. Vérifié : les deux répondent 404,
+avec la page 404 de la charte.
+
+**Ce qui met en ligne est le statut, jamais la date.** Une actualité datée de
+demain paraît aujourd'hui, en tête de liste. Le site n'a pas de publication
+différée, et en simuler une ici ferait disparaître l'article de l'éditeur sans
+qu'aucun écran ne le lui dise. La date nulle, elle, est écartée en plus du
+statut : l'écran de publication la refuse déjà, mais une ligne modifiée en SQL
+passerait au travers et se rangerait n'importe où dans un classement qui est
+chronologique.
+
+**Le corps du texte est du texte, jamais du HTML.** Il est saisi en clair — une
+ligne vide sépare deux paragraphes, c'est ce que dit l'aide du champ — et rendu
+par `View::paragraphes`, qui échappe puis découpe. Un éditeur n'écrit pas de
+balises ; une balise qui apparaîtrait dans le champ viendrait d'ailleurs que de
+lui, et c'est ce qui fait qu'un compte d'édition compromis ne peut pas injecter
+de script dans une page publique.
+
+**Le JSON-LD est fabriqué par `json_encode`, avec `JSON_HEX_TAG`.** C'est la
+première page dont le balisage structuré vient de la base, et c'est l'option qui
+compte : sans elle, un titre contenant `</script>` fermerait la balise et ferait
+passer la suite pour du code. Les pages statiques s'en dispensaient, leur
+JSON-LD étant écrit en dur. Vérifié : une actualité titrée
+`</script><script>alert(1)</script>` sort en `\u003C` dans le JSON-LD, en
+entités dans le titre, la description et les balises Open Graph.
+
+**Les dates sont écrites en français par une table de douze mois**
+(`App\Core\DateFr`), et non par `IntlDateFormatter`, `setlocale` ou
+`strftime` — même raison que la translittération des slugs : ces trois-là
+dépendent de la machine. `ext-intl` n'est pas garantie sur un hébergement
+mutualisé, `setlocale` exige que la locale `fr_FR` soit installée, et
+`strftime` est dépréciée depuis PHP 8.1. Le premier du mois s'écrit « 1er » :
+« 1 mars » ne se dit pas en français, et c'est le genre de détail qui trahit un
+gabarit.
+
+**L'illustration sort avec son crédit.** La fiche va chercher la ligne de
+médiathèque derrière le chemin pour en tirer la légende, le crédit, le texte de
+remplacement et les dimensions ; une archive publiée sans mention de sa source
+expose l'éditeur (CDC §6). La colonne `image` porte un chemin et non une clé
+étrangère : le fichier peut avoir été retiré de la médiathèque, la page
+s'affiche alors sans image plutôt qu'avec un cadre vide.
+
+**Le lien vers l'article d'origine ne force pas de nouvelle fenêtre.** Un
+`target="_blank"` retire au visiteur le contrôle de sa navigation et casse le
+retour arrière ; `rel="noopener nofollow"` est posé malgré tout, au cas où un
+navigateur l'ouvrirait quand même. C'est aussi pourquoi une ligne de la revue de
+presse mène à la fiche interne et non directement au site de l'organe : un lien
+dans un lien n'existe pas en HTML, il fallait choisir, et la fiche reste lisible
+quand l'article d'origine a disparu — ce qui arrive vite sur les sites de presse.
+
+**Pas de pagination, et c'est délibéré.** Une actualité de livre paraît par
+dizaines sur des années, pas par milliers : découper la liste coûterait un
+appareil de navigation pour un problème qui n'existe pas, et couperait la
+lecture d'un fil qui se parcourt d'un trait. La question se reposera le jour où
+la liste dépassera la centaine d'entrées ; les filtres offrent déjà de quoi la
+réduire.
+
+L'accueil ne montre plus trois entrées de démonstration : il lit les trois
+dernières publiées et renvoie vers la page. Quand il n'y en a aucune, ni l'un ni
+l'autre ne fabrique de fausse actualité — comme pour les témoignages, ils le
+disent.
 
 ### Les écrans de contenu
 
@@ -775,7 +878,10 @@ les deux). Ce qu'il reste :
   absence de warning, mesure du rendu au navigateur). Ces vérifications ne sont
   pas rejouables automatiquement.
 - **Pas d'éditeur enrichi.** Le corps d'une actualité se saisit en texte brut,
-  une ligne vide séparant deux paragraphes. L'illustration, elle, se choisit
+  une ligne vide séparant deux paragraphes, et la page publique le rend échappé
+  (voir §2). Pas de gras, pas de lien dans le corps du texte : le jour où
+  l'éditeur en demandera, ce sera une syntaxe restreinte et une liste blanche de
+  balises, jamais du HTML servi tel quel. L'illustration, elle, se choisit
   désormais dans la médiathèque (lot D2).
 - **La médiathèque ne recadre ni ne remplace.** Une image mal cadrée se retaille
   hors du site, et changer le fichier d'une fiche demande d'en déposer un autre
@@ -799,6 +905,11 @@ les deux). Ce qu'il reste :
   plafond, mais un robot patient qui les franchit et reste sous cinq envois par
   heure passe. C'est assumé : la file de modération est là pour ça, et rien ne
   paraît sans décision humaine.
+- **Aucune pagination sur les listes publiques.** La liste des actualités et la
+  revue de presse rendent tout ce qui est publié. C'est le bon choix pour des
+  dizaines d'entrées — et la question se reposera au-delà de la centaine, ou le
+  jour où la galerie d'archives arrivera, elle qui pèsera des images et non des
+  lignes de texte.
 - **Pas d'export des commandes.** Ni CSV ni impression : la comptabilité devra
   relire l'écran ou la base. À voir quand il y aura des commandes.
 - **`reference/` pèse ~70 Mo dans l'arborescence servie.** Verrouillé en 403,
@@ -826,11 +937,13 @@ lot B, limitation de débit des formulaires publics, session côté visiteur
 ouverte route par route, et les pièges à robots posés avec le premier
 formulaire.
 
-**Le site public** — quatre pages sur onze : accueil, Le livre, Biographie, et
-Témoignages, la première adossée aux données. Plus une 404 dessinée dans la
-charte et servie par le routeur.
+**Le site public** — cinq entrées du cahier des charges sur onze : accueil, Le
+livre, Biographie, Témoignages et Actualités/Presse. Six pages en tout, la
+dernière entrée en portant trois — la liste, la fiche par slug et la revue de
+presse. Plus une 404 dessinée dans la charte, servie par le routeur comme par
+une fiche introuvable.
 
-**Non fait** — les sept pages publiques restantes, le tunnel de commande, et la
+**Non fait** — les six entrées publiques restantes, le tunnel de commande, et la
 phase 3 du CDC. Tout ce qui reste est du côté visiteur : il n'y a plus une seule
 ligne de back-office à écrire.
 
@@ -952,7 +1065,7 @@ proposition, pas un engagement — seul F1 est livré.
 | Lot | Objet | État |
 |---|---|---|
 | **F1** | Témoignages — page publique, formulaire de dépôt, aperçu sur l'accueil | livré |
-| **F2** | Actualités — liste, détail par slug, revue de presse | à venir |
+| **F2** | Actualités — liste, détail par slug, revue de presse | livré |
 | **F3** | Galerie/Archives avec visionneuse, et Événements | à venir |
 | **F4** | Contact et mentions légales | à venir |
 
@@ -961,6 +1074,13 @@ verticale complète qui restait — écriture, validation, modération, affichag
 et elle porte la plomberie que les suivantes réutiliseront. F2 et F3 ne font que
 lire ce que le back-office remplit déjà ; F4 réutilisera le formulaire de F1,
 son barème de débit étant même déjà déclaré.
+
+**Ce que F2 a laissé derrière lui**, et dont F3 hérite sans avoir à l'écrire :
+`App\Core\DateFr` pour les dates en français, `View::paragraphes` pour les
+corps de texte saisis en clair, l'image de partage choisie par page, et le
+patron d'une page publique adossée à une entité — liste filtrée par lien, fiche
+par slug, 404 pour un brouillon. Les événements suivent exactement la même
+forme.
 
 Restent en dehors de ce découpage : **Héritage** (§4.5), qui n'attend rien de
 technique mais tout de la matière éditoriale, et la **Boutique** (§4.9), qui est
@@ -971,20 +1091,23 @@ le tunnel de commande — voir ci-dessous.
 Le back-office et la couche formulaire, qui occupaient les deux premières places
 de cette liste, sont faits. Ce qui reste :
 
-1. **Les pages publiques restantes** — lots F2 à F4 ci-dessus, puis Héritage.
+1. **Les pages publiques restantes** — lots F3 et F4 ci-dessus, puis Héritage.
    Rapides : les données se saisissent déjà, le système de composants existe, il
-   n'y a plus qu'à lire ce qui est en base.
+   n'y a plus qu'à lire ce qui est en base — F2 vient de le montrer, et il n'a
+   demandé aucune migration.
 2. **Le tunnel de commande** — la passerelle est arrêtée (`carte.abidjan.net`,
    voir §2) et décrite en un seul endroit. Il suppose la page boutique, donc le
    point 1. Il créera les commandes que l'écran de suivi attend, avec leur code
    de transaction.
 3. **Phase 3 du CDC** — newsletter, recherche interne, multilinguisme.
 
-Deux décisions à prendre en chemin, aucune bloquante aujourd'hui : quelles pages
-font entrer la barre de navigation, qui porte quatre entrées et le bouton de
-commande — Témoignages n'y figure pas, et Actualités voudra sans doute sa place
-avant elle ; et ouvrir ou non la saisie manuelle d'une commande, pour celles qui
-se prendraient au téléphone ou en dédicace (voir §6).
+**Une décision de moins.** L'entrée « Actualités » de la barre de navigation
+pointait sur l'ancre de l'accueil ; elle mène désormais à la page, et la revue
+de presse a pris place dans le pied. Reste la question de fond, non bloquante :
+quelles pages entrent dans une barre qui porte quatre entrées et le bouton de
+commande — Témoignages n'y figure toujours pas. S'y ajoute, inchangée, celle
+d'ouvrir ou non la saisie manuelle d'une commande, pour celles qui se
+prendraient au téléphone ou en dédicace (voir §6).
 
 ### Ce qui bloque, et sur qui
 
@@ -1012,21 +1135,24 @@ Biographie (§4.4) — **complet** : contexte historique, biographie structurée
 chapitres avec sommaire latéral collé, frise chronologique filtrable par période et
 dépliable, citations, galerie de portraits.
 
+Actualités/Presse (§4.7) — **complet** : la liste filtrable par catégorie, la
+fiche par slug avec son illustration créditée et son balisage `NewsArticle`, et
+la revue de presse par millésime. L'accueil en montre les trois dernières.
+
 Témoignages (§4.8) — **complet** : page publique, formulaire de dépôt, file de
 modération, et l'aperçu des trois derniers validés sur l'accueil. La chaîne
 entière tourne, du visiteur qui écrit au modérateur qui décide.
 
 Reste à construire, côté public — Héritage (§4.5), Galerie/Archives (§4.6),
-Actualités/Presse (§4.7), Boutique (§4.9), Événements (§4.10), Contact (§4.11),
-Mentions légales (§4.12). **Le back-office de tout cela existe** ; ce sont les
-pages qui manquent.
+Boutique (§4.9), Événements (§4.10), Contact (§4.11), Mentions légales (§4.12).
+**Le back-office de tout cela existe** ; ce sont les pages qui manquent.
 
-Nuance sur trois d'entre elles : **actualités, événements et archives ont leur
-back-office** — les données se saisissent, s'illustrent et se publient. Seules
-manquent les pages qui les afficheront, et elles seront rapides : il n'y a plus
-qu'à lire ce qui existe. Galerie/Archives comprise : la médiathèque est écrite,
-ses images portent légende, crédit, catégorie et rang, et une image publiée est
-une image créditée.
+Nuance sur deux d'entre elles : **événements et archives ont leur back-office** —
+les données se saisissent, s'illustrent et se publient. Seules manquent les
+pages qui les afficheront, et elles seront rapides : il n'y a plus qu'à lire ce
+qui existe, comme les actualités viennent de le montrer. Galerie/Archives
+comprise : la médiathèque est écrite, ses images portent légende, crédit,
+catégorie et rang, et une image publiée est une image créditée.
 
 La **boutique (§4.9)** est le cas à part : son écran de suivi est livré et la
 passerelle est arrêtée (`carte.abidjan.net`), mais le tunnel de paiement reste à

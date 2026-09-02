@@ -10,6 +10,22 @@ use App\Core\View;
 $titre       = $titre       ?? 'Philippe Grégoire Yacé — Une destinée';
 $description = $description ?? '';
 $ld          = $ld          ?? '';
+
+/**
+ * Aperçu de partage. Le placard typographique sert de défaut à tout le site ;
+ * une page qui porte une image propre — une actualité illustrée — la passe
+ * ici. Elle doit être absolue : un chemin relatif est ignoré par les
+ * plateformes, d'où le passage par Site::url() côté gabarit de page.
+ *
+ * Les dimensions évitent que la plateforme télécharge l'image pour les
+ * deviner. On ne les écrit que si on les connaît : annoncer 1200 × 630 pour
+ * une image d'archive qui n'y ressemble pas donnerait un aperçu rogné de
+ * travers, ce qui est pire que pas de dimensions du tout.
+ */
+$ogType   = $ogType   ?? 'website';
+$ogImage  = $ogImage  ?? Site::url('/assets/img/og-image.jpg');
+$ogAlt    = $ogAlt    ?? 'Philippe Grégoire Yacé — Une destinée, 1920-1998';
+$ogTaille = $ogTaille ?? [1200, 630];
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -33,7 +49,7 @@ $ld          = $ld          ?? '';
 <?php /* URL absolues : un canonical ou un og:image relatif est ignoré. */ ?>
 <link rel="canonical" href="<?= View::e(Site::canonique()) ?>">
 
-<meta property="og:type" content="website">
+<meta property="og:type" content="<?= View::e($ogType) ?>">
 <meta property="og:url" content="<?= View::e(Site::canonique()) ?>">
 <meta property="og:site_name" content="Philippe Grégoire Yacé — Une destinée">
 <meta property="og:locale" content="fr_FR">
@@ -41,13 +57,13 @@ $ld          = $ld          ?? '';
 <meta property="og:description" content="<?= htmlspecialchars($description, ENT_QUOTES, 'UTF-8') ?>">
 <meta name="twitter:card" content="summary_large_image">
 
-<?php /* Les dimensions évitent que la plateforme télécharge l'image pour les
-         deviner : l'aperçu s'affiche au premier partage plutôt qu'au second. */ ?>
-<meta property="og:image" content="<?= View::e(Site::url('/assets/img/og-image.jpg')) ?>">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Philippe Grégoire Yacé — Une destinée, 1920-1998">
-<meta name="twitter:image" content="<?= View::e(Site::url('/assets/img/og-image.jpg')) ?>">
+<meta property="og:image" content="<?= View::e($ogImage) ?>">
+<?php if (is_array($ogTaille) && count($ogTaille) === 2): ?>
+<meta property="og:image:width" content="<?= (int) $ogTaille[0] ?>">
+<meta property="og:image:height" content="<?= (int) $ogTaille[1] ?>">
+<?php endif; ?>
+<meta property="og:image:alt" content="<?= View::e($ogAlt) ?>">
+<meta name="twitter:image" content="<?= View::e($ogImage) ?>">
 
 <?php if ($ld !== ''): ?>
 <script type="application/ld+json">

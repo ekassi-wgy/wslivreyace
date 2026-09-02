@@ -27,7 +27,8 @@
       <div class="col-lg-2 foot__col">
         <p>Le site</p>
         <ul>
-          <li><a href="/#actualites">Actualités</a></li>
+          <li><a href="/actualites">Actualités</a></li>
+          <li><a href="/revue-de-presse">Revue de presse</a></li>
           <li><a href="#">Événements</a></li>
           <li><a href="/temoignages">Témoignages</a></li>
           <li><a href="#">Contact</a></li>
