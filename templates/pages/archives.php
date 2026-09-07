@@ -106,6 +106,24 @@ $formes = ['gal__i--large', 'gal__i--haut', 'gal__i--carre', 'gal__i--pano'];
       </div>
     </div>
 
+    <?php /* --- Appel à contribution (brief §5) --------------------------
+             Placé au-dessus de la planche et non en pied de page : le brief le
+             veut « très visible », et quelqu'un qui possède une pièce le
+             découvre en cherchant ce que le fonds contient déjà. */ ?>
+    <div class="row" style="margin-bottom: var(--sp-7);">
+      <div class="col-lg-10 offset-lg-2">
+        <a class="contrib-appel reveal" href="<?= $lien('/contribuer') ?>">
+          <span class="contrib-appel__texte">
+            <strong>Vous avez connu Philippe Grégoire Yacé&nbsp;?</strong>
+            Une photographie, une lettre, un enregistrement&nbsp;? Aidez-nous à
+            préserver et transmettre sa mémoire.
+          </span>
+          <span class="contrib-appel__btn">Contribuez aux archives
+            <span aria-hidden="true">&#8594;</span></span>
+        </a>
+      </div>
+    </div>
+
     <?php /* --- La planche ---------------------------------------------- */ ?>
     <div class="row">
       <div class="col-lg-10 offset-lg-2">

@@ -1,0 +1,29 @@
+# ============================================================================
+# Fichiers envoyés par le public et non encore relus (lot G8).
+#
+# CE DOSSIER N'EST JAMAIS SERVI. C'est toute sa raison d'être.
+#
+# `medias/` est public : ses fichiers doivent être téléchargeables, et le sont
+# donc par qui devine leur nom — publiés ou non. Un document envoyé par un
+# inconnu, que personne n'a encore ouvert, n'a rien à y faire.
+#
+# Il attend ici, et n'en sort qu'à l'acceptation par un modérateur, qui le
+# déplace alors dans `medias/`. Avant cela, seul le back-office peut le lire,
+# à travers une route authentifiée qui le sert en pièce jointe.
+#
+# Trois barrières se recouvrent, comme pour `medias/` :
+#   1. le contrôle de type au dépôt (App\Core\Televersement) ;
+#   2. le nom de destination fabriqué, le nom d'origine ne survivant pas ;
+#   3. cette règle, qui tient si les deux premières cèdent.
+#
+# Le contrôleur frontal exclut également `quarantaine` de sa réécriture — voir
+# le .htaccess de la racine.
+# ============================================================================
+
+Require all denied
+
+Options -Indexes -ExecCGI
+
+<IfModule mod_php.c>
+  php_flag engine off
+</IfModule>

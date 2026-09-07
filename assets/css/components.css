@@ -1565,3 +1565,53 @@ main > .shell > .avis:first-child { margin-top: var(--sp-7); }
 .her-voisins li:first-child { border-top: 1px solid var(--rule); }
 .her-voisins a { display: block; padding-block: var(--sp-4); color: var(--ink); }
 .her-voisins a:hover { color: var(--brass-text); }
+
+/* =========================================================================
+   CONTRIBUEZ AUX ARCHIVES (lot G8)
+   ========================================================================= */
+.contrib-appel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  padding: var(--sp-5) var(--sp-6);
+  background: var(--paper-sunk);
+  border-left: 3px solid var(--brass);
+  color: var(--ink);
+  transition: background var(--dur-2) var(--ease);
+}
+.contrib-appel:hover { background: var(--brass-wash); }
+.contrib-appel__texte { flex: 1 1 22rem; line-height: 1.6; font-size: var(--fs-small); }
+.contrib-appel__texte strong { display: block; font-family: var(--font-display); font-size: 1.125rem; margin-bottom: var(--sp-2); }
+.contrib-appel__btn {
+  flex: none;
+  font-size: var(--fs-kicker);
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--brass-text);
+  white-space: nowrap;
+}
+
+.champ-duo { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); }
+@media (max-width: 575.98px) { .champ-duo { grid-template-columns: 1fr; } }
+
+/* La case de cession de droits : le libelle porte la case, pour que le clic
+   sur le texte coche — un long paragraphe suivi d'une case minuscule se rate. */
+.champ--case label { display: grid; grid-template-columns: auto 1fr; gap: var(--sp-3); align-items: start; cursor: pointer; }
+.champ--case input { margin-top: 0.25em; }
+.champ--case span { font-size: var(--fs-small); line-height: 1.6; }
+
+/* --- Ce qu'il advient d'une contribution -------------------------------- */
+.contrib-note { border-top: 2px solid var(--ink); padding-top: var(--sp-4); }
+.contrib-etapes { margin: var(--sp-4) 0 0; padding-left: 1.1rem; }
+.contrib-etapes li { margin-bottom: var(--sp-3); font-size: var(--fs-small); line-height: 1.6; color: var(--ink-2); }
+.contrib-etapes li::marker { color: var(--brass-text); }
+.contrib-note__fin {
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--rule);
+  font-size: var(--fs-small);
+  line-height: 1.6;
+  color: var(--ink-3);
+}

@@ -123,6 +123,54 @@ final class Televersement
      */
     public static function recevoir(array $fichier, string $nomSouhaite = ''): array
     {
+        $mesure = self::examiner($fichier);
+        $temporaire = (string) $fichier['tmp_name'];
+
+        if ($mesure['famille'] !== 'image') {
+            $relatif = self::deposer($temporaire, $fichier, $nomSouhaite, $mesure['ext'], true);
+
+            return [
+                'fichier' => $relatif,
+                'famille' => $mesure['famille'],
+                'largeur' => 0,
+                'hauteur' => 0,
+                'octets'  => $mesure['octets'],
+            ];
+        }
+
+        $relatif = self::deposer($temporaire, $fichier, $nomSouhaite, $mesure['ext'], true);
+
+        self::fabriquerDerivees(
+            self::racine() . '/' . $relatif,
+            $mesure['type'],
+            $mesure['largeur'],
+            $mesure['hauteur']
+        );
+
+        return [
+            'fichier' => $relatif,
+            'famille' => 'image',
+            'largeur' => $mesure['largeur'],
+            'hauteur' => $mesure['hauteur'],
+            'octets'  => $mesure['octets'],
+        ];
+    }
+
+    /**
+     * Contrôle un fichier reçu **sans le déplacer**, et rend ce qu'il est.
+     *
+     * Extraite de `recevoir()` au lot G8 : les contributions du public passent
+     * par exactement les mêmes barrières, mais atterrissent en quarantaine et
+     * non dans `medias/`. Deux copies de ce contrôle auraient fini par
+     * diverger, et c'est le genre de divergence dont on n'entend parler
+     * qu'après.
+     *
+     * @param array<string,mixed> $fichier une entrée de $_FILES
+     * @return array{famille:string,ext:string,octets:int,type:int,largeur:int,hauteur:int}
+     * @throws TeleversementErreur message destiné à l'expéditeur
+     */
+    public static function examiner(array $fichier): array
+    {
         $code = (int) ($fichier['error'] ?? UPLOAD_ERR_NO_FILE);
 
         if ($code !== UPLOAD_ERR_OK) {
@@ -188,14 +236,13 @@ final class Televersement
          * `medias/` est ce qui les tient — voir l'en-tête de cette classe.
          */
         if (!$estImage) {
-            $relatif = self::deposer($temporaire, $fichier, $nomSouhaite, self::FICHIERS[$mime]['ext']);
-
             return [
-                'fichier' => $relatif,
                 'famille' => $famille,
+                'ext'     => self::FICHIERS[$mime]['ext'],
+                'octets'  => $octets,
+                'type'    => 0,
                 'largeur' => 0,
                 'hauteur' => 0,
-                'octets'  => $octets,
             ];
         }
 
@@ -218,15 +265,57 @@ final class Televersement
             ));
         }
 
-        $relatif = self::deposer($temporaire, $fichier, $nomSouhaite, $format['ext']);
+        return [
+            'famille' => 'image',
+            'ext'     => $format['ext'],
+            'octets'  => $octets,
+            'type'    => $mesure[2],
+            'largeur' => $largeur,
+            'hauteur' => $hauteur,
+        ];
+    }
 
-        self::fabriquerDerivees(self::racine() . '/' . $relatif, $mesure[2], $largeur, $hauteur);
+    /**
+     * Adopte un fichier **déjà présent sur le disque** dans la médiathèque.
+     *
+     * Sert la promotion d'une contribution acceptée (lot G8) : le fichier a
+     * quitté le navigateur il y a des jours, il n'est plus un envoi mais un
+     * fichier du serveur. `move_uploaded_file` le refuserait, et c'est heureux
+     * — c'est précisément ce qu'elle protège.
+     *
+     * Le contrôle de type n'est pas rejoué : il l'a été à la réception, et le
+     * fichier n'a pas bougé depuis. Ses dimensions, en revanche, sont relues —
+     * elles n'ont pas été conservées.
+     *
+     * @return array{fichier:string,largeur:int,hauteur:int,octets:int}|null
+     */
+    public static function adopter(string $absolu, string $nomSouhaite = ''): ?array
+    {
+        if (!is_file($absolu)) {
+            return null;
+        }
+
+        $extension = strtolower((string) pathinfo($absolu, PATHINFO_EXTENSION));
+        $octets    = (int) filesize($absolu);
+
+        $mesure  = @getimagesize($absolu);
+        $estImage = $mesure !== false && isset(self::FORMATS[$mesure[2]]);
+
+        $relatif = self::deposer($absolu, ['name' => basename($absolu)], $nomSouhaite, $extension, false);
+
+        if ($estImage) {
+            self::fabriquerDerivees(
+                self::racine() . '/' . $relatif,
+                $mesure[2],
+                (int) $mesure[0],
+                (int) $mesure[1]
+            );
+        }
 
         return [
             'fichier' => $relatif,
-            'famille' => 'image',
-            'largeur' => $largeur,
-            'hauteur' => $hauteur,
+            'largeur' => $estImage ? (int) $mesure[0] : 0,
+            'hauteur' => $estImage ? (int) $mesure[1] : 0,
             'octets'  => $octets,
         ];
     }
@@ -246,7 +335,8 @@ final class Televersement
         string $temporaire,
         array $fichier,
         string $nomSouhaite,
-        string $extension
+        string $extension,
+        bool $estUnEnvoi = true
     ): string {
         $mois    = date('Y/m');
         $dossier = self::racine() . '/' . $mois;
@@ -274,7 +364,18 @@ final class Televersement
             $nom = $base . '-' . bin2hex(random_bytes(4)) . '.' . $extension;
         } while (file_exists($dossier . '/' . $nom));
 
-        if (!move_uploaded_file($temporaire, $dossier . '/' . $nom)) {
+        /*
+         * `move_uploaded_file` refuse tout ce qui n'est pas un envoi de la
+         * requête en cours, et c'est sa raison d'être : elle empêche qu'un
+         * chemin forgé fasse déplacer un fichier du serveur. Un fichier promu
+         * depuis la quarantaine n'en est pas un — il a été contrôlé à sa
+         * réception, des jours plus tôt — d'où `rename()` dans ce seul cas.
+         */
+        $place = $estUnEnvoi
+            ? move_uploaded_file($temporaire, $dossier . '/' . $nom)
+            : rename($temporaire, $dossier . '/' . $nom);
+
+        if (!$place) {
             throw new TeleversementErreur("Le fichier n'a pas pu être enregistré sur le serveur.");
         }
 

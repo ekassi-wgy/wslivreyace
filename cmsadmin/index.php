@@ -12,6 +12,7 @@ declare(strict_types=1);
 use App\Controller\Admin\ActualiteController;
 use App\Controller\Admin\ArchiveController;
 use App\Controller\Admin\AuthController;
+use App\Controller\Admin\ContributionController;
 use App\Controller\Admin\HeritageController;
 use App\Controller\Admin\CommandeController;
 use App\Controller\Admin\CompteController;
@@ -87,6 +88,23 @@ $crud('/heritage',   HeritageController::class,  'nouveau');
  * ne crée pas un témoignage depuis l'admin, on décide de celui qu'on reçoit.
  * `{decision}` vaut publier, refuser ou reprendre.
  */
+/**
+ * Contributions du public (brief §5, lot G8). Pas le jeu de routes des
+ * contenus : on ne crée pas une contribution depuis l'admin, on décide de
+ * celle qu'on reçoit — comme pour les témoignages.
+ *
+ * `/{id}/fichier/{fichier}` sert une pièce encore en quarantaine, et c'est la
+ * seule lecture possible d'un fichier non relu : le dossier est refusé par
+ * Apache, il n'a pas d'adresse directe. La garde du back-office s'y applique
+ * comme partout ailleurs sous /cmsadmin/.
+ */
+$router->get($base . '/contributions',                       [ContributionController::class, 'liste']);
+$router->get($base . '/contributions/{id}',                  [ContributionController::class, 'fiche']);
+$router->get($base . '/contributions/{id}/fichier/{fichier}',[ContributionController::class, 'fichier']);
+$router->post($base . '/contributions/{id}/accepter',        [ContributionController::class, 'accepter']);
+$router->post($base . '/contributions/{id}/refuser',         [ContributionController::class, 'refuser']);
+$router->post($base . '/contributions/{id}/supprimer',       [ContributionController::class, 'supprimer']);
+
 $router->get($base . '/temoignages',                       [TemoignageController::class, 'liste']);
 $router->get($base . '/temoignages/{id}',                  [TemoignageController::class, 'formulaire']);
 $router->post($base . '/temoignages/{id}',                 [TemoignageController::class, 'mettreAJour']);

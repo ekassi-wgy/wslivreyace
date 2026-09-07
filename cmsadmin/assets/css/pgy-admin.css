@@ -1049,3 +1049,28 @@ textarea.form-control::placeholder {
   border-radius: 2px;
   font-size: 1.5rem;
 }
+
+/* --- Fichiers en quarantaine (lot G8) -----------------------------------
+   Pas d'apercu : ils ne sont pas servis au navigateur, c'est tout l'objet du
+   dossier. On les telecharge pour les ouvrir dans son propre lecteur. */
+.pgy-quarantaine { list-style: none; margin: 1rem 0 0; padding: 0; }
+.pgy-quarantaine li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid #DED7C9;
+}
+.pgy-quarantaine li:last-child { border-bottom: 1px solid #DED7C9; }
+.pgy-quarantaine__signe { font-size: 1.5rem; }
+.pgy-quarantaine__nom { display: block; word-break: break-word; }
+
+.pgy-fiche { margin: 1rem 0 0; }
+.pgy-fiche > div { padding: 0.6rem 0; border-bottom: 1px solid #DED7C9; }
+.pgy-fiche dt { font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: #6B6862; }
+.pgy-fiche dd { margin: 0.2rem 0 0; }
+.pgy-texte { white-space: normal; line-height: 1.7; }
+
+.pgy-statut--acceptee { background: rgba(63,107,79,0.12); color: #3F6B4F; }
+.pgy-statut--refusee  { background: rgba(140,58,46,0.12); color: #8C3A2E; }

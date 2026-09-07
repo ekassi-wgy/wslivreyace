@@ -47,6 +47,13 @@ final class Debit
     public const BAREMES = [
         'temoignage' => ['plafond' => 5, 'fenetre' => 60, 'nom' => 'témoignage', 'pluriel' => 'témoignages'],
         'contact'    => ['plafond' => 5, 'fenetre' => 60, 'nom' => 'message',    'pluriel' => 'messages'],
+        /*
+         * Plus bas que les deux autres (lot G8) : une contribution porte des
+         * fichiers, et chacune coûte de la place sur le disque avant même
+         * qu'un modérateur l'ait ouverte. Trois par heure laissent largement
+         * de quoi envoyer plusieurs lots à un contributeur de bonne foi.
+         */
+        'contribution' => ['plafond' => 3, 'fenetre' => 60, 'nom' => 'contribution', 'pluriel' => 'contributions'],
     ];
 
     /**

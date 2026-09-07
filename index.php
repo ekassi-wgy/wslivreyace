@@ -12,6 +12,7 @@ declare(strict_types=1);
 use App\Controller\ActualiteController;
 use App\Controller\ArchiveController;
 use App\Controller\ContactController;
+use App\Controller\ContributionController;
 use App\Controller\EvenementController;
 use App\Controller\HeritageController;
 use App\Controller\LivreController;
@@ -57,6 +58,17 @@ $router->get('/actualites/{slug}', [ActualiteController::class, 'detail']);
  * effet, mais l'inverse — un motif à deux segments avant celui à un — ne
  * poserait aucun problème. La lisibilité tranche : du général au particulier.
  */
+/*
+ * « Contribuez aux archives » (brief §5, lot G8). Adresse courte et à part :
+ * `/archives/contribuer` serait entré en concurrence avec `{categorie}`, et
+ * c'est de toute façon un lien qu'on donne de vive voix.
+ *
+ * Le seul formulaire du site qui reçoit des fichiers d'un inconnu — voir le
+ * contrôleur, et `App\Core\Quarantaine` pour où ils atterrissent.
+ */
+$router->get('/contribuer',   [ContributionController::class, 'page']);
+$router->post('/contribuer',  [ContributionController::class, 'envoyer']);
+
 $router->get('/archives',                       [ArchiveController::class, 'index']);
 $router->get('/archives/{categorie}',           [ArchiveController::class, 'categorie']);
 $router->get('/archives/{categorie}/{slug}',    [ArchiveController::class, 'notice']);

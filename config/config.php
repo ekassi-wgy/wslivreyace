@@ -30,6 +30,15 @@ $config = [
         'url'     => '',
         'nom'     => 'Philippe Grégoire Yacé — Une destinée',
         'medias'  => __DIR__ . '/../medias',
+        /*
+         * Fichiers envoyés par le public et non encore relus (lot G8).
+         *
+         * **Ce dossier ne doit jamais être servi.** Il porte son propre
+         * `.htaccess` en `Require all denied`, et le contrôleur frontal
+         * l'exclut de sa réécriture. Un hébergement qui le permet gagnerait à
+         * le placer hors de la racine web ; ici, il est refusé sur place.
+         */
+        'quarantaine' => __DIR__ . '/../quarantaine',
     ],
     /*
      * Coordonnées publiques de la structure éditrice.

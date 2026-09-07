@@ -1580,7 +1580,7 @@ d'analyse. Deux sont acquis, cinq à compléter, quatre à construire.
 | 2 | Le livre | à compléter | préface et sa mise en avant, page auteur à URL propre, rattachement presse et événements de lancement |
 | 3 | Biographie et frise | à construire | douze périodes contre cinq chapitres, une adresse par période, frise à brancher sur la base et à illustrer |
 | 4 | Archives | à construire | six catégories, champs de catalogue, une adresse par pièce, PDF/audio/vidéo, page de discours, recherche |
-| 5 | Contribuez aux archives | à construire | formulaire, dépôt par un visiteur anonyme, cession de droits, réception au back-office |
+| 5 | Contribuez aux archives | **acquis** | livré au lot G8 |
 | 6 | Héritage | **acquis** | livré au lot G7 ; attend la matière éditoriale |
 | 7 | Actualités | **acquis** | quatre catégories à ajouter à l'énumération |
 | 8 | Page d'accueil | **acquis** | validée telle quelle ; suivra les lots |
@@ -1680,7 +1680,7 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 | **G5** | Formats et lecteurs | PDF, audio, plafonds par famille, lecteur et téléchargement de l'original | **livré** |
 | **G6** | Bibliothèque des discours | l'index chronologique par décennie, et ce que chaque pièce porte | **livré** |
 | **G7** | Héritage | cinq rubriques adossées aux données, une page par sujet, rattachement des témoignages | **livré** |
-| **G8** | Contribuez aux archives | formulaire, quarantaine (décision 4), cession de droits, réception et validation au back-office | 3 – 4 j |
+| **G8** | Contribuez aux archives | formulaire, quarantaine (décision 4), cession de droits, réception et validation au back-office | **livré** |
 | **G9** | Recherche et navigation | recherche interne, filtres par année, catégorie et mot-clé, fil d'Ariane, données structurées | 3 – 4 j |
 | **G10** | Biographie par périodes | les douze périodes en base, une adresse par période, frise illustrée et reliée aux archives | 4 – 5 j |
 | **G11** | Version anglaise | traduction des contenus dans la structure posée en G1 ; aucune reprise de code | selon volume |
@@ -2170,6 +2170,69 @@ publiés sans le brouillon. Données d'essai effacées.
 | Fichier | Ce qu'il apporte |
 |---|---|
 | `sql/013_heritage.sql` | les tables `heritage` et `heritage_media` |
+
+### Lot G8 — livré
+
+**Le troisième formulaire ouvert du site, et le premier qui reçoit des fichiers
+d'un inconnu.** Toute la plomberie des deux premiers est reprise — session par
+route, jeton, champ leurre, délai minimal, plafond de débit — et une barrière
+s'y ajoute, qui est le cœur du lot.
+
+**Les fichiers n'atterrissent pas dans `medias/`.** C'est la décision 4, et
+elle ne va pas de soi : `medias/` est servi par Apache, donc un fichier qui y
+est déposé est téléchargeable par qui devine son nom, **publié ou non**. Y
+ranger le document d'un inconnu que personne n'a encore ouvert reviendrait à le
+publier à demi, en comptant sur l'obscurité du nom.
+
+Ils attendent donc dans `quarantaine/` : dossier en `Require all denied`, exclu
+de la réécriture du contrôleur frontal, fichiers en `0600` et noms sans radical
+lisible — personne n'a à deviner ce que la quarantaine contient. Ils n'en
+sortent que par l'acceptation d'un modérateur.
+
+**La seule lecture d'un fichier non relu passe par le back-office**, sur une
+route authentifiée qui le sert en `application/octet-stream` et en pièce
+jointe : le modérateur l'ouvre dans son propre lecteur, hors du navigateur et
+hors de l'origine du site.
+
+**Le contrôle de type est celui du back-office, sans allègement.** `examiner()`
+a été extraite de `Televersement::recevoir()` pour être partagée : mêmes
+formats, mêmes plafonds, même lecture des octets. Un visiteur anonyme n'a
+aucune raison d'avoir plus de latitude qu'un éditeur connecté, et deux copies
+de ce contrôle auraient fini par diverger.
+
+**Trois différences assumées avec le dépôt du back-office :**
+
+- **Cinq fichiers par envoi** et non vingt : chaque fichier reçu est un fichier
+  qu'un modérateur devra ouvrir.
+- **Trois envois par heure** et non cinq : une contribution occupe le disque
+  avant même d'avoir été lue.
+- **Un fichier refusé arrête tout l'envoi**, là où le back-office signale
+  chaque refus et laisse passer les autres. La différence tient à qui est
+  devant l'écran : un éditeur voit sa planche et sait ce qui est entré, un
+  visiteur n'a aucun moyen de le savoir.
+
+**La cession de droits est horodatée**, et c'est une exigence juridique : le
+contributeur confie un document dont il détient les droits, et le site le
+publiera. Sans accord explicite et daté, rien ne prouverait qu'il a été donné.
+
+**Accepter verse les fichiers en brouillon**, jamais en ligne : accepter dit
+« ce fonds nous intéresse », pas « publions-le tel quel ». Il reste à légender,
+créditer et rattacher à une notice. **Refuser efface les fichiers du serveur** —
+le site n'a aucune raison de garder le document d'un tiers qu'il a décidé de ne
+pas publier.
+
+**Vérifié de bout en bout** : envoi trop rapide refusé, cession de droits
+manquante refusée, script PHP renommé en `.pdf` refusé, plafond horaire
+appliqué. Un envoi valide range ses deux pièces en quarantaine et **rien dans
+`medias/`** ; la route de lecture répond 302 sans session ; l'acceptation
+déplace les fichiers, crée les lignes en brouillon avec leurs dérivées et vide
+la quarantaine ; le refus efface. Données d'essai effacées, les deux dossiers
+remis à vide.
+
+| Fichier | Ce qu'il apporte |
+|---|---|
+| `sql/014_contribution.sql` | les tables `contribution` et `contribution_fichier` |
+| `quarantaine/` | le dossier fermé — **son `.htaccess` doit partir au déploiement** |
 
 ### Ce que le brief ajoute à la liste des livrables attendus
 

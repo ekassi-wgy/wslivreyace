@@ -99,6 +99,12 @@ final class Admin
                 'url'    => self::url('/temoignages'),
             ],
             [
+                'cle'    => 'contributions',
+                'titre'  => 'Contributions',
+                'icone'  => 'mdi-inbox-arrow-down-outline',
+                'url'    => self::url('/contributions'),
+            ],
+            [
                 'cle'    => 'messages',
                 'titre'  => 'Messages',
                 'icone'  => 'mdi-email-outline',
