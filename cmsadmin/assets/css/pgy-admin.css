@@ -1029,3 +1029,23 @@ textarea.form-control::placeholder {
   border-top: 1px solid #DED7C9;
 }
 .pgy-pages__etat { font-size: 0.8125rem; color: #6B6862; }
+
+/* --- Tuiles sans vignette : PDF et enregistrements (lot G5) -------------- */
+.pgy-media__signe {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.35rem;
+  aspect-ratio: 4 / 3;
+  background: #EFEAE0;
+  font-size: 2rem;
+}
+.pgy-media__ext { font-size: 0.6875rem; color: #6B6862; letter-spacing: 0.06em; }
+.pgy-choix__signe {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  background: #EFEAE0;
+  border-radius: 2px;
+  font-size: 1.5rem;
+}

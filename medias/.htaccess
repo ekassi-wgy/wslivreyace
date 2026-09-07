@@ -26,8 +26,20 @@ RemoveType    .php .phtml .php3 .php4 .php5 .php7 .php8 .phps .cgi .pl .py .shtm
   Require all denied
 </FilesMatch>
 
-# Un fichier téléversé est une donnée, jamais un script : on force le
-# téléchargement plutôt que l'interprétation pour tout ce qui n'est pas image.
+# Un fichier téléversé est une donnée, jamais un script.
 <IfModule mod_headers.c>
   Header set X-Content-Type-Options "nosniff"
+
+  # Les PDF sont servis en pièce jointe et non affichés dans l'onglet (lot G5).
+  #
+  # Un PDF peut porter du JavaScript, que le lecteur intégré du navigateur
+  # exécute — et il l'exécuterait dans NOTRE origine, puisque le fichier est
+  # servi depuis philippeyace.ci. Le téléchargement coupe court : le fichier
+  # s'ouvre dans le lecteur du système, hors de la page.
+  #
+  # Sans conséquence sur l'usage : la page d'une notice propose déjà ses
+  # documents en téléchargement, `download` à l'appui.
+  <FilesMatch "\.pdf$">
+    Header set Content-Disposition "attachment"
+  </FilesMatch>
 </IfModule>

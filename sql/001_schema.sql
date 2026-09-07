@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS temoignage (
 CREATE TABLE IF NOT EXISTS media (
   id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   fichier    VARCHAR(255) NOT NULL,
+  famille    ENUM('image','document','audio') NOT NULL DEFAULT 'image',  -- lot G5
   titre      VARCHAR(200) NULL,
   legende    VARCHAR(500) NULL,
   credit     VARCHAR(200) NULL,           -- droits : obligatoire sur archives
@@ -99,7 +100,8 @@ CREATE TABLE IF NOT EXISTS media (
   statut     ENUM('brouillon','publie') NOT NULL DEFAULT 'brouillon',
   cree_le    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uk_media_fichier (fichier),
-  KEY ix_media_public (statut, categorie, ordre)
+  KEY ix_media_public (statut, categorie, ordre),
+  KEY ix_media_famille (famille, statut)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --- Repères chronologiques (CDC §4.4) --------------------------------------

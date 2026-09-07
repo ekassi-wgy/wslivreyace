@@ -1399,3 +1399,23 @@ main > .shell > .avis:first-child { margin-top: var(--sp-7); }
   font-size: var(--fs-small);
   color: var(--ink-3);
 }
+
+/* --- Fichiers non-image d'une notice (lot G5) ---------------------------- */
+.arch-son { margin: 0 0 var(--sp-5); }
+.arch-son audio { width: 100%; display: block; }
+.arch-son figcaption { margin-top: var(--sp-2); font-size: var(--fs-small); color: var(--ink-3); }
+.arch-son__meta { display: block; color: var(--ink-3); }
+
+.arch-docs { list-style: none; margin: 0; padding: 0; }
+.arch-docs li { border-top: 1px solid var(--rule); padding-block: var(--sp-4); }
+.arch-docs li:last-child { border-bottom: 1px solid var(--rule); }
+.arch-docs a {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--sp-4);
+  color: var(--ink);
+}
+.arch-docs a:hover .arch-docs__nom { color: var(--brass-text); }
+.arch-docs__signe { font-size: 1.5rem; }
+.arch-docs__meta { font-size: var(--fs-small); color: var(--ink-3); white-space: nowrap; }

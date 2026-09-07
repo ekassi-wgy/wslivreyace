@@ -1677,7 +1677,7 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 | **G2** | Le livre, complété | préface et sa mise en avant, page auteur à URL propre, rattachement de la revue de presse et des événements de lancement | **livré** |
 | **G3** | Commander | page de vente et tunnel sur la passerelle retenue ; l'écran de suivi attend depuis le lot E2 | 4 – 6 j |
 | **G4** | Modèle d'archives | notice et fichiers (décision 1), six catégories, champs de catalogue, page par notice, recherche, écran d'administration | **livré** |
-| **G5** | Formats et lecteurs | PDF, audio, vidéo intégrée (décision 2), plafonds revus, lecteur et visionneuse, téléchargement de l'original | 3 – 4 j |
+| **G5** | Formats et lecteurs | PDF, audio, plafonds par famille, lecteur et téléchargement de l'original | **livré** |
 | **G6** | Bibliothèque des discours | contexte historique, vidéo, audio, transcription intégrale, document original, index chronologique | 3 – 4 j |
 | **G7** | Héritage | lieux de mémoire, hommages, décorations, publications, musique et culture ; rattachement des témoignages | 4 – 5 j |
 | **G8** | Contribuez aux archives | formulaire, quarantaine (décision 4), cession de droits, réception et validation au back-office | 3 – 4 j |
@@ -2005,6 +2005,72 @@ un fichier hors lot : rouvrir puis enregistrer conserve la liaison, décocher la
 retire réellement. Données d'essai et compte temporaire effacés.
 
 **Aucune migration.**
+
+### Lot G5 — livré
+
+**La médiathèque accepte trois familles** et non plus une seule : images,
+documents PDF, enregistrements MP3/M4A/OGG. Le brief §4 demande des documents,
+des correspondances et des discours enregistrés — ni les uns ni les autres ne
+tiennent en JPEG. La vidéo n'y est pas, et ce n'est pas un oubli : elle reste
+chez son hébergeur (décision 2), et la notice porte son adresse.
+
+**Trois plafonds et non un.** Une photographie réduite tient dans 8 Mo, le scan
+d'une correspondance de vingt pages non (30 Mo), l'enregistrement d'un discours
+d'une heure encore moins (60 Mo). Un plafond unique aurait forcé à prendre le
+plus large, ce qui aurait laissé passer des images de trente méga-octets dans
+la galerie. Le type réel est donc lu **avant** le plafond : refuser un discours
+au nom de la limite des images aurait été faux, et le message l'aurait dit de
+travers.
+
+**Ce que l'ouverture aux PDF change en matière de sûreté, et c'est à dire
+clairement.** Une image est validée sur ses octets par `getimagesize`, qui
+échoue sur tout ce qui n'en est pas une. **Un PDF n'a pas d'équivalent** : seul
+son type MIME est vérifiable. La barrière qui compte devient donc le
+`.htaccess` de `medias/`, qui neutralise tout gestionnaire de script dans le
+dossier — et son absence sur le serveur ne se verrait pas, tout fonctionnant
+exactement pareil jusqu'au jour où non. **À vérifier à chaque déploiement.**
+
+Deux durcissements l'accompagnent :
+
+- **Les PDF sont servis en pièce jointe**, pas affichés dans l'onglet. Un PDF
+  peut porter du JavaScript, que le lecteur intégré du navigateur exécuterait
+  dans **notre** origine, le fichier étant servi depuis le domaine du site. Le
+  téléchargement coupe court. Sans conséquence sur l'usage : la page d'une
+  notice les propose déjà en téléchargement.
+- **Un nom d'origine sans un seul caractère latin** — « 討論.pdf » — ne laissait
+  rien après le passage au slug, et le fichier serait sorti de la forme attendue
+  en base. Un repli le nomme désormais « fichier ».
+
+**Trois pièges d'affichage, réglés parce qu'ils ne préviennent pas :**
+
+- **Ni PDF ni MP3 n'ont de vignette.** Une `<img>` pointée dessus rend un cadre
+  cassé. La planche du back-office et le sélecteur d'une notice demandent donc
+  la famille avant de poser une image, et affichent sinon le signe du format et
+  le poids du fichier.
+- **La couverture d'une notice doit être une image**, et le premier fichier n'en
+  est plus forcément une : une notice de discours peut commencer par son
+  enregistrement. `Archive::couverture()` et `couvertures()` filtrent sur la
+  famille — des deux côtés de la jointure, sinon une notice ouverte par un PDF
+  n'aurait aucune couverture alors qu'elle porte des photos.
+- **L'aperçu de partage aussi.** Servir un MP3 en `og:image` ferait échouer la
+  récupération de l'aperçu sans rien dire.
+
+**Sur la page d'une notice**, les fichiers sont désormais séparés par famille :
+les enregistrements se lisent dans la page (`preload="none"` — une page de
+discours peut porter plusieurs pistes, rien ne se télécharge avant qu'on le
+demande), les documents se téléchargent sous le nom de la notice plutôt que
+sous le nom fabriqué au dépôt, les images restent une planche.
+
+**Vérifié** sur un lot mêlant les trois familles plus **un script PHP renommé
+en `.pdf`** : les trois passent avec la bonne famille, le piège est refusé et
+nommé dans le message d'erreur — `finfo` le lit comme `text/x-php`. Aucune
+`<img>` ne pointe vers un PDF ou un MP3, l'aperçu de partage reste l'image alors
+que l'enregistrement est en tête de la notice, et la vignette de la planche
+aussi. Données d'essai et compte temporaire effacés, `medias/` remis à vide.
+
+| Fichier | Ce qu'il apporte |
+|---|---|
+| `sql/012_media_famille.sql` | la colonne `famille` sur `media`, et son index |
 
 ### Ce que le brief ajoute à la liste des livrables attendus
 

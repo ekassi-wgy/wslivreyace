@@ -144,8 +144,12 @@ $action = $edition ? Admin::url('/archives/' . $id) : Admin::url('/archives');
             <?php foreach ($rattaches as $m): ?>
               <label class="pgy-choix is-choisi">
                 <input type="checkbox" name="fichiers[]" value="<?= (int) $m['id'] ?>" checked>
-                <img src="<?= View::e(Media::urlVignette((string) $m['fichier'])) ?>"
-                     alt="<?= View::e(Media::alternative($m)) ?>" loading="lazy">
+                <?php if (Media::aVignette($m)): ?>
+                  <img src="<?= View::e(Media::urlVignette((string) $m['fichier'])) ?>"
+                       alt="<?= View::e(Media::alternative($m)) ?>" loading="lazy">
+                <?php else: ?>
+                  <span class="pgy-choix__signe" aria-hidden="true"><?= Media::SIGNES_FAMILLE[Media::famille($m)] ?></span>
+                <?php endif; ?>
                 <span><?= View::e(mb_strimwidth((string) ($m['titre'] ?? $m['fichier']), 0, 28, '…')) ?></span>
               </label>
             <?php endforeach; ?>
@@ -178,8 +182,12 @@ $action = $edition ? Admin::url('/archives/' . $id) : Admin::url('/archives');
               <?php $etiquette = (string) ($m['titre'] ?? '') . ' ' . (string) $m['fichier']; ?>
               <label class="pgy-choix" data-etiquette="<?= View::e(mb_strtolower($etiquette)) ?>">
                 <input type="checkbox" name="fichiers[]" value="<?= (int) $m['id'] ?>">
-                <img src="<?= View::e(Media::urlVignette((string) $m['fichier'])) ?>"
-                     alt="<?= View::e(Media::alternative($m)) ?>" loading="lazy">
+                <?php if (Media::aVignette($m)): ?>
+                  <img src="<?= View::e(Media::urlVignette((string) $m['fichier'])) ?>"
+                       alt="<?= View::e(Media::alternative($m)) ?>" loading="lazy">
+                <?php else: ?>
+                  <span class="pgy-choix__signe" aria-hidden="true"><?= Media::SIGNES_FAMILLE[Media::famille($m)] ?></span>
+                <?php endif; ?>
                 <span><?= View::e(mb_strimwidth((string) ($m['titre'] ?? $m['fichier']), 0, 28, '…')) ?></span>
               </label>
             <?php endforeach; ?>

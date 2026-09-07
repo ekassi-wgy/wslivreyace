@@ -20,13 +20,41 @@ namespace App\Core;
  *    dans le dossier — c'est la barrière qui tient si les deux premières
  *    cèdent.
  *
- * Les images sont acceptées, et elles seules : la médiathèque sert la galerie
- * d'archives (CDC §4.6) et les vignettes des fiches. Un PDF n'y a rien à faire
- * tant qu'aucun écran ne sait l'afficher.
+ * **Trois familles depuis le lot G5** : images, documents (PDF) et audio. Le
+ * brief §4 demande des documents, des correspondances et des discours
+ * enregistrés — ni l'un ni l'autre ne tient en JPEG.
+ *
+ * La vidéo n'y est pas, et ce n'est pas un oubli : elle reste chez son
+ * hébergeur (décision 2 du brief, README §9). Une heure d'archive pèse
+ * plusieurs gigaoctets et saturerait la bande passante d'un mutualisé dès la
+ * première consultation groupée.
+ *
+ * **Ce que l'ouverture aux PDF change en matière de sûreté.** Une image est
+ * validée sur ses octets par `getimagesize`, qui échoue sur tout ce qui n'en
+ * est pas une. Un PDF n'a pas d'équivalent : seul son en-tête est vérifiable.
+ * La barrière qui compte devient donc le `.htaccess` de `medias/`, qui
+ * neutralise tout gestionnaire de script dans le dossier — un fichier déposé y
+ * est une donnée servie, jamais un programme exécuté.
  */
 final class Televersement
 {
-    /** Plafond applicatif, indépendant de celui du serveur. */
+    /**
+     * Plafond applicatif par famille, indépendant de celui du serveur.
+     *
+     * **Trois valeurs et non une**, parce que les trois familles n'ont pas le
+     * même poids naturel : une photographie réduite tient dans huit méga-octets,
+     * le scan d'une correspondance de vingt pages non, et l'enregistrement
+     * d'un discours d'une heure encore moins. Un plafond unique aurait forcé à
+     * prendre le plus large, ce qui aurait laissé passer des images de trente
+     * méga-octets dans la galerie.
+     */
+    public const PLAFONDS = [
+        'image'    =>  8 * 1024 * 1024,   //  8 Mio — une photo réduite
+        'document' => 30 * 1024 * 1024,   // 30 Mio — un scan de plusieurs pages
+        'audio'    => 60 * 1024 * 1024,   // 60 Mio — un discours d'une heure
+    ];
+
+    /** Plafond des images. Conservé : le nom est employé par les écrans. */
     public const TAILLE_MAX = 8 * 1024 * 1024;      // 8 Mio
 
     /**
@@ -62,8 +90,28 @@ final class Televersement
         IMAGETYPE_WEBP => ['mime' => 'image/webp', 'ext' => 'webp'],
     ];
 
+    /**
+     * Formats non-image acceptés, par type MIME réel.
+     *
+     * Indexés par le MIME que rend `finfo`, et non par extension : c'est le
+     * seul juge, l'extension étant écrite par le client. Un même format peut
+     * en avoir plusieurs — `audio/mpeg` et `audio/mp3` désignent le même
+     * fichier selon la version de la base magique du serveur.
+     */
+    private const FICHIERS = [
+        'application/pdf' => ['ext' => 'pdf', 'famille' => 'document'],
+        'audio/mpeg'      => ['ext' => 'mp3', 'famille' => 'audio'],
+        'audio/mp3'       => ['ext' => 'mp3', 'famille' => 'audio'],
+        'audio/mp4'       => ['ext' => 'm4a', 'famille' => 'audio'],
+        'audio/x-m4a'     => ['ext' => 'm4a', 'famille' => 'audio'],
+        'audio/ogg'       => ['ext' => 'ogg', 'famille' => 'audio'],
+    ];
+
+    /** Ce que le champ de dépôt annonce au navigateur. */
+    public const ACCEPTE = 'image/jpeg,image/png,image/webp,application/pdf,audio/mpeg,audio/mp4,audio/ogg,.mp3,.m4a,.ogg,.pdf';
+
     /** Forme attendue d'un chemin stocké en base : « 2026/09/nom-a1b2c3d4.jpg ». */
-    private const FORME = '#^\d{4}/\d{2}/[a-z0-9][a-z0-9\-]*\.(jpg|png|webp)$#';
+    private const FORME = '#^\d{4}/\d{2}/[a-z0-9][a-z0-9\-]*\.(jpg|png|webp|pdf|mp3|m4a|ogg)$#';
 
     /**
      * Reçoit une entrée de `$_FILES` et rend la ligne à écrire en base.
@@ -94,22 +142,61 @@ final class Televersement
         if ($octets === 0) {
             throw new TeleversementErreur('Le fichier est vide.');
         }
-        if ($octets > self::TAILLE_MAX) {
+
+        /*
+         * Le type réel est lu AVANT le plafond, et l'ordre compte depuis que
+         * les familles ont des plafonds différents : refuser un discours de
+         * quarante méga-octets au nom de la limite des images serait faux, et
+         * le message le dirait de travers.
+         */
+        $mime = (string) (new \finfo(FILEINFO_MIME_TYPE))->file($temporaire);
+
+        // `getimagesize` échoue sur tout ce qui n'est pas une image, y compris
+        // un script PHP renommé en .jpg. C'est le juge des images.
+        $mesure = @getimagesize($temporaire);
+        $estImage = $mesure !== false && isset(self::FORMATS[$mesure[2]]);
+
+        if (!$estImage && !isset(self::FICHIERS[$mime])) {
+            throw new TeleversementErreur(
+                'Format non accepté — quelle que soit son extension. '
+                . 'Sont acceptés : les images JPEG, PNG et WebP, les documents PDF, '
+                . 'les enregistrements MP3, M4A et OGG. '
+                . "Les vidéos ne sont pas hébergées sur le site : elles se rattachent par leur adresse."
+            );
+        }
+
+        $famille = $estImage ? 'image' : self::FICHIERS[$mime]['famille'];
+        $plafond = self::PLAFONDS[$famille];
+
+        if ($octets > $plafond) {
             throw new TeleversementErreur(sprintf(
-                'Le fichier pèse %s ; la limite est de %s. Redimensionnez-le avant de le déposer.',
+                'Le fichier pèse %s ; la limite est de %s pour %s. Allégez-le avant de le déposer.',
                 self::poids($octets),
-                self::poids(self::TAILLE_MAX)
+                self::poids($plafond),
+                match ($famille) {
+                    'document' => 'un document',
+                    'audio'    => 'un enregistrement',
+                    default    => 'une image',
+                }
             ));
         }
 
-        // Type réel : lu dans les octets. `getimagesize` échoue sur tout ce qui
-        // n'est pas une image, y compris un script PHP renommé en .jpg.
-        $mesure = @getimagesize($temporaire);
+        /*
+         * Les fichiers qui ne sont pas des images n'ont ni dimensions, ni
+         * dérivées, ni contre-épreuve possible : `getimagesize` ne les lit pas,
+         * et un PDF n'a pas d'équivalent qui vaille preuve. Le `.htaccess` de
+         * `medias/` est ce qui les tient — voir l'en-tête de cette classe.
+         */
+        if (!$estImage) {
+            $relatif = self::deposer($temporaire, $fichier, $nomSouhaite, self::FICHIERS[$mime]['ext']);
 
-        if ($mesure === false || !isset(self::FORMATS[$mesure[2]])) {
-            throw new TeleversementErreur(
-                "Ce fichier n'est pas une image JPEG, PNG ou WebP — quelle que soit son extension."
-            );
+            return [
+                'fichier' => $relatif,
+                'famille' => $famille,
+                'largeur' => 0,
+                'hauteur' => 0,
+                'octets'  => $octets,
+            ];
         }
 
         $format  = self::FORMATS[$mesure[2]];
@@ -118,9 +205,6 @@ final class Televersement
 
         // Contre-épreuve : le MIME lu par finfo doit confirmer celui du format
         // détecté. Deux lecteurs valent mieux qu'un sur un fichier hostile.
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $mime  = (string) $finfo->file($temporaire);
-
         if ($mime !== $format['mime']) {
             throw new TeleversementErreur("Le contenu du fichier ne correspond pas à son format annoncé.");
         }
@@ -134,6 +218,36 @@ final class Televersement
             ));
         }
 
+        $relatif = self::deposer($temporaire, $fichier, $nomSouhaite, $format['ext']);
+
+        self::fabriquerDerivees(self::racine() . '/' . $relatif, $mesure[2], $largeur, $hauteur);
+
+        return [
+            'fichier' => $relatif,
+            'famille' => 'image',
+            'largeur' => $largeur,
+            'hauteur' => $hauteur,
+            'octets'  => $octets,
+        ];
+    }
+
+    /**
+     * Écrit le fichier reçu sur le disque et rend son chemin relatif.
+     *
+     * Commun aux trois familles : le rangement, le nom fabriqué et les droits
+     * ne dépendent pas de ce qu'on dépose. Écrit une fois — la barrière n° 2
+     * de l'en-tête de cette classe est ici, et une seconde copie de ces vingt
+     * lignes finirait par en oublier un morceau.
+     *
+     * @param array<string,mixed> $fichier l'entrée de $_FILES, pour son nom d'origine
+     * @throws TeleversementErreur
+     */
+    private static function deposer(
+        string $temporaire,
+        array $fichier,
+        string $nomSouhaite,
+        string $extension
+    ): string {
         $mois    = date('Y/m');
         $dossier = self::racine() . '/' . $mois;
 
@@ -149,8 +263,15 @@ final class Televersement
 
         $base = mb_substr(Slug::depuis($base), 0, 60);
 
+        // Un nom d'origine sans un seul caractère latin — « 討論.pdf » — ne
+        // laisse rien après le slug. Sans ce repli, le fichier s'appellerait
+        // « -a1b2c3d4.pdf » et sortirait de la forme attendue en base.
+        if ($base === '') {
+            $base = 'fichier';
+        }
+
         do {
-            $nom = $base . '-' . bin2hex(random_bytes(4)) . '.' . $format['ext'];
+            $nom = $base . '-' . bin2hex(random_bytes(4)) . '.' . $extension;
         } while (file_exists($dossier . '/' . $nom));
 
         if (!move_uploaded_file($temporaire, $dossier . '/' . $nom)) {
@@ -161,16 +282,7 @@ final class Televersement
         // et un fichier déposé n'a aucune raison d'être exécutable.
         chmod($dossier . '/' . $nom, 0644);
 
-        $relatif = $mois . '/' . $nom;
-
-        self::fabriquerDerivees($dossier . '/' . $nom, $mesure[2], $largeur, $hauteur);
-
-        return [
-            'fichier' => $relatif,
-            'largeur' => $largeur,
-            'hauteur' => $hauteur,
-            'octets'  => $octets,
-        ];
+        return $mois . '/' . $nom;
     }
 
     /**

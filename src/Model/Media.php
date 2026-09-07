@@ -29,7 +29,7 @@ final class Media extends Modele
      * ces quatre champs.
      */
     protected const ASSIGNABLES = [
-        'fichier', 'titre', 'legende', 'credit', 'date_prise',
+        'fichier', 'famille', 'titre', 'legende', 'credit', 'date_prise',
         'categorie', 'largeur', 'hauteur', 'octets', 'ordre', 'statut',
     ];
 
@@ -55,6 +55,73 @@ final class Media extends Modele
         'brouillon' => 'Brouillon',
         'publie'    => 'Publié',
     ];
+
+    /**
+     * Les trois familles de fichiers (lot G5).
+     *
+     * Ce que le site sait faire d'un fichier dépend de sa famille, et de rien
+     * d'autre : une image se réduit en vignette, un document se télécharge, un
+     * enregistrement se lit dans la page.
+     */
+    public const FAMILLES = [
+        'image'    => 'Image',
+        'document' => 'Document',
+        'audio'    => 'Enregistrement',
+    ];
+
+    /** Pictogramme d'une famille, pour les fichiers qui n'ont pas de vignette. */
+    public const SIGNES_FAMILLE = [
+        'image'    => '🖼️',
+        'document' => '📄',
+        'audio'    => '🎙️',
+    ];
+
+    /** La famille d'une ligne, avec repli sur `image` — la valeur historique. */
+    public static function famille(array $media): string
+    {
+        $f = (string) ($media['famille'] ?? 'image');
+
+        return isset(self::FAMILLES[$f]) ? $f : 'image';
+    }
+
+    /** Raccourci de lecture : `Media::est($m, 'audio')`. */
+    public static function est(array $media, string $famille): bool
+    {
+        return self::famille($media) === $famille;
+    }
+
+    /**
+     * Le fichier a-t-il une vignette possible ?
+     *
+     * Un PDF et un MP3 n'en ont pas : rien ne les réduit. Les écrans qui
+     * affichent une planche doivent le demander avant de poser une `<img>` —
+     * sans quoi le navigateur tenterait d'afficher un PDF comme une image et
+     * rendrait un cadre cassé.
+     */
+    public static function aVignette(array $media): bool
+    {
+        return self::famille($media) === 'image';
+    }
+
+    /**
+     * Libellé du type d'un fichier, pour un lien de téléchargement.
+     *
+     * « PDF · 2,4 Mo » en dit plus long que « Télécharger » : on sait ce qu'on
+     * reçoit et ce que ça pèse avant de cliquer, ce qui compte sur une
+     * connexion mobile.
+     */
+    public static function etiquette(array $media): string
+    {
+        $extension = strtoupper((string) pathinfo((string) ($media['fichier'] ?? ''), PATHINFO_EXTENSION));
+        $octets    = (int) ($media['octets'] ?? 0);
+
+        $morceaux = array_filter([
+            $extension,
+            $octets > 0 ? Televersement::poids($octets) : '',
+        ]);
+
+        return implode(' · ', $morceaux);
+    }
 
     /**
      * @param string|null $categorie null = toutes

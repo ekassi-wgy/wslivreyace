@@ -37,9 +37,13 @@ $onglets = ['tous' => 'Toutes'] + Media::CATEGORIES;
       <div class="card-body">
         <h4 class="card-title card-title-dash">Déposer</h4>
         <p class="card-subtitle card-subtitle-dash">
-          JPEG, PNG ou WebP, <?= View::e(Televersement::poids($tailleMax)) ?> par fichier au plus,
-          <?= (int) $lotMax ?> fichiers par dépôt. Les images arrivent en brouillon :
+          Images JPEG, PNG, WebP (<?= View::e(Televersement::poids($tailleMax)) ?>),
+          documents PDF (<?= View::e(Televersement::poids($plafonds['document'])) ?>),
+          enregistrements MP3, M4A, OGG (<?= View::e(Televersement::poids($plafonds['audio'])) ?>).
+          <?= (int) $lotMax ?> fichiers par dépôt. Tout arrive en brouillon :
           rien n'est visible du public tant que la légende et le crédit ne sont pas saisis.
+          <br><span class="text-muted">Les vidéos ne s'hébergent pas ici : elles se rattachent
+          à une notice d'archive par leur adresse YouTube.</span>
         </p>
 
         <form method="post" action="<?= Admin::url('/medias') ?>" enctype="multipart/form-data"
@@ -52,7 +56,7 @@ $onglets = ['tous' => 'Toutes'] + Media::CATEGORIES;
           <div class="pgy-depot__champ">
             <label class="form-label" for="fichiers">Fichiers</label>
             <input type="file" class="form-control" id="fichiers" name="fichiers[]"
-                   accept="image/jpeg,image/png,image/webp" multiple required
+                   accept="<?= View::e($accepte) ?>" multiple required
                    data-depot-fichiers>
             <div class="form-text" data-depot-compte>
               Sélection multiple possible : maintenez &#8984; (ou Ctrl) en cliquant.
@@ -156,8 +160,18 @@ $onglets = ['tous' => 'Toutes'] + Media::CATEGORIES;
       <figure class="pgy-media<?= $enLigne ? ' pgy-media--publie' : '' ?>">
 
         <a class="pgy-media__vue" href="<?= $fiche ?>">
-          <img src="<?= View::e(Media::urlVignette((string) $ligne['fichier'])) ?>"
-               alt="<?= View::e(Media::alternative($ligne)) ?>" loading="lazy">
+          <?php if (Media::aVignette($ligne)): ?>
+            <img src="<?= View::e(Media::urlVignette((string) $ligne['fichier'])) ?>"
+                 alt="<?= View::e(Media::alternative($ligne)) ?>" loading="lazy">
+          <?php else: ?>
+            <?php /* Ni PDF ni MP3 n'ont de vignette : une <img> pointée dessus
+                     rendrait un cadre cassé. La tuile porte le signe de sa
+                     famille et le poids du fichier (lot G5). */ ?>
+            <span class="pgy-media__signe">
+              <span aria-hidden="true"><?= Media::SIGNES_FAMILLE[Media::famille($ligne)] ?></span>
+              <span class="pgy-media__ext"><?= View::e(Media::etiquette($ligne)) ?></span>
+            </span>
+          <?php endif; ?>
         </a>
 
         <figcaption class="pgy-media__corps">

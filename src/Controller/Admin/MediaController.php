@@ -76,6 +76,8 @@ final class MediaController
             'pages'      => $pages,
             'compteurs'  => Media::compteurs(),
             'tailleMax'  => min(Televersement::TAILLE_MAX, Televersement::limiteServeur()),
+            'plafonds'   => Televersement::PLAFONDS,
+            'accepte'    => Televersement::ACCEPTE,
             'lotMax'     => self::LOT_MAX,
             'scripts'    => [Admin::asset('js/medias.js')],
         ]);
@@ -136,6 +138,9 @@ final class MediaController
 
                 Media::creer([
                     'fichier'   => $recu['fichier'],
+                    // Écrite au dépôt et jamais recalculée : c'est le
+                    // téléversement qui a lu les octets, lui seul sait.
+                    'famille'   => $recu['famille'],
                     'titre'     => self::titreDepuisNom($nom),
                     'categorie' => $categorie,
                     'largeur'   => $recu['largeur'],

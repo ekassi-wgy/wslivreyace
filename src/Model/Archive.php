@@ -238,10 +238,16 @@ final class Archive extends Modele
      */
     public static function couverture(int $archiveId): ?array
     {
+        /*
+         * **Une image, et rien d'autre** (lot G5). Le premier fichier d'une
+         * notice n'en est plus forcément une : un discours peut commencer par
+         * son enregistrement. Une tuile de galerie pointée sur un MP3 rendrait
+         * un cadre cassé, et l'aperçu de partage échouerait en silence.
+         */
         return Database::one(
             'SELECT m.* FROM media m'
             . ' JOIN archive_media am ON am.media_id = m.id'
-            . ' WHERE am.archive_id = ?'
+            . " WHERE am.archive_id = ? AND m.famille = 'image'"
             . ' ORDER BY am.ordre ASC, m.id ASC LIMIT 1',
             [$archiveId]
         );
@@ -273,18 +279,25 @@ final class Archive extends Modele
         $marqueurs = implode(', ', array_fill(0, count($ids), '?'));
 
         /*
-         * Le premier fichier de chaque notice, en une passe. La sous-requête
-         * choisit le rang minimal par notice ; `m.id` la départage quand deux
-         * fichiers partagent le même ordre — sans quoi la couverture pourrait
-         * changer d'un affichage à l'autre.
+         * La première **image** de chaque notice, en une passe. La sous-requête
+         * choisit le rang minimal par notice, images seules ; `m.id` la
+         * départage quand deux fichiers partagent le même ordre — sans quoi la
+         * couverture pourrait changer d'un affichage à l'autre.
+         *
+         * Le filtre sur la famille est posé des deux côtés de la jointure : le
+         * rang minimal doit être celui d'une image, sinon une notice ouverte
+         * par un PDF n'aurait aucune couverture alors qu'elle porte des photos.
          */
         $lignes = Database::all(
             'SELECT am.archive_id, m.* FROM archive_media am'
             . ' JOIN media m ON m.id = am.media_id'
             . ' JOIN ('
-            . '   SELECT archive_id, MIN(ordre) AS rang FROM archive_media'
-            . '   WHERE archive_id IN (' . $marqueurs . ') GROUP BY archive_id'
+            . '   SELECT am2.archive_id, MIN(am2.ordre) AS rang'
+            . '     FROM archive_media am2 JOIN media m2 ON m2.id = am2.media_id'
+            . "    WHERE m2.famille = 'image' AND am2.archive_id IN (" . $marqueurs . ')'
+            . '    GROUP BY am2.archive_id'
             . ' ) tete ON tete.archive_id = am.archive_id AND tete.rang = am.ordre'
+            . " WHERE m.famille = 'image'"
             . ' ORDER BY am.archive_id, m.id ASC',
             $ids
         );

@@ -120,11 +120,19 @@ final class ArchiveController
             'ogType'      => 'article',
         ];
 
-        if ($fichiers === []) {
+        /*
+         * L'aperçu de partage doit être une IMAGE, et le premier fichier n'en
+         * est plus forcément une depuis le lot G5 : une notice de discours
+         * peut commencer par son enregistrement. Servir un MP3 en `og:image`
+         * ferait échouer la récupération de l'aperçu sans rien dire.
+         */
+        $images = array_values(array_filter($fichiers, static fn(array $f): bool => Media::est($f, 'image')));
+
+        if ($images === []) {
             return $donnees;
         }
 
-        $image = $fichiers[0];
+        $image = $images[0];
 
         return $donnees + [
             'ogImage'  => Site::url(Media::urlMoyen((string) $image['fichier'])),

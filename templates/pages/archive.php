@@ -104,10 +104,73 @@ $ld = json_encode(array_filter([
           </div>
         <?php endif; ?>
 
-        <?php /* --- Les fichiers ---------------------------------------- */ ?>
-        <?php if ($fichiers !== []): ?>
+        <?php
+          /*
+           * Les fichiers, séparés par famille (lot G5) : une image se regarde,
+           * un enregistrement s'écoute, un document se télécharge. Les mêler
+           * dans une seule boucle aurait donné trois `if` imbriqués dans un
+           * gabarit, là où trois blocs se lisent d'un trait.
+           */
+          $images    = array_values(array_filter($fichiers, static fn(array $f): bool => Media::est($f, 'image')));
+          $sons      = array_values(array_filter($fichiers, static fn(array $f): bool => Media::est($f, 'audio')));
+          $documents = array_values(array_filter($fichiers, static fn(array $f): bool => Media::est($f, 'document')));
+        ?>
+
+        <?php /* --- Enregistrements ------------------------------------- */ ?>
+        <?php if ($sons !== []): ?>
+          <div class="arch-bloc reveal">
+            <h2 class="t-d3">Écouter</h2>
+            <?php foreach ($sons as $s): ?>
+              <figure class="arch-son">
+                <?php /* `preload="none"` : la page d'un discours peut porter
+                         plusieurs pistes, et rien ne doit se télécharger avant
+                         que le visiteur ne le demande. */ ?>
+                <audio controls preload="none" src="<?= View::e(Media::url((string) $s['fichier'])) ?>">
+                  Votre navigateur ne sait pas lire cet enregistrement.
+                  <a href="<?= View::e(Media::url((string) $s['fichier'])) ?>">Le télécharger</a>.
+                </audio>
+                <figcaption>
+                  <?= View::e(trim((string) ($s['titre'] ?? '')) ?: 'Enregistrement') ?>
+                  <span class="arch-son__meta"><?= View::e(Media::etiquette($s)) ?></span>
+                  <?php if (!empty($s['credit'])): ?>
+                    <span class="arch-piece__credit"><?= View::e((string) $s['credit']) ?></span>
+                  <?php endif; ?>
+                </figcaption>
+              </figure>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+
+        <?php /* --- Documents originaux --------------------------------- */ ?>
+        <?php if ($documents !== []): ?>
+          <div class="arch-bloc reveal">
+            <h2 class="t-d3">Document original</h2>
+            <ul class="arch-docs">
+              <?php foreach ($documents as $d): ?>
+                <li>
+                  <?php /* `download` propose l'enregistrement plutôt que
+                           l'ouverture dans le lecteur du navigateur : une pièce
+                           d'archive se garde. Le nom déposé n'est pas parlant,
+                           on redonne celui de la notice. */ ?>
+                  <a href="<?= View::e(Media::url((string) $d['fichier'])) ?>"
+                     download="<?= View::e(($notice['slug'] ?? 'archive') . '.' . strtolower(pathinfo((string) $d['fichier'], PATHINFO_EXTENSION))) ?>">
+                    <span class="arch-docs__signe" aria-hidden="true"><?= Media::SIGNES_FAMILLE['document'] ?></span>
+                    <span class="arch-docs__nom"><?= View::e(trim((string) ($d['titre'] ?? '')) ?: 'Télécharger le document') ?></span>
+                    <span class="arch-docs__meta"><?= View::e(Media::etiquette($d)) ?></span>
+                  </a>
+                  <?php if (!empty($d['credit'])): ?>
+                    <span class="arch-piece__credit"><?= View::e((string) $d['credit']) ?></span>
+                  <?php endif; ?>
+                </li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
+        <?php endif; ?>
+
+        <?php /* --- Les images ------------------------------------------ */ ?>
+        <?php if ($images !== []): ?>
           <div class="arch-planche reveal">
-            <?php foreach ($fichiers as $f): ?>
+            <?php foreach ($images as $f): ?>
               <?php $srcset = Media::srcset($f); ?>
               <figure class="arch-piece">
                 <a href="<?= View::e(Media::url((string) $f['fichier'])) ?>"
