@@ -22,12 +22,20 @@ $id = $edition ? (int) $ligne['id'] : null;
  * Les fichiers cochés. La saisie renvoyée l'emporte sur la base : après une
  * erreur de validation, l'éditeur doit retrouver ce qu'il venait de choisir et
  * non ce qui était enregistré avant.
+ *
+ * **C'est `$erreurs` qui distingue les deux cas, et rien d'autre.** Une
+ * première version testait la présence du titre dans `$valeurs` — mais à
+ * l'ouverture d'une fiche, `$valeurs` EST la ligne en base et porte donc un
+ * titre. La liste ressortait vide, aucune case n'était cochée, et le premier
+ * enregistrement détachait tous les fichiers de la notice sans rien dire.
+ *
+ * `formulaire()` n'est rappelé avec des erreurs que depuis `ecrire()`, et un
+ * enregistrement valide ne réaffiche jamais le formulaire : `$erreurs === []`
+ * signifie donc exactement « fiche ouverte, pas encore soumise ».
  */
-$choisis = array_map('intval', (array) ($valeurs['fichiers'] ?? []));
-
-if ($choisis === [] && $edition && !isset($valeurs['titre'])) {
-    $choisis = Archive::idsFichiers((int) $id);
-}
+$choisis = $erreurs === []
+    ? ($edition ? Archive::idsFichiers((int) $id) : [])
+    : array_map('intval', (array) ($valeurs['fichiers'] ?? []));
 
 $action = $edition ? Admin::url('/archives/' . $id) : Admin::url('/archives');
 ?>
@@ -111,25 +119,73 @@ $action = $edition ? Admin::url('/archives/' . $id) : Admin::url('/archives');
           L'ordre suit celui de la médiathèque.
         </p>
 
-        <?php if ($medias === []): ?>
-          <div class="pgy-vide">
-            <p class="mb-1 fw-semibold">La médiathèque est vide</p>
-            <p class="mb-3 small">Déposez d'abord les fichiers, puis revenez les rattacher.</p>
-            <a class="btn btn-primary" href="<?= Admin::url('/medias') ?>">Aller à la médiathèque</a>
-          </div>
-        <?php else: ?>
-          <div class="pgy-planche-choix">
-            <?php foreach ($medias as $m): ?>
-              <?php $mid = (int) $m['id']; ?>
-              <label class="pgy-choix<?= in_array($mid, $choisis, true) ? ' is-choisi' : '' ?>">
-                <input type="checkbox" name="fichiers[]" value="<?= $mid ?>"
-                       <?= in_array($mid, $choisis, true) ? 'checked' : '' ?>>
+        <?php
+          /*
+           * Les fichiers déjà rattachés sont rendus À PART et toujours, même
+           * s'ils sont sortis du lot que le sélecteur propose.
+           *
+           * C'est la précaution qui compte ici : le formulaire ne poste que
+           * les cases présentes dans la page. Un fichier attaché il y a six
+           * mois, absent des deux cents derniers dépôts, serait détaché en
+           * silence au premier enregistrement — et personne ne s'en
+           * apercevrait avant de regarder la page publique.
+           */
+          $rattaches = Media::parIds($choisis);
+          $dejaVus = array_map(static fn(array $m): int => (int) $m['id'], $rattaches);
+          $pool = array_values(array_filter(
+              $medias,
+              static fn(array $m): bool => !in_array((int) $m['id'], $dejaVus, true)
+          ));
+        ?>
+
+        <?php if ($rattaches !== []): ?>
+          <p class="pgy-sous mb-2">Fichiers de cette notice — décochez pour retirer</p>
+          <div class="pgy-planche-choix mb-4">
+            <?php foreach ($rattaches as $m): ?>
+              <label class="pgy-choix is-choisi">
+                <input type="checkbox" name="fichiers[]" value="<?= (int) $m['id'] ?>" checked>
                 <img src="<?= View::e(Media::urlVignette((string) $m['fichier'])) ?>"
                      alt="<?= View::e(Media::alternative($m)) ?>" loading="lazy">
                 <span><?= View::e(mb_strimwidth((string) ($m['titre'] ?? $m['fichier']), 0, 28, '…')) ?></span>
               </label>
             <?php endforeach; ?>
           </div>
+        <?php endif; ?>
+
+        <?php if ($pool === []): ?>
+          <?php if ($rattaches === []): ?>
+            <div class="pgy-vide">
+              <p class="mb-1 fw-semibold">La médiathèque est vide</p>
+              <p class="mb-3 small">Déposez d'abord les fichiers, puis revenez les rattacher.</p>
+              <a class="btn btn-primary" href="<?= Admin::url('/medias') ?>">Aller à la médiathèque</a>
+            </div>
+          <?php endif; ?>
+        <?php else: ?>
+          <p class="pgy-sous mb-2">Ajouter des fichiers — les <?= count($pool) ?> derniers dépôts</p>
+
+          <?php /* Le filtre est côté navigateur : le formulaire est en cours de
+                   saisie, et une recherche qui rechargerait la page ferait
+                   perdre tout ce qui n'est pas encore enregistré. */ ?>
+          <div class="mb-2">
+            <label class="visually-hidden" for="filtre-fichiers">Filtrer les fichiers</label>
+            <input class="form-control" type="search" id="filtre-fichiers"
+                   data-filtre-choix="#planche-fichiers"
+                   placeholder="Filtrer par titre ou nom de fichier…" autocomplete="off">
+          </div>
+
+          <div class="pgy-planche-choix" id="planche-fichiers">
+            <?php foreach ($pool as $m): ?>
+              <?php $etiquette = (string) ($m['titre'] ?? '') . ' ' . (string) $m['fichier']; ?>
+              <label class="pgy-choix" data-etiquette="<?= View::e(mb_strtolower($etiquette)) ?>">
+                <input type="checkbox" name="fichiers[]" value="<?= (int) $m['id'] ?>">
+                <img src="<?= View::e(Media::urlVignette((string) $m['fichier'])) ?>"
+                     alt="<?= View::e(Media::alternative($m)) ?>" loading="lazy">
+                <span><?= View::e(mb_strimwidth((string) ($m['titre'] ?? $m['fichier']), 0, 28, '…')) ?></span>
+              </label>
+            <?php endforeach; ?>
+          </div>
+          <p class="form-text" data-filtre-vide hidden>Aucun fichier ne correspond.
+            Les dépôts plus anciens se retrouvent depuis la <a href="<?= Admin::url('/medias') ?>">médiathèque</a>.</p>
         <?php endif; ?>
       </div></div>
     </div>

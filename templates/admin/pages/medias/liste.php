@@ -87,12 +87,43 @@ $onglets = ['tous' => 'Toutes'] + Media::CATEGORIES;
   <?php foreach ($onglets as $cle => $libelle): ?>
     <?php $n = $cle === 'tous' ? $compteurs['tous'] : ($compteurs[$cle] ?? 0); ?>
     <a class="pgy-onglet<?= $filtre === $cle ? ' is-actif' : '' ?>"
-       href="<?= Admin::url('/medias') . ($cle === 'tous' ? '' : '?categorie=' . $cle) ?>"
+       href="<?= Admin::url('/medias') . '?' . http_build_query(array_filter([
+              'categorie' => $cle === 'tous' ? null : $cle,
+              'q'         => $recherche === '' ? null : $recherche,
+            ])) ?>"
        <?= $filtre === $cle ? 'aria-current="page"' : '' ?>>
       <?= View::e($libelle) ?>
       <span class="pgy-onglet__n"><?= (int) $n ?></span>
     </a>
   <?php endforeach; ?>
+</div>
+
+<?php /* --- Recherche et repérage dans la planche ----------------------
+         La planche rendait tout : tenable sur une médiathèque vide, pas sur le
+         fonds qu'elle a vocation à porter. */ ?>
+<div class="pgy-planche-barre">
+  <form method="get" action="<?= Admin::url('/medias') ?>" role="search" class="pgy-planche-rech">
+    <?php if ($filtre !== 'tous'): ?>
+      <input type="hidden" name="categorie" value="<?= View::e($filtre) ?>">
+    <?php endif; ?>
+    <label class="visually-hidden" for="q">Rechercher un fichier</label>
+    <input class="form-control" type="search" id="q" name="q" value="<?= View::e($recherche) ?>"
+           placeholder="Titre, légende, crédit ou nom de fichier…">
+    <button class="btn btn-outline-secondary" type="submit">Chercher</button>
+    <?php if ($recherche !== ''): ?>
+      <a class="btn btn-link" href="<?= Admin::url('/medias') . ($filtre === 'tous' ? '' : '?categorie=' . $filtre) ?>">Effacer</a>
+    <?php endif; ?>
+  </form>
+
+  <p class="pgy-planche-compte">
+    <?php if ($total === 0): ?>
+      Aucun fichier
+    <?php else: ?>
+      <?= (int) $total ?> fichier<?= $total > 1 ? 's' : '' ?><?php
+        echo $pages > 1 ? ' · page ' . (int) $page . ' sur ' . (int) $pages : '';
+      ?>
+    <?php endif; ?>
+  </p>
 </div>
 
 <?php if ($lignes === []): ?>
@@ -187,5 +218,32 @@ $onglets = ['tous' => 'Toutes'] + Media::CATEGORIES;
       </figure>
     <?php endforeach; ?>
   </div>
+
+  <?php /* --- Pagination -------------------------------------------------
+           Des liens et non des boutons : une page de la planche s'ouvre dans
+           un onglet, se met en favori, se partage entre deux éditeurs. Les
+           filtres et la recherche voyagent avec. */ ?>
+  <?php if ($pages > 1): ?>
+    <?php
+      $adresse = static function (int $p) use ($filtre, $recherche): string {
+          return Admin::url('/medias') . '?' . http_build_query(array_filter([
+              'categorie' => $filtre === 'tous' ? null : $filtre,
+              'q'         => $recherche === '' ? null : $recherche,
+              'page'      => $p > 1 ? $p : null,
+          ]));
+      };
+    ?>
+    <nav class="pgy-pages" aria-label="Pages de la médiathèque">
+      <?php if ($page > 1): ?>
+        <a class="btn btn-outline-secondary btn-sm" href="<?= $adresse($page - 1) ?>" rel="prev">Précédente</a>
+      <?php endif; ?>
+
+      <span class="pgy-pages__etat">Page <?= (int) $page ?> sur <?= (int) $pages ?></span>
+
+      <?php if ($page < $pages): ?>
+        <a class="btn btn-outline-secondary btn-sm" href="<?= $adresse($page + 1) ?>" rel="next">Suivante</a>
+      <?php endif; ?>
+    </nav>
+  <?php endif; ?>
 
 <?php endif; ?>

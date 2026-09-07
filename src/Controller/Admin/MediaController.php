@@ -34,6 +34,16 @@ final class MediaController
     /** Au-delà, l'envoi est refusé avant même d'être lu. */
     private const LOT_MAX = 20;
 
+    /**
+     * Vignettes par page de la planche.
+     *
+     * Soixante tiennent dans un écran défilé sans peser : ce sont des
+     * vignettes de 600 px en `loading="lazy"`, le navigateur ne télécharge que
+     * ce qui approche. Au-delà, c'est le poids du HTML et la longueur de la
+     * page qui gênent, pas les images.
+     */
+    private const PAR_PAGE = 60;
+
     public static function liste(): void
     {
         $filtre = $_GET['categorie'] ?? 'tous';
@@ -41,11 +51,29 @@ final class MediaController
             $filtre = 'tous';
         }
 
+        $recherche = trim((string) ($_GET['q'] ?? ''));
+        $categorie = $filtre === 'tous' ? null : $filtre;
+
+        $total = Media::compterFiltre($categorie, $recherche);
+        $pages = max(1, (int) ceil($total / self::PAR_PAGE));
+
+        /*
+         * La page demandée est ramenée dans les bornes plutôt que refusée : un
+         * lien vers la page 7 reste valide après une suppression qui ramène le
+         * fonds à cinq pages, et il vaut mieux montrer la dernière qu'une
+         * planche vide.
+         */
+        $page = max(1, min($pages, (int) ($_GET['page'] ?? 1)));
+
         View::admin('medias/liste', [
             'titre'      => 'Médiathèque',
             'actif'      => 'medias',
             'filtre'     => $filtre,
-            'lignes'     => Media::listerPar($filtre === 'tous' ? null : $filtre),
+            'recherche'  => $recherche,
+            'lignes'     => Media::chercher($categorie, $recherche, self::PAR_PAGE, ($page - 1) * self::PAR_PAGE),
+            'total'      => $total,
+            'page'       => $page,
+            'pages'      => $pages,
             'compteurs'  => Media::compteurs(),
             'tailleMax'  => min(Televersement::TAILLE_MAX, Televersement::limiteServeur()),
             'lotMax'     => self::LOT_MAX,

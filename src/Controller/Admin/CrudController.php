@@ -26,6 +26,15 @@ use App\Model\Media;
  */
 abstract class CrudController
 {
+    /**
+     * Vignettes proposées par le sélecteur d'illustration.
+     *
+     * Les fichiers **déjà rattachés** s'ajoutent à ce lot et ne sont jamais
+     * comptés dedans : une notice ancienne doit retrouver ses fichiers même
+     * s'ils sont sortis des deux cents derniers dépôts.
+     */
+    protected const MEDIAS_SELECTEUR = 200;
+
     /** Classe de modèle, sous-classe de App\Model\Modele. */
     abstract protected static function modele(): string;
 
@@ -226,9 +235,16 @@ abstract class CrudController
             'valeurs' => $valeurs,
             'erreurs' => $erreurs,
             'config'  => $c,
-            // La planche entière, vignettes comprises : le sélecteur montre
-            // les images, un menu déroulant de noms de fichiers ne dirait rien.
-            'medias'  => $avecMedia ? Media::listerPar() : [],
+            /*
+             * Le sélecteur montre des vignettes — un menu déroulant de noms de
+             * fichiers ne dirait rien. Mais il en montre un **lot borné** et
+             * non la médiathèque entière : elle a vocation à porter le fonds,
+             * et charger trois mille vignettes dans un formulaire ne s'ouvre
+             * pas. Les plus récentes d'abord, ce sont celles qu'on vient de
+             * déposer et qu'on rattache dans la foulée ; le champ de filtre du
+             * formulaire fait le reste.
+             */
+            'medias'  => $avecMedia ? Media::chercher(null, '', self::MEDIAS_SELECTEUR) : [],
             'scripts' => $avecMedia ? [Admin::asset('js/medias.js')] : [],
         ], $erreurs === [] ? 200 : 422);
 

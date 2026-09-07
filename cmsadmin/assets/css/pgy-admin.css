@@ -1004,3 +1004,28 @@ textarea.form-control::placeholder {
   color: #6B6862;
   word-break: break-word;
 }
+
+/* --- Barre de planche : recherche et decompte (medias) ------------------- */
+.pgy-planche-barre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.pgy-planche-rech { display: flex; gap: 0.5rem; flex: 1 1 22rem; min-width: 0; }
+.pgy-planche-rech input { flex: 1 1 auto; min-width: 0; }
+.pgy-planche-compte { margin: 0; font-size: 0.8125rem; color: #6B6862; white-space: nowrap; }
+
+/* --- Pagination ---------------------------------------------------------- */
+.pgy-pages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #DED7C9;
+}
+.pgy-pages__etat { font-size: 0.8125rem; color: #6B6862; }

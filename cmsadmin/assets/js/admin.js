@@ -62,3 +62,36 @@
   });
 
 })(jQuery);
+
+/* --- Filtre de la planche a cases (selecteur de fichiers d'une notice) ----
+   Cote navigateur et non cote serveur : le formulaire est en cours de saisie,
+   et une recherche qui rechargerait la page ferait perdre ce qui n'est pas
+   encore enregistre. Le lot propose est borne, le filtre se contente donc de
+   masquer des tuiles deja rendues. */
+(function () {
+  var champ = document.querySelector("[data-filtre-choix]");
+  if (!champ) { return; }
+
+  var planche = document.querySelector(champ.dataset.filtreChoix);
+  var vide = document.querySelector("[data-filtre-vide]");
+  if (!planche) { return; }
+
+  var tuiles = Array.prototype.slice.call(planche.querySelectorAll("[data-etiquette]"));
+
+  champ.addEventListener("input", function () {
+    var cherche = champ.value.trim().toLowerCase();
+    var visibles = 0;
+
+    tuiles.forEach(function (tuile) {
+      /* Une case cochee reste visible quoi qu'il arrive : la masquer donnerait
+         a croire qu'on l'a retiree, alors qu'elle sera bien enregistree. */
+      var cochee = tuile.querySelector("input").checked;
+      var trouve = cherche === "" || tuile.dataset.etiquette.indexOf(cherche) !== -1;
+
+      tuile.hidden = !(cochee || trouve);
+      if (!tuile.hidden) { visibles++; }
+    });
+
+    if (vide) { vide.hidden = visibles > 0; }
+  });
+})();

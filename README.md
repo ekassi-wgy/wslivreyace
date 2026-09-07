@@ -1141,13 +1141,18 @@ les deux). Ce qu'il reste :
   plafond, mais un robot patient qui les franchit et reste sous cinq envois par
   heure passe. C'est assumé : la file de modération est là pour ça, et rien ne
   paraît sans décision humaine.
-- **Le dépôt de fichiers reste unitaire, et l'ordre des fichiers d'une notice
-  suit celui de la médiathèque** (lot G4). On coche des images déjà déposées ;
-  les déposer se fait une par une, et réordonner une notice passe par la
-  médiathèque, ce qui est indirect. À reprendre avant qu'un vrai fonds soit
-  versé — c'est le premier obstacle que rencontrera l'éditeur.
+- **L'ordre des fichiers d'une notice suit celui de la médiathèque** (lot G4).
+  Réordonner une notice passe donc par la planche générale, ce qui est
+  indirect ; le premier fichier faisant la vignette et l'image de partage, la
+  conséquence est visible. À reprendre le jour où une notice portera vraiment
+  une galerie.
+
+  *(Une ligne affirmait ici que le dépôt de fichiers était unitaire : c'était
+  faux. Le dépôt multiple existe depuis le lot D2 — `fichiers[]`, vingt par
+  lot, avec la garde sur les envois tronqués.)*
 - **Aucune pagination sur les listes publiques.** Actualités, revue de presse,
-  archives et agenda rendent tout ce qui est publié. C'est le bon choix pour des
+  archives et agenda rendent tout ce qui est publié. *(Côté back-office, la
+  médiathèque est paginée depuis le lot G4b.)* C'est le bon choix pour des
   dizaines d'entrées, et la galerie s'en tire mieux qu'on ne pourrait le croire :
   ses tuiles sont en `loading="lazy"`, un navigateur ne télécharge que ce qui
   approche de l'écran. La question se reposera au-delà de la centaine de pièces,
@@ -1946,6 +1951,60 @@ rubrique sans contenu ne dit rien de bon sur un site qu'on découvre.
 **Aucune migration.** Tout passe par la table `parametre`, qui portait déjà la
 fiche technique de l'ouvrage : huit clés s'y ajoutent, et l'écran des Paramètres
 gagne un second bloc. Rien à jouer en production pour ce lot.
+
+### Lot G4b — livré
+
+**Correction préalable, parce qu'elle a orienté ce lot.** La dette écrite après
+G4 affirmait que le dépôt de fichiers était unitaire et qu'il fallait le
+reprendre en premier. C'était faux : le dépôt multiple existe depuis le lot D2
+— `name="fichiers[]" multiple`, vingt fichiers par lot, avec la garde sur les
+envois tronqués par `post_max_size`. Le vrai obstacle était ailleurs.
+
+**`Media::listerPar()` rendait tout, sans limite ni recherche** — dans la
+médiathèque comme dans le sélecteur de fichiers des notices. Tenable sur une
+médiathèque vide, intenable sur le fonds qu'elle a vocation à porter : une
+planche de trois mille vignettes ne s'ouvre pas.
+
+- **La médiathèque est cherchée et paginée**, soixante par page. La recherche
+  porte sur ce qu'un éditeur a en tête — titre, légende, crédit — et sur le nom
+  du fichier, souvent la seule prise sur un scan qui vient d'être déposé. Le
+  `WHERE` de la planche et celui de son décompte sont écrits une fois : deux
+  formulations séparées finiraient par diverger, et une pagination qui compte
+  autre chose que ce qu'elle affiche donne des pages vides à la fin.
+- **Les filtres et la recherche voyagent** dans les liens de page et dans les
+  onglets de catégorie. Une page de la planche s'ouvre dans un onglet, se met en
+  favori, se partage entre deux éditeurs — d'où des liens et non des boutons.
+- **Une page hors bornes est ramenée dans les bornes**, pas refusée : un lien
+  vers la page 7 reste valide après une suppression qui ramène le fonds à cinq
+  pages.
+- **Le sélecteur de fichiers d'une notice est borné à deux cents dépôts**, les
+  plus récents — ceux qu'on vient de déposer et qu'on rattache dans la foulée —
+  avec un filtre côté navigateur. Il est côté navigateur et non côté serveur
+  parce que le formulaire est en cours de saisie : une recherche qui
+  rechargerait la page ferait perdre tout ce qui n'est pas encore enregistré.
+
+**Le piège de ce lot, et il a mordu.** Borner le sélecteur ouvre une perte de
+données silencieuse : le formulaire ne poste que les cases présentes dans la
+page, donc un fichier rattaché il y a six mois, sorti des deux cents derniers
+dépôts, serait détaché au premier enregistrement sans que rien ne le signale.
+Les fichiers déjà rattachés sont donc rendus **à part et toujours**, cochés, en
+tête du sélecteur — et retirés du lot proposé pour ne pas y figurer deux fois.
+
+Le premier essai s'est fait prendre par une seconde version du même piège : la
+liste des cochés se lisait en base seulement si `$valeurs` ne portait pas de
+titre — or à l'ouverture d'une fiche, `$valeurs` **est** la ligne en base et
+porte donc un titre. Aucune case n'était cochée, et le premier enregistrement
+détachait tout. C'est `$erreurs` qui distingue les deux cas, et rien d'autre :
+le formulaire n'est réaffiché avec des erreurs que depuis `ecrire()`, donc
+`$erreurs === []` signifie exactement « fiche ouverte, pas encore soumise ».
+
+**Vérifié sur 250 fichiers** : pagination et bornes, recherche par titre, par
+nom de fichier et sans résultat, échappement du `%` dans la recherche, filtres
+conservés dans les liens — et l'aller-retour complet d'une notice rattachée à
+un fichier hors lot : rouvrir puis enregistrer conserve la liaison, décocher la
+retire réellement. Données d'essai et compte temporaire effacés.
+
+**Aucune migration.**
 
 ### Ce que le brief ajoute à la liste des livrables attendus
 

@@ -73,6 +73,80 @@ final class Media extends Modele
         return Database::all($sql . ' ORDER BY ' . self::ORDRE, $params);
     }
 
+    /**
+     * La planche du back-office : filtrée, cherchée, paginée.
+     *
+     * `listerPar()` rendait tout, sans limite. C'était tenable tant que la
+     * médiathèque était vide ; elle a vocation à porter le fonds entier, et
+     * une planche de trois mille vignettes ne s'ouvre pas.
+     *
+     * La recherche porte sur ce qu'un éditeur a en tête quand il cherche une
+     * image : son titre, sa légende, son crédit — et le nom du fichier, qui
+     * reste souvent la seule prise sur un scan fraîchement déposé.
+     *
+     * @return array<int,array<string,mixed>>
+     */
+    public static function chercher(
+        ?string $categorie = null,
+        string $recherche = '',
+        int $limite = 60,
+        int $decalage = 0
+    ): array {
+        [$ou, $params] = self::criteres($categorie, $recherche);
+
+        // Entiers castés, jamais des paramètres liés : MySQL refuse un
+        // placeholder dans LIMIT quand les requêtes préparées ne sont pas
+        // émulées.
+        return Database::all(
+            'SELECT * FROM ' . self::TABLE . $ou . ' ORDER BY ' . self::ORDRE
+            . ' LIMIT ' . max(1, $limite) . ' OFFSET ' . max(0, $decalage),
+            $params
+        );
+    }
+
+    /** Nombre de fichiers répondant aux mêmes critères, pour la pagination. */
+    public static function compterFiltre(?string $categorie = null, string $recherche = ''): int
+    {
+        [$ou, $params] = self::criteres($categorie, $recherche);
+
+        return (int) (Database::one(
+            'SELECT COUNT(*) AS n FROM ' . self::TABLE . $ou,
+            $params
+        )['n'] ?? 0);
+    }
+
+    /**
+     * Le `WHERE` commun à la planche et à son décompte.
+     *
+     * Écrit une fois : deux formulations séparées finiraient par diverger, et
+     * une pagination qui compte autre chose que ce qu'elle affiche donne des
+     * pages vides à la fin.
+     *
+     * @return array{0:string,1:array<int,string>}
+     */
+    private static function criteres(?string $categorie, string $recherche): array
+    {
+        $conditions = [];
+        $params = [];
+
+        // Comparée à la liste blanche : une valeur inconnue ne part pas en
+        // requête, même liée.
+        if ($categorie !== null && isset(self::CATEGORIES[$categorie])) {
+            $conditions[] = 'categorie = ?';
+            $params[] = $categorie;
+        }
+
+        $recherche = trim($recherche);
+
+        if ($recherche !== '') {
+            $motif = '%' . str_replace(['%', '_'], ['\%', '\_'], $recherche) . '%';
+            $conditions[] = '(titre LIKE ? OR legende LIKE ? OR credit LIKE ? OR fichier LIKE ?)';
+            $params = [...$params, $motif, $motif, $motif, $motif];
+        }
+
+        return [$conditions === [] ? '' : ' WHERE ' . implode(' AND ', $conditions), $params];
+    }
+
     /** @return array<string,int> nombre par catégorie, plus 'tous' et 'publie' */
     public static function compteurs(): array
     {
@@ -87,6 +161,50 @@ final class Media extends Modele
         }
 
         return $n;
+    }
+
+    /**
+     * Des fichiers par leurs identifiants, dans l'ordre demandé.
+     *
+     * Sert le sélecteur des notices d'archives : les fichiers déjà rattachés
+     * doivent être rendus **quoi qu'il arrive**, même hors du lot que le
+     * sélecteur propose. Sans cela, un fichier attaché il y a six mois
+     * n'apparaîtrait plus dans le formulaire, sa case ne serait pas cochée, et
+     * l'enregistrement le détacherait sans rien dire.
+     *
+     * @param array<int,int> $ids
+     * @return array<int,array<string,mixed>>
+     */
+    public static function parIds(array $ids): array
+    {
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $marqueurs = implode(', ', array_fill(0, count($ids), '?'));
+
+        $lignes = [];
+
+        foreach (Database::all(
+            'SELECT * FROM ' . self::TABLE . ' WHERE id IN (' . $marqueurs . ')',
+            $ids
+        ) as $l) {
+            $lignes[(int) $l['id']] = $l;
+        }
+
+        // L'ordre demandé fait autorité : MySQL rend les lignes dans le sien,
+        // et c'est l'ordre d'affichage de la notice qui compte ici.
+        $ordonnees = [];
+
+        foreach ($ids as $id) {
+            if (isset($lignes[$id])) {
+                $ordonnees[] = $lignes[$id];
+            }
+        }
+
+        return $ordonnees;
     }
 
     /** @return array<string,mixed>|null */
