@@ -1669,7 +1669,7 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 |---|---|---|---|
 | **G0** | Gains immédiats | `sitemap.xml` et `robots.txt` ; frise branchée sur `repere` ; catégories d'actualités élargies ; entrée Accueil et barre mobile rouverte à sept entrées ; vérification du domaine en configuration | **livré** |
 | **G1** | Socle bilingue | routeur préfixé, table de traduction, `hreflang`, liens du chrome. Structure seule, aucun contenu traduit | **livré** |
-| **G2** | Le livre, complété | préface et sa mise en avant, page auteur à URL propre, rattachement de la revue de presse et des événements de lancement | 2 – 3 j |
+| **G2** | Le livre, complété | préface et sa mise en avant, page auteur à URL propre, rattachement de la revue de presse et des événements de lancement | **livré** |
 | **G3** | Commander | page de vente et tunnel sur la passerelle retenue ; l'écran de suivi attend depuis le lot E2 | 4 – 6 j |
 | **G4** | Modèle d'archives | notice et fichiers (décision 1), six catégories, champs de catalogue, page par notice, recherche, écran d'administration | **livré** |
 | **G5** | Formats et lecteurs | PDF, audio, vidéo intégrée (décision 2), plafonds revus, lecteur et visionneuse, téléchargement de l'original | 3 – 4 j |
@@ -1908,13 +1908,53 @@ discours — leur transcription porte le contenu le plus recherché.
 |---|---|
 | `sql/011_archive.sql` | les tables `archive` et `archive_media` |
 
+### Lot G2 — livré
+
+**La mise en avant de la préface est un réglage, pas un choix de gabarit.** Le
+brief dit : « si la préface du Président de la République se confirme, nous
+prévoirons une mise en avant spécifique ». Coder l'une des deux formes aurait
+obligé à rouvrir la page le jour de la confirmation — et remonter une préface,
+ce n'est pas déplacer un bloc, c'est refaire la hiérarchie de la page.
+
+L'éditeur coche donc une case dans les Paramètres. Sans elle, la préface est une
+section ordinaire de « Le livre ». Avec elle, le bloc remonte en tête de page,
+passe sur fond sombre, et **un bandeau paraît sur l'accueil**. Même principe que
+la mise en avant des repères (lot G0) : un choix éditorial appartient à
+l'éditeur.
+
+**Le développement n'a donc pas attendu la réponse du commanditaire**, et il n'y
+avait aucune raison qu'il l'attende. Ce qui reste attendu — le texte, le nom et
+la qualité du préfacier — bloque la publication, pas la construction.
+
+**Une préface mise en avant sans nom est refusée à la saisie** : un bloc signé
+de personne, en tête de la page la plus lue du site, n'aurait pas de sens. Même
+règle que le sourçage des repères — ce qui paraît doit être attribuable.
+
+**L'auteur a sa page**, `/auteur`, et non une ancre : le brief le demande, et
+une ancre ne se partage ni sur un plateau, ni dans un dossier de presse. Elle
+porte son balisage `Person` rattaché au `Book`, ce qui la fait remonter sur le
+nom de l'auteur. **Elle répond 404 tant que le nom n'est pas renseigné**, et le
+plan du site ne l'annonce pas : une adresse qui rend un gabarit creux se fait
+indexer telle quelle. La section « L'auteur » de la page du livre en donne
+l'aperçu et y renvoie.
+
+**La revue de presse et les événements de lancement sont rattachés à la page du
+livre**, comme le brief §2 le demande. Les deux existaient chacun à son adresse
+sans que rien n'y mène depuis là. Chaque bloc disparaît quand il est vide : une
+rubrique sans contenu ne dit rien de bon sur un site qu'on découvre.
+
+**Aucune migration.** Tout passe par la table `parametre`, qui portait déjà la
+fiche technique de l'ouvrage : huit clés s'y ajoutent, et l'écran des Paramètres
+gagne un second bloc. Rien à jouer en production pour ce lot.
+
 ### Ce que le brief ajoute à la liste des livrables attendus
 
 À la liste du §5 s'ajoutent, tous non techniques :
 
 | Manquant | Qui le fournit |
 |---|---|
-| Confirmation de la **préface** — la mise en avant présidentielle change la hiérarchie de la page Le livre, à savoir avant d'écrire G2 | commanditaire |
+| **Texte de la préface**, ou l'extrait à mettre en exergue, plus le **nom et la qualité du préfacier** dans la forme exacte à citer. Le mécanisme est livré (G2) : il ne manque que la matière, et une case à cocher | commanditaire |
+| **Notice de l'auteur** — nom, qualité, biographie. Sa page reste en 404 tant que le nom n'est pas saisi | commanditaire / éditeur |
 | **Matière d'Héritage** — les dix sujets : pont, boulevard, buste de Marcory, Jacqueville, hommages, décorations, publications, musique | commanditaire |
 | **Découpage de la biographie** en douze périodes, texte validé et sourcé | commanditaire / auteur |
 | **Fonds d'archives** et leurs crédits — chaque pièce publiée doit porter son fonds, son photographe ou son détenteur de droits ; le back-office refuse déjà la publication sans crédit | commanditaire / familles |

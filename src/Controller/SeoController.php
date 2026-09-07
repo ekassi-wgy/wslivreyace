@@ -66,6 +66,15 @@ final class SeoController
         }
 
         /*
+         * La page de l'auteur n'existe que lorsque son nom est renseigné (lot
+         * G2) : sans ce contrôle, le plan annoncerait une adresse qui répond
+         * 404, ce qui est précisément ce qu'un sitemap ne doit jamais faire.
+         */
+        if (trim((string) \App\Model\Parametre::lire('auteur_nom', '')) !== '') {
+            $chemins[] = ['chemin' => '/auteur', 'priorite' => '0.6', 'maj' => null];
+        }
+
+        /*
          * Les mêmes conditions de publication que les pages elles-mêmes, et
          * c'est une exigence et non une précaution : une adresse listée ici
          * mais rendue en 404 fait chuter la confiance que le moteur accorde

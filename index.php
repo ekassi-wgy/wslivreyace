@@ -13,6 +13,7 @@ use App\Controller\ActualiteController;
 use App\Controller\ArchiveController;
 use App\Controller\ContactController;
 use App\Controller\EvenementController;
+use App\Controller\LivreController;
 use App\Controller\SeoController;
 use App\Controller\TemoignageController;
 use App\Core\Router;
@@ -23,7 +24,13 @@ require __DIR__ . '/src/bootstrap.php';
 $router = new Router();
 
 $router->get('/',            fn() => View::render('pages/accueil',    ['page' => 'accueil']));
-$router->get('/le-livre',    fn() => View::render('pages/livre',      ['page' => 'livre']));
+/*
+ * L'ouvrage et son auteur (lot G2). L'auteur a sa page propre et non une
+ * ancre : le brief le demande, et une ancre ne se partage pas — ni sur un
+ * plateau, ni dans un dossier de presse.
+ */
+$router->get('/le-livre',    [LivreController::class, 'livre']);
+$router->get('/auteur',      [LivreController::class, 'auteur']);
 $router->get('/biographie',  fn() => View::render('pages/biographie', ['page' => 'bio']));
 
 /**

@@ -60,6 +60,34 @@ $total = count($champs);
       </div></div>
     </div>
 
+    <?php /* --- Préface et auteur (lot G2) -------------------------------
+             La mise en avant est un réglage et non un choix de gabarit : le
+             jour où la préface se confirme, l'éditeur coche la case et la page
+             du livre se réorganise seule. Voir Parametre::AUTOUR_LIVRE. */ ?>
+    <div class="col-lg-8 grid-margin stretch-card">
+      <div class="card card-rounded"><div class="card-body">
+        <h4 class="card-title card-title-dash">Préface et auteur</h4>
+        <p class="text-muted small">
+          La page « Le livre » et la page de l'auteur s'en nourrissent.
+          Un champ vide n'affiche rien plutôt qu'un titre sans contenu.
+        </p>
+
+        <?php foreach ($autour as $cle => $champ): ?>
+          <?php if ($champ['type'] === 'case'): ?>
+            <?php champ_case($valeurs, $erreurs, $cle, $champ['libelle'], ['aide' => $champ['aide']]); ?>
+          <?php elseif ($champ['type'] === 'long'): ?>
+            <?php champ_zone($valeurs, $erreurs, $cle, $champ['libelle'], ['aide' => $champ['aide']]); ?>
+          <?php else: ?>
+            <?php champ_texte($valeurs, $erreurs, $cle, $champ['libelle'], [
+                'aide'      => $champ['aide'],
+                'attributs' => 'maxlength="200"'
+                    . ($champ['exemple'] === '' ? '' : ' placeholder="' . View::e($champ['exemple']) . '"'),
+            ]); ?>
+          <?php endif; ?>
+        <?php endforeach; ?>
+      </div></div>
+    </div>
+
     <div class="col-lg-4 grid-margin">
       <div class="card card-rounded"><div class="card-body">
         <h4 class="card-title card-title-dash">Ce qui est vérifié</h4>

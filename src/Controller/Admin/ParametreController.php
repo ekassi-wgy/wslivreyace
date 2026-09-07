@@ -25,6 +25,7 @@ final class ParametreController
             'titre'   => 'Paramètres',
             'actif'   => 'parametres',
             'champs'  => Parametre::FICHE_LIVRE,
+            'autour'  => Parametre::AUTOUR_LIVRE,
             'valeurs' => $valeurs !== [] ? $valeurs : Parametre::toutes(),
             'erreurs' => $erreurs,
             'remplis' => Parametre::ficheRemplie(),
@@ -47,6 +48,24 @@ final class ParametreController
             };
         }
 
+        // Préface et auteur (lot G2). Les textes longs ne sont pas bornés à
+        // 200 signes : une préface en fait plusieurs milliers.
+        foreach (Parametre::AUTOUR_LIVRE as $cle => $champ) {
+            if ($champ['type'] === 'texte') {
+                $v->longueur($cle, $champ['libelle'], 0, 200);
+            }
+        }
+
+        /*
+         * Une préface mise en avant sans nom de préfacier donnerait un bloc
+         * signé de personne, en tête de la page la plus lue du site. La règle
+         * est la même que pour le sourçage des repères : ce qui paraît doit
+         * être attribuable.
+         */
+        if (($_POST['preface_avant'] ?? '') === '1' && trim((string) ($_POST['preface_auteur'] ?? '')) === '') {
+            $v->erreur('preface_auteur', 'Une préface mise en avant doit porter le nom de son auteur.');
+        }
+
         if (!$v->estValide()) {
             self::formulaire($v->erreurs(), $_POST);
             exit;
@@ -55,6 +74,18 @@ final class ParametreController
         foreach (Parametre::FICHE_LIVRE as $cle => $champ) {
             // Un champ vidé redevient NULL et non chaîne vide : la page
             // publique teste l'absence de valeur pour masquer la ligne.
+            $valeur = $v->valeur($cle);
+            Parametre::ecrire($cle, $valeur === '' ? null : $valeur, $champ['libelle']);
+        }
+
+        foreach (Parametre::AUTOUR_LIVRE as $cle => $champ) {
+            if ($champ['type'] === 'case') {
+                // Une case décochée ne poste rien : la valeur est écrite dans
+                // les deux cas, sinon décocher n'aurait aucun effet.
+                Parametre::ecrire($cle, $v->valeur($cle) === '1' ? '1' : null, $champ['libelle']);
+                continue;
+            }
+
             $valeur = $v->valeur($cle);
             Parametre::ecrire($cle, $valeur === '' ? null : $valeur, $champ['libelle']);
         }

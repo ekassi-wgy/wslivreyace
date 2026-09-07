@@ -19,6 +19,77 @@ use App\Core\Database;
 final class Parametre
 {
     /**
+     * Préface et auteur (lot G2).
+     *
+     * **La mise en avant de la préface est un réglage, pas un choix de
+     * gabarit.** Le brief dit : « si la préface du Président de la République
+     * se confirme, nous prévoirons une mise en avant spécifique ». Coder l'une
+     * des deux formes aurait obligé à rouvrir la page le jour de la
+     * confirmation — et remonter une préface, ce n'est pas déplacer un bloc,
+     * c'est refaire la hiérarchie de la page.
+     *
+     * L'éditeur coche donc la case le jour venu : le bloc remonte en tête de
+     * « Le livre » et un bandeau paraît sur l'accueil. Même principe que la
+     * mise en avant des repères (lot G0) — un choix éditorial appartient à
+     * l'éditeur, pas au code.
+     *
+     * `type` vaut `texte` (une ligne, 200 signes), `long` (plusieurs
+     * paragraphes) ou `case` (oui/non).
+     *
+     * @var array<string,array{libelle:string,type:string,aide:string,exemple:string}>
+     */
+    public const AUTOUR_LIVRE = [
+        'preface_auteur' => [
+            'libelle' => 'Nom du préfacier',
+            'type'    => 'texte',
+            'aide'    => 'Tel qu\'il doit être cité, sans abréviation.',
+            'exemple' => 'Prénom NOM',
+        ],
+        'preface_qualite' => [
+            'libelle' => 'Qualité du préfacier',
+            'type'    => 'texte',
+            'aide'    => 'Sa fonction, telle qu\'elle accompagnera la signature.',
+            'exemple' => 'Président de la République de Côte d\'Ivoire',
+        ],
+        'preface_extrait' => [
+            'libelle' => 'Extrait mis en exergue',
+            'type'    => 'long',
+            'aide'    => 'Une ou deux phrases, celles qui portent. Servent au bandeau de l\'accueil.',
+            'exemple' => '',
+        ],
+        'preface_texte' => [
+            'libelle' => 'Texte de la préface',
+            'type'    => 'long',
+            'aide'    => 'Le texte publié. Une ligne vide sépare deux paragraphes.',
+            'exemple' => '',
+        ],
+        'preface_avant' => [
+            'libelle' => 'Mettre la préface en avant',
+            'type'    => 'case',
+            'aide'    => 'À cocher quand la préface est confirmée : elle remonte en tête de la page du livre et un bandeau paraît sur l\'accueil.',
+            'exemple' => '',
+        ],
+        'auteur_nom' => [
+            'libelle' => 'Nom de l\'auteur',
+            'type'    => 'texte',
+            'aide'    => 'L\'auteur de l\'ouvrage. Sa page est publiée dès que ce nom est renseigné.',
+            'exemple' => 'Prénom NOM',
+        ],
+        'auteur_qualite' => [
+            'libelle' => 'Qualité de l\'auteur',
+            'type'    => 'texte',
+            'aide'    => 'Une ligne : profession, titre, rattachement.',
+            'exemple' => 'Historien',
+        ],
+        'auteur_bio' => [
+            'libelle' => 'Biographie de l\'auteur',
+            'type'    => 'long',
+            'aide'    => 'Sa page propre s\'en nourrit. Une ligne vide sépare deux paragraphes.',
+            'exemple' => '',
+        ],
+    ];
+
+    /**
      * @var array<string,array{libelle:string,type:string,aide:string,exemple:string}>
      */
     public const FICHE_LIVRE = [

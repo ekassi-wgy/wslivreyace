@@ -19,6 +19,13 @@ JSONLD;
  * Table `repere`, écran « Repères » du back-office (lot G0, README §9).
  */
 $jalons = App\Model\Repere::listerEnAvant(4);
+
+/**
+ * La préface, si l'éditeur l'a mise en avant (lot G2). Le bandeau ne paraît
+ * qu'à ce moment-là : c'est l'argument que le brief veut voir dès l'accueil si
+ * la préface présidentielle se confirme, et rien avant.
+ */
+$preface = App\Controller\LivreController::preface(App\Model\Parametre::toutes());
 ?>
 
 <!-- ===================== HERO ===================== -->
@@ -131,6 +138,31 @@ $jalons = App\Model\Repere::listerEnAvant(4);
 
   <div class="hero__progress" aria-hidden="true"><i></i></div>
 </section>
+
+<?php /* ============ PRÉFACE MISE EN AVANT ============ */ ?>
+<?php if ($preface['avant']): ?>
+<section class="section section--dark" style="padding-block: var(--sp-9);">
+  <div class="shell">
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2">
+        <p class="kicker reveal">Préface</p>
+        <?php if ($preface['extrait'] !== ''): ?>
+          <blockquote class="quote reveal" style="margin: 0;"><?= App\Core\View::e($preface['extrait']) ?></blockquote>
+        <?php endif; ?>
+        <p class="quote__src reveal">
+          <?= App\Core\View::e($preface['auteur']) ?><?php
+            echo $preface['qualite'] === '' ? '' : '<br>' . App\Core\View::e($preface['qualite']);
+          ?>
+        </p>
+        <p class="reveal" style="margin-top: var(--sp-6);">
+          <a class="link" href="<?= App\Core\Langue::chemin('/le-livre') ?>#preface">Lire la préface</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
+
 
 <!-- ===================== 01 · MANIFESTE ===================== -->
 <section class="section" id="homme">
