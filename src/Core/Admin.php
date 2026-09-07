@@ -74,6 +74,12 @@ final class Admin
                 'url'    => self::url('/reperes'),
             ],
             [
+                'cle'    => 'archives',
+                'titre'  => 'Archives',
+                'icone'  => 'mdi-archive-outline',
+                'url'    => self::url('/archives'),
+            ],
+            [
                 'cle'    => 'medias',
                 'titre'  => 'Médiathèque',
                 'icone'  => 'mdi-image-multiple-outline',

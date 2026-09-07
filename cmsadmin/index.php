@@ -10,6 +10,7 @@ declare(strict_types=1);
  */
 
 use App\Controller\Admin\ActualiteController;
+use App\Controller\Admin\ArchiveController;
 use App\Controller\Admin\AuthController;
 use App\Controller\Admin\CommandeController;
 use App\Controller\Admin\CompteController;
@@ -77,6 +78,7 @@ $crud = static function (string $chemin, string $controleur, string $creation) u
 $crud('/actualites', ActualiteController::class, 'nouvelle');
 $crud('/evenements', EvenementController::class, 'nouveau');
 $crud('/reperes',    RepereController::class,    'nouveau');
+$crud('/archives',   ArchiveController::class,   'nouvelle');
 
 /**
  * Modération des témoignages. Pas le même jeu de routes que les contenus : on

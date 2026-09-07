@@ -1141,8 +1141,13 @@ les deux). Ce qu'il reste :
   plafond, mais un robot patient qui les franchit et reste sous cinq envois par
   heure passe. C'est assumé : la file de modération est là pour ça, et rien ne
   paraît sans décision humaine.
+- **Le dépôt de fichiers reste unitaire, et l'ordre des fichiers d'une notice
+  suit celui de la médiathèque** (lot G4). On coche des images déjà déposées ;
+  les déposer se fait une par une, et réordonner une notice passe par la
+  médiathèque, ce qui est indirect. À reprendre avant qu'un vrai fonds soit
+  versé — c'est le premier obstacle que rencontrera l'éditeur.
 - **Aucune pagination sur les listes publiques.** Actualités, revue de presse,
-  galerie et agenda rendent tout ce qui est publié. C'est le bon choix pour des
+  archives et agenda rendent tout ce qui est publié. C'est le bon choix pour des
   dizaines d'entrées, et la galerie s'en tire mieux qu'on ne pourrait le croire :
   ses tuiles sont en `loading="lazy"`, un navigateur ne télécharge que ce qui
   approche de l'écran. La question se reposera au-delà de la centaine de pièces,
@@ -1666,7 +1671,7 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 | **G1** | Socle bilingue | routeur préfixé, table de traduction, `hreflang`, liens du chrome. Structure seule, aucun contenu traduit | **livré** |
 | **G2** | Le livre, complété | préface et sa mise en avant, page auteur à URL propre, rattachement de la revue de presse et des événements de lancement | 2 – 3 j |
 | **G3** | Commander | page de vente et tunnel sur la passerelle retenue ; l'écran de suivi attend depuis le lot E2 | 4 – 6 j |
-| **G4** | Modèle d'archives | notice et fichiers (décision 1), six catégories, champs de catalogue, page par notice, écran d'administration avec dépôt multiple, recherche et pagination | 6 – 9 j |
+| **G4** | Modèle d'archives | notice et fichiers (décision 1), six catégories, champs de catalogue, page par notice, recherche, écran d'administration | **livré** |
 | **G5** | Formats et lecteurs | PDF, audio, vidéo intégrée (décision 2), plafonds revus, lecteur et visionneuse, téléchargement de l'original | 3 – 4 j |
 | **G6** | Bibliothèque des discours | contexte historique, vidéo, audio, transcription intégrale, document original, index chronologique | 3 – 4 j |
 | **G7** | Héritage | lieux de mémoire, hommages, décorations, publications, musique et culture ; rattachement des témoignages | 4 – 5 j |
@@ -1813,6 +1818,95 @@ refermé et les traductions de test effacées.
 | Fichier | Ce qu'il apporte |
 |---|---|
 | `sql/010_traduction.sql` | la table de traduction, une pour tout le site |
+
+### Lot G4 — livré
+
+**La décision 1 est appliquée : une archive est une notice, pas un fichier.**
+
+| Table | Ce qu'elle porte |
+|---|---|
+| `archive` | la **notice** — ce qui se catalogue, se date, se situe, se cite et se partage. Elle a un slug, donc une adresse |
+| `archive_media` | ce qu'elle **porte** — un fichier, ou vingt |
+| `media` | **inchangée** : elle reste le magasin de fichiers, avec son téléversement contrôlé et ses tailles dérivées |
+
+`media` n'est pas touchée, et c'est délibéré : elle répond à « quels fichiers
+ai-je déposés ? », la notice à « qu'est-ce que cette pièce, et d'où
+vient-elle ? ». Les fondre aurait obligé à choisir entre les deux.
+
+**Trois adresses, et la troisième est celle qui compte :**
+
+```
+/archives                        le fonds, ses six catégories, sa recherche
+/archives/{categorie}            une catégorie, filtrable par année
+/archives/{categorie}/{slug}     la notice — sa page, son adresse, son partage
+```
+
+C'est ce que le §9 du brief demande : chaque pièce se partage seule, là où la
+visionneuse d'avant était une surimpression sans adresse. **Les clés de
+catégorie sont les segments d'adresse** — `discours` donne `/archives/discours/…`
+— et elles ne changeront plus : décision 3.
+
+**Deux 404 qui ne vont pas de soi**, et qui protègent le plan d'adresses : une
+catégorie inconnue répond 404 plutôt que la planche entière — l'adresse est
+publique et durable, elle doit dire la vérité — et un slug demandé sous la
+mauvaise catégorie répond 404 aussi, sans quoi la même pièce aurait deux
+adresses valides et les moteurs y verraient un doublon.
+
+**Les champs du catalogue** sont ceux du brief : titre, date, lieu,
+description, personnes présentes, source, crédit, catégorie, fichiers — plus
+les mots-clés, qui alimentent la recherche. La date est **double** : `date_texte`
+s'affiche (« vers 1965 »), `annee` classe et filtre. Une archive est souvent mal
+datée, et forcer une date exacte aurait fait inventer des dates.
+
+**La bibliothèque des discours n'est pas une entité à part.** Le brief la
+décrit comme une page réunissant contexte historique, vidéo, audio,
+transcription et document : trois colonnes de texte sur la notice y suffisent
+— `contexte`, `transcription`, `video_url`. Une table de plus pour trois
+colonnes nullables aurait coûté une jointure à chaque lecture sans rien
+apporter. L'audio et le document téléchargeable arrivent avec G5.
+
+**La vidéo reste chez son hébergeur** (décision 2) : la notice porte une URL,
+pas un fichier. Seul YouTube est reconnu, et l'écran de saisie **refuse** une
+adresse qu'il ne sait pas intégrer — sans quoi la page publique afficherait un
+cadre noir sans que personne ne le sache.
+
+**La recherche est un `LIKE`, pas un index plein texte**, et c'est un choix :
+`MATCH … AGAINST` ignore les mots de moins de quatre lettres et ceux qu'il tient
+pour trop fréquents. Sur un fonds où l'on cherche « PDCI », un lieu ou un nom
+propre, c'est exactement ce qu'il ne faut pas. Le coût — pas d'index — est sans
+objet à quelques milliers de notices ; la question se reposera à cent mille.
+
+**La provenance est exigée pour publier.** Une pièce sans crédit ni source reste
+en brouillon : le fonds recevra des documents prêtés par des familles et des
+organes de presse, et savoir de qui vient quoi n'est pas une formalité (CDC §6).
+
+**Chaque notice porte ses données structurées**, du type qui lui correspond —
+`Photograph`, `VideoObject`, `DigitalDocument`, `Article` — rattachées à la
+personne et à la collection. Un `CreativeWork` générique n'aurait apporté aucun
+des enrichissements qu'on cherche.
+
+**Un bloc « citer cette archive »** donne le permalien en clair sur chaque
+notice. Un fonds patrimonial se cite : l'adresse est ce qu'on recopie dans une
+note de bas de page, un dossier de presse, un QR code.
+
+**Le plan du site liste les notices**, avec une priorité plus haute pour les
+discours — leur transcription porte le contenu le plus recherché.
+
+**Ce que G4 ne fait pas :**
+
+- **Le dépôt multiple de fichiers.** On coche les images déjà déposées dans la
+  médiathèque ; les déposer se fait toujours une par une. C'est le point à
+  reprendre en premier quand un vrai fonds sera versé.
+- **L'ordre des fichiers par notice.** Il suit celui de la médiathèque, que
+  l'éditeur règle déjà. Le premier fichier fait la vignette et l'image de
+  partage — donc réordonner une notice se fait aujourd'hui depuis la
+  médiathèque, ce qui est indirect.
+- **La pagination.** La planche rend tout ce qui est publié, comme les autres
+  listes du site. La question se reposera au-delà de la centaine de pièces.
+
+| Fichier | Ce qu'il apporte |
+|---|---|
+| `sql/011_archive.sql` | les tables `archive` et `archive_media` |
 
 ### Ce que le brief ajoute à la liste des livrables attendus
 

@@ -41,7 +41,17 @@ $router->get('/actualites/{slug}', [ActualiteController::class, 'detail']);
  * telle que le back-office l'a rangée ; l'agenda partage la même page entre ce
  * qui vient et ce qui a eu lieu. Lecture seule, aucune session.
  */
-$router->get('/archives',           [ArchiveController::class,  'galerie']);
+/*
+ * Archives (brief §4, lot G4). Trois adresses, et la troisième est celle qui
+ * compte : une par pièce, partageable seule — c'est ce que demande le §9.
+ * L'ordre de déclaration importe, le routeur retenant le premier motif qui
+ * correspond : `{categorie}` seul avant `{categorie}/{slug}` serait sans
+ * effet, mais l'inverse — un motif à deux segments avant celui à un — ne
+ * poserait aucun problème. La lisibilité tranche : du général au particulier.
+ */
+$router->get('/archives',                       [ArchiveController::class, 'index']);
+$router->get('/archives/{categorie}',           [ArchiveController::class, 'categorie']);
+$router->get('/archives/{categorie}/{slug}',    [ArchiveController::class, 'notice']);
 $router->get('/evenements',         [EvenementController::class, 'liste']);
 $router->get('/evenements/{slug}',  [EvenementController::class, 'detail']);
 

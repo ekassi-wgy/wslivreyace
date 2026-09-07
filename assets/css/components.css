@@ -1223,3 +1223,166 @@ main > .shell > .avis:first-child { margin-top: var(--sp-7); }
 }
 
 .note__pied { font-size: 0.8125rem; color: var(--ink-3); }
+
+/* =========================================================================
+   ARCHIVES — notices du fonds (lot G4)
+   Le vocabulaire de la galerie est conserve : .gal, .gal__i, .chips. Ce qui
+   suit ne couvre que ce que la notice ajoute — recherche, fiche, planche de
+   piece, transcription.
+   ========================================================================= */
+
+/* --- Recherche dans le fonds ------------------------------------------- */
+.arch-rech__label {
+  display: block;
+  font-size: var(--fs-kicker);
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: var(--sp-3);
+}
+.arch-rech__ligne { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+.arch-rech__champ {
+  flex: 1 1 18rem;
+  min-width: 0;
+  padding: var(--sp-3) var(--sp-4);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  color: var(--ink);
+  background: var(--paper-high);
+  border: 1px solid var(--rule-strong);
+  border-radius: 0;
+}
+.arch-rech__champ:focus-visible { outline: 2px solid var(--brass-text); outline-offset: 2px; }
+
+/* Les millesimes sont nombreux : une puce plus discrete que celle des
+   categories, sans quoi la seconde rangee ecraserait la premiere. */
+.chips--annees { gap: var(--sp-2); }
+.chip--fin { font-size: 0.8125rem; padding-block: 0.3rem; }
+
+/* Un discours ou un document sans image numerisee : la tuile porte le signe
+   de sa categorie plutot qu'un cadre vide. */
+.gal__signe {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  background: var(--paper-sunk);
+  opacity: 0.5;
+}
+
+/* --- Fil d'Ariane ------------------------------------------------------- */
+.fil ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--sp-3);
+  list-style: none;
+  margin: 0 0 var(--sp-5);
+  padding: 0;
+  font-size: var(--fs-small);
+  color: var(--ink-3);
+}
+.fil li + li::before { content: "/"; margin-right: var(--sp-3); color: var(--rule-strong); }
+.fil a { color: var(--ink-3); }
+.fil a:hover { color: var(--brass-text); }
+
+/* --- La notice ---------------------------------------------------------- */
+.arch-bloc { margin-top: var(--sp-8); }
+.arch-bloc h2 { margin-bottom: var(--sp-4); }
+
+.arch-video {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  margin-bottom: var(--sp-7);
+  background: var(--ink-deep);
+}
+.arch-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+.arch-planche { display: flex; flex-direction: column; gap: var(--sp-6); }
+.arch-piece { margin: 0; }
+.arch-piece img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: grayscale(1) contrast(1.04) sepia(0.14);
+}
+.arch-piece figcaption {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-small);
+  color: var(--ink-3);
+  line-height: 1.6;
+}
+.arch-piece__credit { display: block; color: var(--ink-3); font-style: italic; }
+
+/* La transcription est un document, pas un corps d'article : filet de marge
+   et mesure plus large, comme une piece jointe qu'on lit d'un trait. */
+.arch-transcription {
+  border-left: 2px solid var(--brass);
+  padding-left: var(--sp-5);
+}
+.arch-transcription .t-body { max-width: 62ch; }
+
+/* --- Fiche signaletique ------------------------------------------------- */
+.arch-fiche {
+  border-top: 2px solid var(--ink);
+  padding-top: var(--sp-4);
+  position: sticky;
+  top: var(--sp-8);
+}
+.arch-fiche dl { margin: var(--sp-4) 0 0; }
+.arch-fiche dl > div { padding-block: var(--sp-3); border-bottom: 1px solid var(--rule); }
+.arch-fiche dt {
+  font-size: var(--fs-kicker);
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: var(--sp-1);
+}
+.arch-fiche dd { margin: 0; font-size: var(--fs-small); line-height: 1.6; }
+.arch-fiche__mots { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-4); }
+.arch-fiche__citer { margin-top: var(--sp-5); }
+.arch-fiche__lbl {
+  font-size: var(--fs-kicker);
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: var(--sp-2);
+}
+/* L'adresse se recopie a la main dans une note de bas de page : elle doit
+   pouvoir se couper n'importe ou sans deborder de la colonne. */
+.arch-fiche__url {
+  font-size: 0.8125rem;
+  color: var(--brass-text);
+  word-break: break-all;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* --- Pieces voisines ---------------------------------------------------- */
+.arch-voisines {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--sp-5);
+  list-style: none;
+  margin: var(--sp-5) 0 0;
+  padding: 0;
+}
+.arch-voisines a { display: block; color: var(--ink); }
+.arch-voisines img,
+.arch-voisines__signe {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: grid;
+  place-items: center;
+  background: var(--paper-sunk);
+  filter: grayscale(1) contrast(1.04) sepia(0.14);
+  margin-bottom: var(--sp-3);
+  font-size: 2rem;
+}
+.arch-voisines span:last-child { font-size: var(--fs-small); line-height: 1.5; }
+.arch-voisines a:hover span:last-child { color: var(--brass-text); }
+
+@media (max-width: 991.98px) {
+  .arch-fiche { position: static; margin-top: var(--sp-8); }
+}

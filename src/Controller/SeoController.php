@@ -85,6 +85,30 @@ final class SeoController
             ];
         }
 
+        /*
+         * Les notices d'archives, et leurs six catégories (lot G4).
+         *
+         * C'est la part du plan qui grossira : le fonds est fait pour
+         * s'enrichir pendant des années, et chaque pièce versée doit être
+         * trouvable. Priorité haute pour les discours, dont la transcription
+         * porte le contenu le plus recherché.
+         */
+        foreach (array_keys(\App\Model\Archive::comptesParCategorie()) as $cle) {
+            $chemins[] = ['chemin' => '/archives/' . $cle, 'priorite' => '0.7', 'maj' => null];
+        }
+
+        foreach (Database::all(
+            "SELECT categorie, slug, maj_le FROM archive
+              WHERE statut = 'publie'
+              ORDER BY annee IS NULL, annee ASC, id ASC"
+        ) as $n) {
+            $chemins[] = [
+                'chemin'   => '/archives/' . $n['categorie'] . '/' . $n['slug'],
+                'priorite' => $n['categorie'] === 'discours' ? '0.8' : '0.6',
+                'maj'      => self::jour((string) $n['maj_le']),
+            ];
+        }
+
         // Publiés **et annulés** : un événement annulé garde sa page, qui dit
         // qu'il est annulé. Voir `App\Model\Evenement`.
         foreach (Database::all(

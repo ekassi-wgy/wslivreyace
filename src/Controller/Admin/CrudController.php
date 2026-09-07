@@ -56,6 +56,22 @@ abstract class CrudController
      */
     abstract protected static function donnees(Validator $v, ?int $id): array;
 
+    /**
+     * Ce qui s'écrit **hors** des colonnes de la ligne.
+     *
+     * Ce contrôleur ne sait écrire qu'un jeu de colonnes ; une entité peut
+     * avoir besoin d'écrire ailleurs — les archives portent leurs fichiers
+     * dans une table de liaison (lot G4). Le point d'accroche est appelé après
+     * la création comme après la modification, et reçoit l'identifiant : à la
+     * création, il n'existe qu'à ce moment.
+     *
+     * Ne fait rien par défaut : les entités à colonnes seules n'ont pas à le
+     * connaître.
+     */
+    protected static function apresEcriture(int $id, Validator $v): void
+    {
+    }
+
     // -- Écrans ------------------------------------------------------------
 
     public static function liste(): void
@@ -177,6 +193,8 @@ abstract class CrudController
             $modele::modifier($id, $donnees);
             $message = "a été enregistré$e.";
         }
+
+        static::apresEcriture($id, $v);
 
         Session::message('succes', sprintf(
             '%s « %s » %s',
