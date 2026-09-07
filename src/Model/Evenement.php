@@ -69,7 +69,7 @@ final class Evenement extends Modele
             $sql .= ' LIMIT ' . max(1, $limite);
         }
 
-        return Database::all($sql);
+        return self::traduireToutes(Database::all($sql));
     }
 
     /**
@@ -91,7 +91,7 @@ final class Evenement extends Modele
             $sql .= ' LIMIT ' . max(1, $limite);
         }
 
-        return Database::all($sql);
+        return self::traduireToutes(Database::all($sql));
     }
 
     /**
@@ -101,10 +101,10 @@ final class Evenement extends Modele
      */
     public static function parSlug(string $slug): ?array
     {
-        return Database::one(
+        return self::traduire(Database::one(
             'SELECT * FROM ' . self::TABLE . ' WHERE slug = ? AND ' . self::PUBLIQUE,
             [$slug]
-        );
+        ));
     }
 
     /** L'événement est-il passé ? Lu sur la ligne, sans requête. */

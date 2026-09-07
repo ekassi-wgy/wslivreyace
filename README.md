@@ -1585,10 +1585,12 @@ publiques sont du HTML écrit en dur** (`templates/pages/accueil.php`,
 n'apparaît donc nulle part. La « frise chronologique interactive » que demande le
 brief est à moitié déjà payée : il s'agit de brancher, pas d'écrire.
 
-### Les six décisions à prendre avant de coder
+### Les six décisions — arrêtées
 
-Ce sont les choix qu'il est coûteux de reprendre après coup. Ils appellent une
-validation du commanditaire, pas seulement un accord technique.
+Ce sont les choix qu'il est coûteux de reprendre après coup. **Le commanditaire
+les a déléguées le 7 septembre 2026** ; elles sont donc arrêtées telles
+qu'exposées ci-dessous, et c'est sur elles que les lots s'écrivent. Les rouvrir
+reste possible, mais chacune dit ce qu'elle coûterait.
 
 **1. Séparer le fichier de la notice d'archive.** Aujourd'hui, une ligne de
 `media` = un fichier image. C'est suffisant pour une galerie, pas pour un fonds.
@@ -1627,11 +1629,12 @@ racine web** et ne rejoignent le fonds qu'après validation explicite, avec
 plafond de taille, nombre de fichiers borné, contrôle du type réel, et une case
 de cession de droits horodatée.
 
-**5. Bilingue : la structure maintenant, la traduction plus tard.** Il ne s'agit
+**5. Bilingue : la structure maintenant, la traduction plus tard.** *(Posé au
+lot G1.)* Il ne s'agit
 pas de traduire le site mais de **le rendre traduisible sans le rouvrir**. Trois
 choix qui se prennent une fois : les adresses en `/en/…` plutôt qu'en
 sous-domaine ou en paramètre — c'est ce que Google attend et cela ne touche pas
-au domaine ; une **table de traduction par contenu** plutôt que des colonnes
+au domaine ; une **table de traduction unique** plutôt que des colonnes
 `titre_en` ajoutées partout, sinon chaque langue future est une migration ; et
 les textes des gabarits sortis dans un fichier de langue, avec `hreflang` dès la
 première page. **Aucun contenu n'est traduit avant que la communication
@@ -1660,7 +1663,7 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 | Lot | Objet | Contenu | Charge |
 |---|---|---|---|
 | **G0** | Gains immédiats | `sitemap.xml` et `robots.txt` ; frise branchée sur `repere` ; catégories d'actualités élargies ; entrée Accueil et barre mobile rouverte à sept entrées ; vérification du domaine en configuration | **livré** |
-| **G1** | Socle bilingue | routeur préfixé, tables de traduction, fichiers de langue, `hreflang`. Structure seule, aucun contenu traduit | 2 – 3 j |
+| **G1** | Socle bilingue | routeur préfixé, table de traduction, `hreflang`, liens du chrome. Structure seule, aucun contenu traduit | **livré** |
 | **G2** | Le livre, complété | préface et sa mise en avant, page auteur à URL propre, rattachement de la revue de presse et des événements de lancement | 2 – 3 j |
 | **G3** | Commander | page de vente et tunnel sur la passerelle retenue ; l'écran de suivi attend depuis le lot E2 | 4 – 6 j |
 | **G4** | Modèle d'archives | notice et fichiers (décision 1), six catégories, champs de catalogue, page par notice, écran d'administration avec dépôt multiple, recherche et pagination | 6 – 9 j |
@@ -1750,6 +1753,66 @@ dedans — à sept entrées, la dernière sortait de l'écran sur un téléphone
 aucun garde-fou contre le doublon, une ligne d'amorce n'ayant pas de clé
 naturelle sur laquelle en poser un. `007` et `009` se contrôlent comme les
 précédentes — voir la requête au §7.
+
+### Lot G1 — livré
+
+**Le site est bilingue par construction, et monolingue à l'écran.** C'est tout
+l'objet du lot : ouvrir l'anglais ne demandera pas de rouvrir le routeur, les
+modèles et les gabarits.
+
+**L'anglais est déclaré mais fermé.** `App\Core\Langue::LANGUES` porte les deux
+langues ; `'active' => false` sur l'anglais fait répondre 404 à `/en/`. Servir
+des pages françaises sous `/en/` apprendrait aux moteurs que le site ment sur
+son contenu, et c'est long à défaire. **Ouvrir l'anglais tiendra en un mot** —
+`true` — une fois la matière traduite.
+
+Les trois choix structurants, pris une fois :
+
+- **`/en/le-livre`**, et non `en.philippeyace.ci` ni `?lang=en`. C'est la forme
+  que Google recommande, elle ne demande rien au DNS ni au certificat.
+- **Le français n'a pas de préfixe** : `/le-livre` reste `/le-livre`. Un `/fr/`
+  ajouté après coup aurait rendu caduque chaque adresse déjà partagée, chaque
+  QR code, chaque lien de la page Facebook — décision 3.
+- **La langue vient de l'adresse, jamais de l'en-tête du navigateur.** Rediriger
+  d'après `Accept-Language` donne deux contenus à une même adresse : le moteur
+  en indexe un, l'utilisateur en voit l'autre.
+
+**Une table de traduction pour tout le site**, et non une par entité
+(`sql/010_traduction.sql`). L'autre forme donne des colonnes typées, mais coûte
+**une migration par entité** — or le fonds va en créer plusieurs : notices
+d'archives, discours, lieux de mémoire, périodes de la biographie. L'oubli d'une
+seule ne se serait vu qu'en anglais, donc tard. Ici, une entité nouvelle est
+traduisible le jour où elle existe, sans toucher au schéma.
+
+**En français, la traduction ne fait rien et n'interroge rien.** Pas une
+jointure, pas une requête : le coût du bilinguisme est nul tant que le site est
+monolingue. Un champ non traduit garde sa valeur française plutôt que de
+disparaître — une page anglaise incomplète reste lisible, et l'anglais pourra
+s'ouvrir rubrique par rubrique au lieu d'attendre que tout soit traduit.
+
+**Le routeur détache le préfixe en un seul endroit.** Les routes restent
+déclarées une fois, sans préfixe : les déclarer deux fois aurait garanti qu'une
+des deux séries finisse par manquer une adresse.
+
+**Les liens du chrome passent par `Langue::chemin()`** — navigation et pied de
+page. Un `href="/le-livre"` écrit en dur ramènerait le visiteur anglophone au
+français sans le dire.
+
+**Ce que G1 ne fait pas, délibérément :** les textes des gabarits de page ne
+sont pas encore sortis dans un fichier de langue. C'est du travail mécanique,
+page par page, sans conséquence architecturale — il se fera avec G11, ou au fil
+des pages qu'on rouvre. Ce qui devait être décidé maintenant l'est ; le reste
+peut attendre sans coûter davantage.
+
+**Vérifié en ouvrant l'anglais le temps d'un test** : `/en/` répond, `<html
+lang="en">`, `hreflang` et `x-default` s'écrivent, le sitemap se dédouble en
+`xhtml:link`, les liens du menu et du pied se préfixent, les champs traduits
+sortent en anglais et les autres restent en français. L'anglais a ensuite été
+refermé et les traductions de test effacées.
+
+| Fichier | Ce qu'il apporte |
+|---|---|
+| `sql/010_traduction.sql` | la table de traduction, une pour tout le site |
 
 ### Ce que le brief ajoute à la liste des livrables attendus
 

@@ -1,37 +1,45 @@
+<?php
+/**
+ * Pied de page. Comme la navigation, tout lien interne passe par
+ * `Langue::chemin()` (lot G1) : en français il rend le chemin inchangé, sous
+ * `/en/` il le préfixe.
+ */
+$lien = static fn(string $chemin): string => App\Core\Langue::chemin($chemin);
+?>
 <footer class="foot">
   <div class="shell" style="padding-block: var(--sp-9) var(--sp-7);">
     <div class="row" style="row-gap: var(--sp-7);">
       <div class="col-lg-5 col-xl-4">
-        <a class="logo" href="/" aria-label="Philippe Grégoire Yacé — accueil">
+        <a class="logo" href="<?= $lien('/') ?>" aria-label="Philippe Grégoire Yacé — accueil">
           <svg class="logo__svg" aria-hidden="true" focusable="false"><use href="#pgy-logo"></use></svg>
         </a>
       </div>
       <div class="col-lg-3 foot__col">
         <p>L'ouvrage</p>
         <ul>
-          <li><a href="/le-livre">Le livre</a></li>
-          <li><a href="/le-livre#auteur">L'auteur</a></li>
-          <li><a href="/le-livre#extrait">Extraits</a></li>
-          <li><a href="/le-livre#acheter">Commander</a></li>
+          <li><a href="<?= $lien('/le-livre') ?>">Le livre</a></li>
+          <li><a href="<?= $lien('/le-livre') ?>#auteur">L'auteur</a></li>
+          <li><a href="<?= $lien('/le-livre') ?>#extrait">Extraits</a></li>
+          <li><a href="<?= $lien('/le-livre') ?>#acheter">Commander</a></li>
         </ul>
       </div>
       <div class="col-lg-2 foot__col">
         <p>Le personnage</p>
         <ul>
-          <li><a href="/biographie">Biographie</a></li>
-          <li><a href="/biographie#chronologie">Repères</a></li>
+          <li><a href="<?= $lien('/biographie') ?>">Biographie</a></li>
+          <li><a href="<?= $lien('/biographie') ?>#chronologie">Repères</a></li>
           <li><a href="#">Héritage</a></li>
-          <li><a href="/archives">Archives</a></li>
+          <li><a href="<?= $lien('/archives') ?>">Archives</a></li>
         </ul>
       </div>
       <div class="col-lg-2 foot__col">
         <p>Le site</p>
         <ul>
-          <li><a href="/actualites">Actualités</a></li>
-          <li><a href="/revue-de-presse">Revue de presse</a></li>
-          <li><a href="/evenements">Événements</a></li>
-          <li><a href="/temoignages">Témoignages</a></li>
-          <li><a href="/contact">Contact</a></li>
+          <li><a href="<?= $lien('/actualites') ?>">Actualités</a></li>
+          <li><a href="<?= $lien('/revue-de-presse') ?>">Revue de presse</a></li>
+          <li><a href="<?= $lien('/evenements') ?>">Événements</a></li>
+          <li><a href="<?= $lien('/temoignages') ?>">Témoignages</a></li>
+          <li><a href="<?= $lien('/contact') ?>">Contact</a></li>
         </ul>
       </div>
     </div>
@@ -49,8 +57,8 @@
           <?php /* Un seul document : la politique de confidentialité est une
                    section des mentions légales, et deux pages qui se renvoient
                    l'une à l'autre finissent par se contredire. */ ?>
-          <a href="/mentions-legales">Mentions légales</a> ·
-          <a href="/mentions-legales#donnees">Confidentialité</a>
+          <a href="<?= $lien('/mentions-legales') ?>">Mentions légales</a> ·
+          <a href="<?= $lien('/mentions-legales') ?>#donnees">Confidentialité</a>
         </p>
       </div>
     </div>

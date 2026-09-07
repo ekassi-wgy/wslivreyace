@@ -20,21 +20,28 @@ $liens = [
     'actus'    => ['/actualites',  "Actualités"],
 ];
 $page = $page ?? '';
+
+/**
+ * Tout lien interne passe par `Langue::chemin()` (lot G1). En français il rend
+ * le chemin inchangé ; sous `/en/`, il le préfixe. Un `href="/le-livre"` écrit
+ * en dur ramènerait le visiteur anglophone au français sans le dire.
+ */
+$lien = static fn(string $chemin): string => App\Core\Langue::chemin($chemin);
 ?>
 <header class="nav-bar">
   <div class="shell">
     <div class="nav-bar__row">
 
-      <a class="logo" href="/" aria-label="Philippe Grégoire Yacé — accueil">
+      <a class="logo" href="<?= $lien('/') ?>" aria-label="Philippe Grégoire Yacé — accueil">
         <svg class="logo__svg" aria-hidden="true" focusable="false"><use href="#pgy-logo"></use></svg>
       </a>
 
       <nav aria-label="Navigation principale">
         <ul class="nav-menu" id="navMenu">
 <?php foreach ($liens as $cle => [$href, $libelle]): ?>
-          <li><a href="<?= $href ?>"<?= $cle === $page ? ' aria-current="page"' : '' ?>><?= $libelle ?></a></li>
+          <li><a href="<?= $lien($href) ?>"<?= $cle === $page ? ' aria-current="page"' : '' ?>><?= $libelle ?></a></li>
 <?php endforeach; ?>
-          <li><a class="btn-pgy btn-pgy--sm" href="/le-livre#acheter">Commander</a></li>
+          <li><a class="btn-pgy btn-pgy--sm" href="<?= $lien('/le-livre') ?>#acheter">Commander</a></li>
         </ul>
       </nav>
 

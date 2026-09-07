@@ -79,7 +79,7 @@ final class Repere extends Modele
             $sql .= ' LIMIT ' . max(1, $limite);
         }
 
-        return Database::all($sql, $params);
+        return self::traduireToutes(Database::all($sql, $params));
     }
 
     /**
@@ -139,7 +139,7 @@ final class Repere extends Modele
             $sql .= ' LIMIT ' . max(1, $limite);
         }
 
-        return Database::all($sql);
+        return self::traduireToutes(Database::all($sql));
     }
 
     /** Libellé d'affichage d'une période ; la clé brute si elle est inconnue. */

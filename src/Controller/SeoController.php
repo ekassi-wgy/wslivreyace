@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Core\Database;
+use App\Core\Langue;
 use App\Core\Site;
 
 /**
@@ -58,10 +59,10 @@ final class SeoController
      */
     public static function sitemap(): void
     {
-        $urls = [];
+        $chemins = [];
 
         foreach (self::FIXES as $chemin => $priorite) {
-            $urls[] = ['loc' => Site::url($chemin), 'priorite' => $priorite, 'maj' => null];
+            $chemins[] = ['chemin' => $chemin, 'priorite' => $priorite, 'maj' => null];
         }
 
         /*
@@ -77,8 +78,8 @@ final class SeoController
               WHERE statut = 'publie' AND publie_le IS NOT NULL
               ORDER BY publie_le DESC"
         ) as $a) {
-            $urls[] = [
-                'loc'      => Site::url('/actualites/' . $a['slug']),
+            $chemins[] = [
+                'chemin'   => '/actualites/' . $a['slug'],
                 'priorite' => '0.6',
                 'maj'      => self::jour((string) $a['maj_le']),
             ];
@@ -91,12 +92,24 @@ final class SeoController
               WHERE statut IN ('publie', 'annule')
               ORDER BY debut_le DESC"
         ) as $e) {
-            $urls[] = [
-                'loc'      => Site::url('/evenements/' . $e['slug']),
+            $chemins[] = [
+                'chemin'   => '/evenements/' . $e['slug'],
                 'priorite' => '0.5',
                 'maj'      => self::jour((string) $e['maj_le']),
             ];
         }
+
+        /*
+         * Chaque page paraît une fois **par langue ouverte**, et déclare les
+         * autres versions d'elle-même en `xhtml:link` — c'est la forme que le
+         * protocole prévoit, et la seule que Google lit dans un sitemap.
+         *
+         * Aujourd'hui une seule langue est ouverte : la boucle tourne une fois
+         * et aucun `xhtml:link` n'est écrit. Le fichier est donc exactement
+         * celui d'avant — mais il n'aura pas à être repris le jour où
+         * l'anglais s'ouvrira (lot G1, README §9).
+         */
+        $langues = array_keys(Langue::ouvertes());
 
         $xml = new \XMLWriter();
         $xml->openMemory();
@@ -105,16 +118,35 @@ final class SeoController
         $xml->startElement('urlset');
         $xml->writeAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
 
-        foreach ($urls as $u) {
-            $xml->startElement('url');
-            $xml->writeElement('loc', $u['loc']);
+        if (Langue::multilingue()) {
+            $xml->writeAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml');
+        }
 
-            if ($u['maj'] !== null) {
-                $xml->writeElement('lastmod', $u['maj']);
+        foreach ($chemins as $c) {
+            foreach ($langues as $langue) {
+                $xml->startElement('url');
+                $xml->writeElement('loc', Site::base() . Langue::chemin($c['chemin'], $langue));
+
+                if ($c['maj'] !== null) {
+                    $xml->writeElement('lastmod', $c['maj']);
+                }
+
+                $xml->writeElement('priority', $c['priorite']);
+
+                // Chaque version se déclare elle-même en plus des autres :
+                // le protocole l'exige, un jeu incomplet est ignoré en bloc.
+                if (Langue::multilingue()) {
+                    foreach ($langues as $autre) {
+                        $xml->startElement('xhtml:link');
+                        $xml->writeAttribute('rel', 'alternate');
+                        $xml->writeAttribute('hreflang', $autre);
+                        $xml->writeAttribute('href', Site::base() . Langue::chemin($c['chemin'], $autre));
+                        $xml->endElement();
+                    }
+                }
+
+                $xml->endElement();
             }
-
-            $xml->writeElement('priority', $u['priorite']);
-            $xml->endElement();
         }
 
         $xml->endElement();

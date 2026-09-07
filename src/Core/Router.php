@@ -74,9 +74,45 @@ final class Router
         return '#^' . $regex . '$#i';
     }
 
+    /**
+     * Détache le préfixe de langue du chemin reçu, et le déclare.
+     *
+     * **Un seul endroit décide de la langue de la requête** (lot G1). Les
+     * routes sont déclarées une fois, sans préfixe : `/le-livre` répond aussi
+     * bien à `/le-livre` qu'à `/en/le-livre`, et c'est `Langue` qui dit laquelle
+     * des deux a été demandée. Déclarer chaque route deux fois aurait garanti
+     * qu'une des deux séries finisse par manquer une adresse.
+     *
+     * Un préfixe déclaré mais fermé — `/en/` tant que rien n'est traduit — rend
+     * le chemin inchangé : aucune route ne correspondra à `/en/le-livre`, et la
+     * 404 tombera d'elle-même. C'est la réponse juste : la page n'existe pas
+     * encore.
+     */
+    private static function langue(string $path): string
+    {
+        if (preg_match('#^/([a-z]{2})(/.*)?$#', $path, $m) !== 1) {
+            Langue::poserCheminNu($path);
+
+            return $path;
+        }
+
+        [, $code, $reste] = $m + [2 => ''];
+
+        if ($code === Langue::DEFAUT || !Langue::fixer($code)) {
+            Langue::poserCheminNu($path);
+
+            return $path;
+        }
+
+        $nu = self::normalise($reste === '' ? '/' : $reste);
+        Langue::poserCheminNu($nu);
+
+        return $nu;
+    }
+
     public function dispatch(string $method, string $uri): void
     {
-        $path = self::normalise(parse_url($uri, PHP_URL_PATH) ?? '/');
+        $path = self::langue(self::normalise(parse_url($uri, PHP_URL_PATH) ?? '/'));
 
         foreach ($this->routes[$method] ?? [] as $pattern => $action) {
             if (preg_match(self::motif($pattern), $path, $m)) {

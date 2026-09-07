@@ -1,5 +1,6 @@
 <?php
 
+use App\Core\Langue;
 use App\Core\Site;
 use App\Core\View;
 
@@ -28,7 +29,7 @@ $ogAlt    = $ogAlt    ?? 'Philippe Grégoire Yacé — Une destinée, 1920-1998'
 $ogTaille = $ogTaille ?? [1200, 630];
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="<?= View::e(Langue::etiquette()) ?>">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -52,7 +53,19 @@ $ogTaille = $ogTaille ?? [1200, 630];
 <meta property="og:type" content="<?= View::e($ogType) ?>">
 <meta property="og:url" content="<?= View::e(Site::canonique()) ?>">
 <meta property="og:site_name" content="Philippe Grégoire Yacé — Une destinée">
-<meta property="og:locale" content="fr_FR">
+<meta property="og:locale" content="<?= View::e(Langue::locale()) ?>">
+<?php /* Les autres versions de la page. Rien n'est écrit tant qu'une seule
+         langue est ouverte : annoncer une alternative qui répond 404 est pire
+         que ne rien annoncer. Voir App\Core\Langue (lot G1). */ ?>
+<?php foreach (Langue::alternatives() as $codeLangue => $urlLangue): ?>
+<link rel="alternate" hreflang="<?= View::e($codeLangue) ?>" href="<?= View::e($urlLangue) ?>">
+<meta property="og:locale:alternate" content="<?= View::e(Langue::locale($codeLangue)) ?>">
+<?php endforeach; ?>
+<?php if (Langue::multilingue()): ?>
+<?php /* `x-default` désigne la version servie à qui n'a pas de préférence
+         reconnue : la française, qui est à la racine. */ ?>
+<link rel="alternate" hreflang="x-default" href="<?= View::e(Site::base() . Langue::chemin(Langue::cheminNu(), Langue::DEFAUT)) ?>">
+<?php endif; ?>
 <meta property="og:title" content="<?= htmlspecialchars($titre, ENT_QUOTES, 'UTF-8') ?>">
 <meta property="og:description" content="<?= htmlspecialchars($description, ENT_QUOTES, 'UTF-8') ?>">
 <meta name="twitter:card" content="summary_large_image">

@@ -173,7 +173,7 @@ final class Media extends Modele
             $sql .= ' LIMIT ' . max(1, $limite);
         }
 
-        return Database::all($sql, $params);
+        return self::traduireToutes(Database::all($sql, $params));
     }
 
     /**

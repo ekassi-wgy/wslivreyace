@@ -107,7 +107,7 @@ final class Actualite extends Modele
             $sql .= ' LIMIT ' . max(1, $limite);
         }
 
-        return Database::all($sql, $params);
+        return self::traduireToutes(Database::all($sql, $params));
     }
 
     /**
@@ -122,10 +122,10 @@ final class Actualite extends Modele
      */
     public static function parSlug(string $slug): ?array
     {
-        return Database::one(
+        return self::traduire(Database::one(
             'SELECT * FROM ' . self::TABLE . ' WHERE slug = ? AND ' . self::PUBLIQUE,
             [$slug]
-        );
+        ));
     }
 
     /**
@@ -167,12 +167,12 @@ final class Actualite extends Modele
      */
     public static function autresQue(int $id, int $limite = 3): array
     {
-        return Database::all(
+        return self::traduireToutes(Database::all(
             'SELECT ' . self::COLONNES_LISTE . ' FROM ' . self::TABLE
             . ' WHERE ' . self::PUBLIQUE . ' AND id <> ?'
             . ' ORDER BY ' . self::ORDRE_PUBLIC . ' LIMIT ' . max(1, $limite),
             [$id]
-        );
+        ));
     }
 
     /** Libellé d'affichage d'une catégorie ; la clé brute si elle est inconnue. */

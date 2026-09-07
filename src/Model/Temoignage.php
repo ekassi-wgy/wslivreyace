@@ -86,7 +86,7 @@ final class Temoignage extends Modele
             $sql .= ' LIMIT ' . max(1, $limite);
         }
 
-        return Database::all($sql);
+        return self::traduireToutes(Database::all($sql));
     }
 
     /**

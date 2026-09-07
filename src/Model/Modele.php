@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Model;
 
 use App\Core\Database;
+use App\Core\Traduction;
 
 /**
  * Base commune aux tables du back-office.
@@ -92,6 +93,40 @@ abstract class Modele
         Database::pdo()
             ->prepare('DELETE FROM ' . static::TABLE . ' WHERE id = ?')
             ->execute([$id]);
+
+        /*
+         * Les traductions partent avec la ligne. Ici et pas dans chaque
+         * contrôleur : la table `traduction` ne porte aucune clé étrangère —
+         * elle viserait une table différente à chaque ligne — donc rien ne
+         * ferait ce ménage à notre place, et un identifiant réattribué par
+         * AUTO_INCREMENT ressortirait avec la traduction du contenu effacé.
+         */
+        Traduction::oublier(static::TABLE, $id);
+    }
+
+    /**
+     * Une ligne, traduite dans la langue de la requête.
+     *
+     * En français — la seule langue ouverte aujourd'hui — ne fait rien et
+     * n'interroge rien. Voir `App\Core\Traduction`.
+     *
+     * @param array<string,mixed>|null $ligne
+     * @return array<string,mixed>|null
+     */
+    protected static function traduire(?array $ligne): ?array
+    {
+        return $ligne === null ? null : Traduction::ligne(static::TABLE, $ligne);
+    }
+
+    /**
+     * Une liste de lignes, traduites en une seule requête.
+     *
+     * @param array<int,array<string,mixed>> $lignes
+     * @return array<int,array<string,mixed>>
+     */
+    protected static function traduireToutes(array $lignes): array
+    {
+        return Traduction::lignes(static::TABLE, $lignes);
     }
 
     public static function compter(?string $statut = null): int
