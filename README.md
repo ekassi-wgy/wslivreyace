@@ -1,21 +1,25 @@
 # Philippe Grégoire Yacé — *Une destinée* (1920-1998)
 
-Site éditorial de l'ouvrage, **en cours de mue vers un fonds patrimonial
-numérique** (brief du 7 septembre 2026, repris au §9).
+**Fonds patrimonial numérique** consacré à Philippe Grégoire Yacé, adossé à la
+sortie de l'ouvrage *Une destinée*. Le site a été construit comme la campagne
+d'un livre ; le brief du 7 septembre 2026 en a fait un fonds destiné à
+s'enrichir pendant des années. Ce brief, ce qu'il déplace et sa feuille de route
+sont au **§9**, qui fait foi.
 
-**Le back-office est complet** : ossature de `/cmsadmin/`, authentification,
-actualités, événements, repères, modération des témoignages, fiche technique,
-tableau de bord, médiathèque, commandes et comptes, **et la boîte de réception
-du formulaire de contact**. Côté public, onze pages : accueil, Le livre,
-Biographie, **Témoignages**, **Actualités** (liste, fiche par slug, revue de
-presse), **Archives** avec sa visionneuse, **Événements** (agenda et fiche),
-**Contact** et **Mentions légales**. Tout cela est **déployé et à jour en
-production**.
+**Le cahier des charges d'origine est entièrement livré**, à une exception près :
+le tunnel de commande. **Neuf des onze lots du nouveau périmètre le sont aussi.**
 
-Restent, du cahier des charges d'origine, **Héritage et le tunnel de commande**
-— et, du nouveau brief, le modèle d'archives cataloguées, la bibliothèque des
-discours, les contributions du public et le socle bilingue. **La feuille de
-route qui fait foi est celle du §9.**
+| | |
+|---|---|
+| **Back-office** | treize écrans : tableau de bord, actualités, événements, repères, **archives**, **héritage**, médiathèque cherchée et paginée, modération des témoignages, **contributions du public**, messages, commandes, paramètres, comptes |
+| **Site public** | accueil, Le livre, **auteur**, Biographie, **Archives** (fonds, catégorie, notice, **bibliothèque des discours**), **Héritage** (index et sujets), Actualités (liste, fiche, revue de presse), Événements, Témoignages, **Contribuez aux archives**, **Recherche**, Contact, Mentions légales, 404 |
+| **Socle** | bilingue par construction (anglais déclaré, fermé), plan du site et `robots.txt`, fil d'Ariane et données structurées partout, quarantaine des envois publics |
+
+**Restent : le tunnel de commande (G3), la biographie par périodes (G10) et la
+traduction anglaise (G11).**
+
+⚠️ **Le dépôt est en avance sur le serveur.** Huit migrations attendent d'être
+jouées — voir « Ce qui est en ligne » au §7 et les lots du §9.
 
 ---
 
@@ -1223,9 +1227,14 @@ semaine plus tard que le serveur était en retard de quatre lots, alors que le
 déploiement avait eu lieu. Un document n'est pas une mesure. **Toute relecture
 qui s'appuie sur ce qui suit doit d'abord vérifier la date.**
 
-**État au 7 septembre 2026 : le dépôt et le serveur sont au même point.** Les
-onze pages publiques sont déployées, les huit écrans du back-office aussi, et
-les quatre migrations sont jouées en production.
+**État au 7 septembre 2026, matin : le dépôt et le serveur étaient au même
+point.** Les onze pages publiques étaient déployées, les huit écrans du
+back-office aussi, et les quatre migrations jouées en production.
+
+**Le même jour, l'écart s'est recreusé** : neuf lots du nouveau périmètre ont
+été écrits et poussés dans la foulée, avec huit migrations. **Rien n'en est
+déployé.** La liste, dans l'ordre où les jouer, est au §9 — « Où en est ce
+périmètre ».
 
 | Migration | Ce qu'elle apporte | État en production |
 |---|---|---|
@@ -1525,6 +1534,54 @@ la continuité du site de référence. Contrepartie assumée : le back-office es
 ---
 
 ## 9. Le nouveau périmètre — brief du 7 septembre 2026
+
+### Où en est ce périmètre
+
+**État au 7 septembre 2026, fin de journée.** Neuf lots sur onze sont écrits,
+testés et poussés ; **aucun n'est encore déployé.**
+
+| Lot | Objet | État |
+|---|---|---|
+| G0 | Gains immédiats — plan du site, frise branchée, menu | livré |
+| G1 | Socle bilingue — structure seule, aucun contenu traduit | livré |
+| G2 | Le livre complété — préface réglable, page auteur | livré |
+| G4 | Modèle d'archives — la notice et ses fichiers | livré |
+| G4b | Médiathèque cherchée et paginée | livré |
+| G5 | PDF, audio, téléchargement | livré |
+| G6 | Bibliothèque des discours | livré |
+| G7 | Héritage | livré |
+| G8 | Contribuez aux archives — quarantaine et modération | livré |
+| G9 | Recherche transversale, fil d'Ariane, 404 qui rattrape | livré |
+| **G3** | **Boutique et tunnel de commande** | **à faire** — 4 à 6 j |
+| **G10** | **Biographie par périodes** | **à faire** — 4 à 5 j |
+| **G11** | **Version anglaise** | **à faire** — attend la traduction |
+
+**G3 n'a pas de date parce que le livre n'en a pas.** Le commanditaire a
+confirmé le 7 septembre qu'aucune date de sortie n'est annoncée. C'est le seul
+lot dont le retard aurait une conséquence commerciale, et il demande quatre à
+six jours : **dès qu'une date est évoquée, il repasse en tête.**
+
+**Huit migrations à jouer, dans cet ordre**, et une seule fois :
+
+| Fichier | Lot | Ce qu'il apporte |
+|---|---|---|
+| `sql/007_actualite_categories.sql` | G0 | quatre catégories d'actualités |
+| `sql/008_repere_amorce.sql` | G0 | les sept repères de la frise — **seulement si `repere` est vide** |
+| `sql/009_repere_avant.sql` | G0 | la mise en avant des repères sur l'accueil |
+| `sql/010_traduction.sql` | G1 | la table de traduction |
+| `sql/011_archive.sql` | G4 | `archive` et `archive_media` |
+| `sql/012_media_famille.sql` | G5 | la colonne `famille` sur `media` |
+| `sql/013_heritage.sql` | G7 | `heritage` et `heritage_media` |
+| `sql/014_contribution.sql` | G8 | `contribution` et `contribution_fichier` |
+
+**Deux points de déploiement qu'aucune migration ne règle :**
+
+- **`quarantaine/` doit exister, être accessible en écriture, et son
+  `.htaccess` doit partir avec.** C'est lui qui empêche que les envois du
+  public soient servis. Les clients FTP masquent les fichiers commençant par un
+  point, et son absence ne se verrait pas.
+- **Le `.htaccess` de la racine a changé** : il exclut désormais `quarantaine`
+  de la réécriture. Celui de `medias/` aussi : il sert les PDF en pièce jointe.
 
 ### Ce que le brief déplace
 
