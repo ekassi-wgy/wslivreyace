@@ -11,8 +11,10 @@ use App\Core\View;
 use App\Model\Repere;
 
 $sansSource = 0;
+$enAvant = 0;
 foreach ($lignes as $l) {
     if (empty($l['source'])) { $sansSource++; }
+    if (!empty($l['en_avant']) && $l['statut'] === 'publie') { $enAvant++; }
 }
 ?>
 
@@ -20,7 +22,8 @@ foreach ($lignes as $l) {
   <div>
     <span class="pgy-surtitre">Contenus</span>
     <h1>Repères</h1>
-    <p><?= count($lignes) ?> entrée<?= count($lignes) > 1 ? 's' : '' ?> &middot; frise chronologique de la biographie</p>
+    <p><?= count($lignes) ?> entrée<?= count($lignes) > 1 ? 's' : '' ?> &middot; frise chronologique de la biographie
+       &middot; <?= $enAvant ?> sur la page d'accueil</p>
   </div>
   <a class="btn btn-primary" href="<?= Admin::url('/reperes/nouveau') ?>">
     <i class="mdi mdi-plus me-1" aria-hidden="true"></i> Nouveau repère
@@ -59,6 +62,7 @@ foreach ($lignes as $l) {
                   <th scope="col">Période</th>
                   <th scope="col">Source</th>
                   <th scope="col">Statut</th>
+                  <th scope="col">Accueil</th>
                   <th scope="col" data-orderable="false">Actions</th>
                 </tr>
               </thead>
@@ -86,6 +90,19 @@ foreach ($lignes as $l) {
                       <span class="pgy-statut pgy-statut--<?= View::e($ligne['statut']) ?>">
                         <?= View::e(Repere::STATUTS[$ligne['statut']] ?? $ligne['statut']) ?>
                       </span>
+                    </td>
+                    <td>
+                      <?php /* Une case cochée sur un brouillon ne fait rien : la colonne
+                               le dit plutôt que de laisser croire à une mise en ligne. */ ?>
+                      <?php if (!empty($ligne['en_avant'])): ?>
+                        <?php if ($ligne['statut'] === 'publie'): ?>
+                          <i class="mdi mdi-check" aria-label="Affiché sur l'accueil"></i>
+                        <?php else: ?>
+                          <span class="pgy-sous" title="La mise en avant ne prend effet qu'à la publication.">en attente</span>
+                        <?php endif; ?>
+                      <?php else: ?>
+                        <span class="text-muted" aria-hidden="true">—</span>
+                      <?php endif; ?>
                     </td>
                     <td>
                       <?php $confirmation = 'Supprimer définitivement le repère « ' . $ligne['titre'] . ' » ?';

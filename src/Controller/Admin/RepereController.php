@@ -75,6 +75,13 @@ final class RepereController extends CrudController
             'notice'  => static::ouNull($v->valeur('notice')),
             'source'  => static::ouNull($v->valeur('source')),
             'statut'  => $v->valeur('statut', 'brouillon'),
+            /*
+             * Une case décochée ne poste rien. La valeur est donc **écrite
+             * dans les deux cas** — 1 ou 0, jamais omise : ne rien écrire
+             * quand elle est absente laisserait l'ancienne valeur en base, et
+             * décocher n'aurait aucun effet.
+             */
+            'en_avant' => $v->valeur('en_avant') === '1' ? 1 : 0,
         ];
     }
 

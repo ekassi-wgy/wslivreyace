@@ -125,6 +125,19 @@ JSONLD;
 </section>
 
 <!-- ===================== FRISE CHRONOLOGIQUE ===================== -->
+<?php
+/**
+ * La frise vient de la base — table `repere`, écran « Repères » du
+ * back-office (lot G0, README §9). Elle portait ses dates en dur jusqu'ici :
+ * ce qu'un éditeur saisissait n'apparaissait nulle part.
+ *
+ * Les filtres ne montrent que les périodes qui portent quelque chose : un
+ * onglet qui donne sur une frise vide est un lien mort.
+ */
+$reperes  = App\Model\Repere::listerPubliees();
+$periodes = App\Model\Repere::periodesPubliees();
+?>
+<?php if ($reperes !== []): ?>
 <section class="section" id="chronologie">
   <div class="shell">
     <div class="row" style="margin-bottom: var(--sp-7);">
@@ -135,133 +148,67 @@ JSONLD;
       </div>
     </div>
 
+<?php /* Un seul groupe de périodes ne se filtre pas : les chips n'offriraient
+         qu'un choix, « Tout », et un autre qui donne le même résultat. */ ?>
+<?php if (count($periodes) > 1): ?>
     <div class="row" style="margin-bottom: var(--sp-6);">
       <div class="col-lg-10 offset-lg-2">
         <div class="chips reveal" role="group" aria-label="Filtrer par période">
           <button class="chip is-active" type="button" data-period="tout" aria-pressed="true">Tout</button>
-          <button class="chip" type="button" data-period="p1" aria-pressed="false">1920 — 1944</button>
-          <button class="chip" type="button" data-period="p2" aria-pressed="false">1945 — 1958</button>
-          <button class="chip" type="button" data-period="p3" aria-pressed="false">1959 — 1980</button>
-          <button class="chip" type="button" data-period="p4" aria-pressed="false">1980 — 1998</button>
+<?php foreach ($periodes as $cle => $n): ?>
+          <button class="chip" type="button" data-period="<?= App\Core\View::e($cle) ?>" aria-pressed="false"><?= App\Core\View::e(App\Model\Repere::periode($cle)) ?></button>
+<?php endforeach; ?>
         </div>
       </div>
     </div>
+<?php endif; ?>
 
     <div class="row">
       <div class="col-lg-10 offset-lg-2">
-        <!-- CHRONOLOGIE — seules 1920, 1959, 1980 et 1998 sont des repères
-             établis. Toute autre entrée doit être documentée avant publication. -->
         <div class="chrono">
-          <div class="chrono__item reveal" data-period="p1">
+<?php foreach ($reperes as $r): ?>
+<?php
+  /* L'identifiant du dépliant vient de la clé primaire : deux repères de même
+     titre ne peuvent pas se retrouver avec la même ancre. */
+  $cible  = 'repere-' . (int) $r['id'];
+  $notice = trim((string) ($r['notice'] ?? ''));
+  $source = trim((string) ($r['source'] ?? ''));
+  $depliable = $notice !== '' || $source !== '';
+?>
+          <div class="chrono__item reveal" data-period="<?= App\Core\View::e((string) $r['periode']) ?>">
+<?php if ($depliable): ?>
             <button class="chrono__head" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#ev0" aria-expanded="false" aria-controls="ev0">
-              <span class="chrono__year">1920</span>
-              <span class="chrono__t">Naissance</span>
+                    data-bs-target="#<?= $cible ?>" aria-expanded="false" aria-controls="<?= $cible ?>">
+              <span class="chrono__year"><?= App\Core\View::e((string) $r['annee']) ?></span>
+              <span class="chrono__t"><?= App\Core\View::e((string) $r['titre']) ?></span>
               <span class="chrono__sign" aria-hidden="true"></span>
             </button>
-            <div class="collapse" id="ev0">
+            <div class="collapse" id="<?= $cible ?>">
               <div class="chrono__body">
                 <div class="row"><div class="col-lg-8 offset-lg-3">
-                  <p class="t-body">Philippe Grégoire Yacé naît en 1920. <em>Lieu et date exacte à confirmer par l'éditeur.</em></p>
+<?= App\Core\View::paragraphes($notice, 't-body') ?>
+<?php if ($source !== ''): ?>
+                  <p class="chrono__src"><?= App\Core\View::e($source) ?></p>
+<?php endif; ?>
                 </div></div>
               </div>
             </div>
-          </div>
-          <div class="chrono__item reveal" data-period="p1">
-            <button class="chrono__head" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#ev1" aria-expanded="false" aria-controls="ev1">
-              <span class="chrono__year">—</span>
-              <span class="chrono__t">Formation</span>
-              <span class="chrono__sign" aria-hidden="true"></span>
-            </button>
-            <div class="collapse" id="ev1">
-              <div class="chrono__body">
-                <div class="row"><div class="col-lg-8 offset-lg-3">
-                  <p class="t-body"><em>Étape à documenter.</em> Parcours scolaire et formation professionnelle.</p>
-                </div></div>
-              </div>
+<?php else: ?>
+<?php /* Sans notice ni source, rien à déplier : un bouton qui n'ouvre rien
+         ment au clavier comme à la souris. La date reste, en clair. */ ?>
+            <div class="chrono__head chrono__head--plat">
+              <span class="chrono__year"><?= App\Core\View::e((string) $r['annee']) ?></span>
+              <span class="chrono__t"><?= App\Core\View::e((string) $r['titre']) ?></span>
             </div>
+<?php endif; ?>
           </div>
-          <div class="chrono__item reveal" data-period="p2">
-            <button class="chrono__head" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#ev2" aria-expanded="false" aria-controls="ev2">
-              <span class="chrono__year">—</span>
-              <span class="chrono__t">Entrée en vie publique</span>
-              <span class="chrono__sign" aria-hidden="true"></span>
-            </button>
-            <div class="collapse" id="ev2">
-              <div class="chrono__body">
-                <div class="row"><div class="col-lg-8 offset-lg-3">
-                  <p class="t-body"><em>Étape à documenter.</em> Premiers engagements et responsabilités.</p>
-                </div></div>
-              </div>
-            </div>
-          </div>
-          <div class="chrono__item reveal" data-period="p3">
-            <button class="chrono__head" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#ev3" aria-expanded="false" aria-controls="ev3">
-              <span class="chrono__year">1959</span>
-              <span class="chrono__t">Présidence de l'Assemblée nationale</span>
-              <span class="chrono__sign" aria-hidden="true"></span>
-            </button>
-            <div class="collapse" id="ev3">
-              <div class="chrono__body">
-                <div class="row"><div class="col-lg-8 offset-lg-3">
-                  <p class="t-body">Il accède à la présidence de l'Assemblée nationale de Côte d'Ivoire, fonction qu'il occupera pendant vingt et un ans.</p>
-                </div></div>
-              </div>
-            </div>
-          </div>
-          <div class="chrono__item reveal" data-period="p3">
-            <button class="chrono__head" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#ev4" aria-expanded="false" aria-controls="ev4">
-              <span class="chrono__year">—</span>
-              <span class="chrono__t">Secrétariat général du PDCI-RDA</span>
-              <span class="chrono__sign" aria-hidden="true"></span>
-            </button>
-            <div class="collapse" id="ev4">
-              <div class="chrono__body">
-                <div class="row"><div class="col-lg-8 offset-lg-3">
-                  <p class="t-body"><em>Dates à documenter.</em> Responsabilités au sein du parti.</p>
-                </div></div>
-              </div>
-            </div>
-          </div>
-          <div class="chrono__item reveal" data-period="p4">
-            <button class="chrono__head" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#ev5" aria-expanded="false" aria-controls="ev5">
-              <span class="chrono__year">1980</span>
-              <span class="chrono__t">Conseil économique et social</span>
-              <span class="chrono__sign" aria-hidden="true"></span>
-            </button>
-            <div class="collapse" id="ev5">
-              <div class="chrono__body">
-                <div class="row"><div class="col-lg-8 offset-lg-3">
-                  <p class="t-body">Il quitte le perchoir et prend la présidence du Conseil économique et social. <em>Détails à documenter.</em></p>
-                </div></div>
-              </div>
-            </div>
-          </div>
-          <div class="chrono__item reveal" data-period="p4">
-            <button class="chrono__head" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#ev6" aria-expanded="false" aria-controls="ev6">
-              <span class="chrono__year">1998</span>
-              <span class="chrono__t">Disparition</span>
-              <span class="chrono__sign" aria-hidden="true"></span>
-            </button>
-            <div class="collapse" id="ev6">
-              <div class="chrono__body">
-                <div class="row"><div class="col-lg-8 offset-lg-3">
-                  <p class="t-body"><em>Notice à compléter.</em></p>
-                </div></div>
-              </div>
-            </div>
-          </div>
+<?php endforeach; ?>
         </div>
       </div>
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <!-- ===================== CITATIONS ===================== -->
 <section class="section section--dark">

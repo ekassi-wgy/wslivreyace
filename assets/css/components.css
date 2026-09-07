@@ -563,6 +563,13 @@
    l'image passe en fond plein cadre et le texte se pose dessus. */
 @media (max-width: 991.98px) {
   .nav-toggle { display: block; }
+  /* Le panneau tenait cinq entrees ; il en portera sept quand Heritage et le
+     bouton de commande auront rejoint la barre (README §9). Sur un telephone
+     bas, sept lignes plus la marge haute depassent la fenetre : le panneau se
+     borne donc a la hauteur visible et defile en dedans plutot que de laisser
+     la derniere entree hors de portee.
+     `dvh` suit la barre d'adresse mobile, qui se retracte au defilement ;
+     `vh` la ferait ignorer et rendrait la mesure fausse au pire moment. */
   .nav-menu {
     position: fixed;
     inset: 0 0 auto;
@@ -570,6 +577,9 @@
     align-items: flex-start;
     gap: 0;
     padding: 7rem var(--gutter) 3rem;
+    max-height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     background: var(--paper);
     border-bottom: 1px solid var(--rule);
     transform: translateY(-101%);
@@ -824,6 +834,19 @@
 .chrono__head[aria-expanded="true"] .chrono__sign::after { transform: rotate(0deg); }
 .chrono__body { padding: 0 0 clamp(1.4rem, 2.4vw, 2rem) 0; }
 .chrono__body .t-body { max-width: 58ch; }
+
+/* Un repere saisi sans notice ni source n'a rien a deplier. Il garde la meme
+   ligne, mais ce n'est plus un bouton : ni curseur, ni survol, ni signe +/-.
+   Un bouton qui n'ouvre rien ment au clavier comme a la souris. */
+.chrono__head--plat { cursor: default; grid-template-columns: minmax(6rem, 10rem) 1fr; }
+.chrono__head--plat:hover { background: none; }
+
+/* Le sourcage exige par le CDC §6 : discret, mais present sur la piece. */
+.chrono__src {
+  margin: var(--sp-4) 0 0;
+  font-size: var(--fs-small);
+  color: var(--ink-3);
+}
 
 /* --- Sommaire de l'ouvrage ---------------------------------------------
    Ligne de conduite pointillee entre l'intitule et la page : convention

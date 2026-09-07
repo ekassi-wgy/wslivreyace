@@ -69,6 +69,10 @@ $action = $edition ? Admin::url('/reperes/' . $id) : Admin::url('/reperes');
       <div class="card card-rounded"><div class="card-body">
         <h4 class="card-title card-title-dash">Publication</h4>
         <?php champ_choix($valeurs, $erreurs, 'statut', 'Statut', Repere::STATUTS, ['defaut' => 'brouillon']); ?>
+        <?php champ_case($valeurs, $erreurs, 'en_avant', "Afficher sur la page d'accueil", [
+            'aide' => "L'accueil ne montre que quelques jalons ; la biographie affiche la frise entière. "
+                    . 'Sans publication, cette case ne fait rien.',
+        ]); ?>
       </div></div>
     </div>
   </div>

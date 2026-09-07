@@ -47,13 +47,39 @@ final class Router
         $this->introuvable = $action;
     }
 
+    /**
+     * Le motif d'une route, compilé en expression régulière.
+     *
+     * **Les segments littéraux sont échappés**, et cela compte depuis que
+     * `/sitemap.xml` existe : sans `preg_quote`, son point vaut « n'importe
+     * quel caractère » et `/sitemapaxml` répondrait la même chose. Rien de
+     * grave ici — une adresse fantaisiste de plus — mais un motif de route qui
+     * ne dit pas ce qu'il a l'air de dire finit par surprendre ailleurs.
+     *
+     * L'échappement ne peut pas s'appliquer au motif entier : `preg_quote`
+     * neutraliserait aussi les accolades des segments nommés. Le motif est donc
+     * découpé sur ces accolades, et chaque morceau traité selon sa nature.
+     */
+    private static function motif(string $pattern): string
+    {
+        $morceaux = preg_split('#(\{[a-z_]+\})#', $pattern, -1, PREG_SPLIT_DELIM_CAPTURE) ?: [];
+        $regex = '';
+
+        foreach ($morceaux as $morceau) {
+            $regex .= preg_match('#^\{([a-z_]+)\}$#', $morceau, $m) === 1
+                ? '(?P<' . $m[1] . '>[a-z0-9\-]+)'
+                : preg_quote($morceau, '#');
+        }
+
+        return '#^' . $regex . '$#i';
+    }
+
     public function dispatch(string $method, string $uri): void
     {
         $path = self::normalise(parse_url($uri, PHP_URL_PATH) ?? '/');
 
         foreach ($this->routes[$method] ?? [] as $pattern => $action) {
-            $regex = '#^' . preg_replace('#\{([a-z_]+)\}#', '(?P<$1>[a-z0-9\-]+)', $pattern) . '$#i';
-            if (preg_match($regex, $path, $m)) {
+            if (preg_match(self::motif($pattern), $path, $m)) {
                 $params = array_filter($m, 'is_string', ARRAY_FILTER_USE_KEY);
                 $action($params);
                 return;

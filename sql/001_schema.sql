@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS actualite (
   id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   titre       VARCHAR(200) NOT NULL,
   slug        VARCHAR(200) NOT NULL,
-  categorie   ENUM('parution','dedicace','presse','hommage','evenement') NOT NULL DEFAULT 'parution',
+  categorie   ENUM('parution','dedicace','presse','hommage','evenement',
+                  'conference','reportage','interview','archive') NOT NULL DEFAULT 'parution',
   chapo       VARCHAR(400) NULL,
   contenu     MEDIUMTEXT NULL,
   image       VARCHAR(255) NULL,
@@ -111,6 +112,7 @@ CREATE TABLE IF NOT EXISTS repere (
   notice   TEXT NULL,
   source   VARCHAR(300) NULL,             -- sourçage exigé par le CDC §6
   statut   ENUM('brouillon','publie') NOT NULL DEFAULT 'brouillon',
+  en_avant TINYINT(1) NOT NULL DEFAULT 0,  -- remonte sur l'accueil (lot G0)
   KEY ix_repere_public (statut, tri)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

@@ -24,12 +24,26 @@ final class Actualite extends Modele
      */
     protected const ORDRE = 'COALESCE(publie_le, DATE(cree_le)) DESC, id DESC';
 
+    /**
+     * L'ordre est celui de l'affichage — filtres de la liste, sélecteur du
+     * back-office — et non celui de l'ENUM en base, qui ne sert à rien
+     * qu'à valider. Les quatre dernières viennent du brief du 7 septembre
+     * (README §9) ; voir `sql/007_actualite_categories.sql`.
+     *
+     * Pas de « commémoration » : `hommage` la couvre, et deux cases pour une
+     * même chose obligent l'éditeur à trancher entre elles à chaque saisie
+     * sans qu'aucune règle ne le guide.
+     */
     public const CATEGORIES = [
-        'parution'  => 'Parution',
-        'dedicace'  => 'Dédicace',
-        'presse'    => 'Presse',
-        'hommage'   => 'Hommage',
-        'evenement' => 'Événement',
+        'parution'   => 'Parution',
+        'dedicace'   => 'Dédicace',
+        'evenement'  => 'Événement',
+        'conference' => 'Conférence',
+        'presse'     => 'Presse',
+        'reportage'  => 'Reportage',
+        'interview'  => 'Interview',
+        'hommage'    => 'Hommage',
+        'archive'    => 'Archive retrouvée',
     ];
 
     public const STATUTS = [

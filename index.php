@@ -13,6 +13,7 @@ use App\Controller\ActualiteController;
 use App\Controller\ArchiveController;
 use App\Controller\ContactController;
 use App\Controller\EvenementController;
+use App\Controller\SeoController;
 use App\Controller\TemoignageController;
 use App\Core\Router;
 use App\Core\View;
@@ -61,5 +62,16 @@ $router->get('/mentions-legales',  [ContactController::class, 'mentions']);
  */
 $router->get('/temoignages',  [TemoignageController::class, 'page']);
 $router->post('/temoignages', [TemoignageController::class, 'deposer']);
+
+/**
+ * Plan du site et consignes aux robots (brief §9, README §9).
+ *
+ * Servis par le routeur et non posés en fichiers : le plan doit lister les
+ * actualités et les événements publiés, et un fichier statique se périmerait
+ * dès la première publication sans que personne ne le sache. Voir le
+ * contrôleur. Lecture seule, aucune session.
+ */
+$router->get('/sitemap.xml', [SeoController::class, 'sitemap']);
+$router->get('/robots.txt',  [SeoController::class, 'robots']);
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

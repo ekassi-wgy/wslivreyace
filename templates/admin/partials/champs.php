@@ -156,6 +156,30 @@ if (!function_exists('champ_valeur')) {
         <?php
     }
 
+    /**
+     * Case à cocher.
+     *
+     * Le `value="1"` compte : une case décochée ne poste rien du tout, et
+     * c'est au contrôleur d'en tirer le zéro. Voir `RepereController::donnees`.
+     */
+    function champ_case(array $valeurs, array $erreurs, string $nom, string $libelle, array $options = []): void
+    {
+        $aide   = $options['aide'] ?? '';
+        $cochee = champ_valeur($valeurs, $nom, $options['defaut'] ?? '') === '1';
+        ?>
+        <div class="mb-3">
+          <div class="form-check">
+            <input class="form-check-input<?= isset($erreurs[$nom]) ? ' is-invalid' : '' ?>"
+                   type="checkbox" value="1"
+                   id="<?= View::e($nom) ?>" name="<?= View::e($nom) ?>"<?= $cochee ? ' checked' : '' ?>>
+            <label class="form-check-label" for="<?= View::e($nom) ?>"><?= View::e($libelle) ?></label>
+          </div>
+          <?php if ($aide !== ''): ?><div class="form-text"><?= $aide ?></div><?php endif; ?>
+          <?= champ_erreur($erreurs, $nom) ?>
+        </div>
+        <?php
+    }
+
     /** @param array<string,string> $choix valeur => libellé */
     function champ_choix(array $valeurs, array $erreurs, string $nom, string $libelle, array $choix, array $options = []): void
     {

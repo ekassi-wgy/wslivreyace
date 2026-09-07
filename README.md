@@ -1659,7 +1659,7 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 
 | Lot | Objet | Contenu | Charge |
 |---|---|---|---|
-| **G0** | Gains immédiats | `sitemap.xml` et `robots.txt` ; frise branchée sur `repere` ; catégories d'actualités élargies ; entrée Accueil et barre mobile rouverte à sept entrées ; vérification du domaine en configuration | 1 – 2 j |
+| **G0** | Gains immédiats | `sitemap.xml` et `robots.txt` ; frise branchée sur `repere` ; catégories d'actualités élargies ; entrée Accueil et barre mobile rouverte à sept entrées ; vérification du domaine en configuration | **livré** |
 | **G1** | Socle bilingue | routeur préfixé, tables de traduction, fichiers de langue, `hreflang`. Structure seule, aucun contenu traduit | 2 – 3 j |
 | **G2** | Le livre, complété | préface et sa mise en avant, page auteur à URL propre, rattachement de la revue de presse et des événements de lancement | 2 – 3 j |
 | **G3** | Commander | page de vente et tunnel sur la passerelle retenue ; l'écran de suivi attend depuis le lot E2 | 4 – 6 j |
@@ -1682,6 +1682,74 @@ versement de plusieurs centaines de pièces serait douloureux. La décision 1 se
 tranche maintenant, même si la construction vient après la sortie. À l'inverse,
 G3 — le tunnel de commande — est le seul lot que rien n'appelle en dépendance :
 il se place où l'échéance commerciale l'exige.
+
+### Lot G0 — livré
+
+Le premier lot du nouveau périmètre. Rien n'en dépendait, rien ne le bloquait,
+et il rend administrable ce qui ne l'était pas.
+
+**La frise chronologique est branchée sur la base.** C'était l'anomalie la plus
+coûteuse du site : `repere` et son écran d'administration existaient depuis le
+lot C, mais les deux frises publiques portaient leurs dates en dur dans le
+gabarit. Ce qu'un éditeur saisissait n'arrivait nulle part.
+
+Trois choses en sont sorties, qui ne se voyaient pas avant :
+
+- **`sql/008_repere_amorce.sql` verse les sept entrées qui étaient affichées**,
+  mot pour mot, pour que le site ne perde rien au passage. Elles arrivent en
+  `publie` parce qu'elles l'étaient déjà, de fait. Six des sept portent encore
+  « à documenter » : elles sont désormais **corrigeables**, ce qui était tout
+  l'objet du lot ; les corriger reste à faire, et c'est à l'éditeur.
+- **Un repère sans notice ni source ne se déplie pas.** Le gabarit rendait un
+  bouton pour chaque entrée ; sur une saisie réduite à une date et un titre,
+  ce bouton n'ouvrait rien. La ligne reste, ce n'est plus un bouton — un
+  contrôle qui n'ouvre rien ment au clavier comme à la souris.
+- **L'accueil a gagné une colonne `en_avant`** (`sql/009_repere_avant.sql`).
+  En branchant la frise, l'accueil s'est mis à montrer les quatre premières
+  entrées chronologiques — dont deux notices vides — là où le gabarit affichait
+  les quatre dates marquantes. Remplacer une règle implicite par une autre
+  n'aurait fait que déplacer le problème : **c'est un choix éditorial**, il
+  revient à l'éditeur, et une case sur la fiche du repère le lui donne. La
+  liste des repères dit combien sont sur l'accueil, et signale une case cochée
+  sur un brouillon — qui ne fait rien tant que rien n'est publié.
+
+**`sitemap.xml` et `robots.txt` sont servis par le routeur**, pas posés à la
+racine, et c'est ce qui décide de leur forme : le plan doit lister les
+actualités et les événements publiés. Un fichier statique se périmerait à la
+première publication, et le sitemap dirait alors à Google le contraire de ce
+qu'on lui demande. Les conditions de publication y sont **les mêmes que celles
+des pages** — une adresse listée mais rendue en 404 fait chuter la confiance
+accordée au plan entier.
+
+**Le routeur échappe désormais les segments littéraux d'un motif.**
+`/sitemap.xml` est la première route du site à porter un point : sans
+`preg_quote`, ce point valait « n'importe quel caractère » et `/sitemapaxml`
+répondait la même chose. Sans conséquence ici, mais un motif de route qui ne
+dit pas ce qu'il a l'air de dire finit par surprendre ailleurs.
+
+**Quatre catégories d'actualités s'ajoutent** — conférence, reportage,
+interview, archive retrouvée (`sql/007_actualite_categories.sql`). Pas de
+« commémoration » : `hommage` la couvre, et deux cases pour une même chose
+obligent l'éditeur à trancher entre elles à chaque saisie sans qu'aucune règle
+ne le guide.
+
+**« Accueil » est une entrée de menu à part entière**, et non plus le seul
+logotype : sur un site de référence on arrive par un lien profond, et le retour
+doit se nommer. Le panneau mobile se borne à la hauteur visible et défile en
+dedans — à sept entrées, la dernière sortait de l'écran sur un téléphone bas.
+
+**Trois migrations à jouer, dans cet ordre :**
+
+| Fichier | Ce qu'il apporte |
+|---|---|
+| `sql/007_actualite_categories.sql` | les quatre catégories d'actualités du brief |
+| `sql/008_repere_amorce.sql` | les sept repères qui étaient affichés en dur |
+| `sql/009_repere_avant.sql` | la colonne `en_avant` et les quatre jalons de l'accueil |
+
+`008` **ne se joue que sur une base dont la table `repere` est vide** : il n'a
+aucun garde-fou contre le doublon, une ligne d'amorce n'ayant pas de clé
+naturelle sur laquelle en poser un. `007` et `009` se contrôlent comme les
+précédentes — voir la requête au §7.
 
 ### Ce que le brief ajoute à la liste des livrables attendus
 

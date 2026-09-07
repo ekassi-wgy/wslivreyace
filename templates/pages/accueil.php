@@ -12,6 +12,13 @@ $ld          = <<<'JSONLD'
     "jobTitle": "Président de l\'Assemblée nationale de Côte d\'Ivoire (1959-1980)" }
 }
 JSONLD;
+
+/**
+ * Repères de la frise, lus une fois pour deux emplacements : le lien du hero,
+ * qui n'a de sens que s'il mène quelque part, et la section plus bas.
+ * Table `repere`, écran « Repères » du back-office (lot G0, README §9).
+ */
+$jalons = App\Model\Repere::listerEnAvant(4);
 ?>
 
 <!-- ===================== HERO ===================== -->
@@ -43,7 +50,9 @@ JSONLD;
                   Découvrir l'ouvrage
                   <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
                 </a>
+<?php if ($jalons !== []): ?>
                 <a class="link" href="#reperes">Parcourir les repères</a>
+<?php endif; ?>
               </div>
             </div>
           </div>
@@ -199,54 +208,61 @@ JSONLD;
 </section>
 
 <!-- ===================== 03 · REPÈRES ===================== -->
+<?php
+/**
+ * Les repères viennent de la base, comme la frise de la biographie — table
+ * `repere`, écran « Repères » du back-office (lot G0, README §9).
+ *
+ * Quatre au plus, et **choisis par l'éditeur** : une case sur la fiche du
+ * repère décide de ce qui remonte ici. L'accueil donne l'échelle, la
+ * biographie donne la frise entière.
+ *
+ * Le titre compte donc ce qu'il affiche réellement plutôt que d'annoncer
+ * quatre dates devant trois — la matière est administrable, elle peut varier.
+ *
+ * `$jalons` est lu en tête de gabarit : le lien du hero en dépend aussi.
+ */
+$compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre dates'];
+?>
+<?php if ($jalons !== []): ?>
 <section class="section" id="reperes">
   <div class="shell">
     <div class="row" style="margin-bottom: var(--sp-8);">
       <div class="col-lg-2"><p class="section-num reveal">03</p></div>
       <div class="col-lg-7">
         <p class="kicker reveal">Repères</p>
-        <h2 class="t-d1 reveal">Quatre dates,<br>un siècle ivoirien.</h2>
+        <h2 class="t-d1 reveal"><?= $compte[count($jalons)] ?? 'Des dates' ?>,<br>un siècle ivoirien.</h2>
       </div>
     </div>
 
     <div class="row">
       <div class="col-lg-10 offset-lg-2">
-        <!-- CHRONOLOGIE — dates à faire valider par l'éditeur avant mise en ligne -->
         <div class="tl">
+<?php foreach ($jalons as $j): ?>
           <div class="tl__item reveal">
-            <div class="tl__year">1920</div>
+            <div class="tl__year"><?= App\Core\View::e((string) $j['annee']) ?></div>
             <div class="tl__body">
-              <h3 class="t-d3">Naissance</h3>
-              <p class="t-body"><em>Notice à compléter.</em></p>
+              <h3 class="t-d3"><?= App\Core\View::e((string) $j['titre']) ?></h3>
+<?= App\Core\View::paragraphes((string) ($j['notice'] ?? ''), 't-body') ?>
             </div>
           </div>
-          <div class="tl__item reveal">
-            <div class="tl__year">1959</div>
-            <div class="tl__body">
-              <h3 class="t-d3">Présidence de l'Assemblée nationale</h3>
-              <p class="t-body">Il en occupe le perchoir pendant vingt et un ans.
-                <em>Notice à compléter.</em></p>
-            </div>
-          </div>
-          <div class="tl__item reveal">
-            <div class="tl__year">1980</div>
-            <div class="tl__body">
-              <h3 class="t-d3">Conseil économique et social</h3>
-              <p class="t-body"><em>Notice à compléter.</em></p>
-            </div>
-          </div>
-          <div class="tl__item reveal">
-            <div class="tl__year">1998</div>
-            <div class="tl__body">
-              <h3 class="t-d3">Disparition</h3>
-              <p class="t-body"><em>Notice à compléter.</em></p>
-            </div>
-          </div>
+<?php endforeach; ?>
         </div>
       </div>
     </div>
+
+<?php /* La frise entière est sur la biographie ; l'accueil n'en montre que
+         l'amorce. Le lien n'a de sens que s'il y a plus à voir. */ ?>
+<?php if (count($jalons) >= 4): ?>
+    <div class="row" style="margin-top: var(--sp-7);">
+      <div class="col-lg-10 offset-lg-2">
+        <a class="link reveal" href="/biographie#chronologie">Voir la chronologie complète</a>
+      </div>
+    </div>
+<?php endif; ?>
   </div>
 </section>
+<?php endif; ?>
 
 <!-- ===================== CITATION ===================== -->
 <section class="section section--dark">
