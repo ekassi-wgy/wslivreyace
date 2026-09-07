@@ -1,13 +1,21 @@
 # Philippe Grégoire Yacé — *Une destinée* (1920-1998)
 
-Site éditorial de l'ouvrage. **Le back-office est complet** : ossature de
-`/cmsadmin/`, authentification, actualités, événements, repères, modération des
-témoignages, fiche technique, tableau de bord, médiathèque, commandes et
-comptes, **et la boîte de réception du formulaire de contact**. Côté public,
-onze pages : accueil, Le livre, Biographie, **Témoignages**, **Actualités**
-(liste, fiche par slug, revue de presse), **Archives** avec sa visionneuse,
-**Événements** (agenda et fiche), **Contact** et **Mentions légales**.
-**Restent Héritage et le tunnel de commande.**
+Site éditorial de l'ouvrage, **en cours de mue vers un fonds patrimonial
+numérique** (brief du 7 septembre 2026, repris au §9).
+
+**Le back-office est complet** : ossature de `/cmsadmin/`, authentification,
+actualités, événements, repères, modération des témoignages, fiche technique,
+tableau de bord, médiathèque, commandes et comptes, **et la boîte de réception
+du formulaire de contact**. Côté public, onze pages : accueil, Le livre,
+Biographie, **Témoignages**, **Actualités** (liste, fiche par slug, revue de
+presse), **Archives** avec sa visionneuse, **Événements** (agenda et fiche),
+**Contact** et **Mentions légales**. Tout cela est **déployé et à jour en
+production**.
+
+Restent, du cahier des charges d'origine, **Héritage et le tunnel de commande**
+— et, du nouveau brief, le modèle d'archives cataloguées, la bibliothèque des
+discours, les contributions du public et le socle bilingue. **La feuille de
+route qui fait foi est celle du §9.**
 
 ---
 
@@ -1181,43 +1189,40 @@ portant parfois plusieurs adresses — liste, fiche par slug, revue de presse,
 agenda. Plus une 404 dessinée dans la charte, servie par le routeur comme par
 une fiche introuvable.
 
-**Non fait** — Héritage, le tunnel de commande et la phase 3 du CDC. Héritage
-n'attend rien de technique, tout de la matière éditoriale ; **le tunnel de
-commande est le seul chantier de code qui reste.**
+**Non fait sur le périmètre initial** — Héritage, le tunnel de commande et la
+phase 3 du CDC. Héritage n'attend rien de technique, tout de la matière
+éditoriale ; **le tunnel de commande est le seul chantier de code qui restait au
+titre du cahier des charges d'origine.**
 
-**Ce qui manque n'est donc plus du travail de développement, à une exception
-près.** Le site attend des contenus — textes validés, visuels d'archives, fiche
-technique de l'ouvrage — et quatre informations légales que seule la structure
-éditrice peut fournir. Voir §5, et « Ce qui bloque » plus bas.
+**Le périmètre a changé le 7 septembre 2026.** Un nouveau brief demande que le
+site devienne un fonds patrimonial numérique et non plus le site de campagne
+d'un livre. Il est repris intégralement au **§9**, avec ce qu'il implique lot
+par lot. Le présent §7 décrit donc l'achèvement du cahier des charges d'origine ;
+il n'est plus la liste complète de ce qui reste à faire.
 
-### Ce qui est en ligne, et ce qu'il faut y porter
+**Ce qui manque au périmètre initial n'est plus du travail de développement, à
+une exception près.** Le site attend des contenus — textes validés, visuels
+d'archives, fiche technique de l'ouvrage — et quatre informations légales que
+seule la structure éditrice peut fournir. Voir §5, et « Ce qui bloque » plus bas.
 
-Le dépôt et le serveur ne sont pas au même point, et **l'écart s'est creusé** :
-le site en ligne est toujours à l'état du 1er septembre — dernier commit
-déployé, « Partage social : canonical, og:image ». Depuis, quatre lots publics
-ont été écrits et testés en local sans être déployés :
+### Ce qui est en ligne
 
-| Lot | Ce qui manque en ligne |
-|---|---|
-| **F1** | Témoignages — page publique, formulaire, aperçu sur l'accueil |
-| **F2** | Actualités — liste, fiche par slug, revue de presse |
-| **F3** | Archives et sa visionneuse, agenda des événements, seconde taille d'image |
-| **F4** | Contact, mentions légales, boîte de réception au back-office |
+**Cette section décrit un état daté, et elle doit porter sa date.** Elle a déjà
+induit en erreur une fois : écrite le 2 septembre, elle affirmait encore une
+semaine plus tard que le serveur était en retard de quatre lots, alors que le
+déploiement avait eu lieu. Un document n'est pas une mesure. **Toute relecture
+qui s'appuie sur ce qui suit doit d'abord vérifier la date.**
 
-S'y ajoute le **portrait de la biographie**, premier visuel réel du site.
+**État au 7 septembre 2026 : le dépôt et le serveur sont au même point.** Les
+onze pages publiques sont déployées, les huit écrans du back-office aussi, et
+les quatre migrations sont jouées en production.
 
-En clair : **le serveur montre aujourd'hui quatre pages, le dépôt en porte
-onze.** Tout ce qui suit dans cette section est écrit, testé et commité, mais
-pas encore en production.
-
-**Quatre migrations à jouer, dans cet ordre**, et une seule fois :
-
-| Fichier | Ce qu'il apporte |
-|---|---|
-| `sql/003_media.sql` | le poids du fichier et l'unicité du chemin sur `media` (lot D2) |
-| `sql/004_commande.sql` | provenance du paiement, code de transaction, note et trace de remise (lot E2) |
-| `sql/005_soumission.sql` | le journal des soumissions publiques (limitation de débit) |
-| `sql/006_message.sql` | la table des messages du formulaire de contact (lot F4) |
+| Migration | Ce qu'elle apporte | État en production |
+|---|---|---|
+| `sql/003_media.sql` | poids du fichier et unicité du chemin sur `media` (lot D2) | jouée |
+| `sql/004_commande.sql` | provenance du paiement, code de transaction, note et trace de remise (lot E2) | jouée |
+| `sql/005_soumission.sql` | journal des soumissions publiques (limitation de débit) | jouée |
+| `sql/006_message.sql` | table des messages du formulaire de contact (lot F4) | jouée |
 
 **`001_schema.sql` ne se rejoue jamais sur une base installée.** Il a été mis à
 jour pour qu'une installation neuve n'ait pas à rejouer l'historique, mais ses
@@ -1227,8 +1232,11 @@ nouvelles colonnes n'arriveraient pas, et la base paraîtrait à jour sans l'êt
 `003` et `004` sont des `ALTER TABLE` : les rejouer lève `Duplicate column
 name`. `005` et `006` créent des tables en `IF NOT EXISTS` : les rejouer ne
 casse rien, mais ne rattrape rien non plus si la table existe sous une autre
-forme. Cette requête dit où en est une base — quatre zéros avant, quatre `1`
-après :
+forme.
+
+**La requête de contrôle reste ici**, et elle resservira à chaque migration à
+venir : elle dit où en est une base sans qu'on ait à la croire sur parole —
+quatre `1` sur une base à jour, un `0` sur chaque migration manquante.
 
 ```sql
 SELECT 'octets sur media' AS controle, COUNT(*) AS present
@@ -1245,11 +1253,12 @@ UNION ALL SELECT 'table message', COUNT(*)
  WHERE table_schema = DATABASE() AND table_name = 'message';
 ```
 
-Depuis la bascule de collation (voir §2), les quatre fichiers se chargent aussi
+Depuis la bascule de collation (voir §2), les fichiers SQL se chargent aussi
 bien sous MySQL que sous MariaDB — il n'y a plus de ligne à corriger avant
 d'envoyer.
 
-**Côté fichiers**, trois points qu'un dépôt ne règle pas tout seul :
+**Côté fichiers**, quatre points qu'un dépôt ne règle pas tout seul, et qui
+valent pour tout déploiement futur :
 
 - **`medias/` doit exister et être accessible en écriture** par le serveur.
   Son `.htaccess` doit partir avec, c'est lui qui empêche l'exécution de ce qui
@@ -1257,9 +1266,15 @@ d'envoyer.
   par un point.
 - **`config/config.local.php` est ignoré par git** : il se crée à la main sur le
   serveur, avec les identifiants de production, `'debug' => false` et surtout
-  `'url' => 'https://www.philippeyace.ci'` — le domaine est arrêté depuis le lot
-  F4. Sans cette dernière valeur, `canonical` et `og:image` retombent sur
-  l'en-tête `Host` de la requête, que le client choisit.
+  `'url' => 'https://www.philippeyace.ci'`. Sans cette dernière valeur,
+  `canonical` et `og:image` retombent sur l'en-tête `Host` de la requête, que le
+  client choisit.
+
+  **C'est le seul réglage que le dépôt ne peut jamais renseigner ni vérifier**,
+  et le seul dont l'absence ne se voit pas à l'œil : les pages s'affichent
+  normalement, seules les adresses canoniques sont fausses. Le contrôle se fait
+  en lisant la source d'une page en ligne — la balise `<link rel="canonical">`
+  doit porter le domaine réel.
 - **Les coordonnées publiques sont dans `config/config.php`**, donc dans le
   dépôt : adresse, courriel, téléphone, domaine. Elles alimentent la page
   Contact, les mentions légales et le pied de page. Les corriger se fait à un
@@ -1377,7 +1392,7 @@ la matière éditoriale, et la **Boutique** (§4.9), qui est le tunnel de comman
 ### Prochaines étapes, dans l'ordre
 
 Le back-office et la couche formulaire, qui occupaient les deux premières places
-de cette liste, sont faits. Ce qui reste :
+de cette liste, sont faits. Ce qui restait du cahier des charges d'origine :
 
 1. **Héritage** (§4.5), la dernière page publique hors boutique. Rien n'y bloque
    techniquement : elle attend la matière éditoriale, et elle seule.
@@ -1387,6 +1402,11 @@ de cette liste, sont faits. Ce qui reste :
    tunnel, qui créera les commandes que l'écran de suivi attend depuis le lot E2,
    avec leur code de transaction. Indépendant du point 1.
 3. **Phase 3 du CDC** — newsletter, recherche interne, multilinguisme.
+
+**Ces trois points sont repris et réordonnés par le brief du 7 septembre.** Ils
+n'ont pas disparu — Héritage y gagne dix sujets au lieu d'une page, la phase 3
+devient exigible et non plus optionnelle — mais ils ne suffisent plus à décrire
+la suite. **La feuille de route qui fait foi est celle du §9.**
 
 **La navigation, maintenant que toutes les pages existent.** Les entrées qui
 pointaient sur des ancres de l'accueil — Actualités, Archives — mènent à leurs
@@ -1409,9 +1429,10 @@ ligne ne peut être publiée sans validation de l'éditeur** — Yacé est une f
 historique réelle. S'y ajoutent les visuels d'archives — le portrait de la
 biographie est arrivé, il attend son crédit ; les autres cadres d'attente sont
 toujours en place —, la fiche technique de l'ouvrage — six de ses huit valeurs
-sont vides — et l'adresse publique à poser en configuration sur le serveur : le
-domaine est connu, `https://www.philippeyace.ci`, mais il ne peut pas vivre
-dans le dépôt.
+sont vides — et l'adresse publique en configuration sur le serveur, à vérifier
+plutôt qu'à poser : le domaine est connu, `https://www.philippeyace.ci`, mais il
+ne peut pas vivre dans le dépôt, donc rien ici ne peut dire s'il y est. Le
+contrôle tient en une ligne — voir « Ce qui est en ligne » plus haut.
 
 **Depuis le lot F4, une part de ce qui manque est légale et non éditoriale** :
 la page des mentions est écrite, mais l'identité de la structure éditrice, son
@@ -1475,6 +1496,10 @@ partage social — canonical, Open Graph, Twitter Card — sont en place. Newsle
 recherche interne et multilinguisme restent à faire ; ils sont désormais
 réalisables, le socle dynamique étant en place.
 
+**Ce §8 couvre le cahier des charges d'origine, et lui seul.** Le brief du
+7 septembre élargit le périmètre — archives cataloguées, héritage, contributions
+du public, bilinguisme — et sa propre couverture est tenue au **§9**.
+
 ### Le socle applicatif : décision prise
 
 Le CDC exige un back-office utilisable sans intervention technique, des formulaires
@@ -1486,3 +1511,181 @@ gabarits), plutôt qu'un framework ou un CMS. Motif : garder la racine web sur
 `livreyace/` — Symfony et Laravel imposent une racine en `public/` — et rester dans
 la continuité du site de référence. Contrepartie assumée : le back-office est à
 écrire intégralement, et c'est l'essentiel de la charge restante.
+
+---
+
+## 9. Le nouveau périmètre — brief du 7 septembre 2026
+
+### Ce que le brief déplace
+
+Le site a été construit comme **la campagne d'un livre** : une sortie, des
+dédicaces, une revue de presse, un bouton pour commander. Le brief lui demande
+de devenir **un fonds patrimonial dont le livre n'est que le premier
+événement**, la page Facebook gardant le rôle d'interaction. Ce n'est pas un
+ajout de rubriques, c'est un changement de nature, et il a une traduction
+technique unique :
+
+> Jusqu'ici les contenus du site sont **des pages** — on les écrit, on les
+> publie, on les lit. Désormais ce sont **des pièces cataloguées** : datées,
+> situées, créditées, indexées, et chacune à son adresse propre, puisque chaque
+> photographie, chaque discours, chaque document doit pouvoir se partager seul.
+
+**Rien de ce qui est écrit n'est à jeter.** Les actualités sont déjà exactement
+ce que le brief demande ; le back-office, la modération, le téléversement
+contrôlé, les formulaires anti-robots, le partage social et l'accessibilité
+servent tels quels le nouveau périmètre. Le chantier porte sur quatre points :
+les archives, l'héritage, la biographie et le socle bilingue.
+
+### Le menu demandé
+
+```
+ACCUEIL | LE LIVRE | BIOGRAPHIE | ARCHIVES | HÉRITAGE | ACTUALITÉS | COMMANDER
+```
+
+Contre les quatre entrées actuelles plus le bouton de commande. Deux manquent —
+**Héritage**, qui n'existe pas, et **Accueil** en clair, le logotype servant
+seul de retour aujourd'hui : suffisant sur un site de campagne, insuffisant sur
+un site de référence où l'on arrive par un lien profond. Sept entrées tiendront
+mal dans la barre mobile actuelle ; le menu déroulant est à revoir avec.
+
+Cela tranche au passage la question laissée ouverte au §7 : **Témoignages,
+Événements et Contact n'entrent pas dans la barre.** Les témoignages
+appartiennent à Héritage, les événements se rattachent au livre et gardent leur
+agenda, le contact reste au pied.
+
+### Lecture du brief, chapitre par chapitre
+
+Onze chapitres — les dix du brief, plus l'exigence bilingue ajoutée à la note
+d'analyse. Deux sont acquis, cinq à compléter, quatre à construire.
+
+| # | Chapitre | État | Ce qui manque |
+|---|---|---|---|
+| 1 | Menu principal | à compléter | Héritage, entrée Accueil, barre mobile à sept entrées |
+| 2 | Le livre | à compléter | préface et sa mise en avant, page auteur à URL propre, rattachement presse et événements de lancement |
+| 3 | Biographie et frise | à construire | douze périodes contre cinq chapitres, une adresse par période, frise à brancher sur la base et à illustrer |
+| 4 | Archives | à construire | six catégories, champs de catalogue, une adresse par pièce, PDF/audio/vidéo, page de discours, recherche |
+| 5 | Contribuez aux archives | à construire | formulaire, dépôt par un visiteur anonyme, cession de droits, réception au back-office |
+| 6 | Héritage | à construire | dix sujets, en rubrique à sous-pages et non en page unique |
+| 7 | Actualités | **acquis** | quatre catégories à ajouter à l'énumération |
+| 8 | Page d'accueil | **acquis** | validée telle quelle ; suivra les lots |
+| 9 | Partage et référencement | à compléter | `sitemap.xml`, `robots.txt`, fil d'Ariane, balisage des archives, adresse par pièce |
+| 10 | Back-office du fonds | à compléter | dépôt multiple, recherche et pagination de la médiathèque, sauvegarde |
+| 11 | Architecture FR \| EN | à compléter | préfixe de langue, tables de traduction, `hreflang`, textes sortis des gabarits |
+
+**Le chapitre 3 mérite d'être lu deux fois.** La table `repere` et son écran
+d'administration existent, complets, depuis le lot C — mais **les deux frises
+publiques sont du HTML écrit en dur** (`templates/pages/accueil.php`,
+`templates/pages/biographie.php`). Ce qu'un éditeur saisit au back-office
+n'apparaît donc nulle part. La « frise chronologique interactive » que demande le
+brief est à moitié déjà payée : il s'agit de brancher, pas d'écrire.
+
+### Les six décisions à prendre avant de coder
+
+Ce sont les choix qu'il est coûteux de reprendre après coup. Ils appellent une
+validation du commanditaire, pas seulement un accord technique.
+
+**1. Séparer le fichier de la notice d'archive.** Aujourd'hui, une ligne de
+`media` = un fichier image. C'est suffisant pour une galerie, pas pour un fonds.
+Un discours de 1980, c'est une notice unique portant un contexte historique, une
+vidéo, un enregistrement, une transcription et un document scanné : cinq choses
+sous une seule adresse. Deux niveaux, donc — la **notice**, qui se catalogue, se
+date, se situe, se cite et se partage, et les **fichiers** qu'elle porte, un ou
+vingt. Ce seul choix règle la galerie photo, le discours, le document, la
+correspondance et l'exigence « une URL par pièce ». C'est aussi le seul qu'on ne
+rattrape pas : tout le reste des archives en dépend.
+
+**2. Ne pas héberger la vidéo.** Une heure d'archive pèse plusieurs gigaoctets,
+demande un transcodage en plusieurs qualités et saturera la bande passante d'un
+mutualisé dès la première consultation groupée. Les vidéos vont sur une chaîne
+YouTube dédiée et sont intégrées dans les notices : le site garde la notice, le
+contexte, la transcription et la citation — ce qui a de la valeur — YouTube
+porte les octets et devient un canal de découverte de plus vers
+`philippeyace.ci`. L'audio et les PDF, légers et mal citables ailleurs, restent
+hébergés ici.
+
+**3. Arrêter le plan d'adresses maintenant, et ne plus y toucher.** Le brief
+prévoit QR codes, filigranes, dossier de presse et peut-être une mention dans le
+livre. **Une adresse imprimée l'est pour toujours.** Figer dès maintenant la
+forme — `/archives/discours/1980-cloture-cinquieme-legislature` —, poser des
+adresses courtes et stables pour les supports imprimés, et s'imposer la règle :
+toute adresse qui change laisse une **redirection permanente** derrière elle.
+C'est une discipline, pas une fonctionnalité, et elle ne coûte rien si elle est
+prise au départ.
+
+**4. Les contributions du public arrivent en zone fermée.** Le brief est clair :
+rien n'est publié automatiquement. La contrepartie technique ne va pas de soi —
+**un fichier envoyé par un inconnu ne doit pas atterrir dans `medias/`**, même
+non publié : le dossier est servi par Apache, et qui devine un nom télécharge le
+fichier. Les contributions vont donc dans un dossier de **quarantaine hors
+racine web** et ne rejoignent le fonds qu'après validation explicite, avec
+plafond de taille, nombre de fichiers borné, contrôle du type réel, et une case
+de cession de droits horodatée.
+
+**5. Bilingue : la structure maintenant, la traduction plus tard.** Il ne s'agit
+pas de traduire le site mais de **le rendre traduisible sans le rouvrir**. Trois
+choix qui se prennent une fois : les adresses en `/en/…` plutôt qu'en
+sous-domaine ou en paramètre — c'est ce que Google attend et cela ne touche pas
+au domaine ; une **table de traduction par contenu** plutôt que des colonnes
+`titre_en` ajoutées partout, sinon chaque langue future est une migration ; et
+les textes des gabarits sortis dans un fichier de langue, avec `hreflang` dès la
+première page. **Aucun contenu n'est traduit avant que la communication
+internationale ne démarre** — on pose la tuyauterie, pas l'eau. Deux à trois
+jours maintenant ; après coup, c'est le routeur, tous les modèles et les
+dix-huit gabarits à rouvrir.
+
+**6. Une politique de sauvegarde du fonds.** Le site va recevoir des pièces qui,
+pour certaines, n'existeront nulle part ailleurs sous forme numérique : une
+correspondance prêtée par une famille, une photographie confiée, un
+enregistrement retrouvé. **`medias/` n'est sauvegardé nulle part** — il n'est pas
+versionné, et un hébergement mutualisé n'est pas un service d'archivage. Qui
+garde une copie, où, à quelle fréquence, et en conservant **les originaux à
+pleine résolution** et non les seules dérivées que le site affiche. Cela relève
+autant de l'organisation que du code, mais c'est la condition pour que le mot
+« patrimonial » soit tenu.
+
+### Feuille de route
+
+Même méthode que pour les lots précédents : des tranches validables l'une après
+l'autre. Elle se lit en **deux pistes parallèles** — ce que la sortie du livre
+exige à court terme, ce que le fonds demande dans la durée. Les charges sont
+indicatives, pour un développeur, contenus fournis et validés ; elles n'incluent
+ni la numérisation, ni la saisie éditoriale, ni la traduction.
+
+| Lot | Objet | Contenu | Charge |
+|---|---|---|---|
+| **G0** | Gains immédiats | `sitemap.xml` et `robots.txt` ; frise branchée sur `repere` ; catégories d'actualités élargies ; vérification du domaine en configuration | 1 j |
+| **G1** | Socle bilingue | routeur préfixé, tables de traduction, fichiers de langue, `hreflang`. Structure seule, aucun contenu traduit | 2 – 3 j |
+| **G2** | Le livre, complété | préface et sa mise en avant, page auteur à URL propre, rattachement de la revue de presse et des événements de lancement | 2 – 3 j |
+| **G3** | Commander | page de vente et tunnel sur la passerelle retenue ; l'écran de suivi attend depuis le lot E2 | 4 – 6 j |
+| **G4** | Modèle d'archives | notice et fichiers (décision 1), six catégories, champs de catalogue, page par notice, écran d'administration avec dépôt multiple, recherche et pagination | 6 – 9 j |
+| **G5** | Formats et lecteurs | PDF, audio, vidéo intégrée (décision 2), plafonds revus, lecteur et visionneuse, téléchargement de l'original | 3 – 4 j |
+| **G6** | Bibliothèque des discours | contexte historique, vidéo, audio, transcription intégrale, document original, index chronologique | 3 – 4 j |
+| **G7** | Héritage | lieux de mémoire, hommages, décorations, publications, musique et culture ; rattachement des témoignages | 4 – 5 j |
+| **G8** | Contribuez aux archives | formulaire, quarantaine (décision 4), cession de droits, réception et validation au back-office | 3 – 4 j |
+| **G9** | Recherche et navigation | recherche interne, filtres par année, catégorie et mot-clé, fil d'Ariane, données structurées | 3 – 4 j |
+| **G10** | Biographie par périodes | les douze périodes en base, une adresse par période, frise illustrée et reliée aux archives | 4 – 5 j |
+| **G11** | Version anglaise | traduction des contenus dans la structure posée en G1 ; aucune reprise de code | selon volume |
+
+**Ordre recommandé.** G0 et G1 d'abord, communs aux deux pistes. Puis G2 et G3
+pour la sortie du livre, G4 à G10 pour le fonds. G11 quand la communication
+internationale démarre.
+
+**Une réserve sur cet ordre.** G4 est en seconde piste, mais **sa conception ne
+peut pas attendre** : G5 à G10 en dépendent tous, et corriger le modèle après le
+versement de plusieurs centaines de pièces serait douloureux. La décision 1 se
+tranche maintenant, même si la construction vient après la sortie. À l'inverse,
+G3 — le tunnel de commande — est le seul lot que rien n'appelle en dépendance :
+il se place où l'échéance commerciale l'exige.
+
+### Ce que le brief ajoute à la liste des livrables attendus
+
+À la liste du §5 s'ajoutent, tous non techniques :
+
+| Manquant | Qui le fournit |
+|---|---|
+| Confirmation de la **préface** — la mise en avant présidentielle change la hiérarchie de la page Le livre, à savoir avant d'écrire G2 | commanditaire |
+| **Matière d'Héritage** — les dix sujets : pont, boulevard, buste de Marcory, Jacqueville, hommages, décorations, publications, musique | commanditaire |
+| **Découpage de la biographie** en douze périodes, texte validé et sourcé | commanditaire / auteur |
+| **Fonds d'archives** et leurs crédits — chaque pièce publiée doit porter son fonds, son photographe ou son détenteur de droits ; le back-office refuse déjà la publication sans crédit | commanditaire / familles |
+| **Compte de la chaîne vidéo**, si la décision 2 est retenue | commanditaire |
+| **Politique de sauvegarde** — qui garde une copie des originaux, où, à quelle fréquence | hébergeur / commanditaire |
