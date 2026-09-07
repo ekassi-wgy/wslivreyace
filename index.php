@@ -13,6 +13,7 @@ use App\Controller\ActualiteController;
 use App\Controller\ArchiveController;
 use App\Controller\ContactController;
 use App\Controller\EvenementController;
+use App\Controller\HeritageController;
 use App\Controller\LivreController;
 use App\Controller\SeoController;
 use App\Controller\TemoignageController;
@@ -59,6 +60,15 @@ $router->get('/actualites/{slug}', [ActualiteController::class, 'detail']);
 $router->get('/archives',                       [ArchiveController::class, 'index']);
 $router->get('/archives/{categorie}',           [ArchiveController::class, 'categorie']);
 $router->get('/archives/{categorie}/{slug}',    [ArchiveController::class, 'notice']);
+/*
+ * Héritage (brief §6, lot G7). Les adresses sont plates — `/heritage/{slug}`
+ * et non `/heritage/{rubrique}/{slug}` : elles finiront sur une plaque ou un
+ * QR code, et chaque segment compte. La rubrique reste un regroupement
+ * d'affichage, pas un niveau d'adresse (décision 3).
+ */
+$router->get('/heritage',         [HeritageController::class, 'index']);
+$router->get('/heritage/{slug}',  [HeritageController::class, 'sujet']);
+
 $router->get('/evenements',         [EvenementController::class, 'liste']);
 $router->get('/evenements/{slug}',  [EvenementController::class, 'detail']);
 

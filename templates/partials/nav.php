@@ -7,16 +7,17 @@
  * sur un site de référence on arrive par un lien profond — une archive
  * partagée, un discours cité — et le retour doit se nommer.
  *
- * Le brief demande sept entrées (README §9). Deux manquent encore et ne
- * peuvent pas précéder ce qu'elles ouvrent : « Héritage » arrive avec sa
- * rubrique (lot G7), et « Commander » ne pointera sur le tunnel qu'au lot G3 —
- * il mène pour l'instant à la section d'achat de la page du livre.
+ * **Les sept entrées du brief y sont depuis le lot G7**, « Héritage » ayant
+ * rejoint la barre avec sa rubrique. Seul « Commander » ne pointe pas encore
+ * sur le tunnel de commande (lot G3) : il mène à la section d'achat de la page
+ * du livre.
  */
 $liens = [
     'accueil'  => ['/',            "Accueil"],
     'livre'    => ['/le-livre',    "Le livre"],
     'bio'      => ['/biographie',  "Biographie"],
     'archives' => ['/archives',    "Archives"],
+    'heritage' => ['/heritage',    "Héritage"],
     'actus'    => ['/actualites',  "Actualités"],
 ];
 $page = $page ?? '';

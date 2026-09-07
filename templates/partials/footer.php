@@ -28,7 +28,7 @@ $lien = static fn(string $chemin): string => App\Core\Langue::chemin($chemin);
         <ul>
           <li><a href="<?= $lien('/biographie') ?>">Biographie</a></li>
           <li><a href="<?= $lien('/biographie') ?>#chronologie">Repères</a></li>
-          <li><a href="#">Héritage</a></li>
+          <li><a href="<?= $lien('/heritage') ?>">Héritage</a></li>
           <li><a href="<?= $lien('/archives') ?>">Archives</a></li>
         </ul>
       </div>

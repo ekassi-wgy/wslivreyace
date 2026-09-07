@@ -1581,7 +1581,7 @@ d'analyse. Deux sont acquis, cinq à compléter, quatre à construire.
 | 3 | Biographie et frise | à construire | douze périodes contre cinq chapitres, une adresse par période, frise à brancher sur la base et à illustrer |
 | 4 | Archives | à construire | six catégories, champs de catalogue, une adresse par pièce, PDF/audio/vidéo, page de discours, recherche |
 | 5 | Contribuez aux archives | à construire | formulaire, dépôt par un visiteur anonyme, cession de droits, réception au back-office |
-| 6 | Héritage | à construire | dix sujets, en rubrique à sous-pages et non en page unique |
+| 6 | Héritage | **acquis** | livré au lot G7 ; attend la matière éditoriale |
 | 7 | Actualités | **acquis** | quatre catégories à ajouter à l'énumération |
 | 8 | Page d'accueil | **acquis** | validée telle quelle ; suivra les lots |
 | 9 | Partage et référencement | à compléter | `sitemap.xml`, `robots.txt`, fil d'Ariane, balisage des archives, adresse par pièce |
@@ -1679,7 +1679,7 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 | **G4** | Modèle d'archives | notice et fichiers (décision 1), six catégories, champs de catalogue, page par notice, recherche, écran d'administration | **livré** |
 | **G5** | Formats et lecteurs | PDF, audio, plafonds par famille, lecteur et téléchargement de l'original | **livré** |
 | **G6** | Bibliothèque des discours | l'index chronologique par décennie, et ce que chaque pièce porte | **livré** |
-| **G7** | Héritage | lieux de mémoire, hommages, décorations, publications, musique et culture ; rattachement des témoignages | 4 – 5 j |
+| **G7** | Héritage | cinq rubriques adossées aux données, une page par sujet, rattachement des témoignages | **livré** |
 | **G8** | Contribuez aux archives | formulaire, quarantaine (décision 4), cession de droits, réception et validation au back-office | 3 – 4 j |
 | **G9** | Recherche et navigation | recherche interne, filtres par année, catégorie et mot-clé, fil d'Ariane, données structurées | 3 – 4 j |
 | **G10** | Biographie par périodes | les douze périodes en base, une adresse par période, frise illustrée et reliée aux archives | 4 – 5 j |
@@ -2112,6 +2112,64 @@ de la transcription retrouve la bonne. Une coquille corrigée au passage : le
 titre de groupe rendait « 1960s », pluriel anglais qui n'existe pas en français.
 
 **Aucune migration.**
+
+### Lot G7 — livré
+
+**La dernière page du cahier des charges d'origine, et celle qui n'attendait
+rien de technique.** Elle est restée non écrite pendant tout le projet, et la
+raison mérite d'être dite : elle était prévue en **page unique**, et une page de
+texte attend que *tout* son texte existe. Le crédit d'une photographie du buste
+ne dépend pourtant pas de la liste des décorations.
+
+**Elle est donc adossée aux données comme le reste du site**, et s'ouvre sujet
+par sujet à mesure que la matière arrive. C'est le déblocage réel du lot :
+publier « Pont Philippe Grégoire Yacé » n'attend plus que la chanson de Reine
+Pélagie soit documentée.
+
+**Cinq rubriques**, qui regroupent les dix sujets du brief : lieux de mémoire —
+pont, boulevard, buste, Jacqueville en forment une et non quatre —, hommages et
+commémorations, décorations et distinctions, livres et publications, musique et
+culture. **Seules paraissent celles qui portent quelque chose** : la page montre
+ce qui existe et se tait sur le reste, au lieu d'afficher cinq intertitres
+suivis de vide.
+
+**Les témoignages ne sont pas une rubrique.** Ils vivent à leur adresse depuis
+le lot F1, avec leur formulaire et leur file de modération ; l'index d'Héritage
+en montre trois et y renvoie, plutôt que de les recopier — ce qui ferait deux
+endroits à tenir à jour.
+
+**Une table distincte d'`archive`, délibérément.** Une notice d'archive est une
+*pièce* du fonds — datée, créditée, cataloguée. Un lieu de mémoire existe
+aujourd'hui, se visite, et sa photographie n'est qu'une illustration. Les mêler
+aurait fait remonter le pont de Marcory dans les résultats de recherche du fonds
+documentaire.
+
+**Les adresses sont plates** — `/heritage/pont-philippe-gregoire-yace` et non
+`/heritage/lieux/pont-…`. Elles finiront sur une plaque, un QR code ou un
+dossier de presse, et chaque segment compte ; la rubrique reste un regroupement
+d'affichage, pas un niveau d'adresse. Elle peut donc changer sans casser un
+seul lien. *Réservation notée dans le fichier SQL : si une rubrique demandait un
+jour sa page, elle prendrait `/heritage/rubrique/{cle}` — jamais
+`/heritage/{cle}`, qui entrerait en collision avec un slug de sujet.*
+
+**Un lieu de mémoire est balisé `Place`**, ce qui le rend éligible aux résultats
+de recherche locale — précisément ce qu'on veut pour un pont qu'on cherche à
+situer.
+
+**La barre du site porte enfin les sept entrées du brief.** « Héritage » y entre
+avec sa rubrique — elle ne pouvait pas précéder ce qu'elle ouvre — et le lien
+mort du pied de page disparaît. Seul « Commander » ne pointe pas encore sur le
+tunnel (lot G3).
+
+**Vérifié** sur cinq sujets répartis dans quatre rubriques, dont un brouillon :
+les rubriques vides n'apparaissent pas, le brouillon et un slug inconnu rendent
+404, l'ordre manuel est respecté, le balisage `Place` sort sur un lieu, le fil
+d'Ariane renvoie à la bonne ancre, et le plan du site liste les quatre sujets
+publiés sans le brouillon. Données d'essai effacées.
+
+| Fichier | Ce qu'il apporte |
+|---|---|
+| `sql/013_heritage.sql` | les tables `heritage` et `heritage_media` |
 
 ### Ce que le brief ajoute à la liste des livrables attendus
 

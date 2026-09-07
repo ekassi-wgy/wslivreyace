@@ -40,6 +40,7 @@ final class SeoController
         '/le-livre'        => '0.9',
         '/biographie'      => '0.9',
         '/archives'        => '0.8',
+        '/heritage'        => '0.8',
         '/actualites'      => '0.7',
         '/evenements'      => '0.6',
         '/temoignages'     => '0.6',
@@ -122,6 +123,18 @@ final class SeoController
                 'chemin'   => '/archives/' . $n['categorie'] . '/' . $n['slug'],
                 'priorite' => $n['categorie'] === 'discours' ? '0.8' : '0.6',
                 'maj'      => self::jour((string) $n['maj_le']),
+            ];
+        }
+
+        // Les sujets d'Héritage (lot G7) : chacun a sa page et son adresse,
+        // et celle d'un lieu de mémoire a vocation à finir sur une plaque.
+        foreach (Database::all(
+            "SELECT slug, maj_le FROM heritage WHERE statut = 'publie' ORDER BY rubrique, ordre"
+        ) as $h) {
+            $chemins[] = [
+                'chemin'   => '/heritage/' . $h['slug'],
+                'priorite' => '0.6',
+                'maj'      => self::jour((string) $h['maj_le']),
             ];
         }
 

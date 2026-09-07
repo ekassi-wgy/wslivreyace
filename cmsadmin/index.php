@@ -12,6 +12,7 @@ declare(strict_types=1);
 use App\Controller\Admin\ActualiteController;
 use App\Controller\Admin\ArchiveController;
 use App\Controller\Admin\AuthController;
+use App\Controller\Admin\HeritageController;
 use App\Controller\Admin\CommandeController;
 use App\Controller\Admin\CompteController;
 use App\Controller\Admin\EvenementController;
@@ -79,6 +80,7 @@ $crud('/actualites', ActualiteController::class, 'nouvelle');
 $crud('/evenements', EvenementController::class, 'nouveau');
 $crud('/reperes',    RepereController::class,    'nouveau');
 $crud('/archives',   ArchiveController::class,   'nouvelle');
+$crud('/heritage',   HeritageController::class,  'nouveau');
 
 /**
  * Modération des témoignages. Pas le même jeu de routes que les contenus : on

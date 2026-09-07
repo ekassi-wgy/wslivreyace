@@ -80,6 +80,12 @@ final class Admin
                 'url'    => self::url('/archives'),
             ],
             [
+                'cle'    => 'heritage',
+                'titre'  => 'Héritage',
+                'icone'  => 'mdi-bank-outline',
+                'url'    => self::url('/heritage'),
+            ],
+            [
                 'cle'    => 'medias',
                 'titre'  => 'Médiathèque',
                 'icone'  => 'mdi-image-multiple-outline',
