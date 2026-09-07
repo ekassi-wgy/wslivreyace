@@ -213,6 +213,50 @@ final class Archive extends Modele
         return $annees;
     }
 
+    /**
+     * Les notices publiées dont la date tombe dans un intervalle d'années.
+     *
+     * C'est ce qui relie la biographie au fonds (lot G10) : une période sait
+     * ses bornes, elle sait donc quelles pièces ont été produites pendant
+     * qu'elle durait, et personne n'a eu à rattacher une notice à une période
+     * à la main. Un découpage revu déplace les pièces avec lui.
+     *
+     * Les notices sans année n'y figurent pas, et c'est volontaire : une pièce
+     * non datée ne peut pas être située dans un récit chronologique. Elle reste
+     * dans le fonds, où la recherche la trouve.
+     *
+     * @return array<int,array<string,mixed>>
+     */
+    public static function entreAnnees(int $debut, int $fin, ?int $limite = null): array
+    {
+        $sql = 'SELECT * FROM ' . self::TABLE . ' WHERE ' . self::PUBLIQUE
+             . ' AND annee BETWEEN ? AND ? ORDER BY ' . self::ORDRE_PUBLIC;
+
+        if ($limite !== null) {
+            $sql .= ' LIMIT ' . max(1, $limite);
+        }
+
+        return self::traduireToutes(Database::all($sql, [$debut, $fin]));
+    }
+
+    /**
+     * Combien de notices publiées tombent dans un intervalle d'années.
+     *
+     * Séparé de la lecture parce que la page d'une période n'affiche qu'une
+     * poignée de pièces : sans ce compte, elle ne pourrait pas dire combien il
+     * en reste à voir.
+     */
+    public static function compterEntreAnnees(int $debut, int $fin): int
+    {
+        $ligne = Database::one(
+            'SELECT COUNT(*) AS n FROM ' . self::TABLE . ' WHERE ' . self::PUBLIQUE
+            . ' AND annee BETWEEN ? AND ?',
+            [$debut, $fin]
+        );
+
+        return (int) ($ligne['n'] ?? 0);
+    }
+
     // -- Les fichiers portés par une notice ---------------------------------
 
     /**

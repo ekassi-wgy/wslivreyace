@@ -17,7 +17,7 @@ $titre = $terme === ''
     : sprintf('« %s » — recherche', $terme);
 
 $description = 'Rechercher dans le fonds Philippe Grégoire Yacé : archives, discours, '
-             . 'héritage, actualités et événements.';
+             . 'biographie, héritage, actualités et événements.';
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
 ?>
@@ -53,7 +53,8 @@ $lien = static fn(string $chemin): string => Langue::chemin($chemin);
         <?php if ($terme === ''): ?>
           <p class="t-body reveal">
             La recherche parcourt les archives — transcriptions des discours
-            comprises —, l'héritage, les actualités et les événements.
+            comprises —, la biographie, l'héritage, les actualités et les
+            événements.
           </p>
 
         <?php elseif (mb_strlen($terme) < Recherche::MINIMUM): ?>

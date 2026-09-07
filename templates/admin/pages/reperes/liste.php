@@ -8,7 +8,15 @@
 
 use App\Core\Admin;
 use App\Core\View;
+use App\Model\Periode;
 use App\Model\Repere;
+
+/*
+ * Les périodes publiées, lues une fois pour toute la liste (lot G10) : celle
+ * d'un repère n'est plus une colonne de la table, elle se déduit de son année
+ * de classement. Une requête, quel que soit le nombre de lignes.
+ */
+$periodes = Periode::listerPubliees();
 
 $sansSource = 0;
 $enAvant = 0;
@@ -76,7 +84,16 @@ foreach ($lignes as $l) {
                         <?= View::e($ligne['titre']) ?>
                       </a>
                     </td>
-                    <td class="text-muted"><?= View::e(Repere::PERIODES[$ligne['periode']] ?? $ligne['periode']) ?></td>
+                    <td class="text-muted">
+                      <?php $periode = Periode::contenant($periodes, (int) $ligne['tri']); ?>
+                      <?php if ($periode !== null): ?>
+                        <?= View::e((string) $periode['titre']) ?>
+                      <?php else: ?>
+                        <?php /* Aucune période publiée ne couvre cette année : le repère
+                                 paraît sur la frise, sans onglet pour le filtrer. */ ?>
+                        <span aria-hidden="true">—</span><span class="visually-hidden">aucune</span>
+                      <?php endif; ?>
+                    </td>
                     <td>
                       <?php if (!empty($ligne['source'])): ?>
                         <span class="pgy-sous" title="<?= View::e($ligne['source']) ?>">

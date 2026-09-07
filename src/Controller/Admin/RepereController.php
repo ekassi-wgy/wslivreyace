@@ -13,6 +13,13 @@ use App\Model\Repere;
  * seulement sur la forme : un repère publié doit être sourcé. Yacé est une
  * figure historique réelle, et le §6 du cahier des charges exige que tout fait
  * biographique soit rattaché à une référence.
+ *
+ * **La période ne se choisit plus** (lot G10). Un menu déroulant l'imposait,
+ * et l'écran vérifiait ensuite que l'année de classement y tombait bien —
+ * deux saisies pour une seule information, et une erreur à corriger quand le
+ * découpage changeait. L'année suffit : la période qui la contient se déduit
+ * (`App\Model\Periode::contenant()`), et la liste des repères l'affiche sans
+ * que personne ait à l'entretenir.
  */
 final class RepereController extends CrudController
 {
@@ -43,8 +50,6 @@ final class RepereController extends CrudController
           ->requis('annee', 'Année affichée')->longueur('annee', 'Année affichée', 1, 20)
           ->requis('tri', 'Année de classement')
           ->entier('tri', 'Année de classement', 1900, 2100)
-          ->parmi('periode', 'Période', array_keys(Repere::PERIODES))
-          ->requis('periode', 'Période')
           ->longueur('source', 'Source', 0, 300)
           ->parmi('statut', 'Statut', array_keys(Repere::STATUTS));
 
@@ -58,10 +63,6 @@ final class RepereController extends CrudController
             );
         }
 
-        // L'année de classement doit rester dans la période choisie, sinon la
-        // frise publique affiche l'entrée sous un filtre où elle ne va pas.
-        static::verifierPeriode($v);
-
         return $v;
     }
 
@@ -70,7 +71,6 @@ final class RepereController extends CrudController
         return [
             'annee'   => $v->valeur('annee'),
             'tri'     => (int) $v->valeur('tri'),
-            'periode' => $v->valeur('periode'),
             'titre'   => $v->valeur('titre'),
             'notice'  => static::ouNull($v->valeur('notice')),
             'source'  => static::ouNull($v->valeur('source')),
@@ -83,39 +83,5 @@ final class RepereController extends CrudController
              */
             'en_avant' => $v->valeur('en_avant') === '1' ? 1 : 0,
         ];
-    }
-
-    /**
-     * Bornes reprises des filtres de la frise publique
-     * (templates/pages/biographie.php). Les périodes se chevauchent d'un an sur
-     * p3/p4 — 1980 appartient aux deux — c'est le découpage retenu côté public,
-     * on ne le corrige pas ici sans décision éditoriale.
-     */
-    private const BORNES = [
-        'p1' => [1920, 1944],
-        'p2' => [1945, 1958],
-        'p3' => [1959, 1980],
-        'p4' => [1980, 1998],
-    ];
-
-    private static function verifierPeriode(Validator $v): void
-    {
-        $periode = $v->valeur('periode');
-        $tri     = $v->valeur('tri');
-
-        if (!isset(self::BORNES[$periode]) || filter_var($tri, FILTER_VALIDATE_INT) === false) {
-            return;
-        }
-
-        [$min, $max] = self::BORNES[$periode];
-        $annee = (int) $tri;
-
-        if ($annee < $min || $annee > $max) {
-            $v->erreur('tri', sprintf(
-                'L\'année %d sort de la période choisie (%s). Corrigez l\'une ou l\'autre.',
-                $annee,
-                Repere::PERIODES[$periode]
-            ));
-        }
     }
 }

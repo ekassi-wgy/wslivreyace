@@ -6,6 +6,7 @@
 use App\Core\Admin;
 use App\Core\Csrf;
 use App\Core\View;
+use App\Model\Periode;
 use App\Model\Repere;
 
 require dirname(__DIR__, 2) . '/partials/champs.php';
@@ -61,9 +62,38 @@ $action = $edition ? Admin::url('/reperes/' . $id) : Admin::url('/reperes');
         <?php champ_texte($valeurs, $erreurs, 'tri', 'Année de classement', [
             'type'      => 'number', 'requis' => true,
             'attributs' => 'min="1900" max="2100" step="1" placeholder="1959"',
-            'aide'      => "L'année numérique qui sert à ordonner la frise. Doit tomber dans la période choisie.",
+            'aide'      => "L'année numérique qui sert à ordonner la frise, et qui range "
+                         . "l'entrée sous une période de la biographie.",
         ]); ?>
-        <?php champ_choix($valeurs, $erreurs, 'periode', 'Période', Repere::PERIODES, ['defaut' => 'p1']); ?>
+
+        <?php
+        /*
+         * La période ne se choisit plus (lot G10) : elle se déduit de l'année
+         * de classement. La fiche dit laquelle plutôt que de la faire saisir —
+         * un menu déroulant qui répète ce que le champ du dessus dit déjà finit
+         * par le contredire.
+         */
+        $triSaisi = champ_valeur($valeurs, 'tri');
+        $periode  = $triSaisi === ''
+            ? null
+            : Periode::contenant(Periode::listerPubliees(), (int) $triSaisi);
+        ?>
+        <div class="mb-3">
+          <span class="form-label d-block">Période de la biographie</span>
+          <?php if ($triSaisi === ''): ?>
+            <p class="mb-1 text-muted">—</p>
+            <div class="form-text">Elle se déduit de l'année de classement, dès qu'elle est saisie.</div>
+          <?php elseif ($periode !== null): ?>
+            <p class="mb-1"><?= View::e((string) $periode['titre']) ?>
+              <span class="text-muted">(<?= View::e(Periode::annees($periode)) ?>)</span></p>
+            <div class="form-text">Déduite de l'année de classement. Pour la changer, changez l'année
+              — ou le découpage, dans <a href="<?= Admin::url('/periodes') ?>">Biographie</a>.</div>
+          <?php else: ?>
+            <p class="mb-1 text-muted">Aucune</p>
+            <div class="form-text">Aucune période publiée ne couvre cette année. Le repère paraît
+              sur la frise, sans onglet pour le filtrer. Voir <a href="<?= Admin::url('/periodes') ?>">Biographie</a>.</div>
+          <?php endif; ?>
+        </div>
       </div></div>
 
       <div class="card card-rounded"><div class="card-body">

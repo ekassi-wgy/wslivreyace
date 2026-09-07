@@ -67,6 +67,18 @@ final class Admin
                 'icone'  => 'mdi-calendar-star',
                 'url'    => self::url('/evenements'),
             ],
+            /*
+             * La biographie précède les repères, et l'ordre a un sens depuis
+             * le lot G10 : la période est le récit, le repère est le jalon
+             * qu'elle traverse. C'est aussi l'ordre dans lequel un éditeur
+             * travaille — on découpe, puis on date.
+             */
+            [
+                'cle'    => 'periodes',
+                'titre'  => 'Biographie',
+                'icone'  => 'mdi-book-open-page-variant-outline',
+                'url'    => self::url('/periodes'),
+            ],
             [
                 'cle'    => 'reperes',
                 'titre'  => 'Repères',

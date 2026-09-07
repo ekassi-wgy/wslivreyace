@@ -8,40 +8,47 @@
  * de site ou une balise sur un site tiers — et il n'y a pas de corbeille.
  *
  * Attend $ligne, $config et $confirmation dans la portée appelante.
+ *
+ * **Ce fichier écrit dans la portée de la liste qui l'inclut** — un `require`
+ * ne crée pas de portée à lui. Ses variables portent donc un préfixe depuis le
+ * lot G10 : `$alTitre` valait auparavant le titre de la ligne, écrasait celui de
+ * la page, et la mise en page d'administration servait ensuite le nom du
+ * dernier contenu de la liste en `<title>` de l'onglet. Les listes vides n'y
+ * échappaient que parce que la boucle ne tournait pas.
  */
 
 use App\Core\Admin;
 use App\Core\Csrf;
 use App\Core\View;
 
-$id      = (int) $ligne['id'];
-$statut  = (string) ($ligne['statut'] ?? 'brouillon');
-$chemin  = $config['chemin'];
-$titre   = (string) ($ligne['titre'] ?? '');
-$enLigne = $statut === 'publie';
+$alId      = (int) $ligne['id'];
+$alStatut  = (string) ($ligne['statut'] ?? 'brouillon');
+$alChemin  = $config['chemin'];
+$alTitre   = (string) ($ligne['titre'] ?? '');
+$alEnLigne = $alStatut === 'publie';
 ?>
 <div class="pgy-actions">
 
-  <form method="post" action="<?= Admin::url("$chemin/$id/statut") ?>" class="d-inline">
+  <form method="post" action="<?= Admin::url("$alChemin/$alId/statut") ?>" class="d-inline">
     <?= Csrf::champ() ?>
-    <button type="submit" class="btn btn-sm <?= $enLigne ? 'btn-outline-secondary' : 'btn-primary' ?>"
-            title="<?= $enLigne ? 'Repasser en brouillon' : 'Publier' ?>">
-      <i class="mdi <?= $enLigne ? 'mdi-eye-off-outline' : 'mdi-eye-outline' ?>" aria-hidden="true"></i>
-      <span class="visually-hidden"><?= $enLigne ? 'Repasser en brouillon' : 'Publier' ?> : <?= View::e($titre) ?></span>
+    <button type="submit" class="btn btn-sm <?= $alEnLigne ? 'btn-outline-secondary' : 'btn-primary' ?>"
+            title="<?= $alEnLigne ? 'Repasser en brouillon' : 'Publier' ?>">
+      <i class="mdi <?= $alEnLigne ? 'mdi-eye-off-outline' : 'mdi-eye-outline' ?>" aria-hidden="true"></i>
+      <span class="visually-hidden"><?= $alEnLigne ? 'Repasser en brouillon' : 'Publier' ?> : <?= View::e($alTitre) ?></span>
     </button>
   </form>
 
-  <a class="btn btn-sm btn-outline-secondary" href="<?= Admin::url("$chemin/$id") ?>" title="Modifier">
+  <a class="btn btn-sm btn-outline-secondary" href="<?= Admin::url("$alChemin/$alId") ?>" title="Modifier">
     <i class="mdi mdi-pencil-outline" aria-hidden="true"></i>
-    <span class="visually-hidden">Modifier : <?= View::e($titre) ?></span>
+    <span class="visually-hidden">Modifier : <?= View::e($alTitre) ?></span>
   </a>
 
-  <form method="post" action="<?= Admin::url("$chemin/$id/supprimer") ?>" class="d-inline"
-        data-confirmation="<?= View::e($confirmation ?? 'Supprimer définitivement « ' . $titre . ' » ?') ?>">
+  <form method="post" action="<?= Admin::url("$alChemin/$alId/supprimer") ?>" class="d-inline"
+        data-confirmation="<?= View::e($confirmation ?? 'Supprimer définitivement « ' . $alTitre . ' » ?') ?>">
     <?= Csrf::champ() ?>
     <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
       <i class="mdi mdi-trash-can-outline" aria-hidden="true"></i>
-      <span class="visually-hidden">Supprimer : <?= View::e($titre) ?></span>
+      <span class="visually-hidden">Supprimer : <?= View::e($alTitre) ?></span>
     </button>
   </form>
 

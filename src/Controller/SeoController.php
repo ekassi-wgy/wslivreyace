@@ -127,6 +127,26 @@ final class SeoController
             ];
         }
 
+        /*
+         * Les périodes de la biographie (lot G10). Priorité haute : le récit
+         * est ce qu'on cherche quand on cherche l'homme, et chaque période est
+         * une page de fond, pas une liste.
+         *
+         * Les mêmes conditions que la page publique — publiée **et** datée :
+         * une période sans bornes n'a pas d'adresse qui réponde.
+         */
+        foreach (Database::all(
+            "SELECT slug, maj_le FROM periode
+              WHERE statut = 'publie' AND debut IS NOT NULL AND fin IS NOT NULL
+              ORDER BY debut ASC"
+        ) as $p) {
+            $chemins[] = [
+                'chemin'   => '/biographie/' . $p['slug'],
+                'priorite' => '0.8',
+                'maj'      => self::jour((string) $p['maj_le']),
+            ];
+        }
+
         // Les sujets d'Héritage (lot G7) : chacun a sa page et son adresse,
         // et celle d'un lieu de mémoire a vocation à finir sur une plaque.
         foreach (Database::all(

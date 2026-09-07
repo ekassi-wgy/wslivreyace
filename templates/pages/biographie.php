@@ -1,6 +1,27 @@
 <?php
-/** Gabarit de page — le corps seul ; l'en-tête, la navigation et le pied
-    viennent de templates/layout.php. */
+/**
+ * Biographie — le parcours par périodes (brief §3, lot G10).
+ *
+ * Gabarit de page : le corps seul ; l'en-tête, la navigation et le pied
+ * viennent de templates/layout.php.
+ *
+ * La page portait cinq chapitres écrits en dur, avec un sommaire d'ancres.
+ * Elle porte maintenant les périodes que le back-office tient, **chacune à son
+ * adresse** : une ancre ne se partage pas et ne se date pas. Ce qui reste
+ * écrit ici — contexte, citations, renvoi vers l'ouvrage — est du texte de
+ * page et non du contenu catalogué.
+ *
+ * Reçoit du contrôleur : $periodes, $couvertures, $reperes, $situation,
+ * $onglets. Voir App\Controller\BiographieController.
+ */
+
+use App\Core\Langue;
+use App\Core\View;
+use App\Model\Media;
+use App\Model\Periode;
+
+$lien = static fn(string $chemin): string => Langue::chemin($chemin);
+
 $titre       = 'Biographie — Philippe Grégoire Yacé (1920-1998)';
 $description = 'Le parcours de Philippe Grégoire Yacé : formation, engagement politique, carrière institutionnelle et chronologie 1920-1998.';
 $ld          = <<<'JSONLD'
@@ -65,8 +86,22 @@ JSONLD;
   </div>
 </section>
 
-<!-- ===================== BIOGRAPHIE STRUCTURÉE ===================== -->
-<section class="section section--sunk">
+<!-- ===================== LE PARCOURS, PAR PÉRIODES ===================== -->
+<?php
+/**
+ * Les périodes de la biographie (lot G10).
+ *
+ * Cinq chapitres à ancres vivaient ici, écrits dans le gabarit. Ce qui change
+ * n'est pas leur nombre : **une période a son adresse et ses dates**, ce qui
+ * la rend citable et lui permet de porter les repères de la frise et les
+ * pièces du fonds de ces années-là.
+ *
+ * Tant qu'aucune n'est publiée, la section le dit et ne montre rien — même
+ * règle qu'Héritage. Cinq intertitres suivis de « texte à rédiger » sur la
+ * biographie d'une personne réelle valent moins qu'une phrase honnête.
+ */
+?>
+<section class="section section--sunk" id="parcours">
   <div class="shell">
     <div class="row" style="margin-bottom: var(--sp-8);">
       <div class="col-lg-2"><p class="section-num reveal">02</p></div>
@@ -76,51 +111,56 @@ JSONLD;
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-lg-3 col-xl-2 offset-xl-1">
-        <nav class="subnav reveal" aria-label="Chapitres de la biographie">
-          <ul>
-            <li><a href="#enfance">Enfance et formation</a></li>
-            <li><a href="#engagement">L'engagement politique</a></li>
-            <li><a href="#carriere">La carrière institutionnelle</a></li>
-            <li><a href="#prive">L'homme privé</a></li>
-            <li><a href="#dernieres">Les dernières années</a></li>
-          </ul>
-        </nav>
-      </div>
-      <div class="col-lg-8 offset-lg-1">
-        <div class="chap reveal" id="enfance">
-          <span class="chap__num">01</span>
-          <h3 class="t-d3">Enfance et formation</h3>
-          <p class="t-body"><em>Texte à rédiger : Origines familiales, années de jeunesse, parcours scolaire et formation.</em></p>
-          <p class="t-body"><em>Les faits avancés ici devront être sourcés (CDC §6).</em></p>
-        </div>
-        <div class="chap reveal" id="engagement">
-          <span class="chap__num">02</span>
-          <h3 class="t-d3">L'engagement politique</h3>
-          <p class="t-body"><em>Texte à rédiger : Entrée en politique, rencontre avec Félix Houphouët-Boigny, rôle au sein du PDCI-RDA.</em></p>
-          <p class="t-body"><em>Les faits avancés ici devront être sourcés (CDC §6).</em></p>
-        </div>
-        <div class="chap reveal" id="carriere">
-          <span class="chap__num">03</span>
-          <h3 class="t-d3">La carrière institutionnelle</h3>
-          <p class="t-body"><em>Texte à rédiger : Vingt et un ans à la présidence de l'Assemblée nationale, puis le Conseil économique et social.</em></p>
-          <p class="t-body"><em>Les faits avancés ici devront être sourcés (CDC §6).</em></p>
-        </div>
-        <div class="chap reveal" id="prive">
-          <span class="chap__num">04</span>
-          <h3 class="t-d3">L'homme privé</h3>
-          <p class="t-body"><em>Texte à rédiger : Vie familiale, convictions, rapports aux siens — dans le respect dû à la sphère privée.</em></p>
-          <p class="t-body"><em>Les faits avancés ici devront être sourcés (CDC §6).</em></p>
-        </div>
-        <div class="chap reveal" id="dernieres">
-          <span class="chap__num">05</span>
-          <h3 class="t-d3">Les dernières années</h3>
-          <p class="t-body"><em>Texte à rédiger : Retrait de la vie publique, derniers engagements, disparition en 1998.</em></p>
-          <p class="t-body"><em>Les faits avancés ici devront être sourcés (CDC §6).</em></p>
+    <?php if ($periodes === []): ?>
+      <div class="row">
+        <div class="col-lg-7 offset-lg-2">
+          <p class="t-lead reveal">
+            <em>Le récit par périodes se constitue.</em> Chaque période paraîtra ici
+            dès qu'elle sera rédigée et sourcée, avec sa page propre — et les repères
+            de la frise comme les pièces du fonds de ces années-là.
+          </p>
         </div>
       </div>
-    </div>
+    <?php else: ?>
+      <div class="row">
+        <div class="col-lg-10 offset-lg-2">
+          <ol class="bio-periodes">
+            <?php foreach ($periodes as $i => $per): ?>
+              <?php
+                $couverture = $couvertures[(int) $per['id']] ?? null;
+                $chapo      = trim((string) ($per['sous_titre'] ?? ''));
+              ?>
+              <li class="reveal">
+                <a class="bio-per" href="<?= $lien(Periode::chemin($per)) ?>">
+                  <span class="bio-per__vue">
+                    <?php if ($couverture !== null): ?>
+                      <?php $srcset = Media::srcset($couverture); ?>
+                      <img loading="lazy" decoding="async"
+                           src="<?= View::e(Media::urlVignette((string) $couverture['fichier'])) ?>"
+                           <?= $srcset === '' ? '' : 'srcset="' . View::e($srcset) . '" sizes="(max-width: 991px) 100vw, 28vw"' ?>
+                           alt="<?= View::e(Media::alternative($couverture)) ?>">
+                    <?php else: ?>
+                      <?php /* Une période sans photographie garde sa place : le
+                               texte arrive avant l'image, et attendre les
+                               visuels retarderait la publication du récit. */ ?>
+                      <span class="bio-per__vide" aria-hidden="true"><?= sprintf('%02d', $i + 1) ?></span>
+                    <?php endif; ?>
+                  </span>
+
+                  <span class="bio-per__corps">
+                    <span class="bio-per__ans"><?= View::e(Periode::annees($per)) ?></span>
+                    <span class="bio-per__t"><?= View::e((string) $per['titre']) ?></span>
+                    <?php if ($chapo !== ''): ?>
+                      <span class="bio-per__chapo"><?= View::e($chapo) ?></span>
+                    <?php endif; ?>
+                  </span>
+                </a>
+              </li>
+            <?php endforeach; ?>
+          </ol>
+        </div>
+      </div>
+    <?php endif; ?>
   </div>
 </section>
 
@@ -131,11 +171,13 @@ JSONLD;
  * back-office (lot G0, README §9). Elle portait ses dates en dur jusqu'ici :
  * ce qu'un éditeur saisissait n'apparaissait nulle part.
  *
- * Les filtres ne montrent que les périodes qui portent quelque chose : un
- * onglet qui donne sur une frise vide est un lien mort.
+ * **Les onglets sont les périodes de la biographie** depuis le lot G10, et non
+ * plus quatre tranches d'années figées dans le code : un repère se range sous
+ * la période qui contient son année de classement. Ne paraissent que les
+ * périodes qui ont recueilli un repère — un onglet qui donne sur une frise
+ * vide est un lien mort — et un repère qu'aucune période ne couvre reste sur
+ * la frise, sans onglet pour le filtrer.
  */
-$reperes  = App\Model\Repere::listerPubliees();
-$periodes = App\Model\Repere::periodesPubliees();
 ?>
 <?php if ($reperes !== []): ?>
 <section class="section" id="chronologie">
@@ -150,13 +192,13 @@ $periodes = App\Model\Repere::periodesPubliees();
 
 <?php /* Un seul groupe de périodes ne se filtre pas : les chips n'offriraient
          qu'un choix, « Tout », et un autre qui donne le même résultat. */ ?>
-<?php if (count($periodes) > 1): ?>
+<?php if (count($onglets) > 1): ?>
     <div class="row" style="margin-bottom: var(--sp-6);">
       <div class="col-lg-10 offset-lg-2">
         <div class="chips reveal" role="group" aria-label="Filtrer par période">
           <button class="chip is-active" type="button" data-period="tout" aria-pressed="true">Tout</button>
-<?php foreach ($periodes as $cle => $n): ?>
-          <button class="chip" type="button" data-period="<?= App\Core\View::e($cle) ?>" aria-pressed="false"><?= App\Core\View::e(App\Model\Repere::periode($cle)) ?></button>
+<?php foreach ($onglets as $idPeriode => $per): ?>
+          <button class="chip" type="button" data-period="p<?= (int) $idPeriode ?>" aria-pressed="false"><?= View::e((string) $per['titre']) ?></button>
 <?php endforeach; ?>
         </div>
       </div>
@@ -174,21 +216,27 @@ $periodes = App\Model\Repere::periodesPubliees();
   $notice = trim((string) ($r['notice'] ?? ''));
   $source = trim((string) ($r['source'] ?? ''));
   $depliable = $notice !== '' || $source !== '';
+
+  /* La période du repère, calculée par le contrôleur d'après son année.
+     `hors` quand aucune période publiée ne couvre cette année : aucun onglet ne
+     porte cette valeur, l'entrée se lit donc sous « Tout » et disparaît dès
+     qu'une période est choisie — ce qui est exact, elle n'est dans aucune. */
+  $sien = $situation[(int) $r['id']] ?? null;
 ?>
-          <div class="chrono__item reveal" data-period="<?= App\Core\View::e((string) $r['periode']) ?>">
+          <div class="chrono__item reveal" data-period="<?= $sien === null ? 'hors' : 'p' . (int) $sien ?>">
 <?php if ($depliable): ?>
             <button class="chrono__head" type="button" data-bs-toggle="collapse"
                     data-bs-target="#<?= $cible ?>" aria-expanded="false" aria-controls="<?= $cible ?>">
-              <span class="chrono__year"><?= App\Core\View::e((string) $r['annee']) ?></span>
-              <span class="chrono__t"><?= App\Core\View::e((string) $r['titre']) ?></span>
+              <span class="chrono__year"><?= View::e((string) $r['annee']) ?></span>
+              <span class="chrono__t"><?= View::e((string) $r['titre']) ?></span>
               <span class="chrono__sign" aria-hidden="true"></span>
             </button>
             <div class="collapse" id="<?= $cible ?>">
               <div class="chrono__body">
                 <div class="row"><div class="col-lg-8 offset-lg-3">
-<?= App\Core\View::paragraphes($notice, 't-body') ?>
+<?= View::paragraphes($notice, 't-body') ?>
 <?php if ($source !== ''): ?>
-                  <p class="chrono__src"><?= App\Core\View::e($source) ?></p>
+                  <p class="chrono__src"><?= View::e($source) ?></p>
 <?php endif; ?>
                 </div></div>
               </div>
@@ -197,8 +245,8 @@ $periodes = App\Model\Repere::periodesPubliees();
 <?php /* Sans notice ni source, rien à déplier : un bouton qui n'ouvre rien
          ment au clavier comme à la souris. La date reste, en clair. */ ?>
             <div class="chrono__head chrono__head--plat">
-              <span class="chrono__year"><?= App\Core\View::e((string) $r['annee']) ?></span>
-              <span class="chrono__t"><?= App\Core\View::e((string) $r['titre']) ?></span>
+              <span class="chrono__year"><?= View::e((string) $r['annee']) ?></span>
+              <span class="chrono__t"><?= View::e((string) $r['titre']) ?></span>
             </div>
 <?php endif; ?>
           </div>
@@ -245,7 +293,7 @@ $periodes = App\Model\Repere::periodesPubliees();
     /* Les portraits de la médiathèque, catégorie « portrait » : c'est la même
        matière que la galerie d'archives, vue par une entrée. La planche
        complète et sa visionneuse vivent sur /archives. */
-    $portraits = App\Model\Media::listerPubliees('portrait', 4);
+    $portraits = Media::listerPubliees('portrait', 4);
     $trame     = ['large', 'haut', 'carre', 'pano'];
     ?>
 
@@ -266,11 +314,11 @@ $periodes = App\Model\Repere::periodesPubliees();
         <?php foreach ($portraits as $i => $img): ?>
           <li class="gal__i gal__i--<?= $trame[$i % count($trame)] ?> reveal">
             <a class="gal__lien" href="/archives?categorie=portrait">
-              <?php $srcset = App\Model\Media::srcset($img); ?>
+              <?php $srcset = Media::srcset($img); ?>
               <img loading="lazy" decoding="async"
-                   src="<?= App\Core\View::e(App\Model\Media::urlVignette((string) $img['fichier'])) ?>"
-                   <?= $srcset === '' ? '' : 'srcset="' . App\Core\View::e($srcset) . '" sizes="(max-width: 767px) 50vw, 45vw"' ?>
-                   alt="<?= App\Core\View::e(App\Model\Media::alternative($img)) ?>">
+                   src="<?= View::e(Media::urlVignette((string) $img['fichier'])) ?>"
+                   <?= $srcset === '' ? '' : 'srcset="' . View::e($srcset) . '" sizes="(max-width: 767px) 50vw, 45vw"' ?>
+                   alt="<?= View::e(Media::alternative($img)) ?>">
             </a>
           </li>
         <?php endforeach; ?>

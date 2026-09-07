@@ -20,6 +20,7 @@ use App\Controller\Admin\EvenementController;
 use App\Controller\Admin\MediaController;
 use App\Controller\Admin\MessageController;
 use App\Controller\Admin\ParametreController;
+use App\Controller\Admin\PeriodeController;
 use App\Controller\Admin\RepereController;
 use App\Controller\Admin\TemoignageController;
 use App\Core\Admin;
@@ -79,6 +80,7 @@ $crud = static function (string $chemin, string $controleur, string $creation) u
 
 $crud('/actualites', ActualiteController::class, 'nouvelle');
 $crud('/evenements', EvenementController::class, 'nouveau');
+$crud('/periodes',   PeriodeController::class,   'nouvelle');
 $crud('/reperes',    RepereController::class,    'nouveau');
 $crud('/archives',   ArchiveController::class,   'nouvelle');
 $crud('/heritage',   HeritageController::class,  'nouveau');

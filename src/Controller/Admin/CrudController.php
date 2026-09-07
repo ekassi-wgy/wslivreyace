@@ -149,6 +149,26 @@ abstract class CrudController
     }
 
     /**
+     * Ce qui empêcherait de publier cette ligne depuis la liste, s'il y a lieu.
+     *
+     * **Le bouton de publication de la liste ne passe pas par `valider()`** :
+     * il n'écrit qu'une colonne, sans formulaire ni saisie. Une entité dont la
+     * publication est conditionnelle — les périodes de la biographie exigent
+     * leurs bornes et leur source — passerait donc par ce raccourci ce que la
+     * fiche refuse.
+     *
+     * Rend le message à afficher, ou `null` si rien ne s'y oppose. Ne dit rien
+     * par défaut : les écrans dont la publication ne tient qu'au statut n'ont
+     * pas à le connaître.
+     *
+     * @param array<string,mixed> $ligne
+     */
+    protected static function refusDePublier(array $ligne): ?string
+    {
+        return null;
+    }
+
+    /**
      * Bascule brouillon / publié depuis la liste.
      *
      * C'est l'action la plus fréquente d'un éditeur : la faire passer par le
@@ -163,6 +183,16 @@ abstract class CrudController
         $modele = static::modele();
 
         $nouveau = ($ligne['statut'] ?? 'brouillon') === 'publie' ? 'brouillon' : 'publie';
+
+        // Dépublier ne se refuse jamais : retirer une page du site est toujours
+        // permis, c'est la mettre en ligne qui se mérite.
+        $refus = $nouveau === 'publie' ? static::refusDePublier($ligne) : null;
+
+        if ($refus !== null) {
+            Session::message('erreur', $refus);
+            static::rediriger($c['chemin']);
+        }
+
         $modele::modifier((int) $params['id'], ['statut' => $nouveau]);
 
         // Tournure verbale plutôt qu'un participe passé : « passe en ligne »

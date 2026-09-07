@@ -1675,3 +1675,172 @@ mark {
   box-shadow: inset 0 -0.35em 0 var(--brass-wash);
   font-weight: 500;
 }
+
+/* =========================================================================
+   BIOGRAPHIE PAR PERIODES (lot G10)
+   Une periode n'est pas une tuile : elle porte deux annees, un titre et une
+   phrase, et c'est l'intervalle qui la designe avant l'image. La liste se lit
+   donc comme une frise verticale — annees a gauche, recit a droite — et non
+   comme une grille de vignettes, ou les dates se perdraient.
+   ========================================================================= */
+.bio-periodes { list-style: none; margin: 0; padding: 0; counter-reset: periode; }
+.bio-periodes > li { border-top: 1px solid var(--rule); }
+.bio-periodes > li:last-child { border-bottom: 1px solid var(--rule); }
+
+.bio-per {
+  display: grid;
+  grid-template-columns: minmax(140px, 220px) 1fr;
+  gap: var(--sp-5);
+  align-items: start;
+  padding-block: var(--sp-5);
+  color: var(--ink);
+  transition: background var(--dur-1) var(--ease);
+}
+.bio-per:hover { background: var(--brass-wash); }
+.bio-per__vue { display: block; overflow: hidden; }
+.bio-per__vue img,
+.bio-per__vide {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--paper-sunk);
+  filter: grayscale(1) contrast(1.04) sepia(0.14);
+  transition: transform var(--dur-3) var(--ease-out);
+}
+.bio-per:hover .bio-per__vue img { transform: scale(1.045); }
+
+/* Sans photographie, le rang de la periode tient la place de l'image : un
+   cadre vide ne dit rien, un chiffre dit ou l'on en est dans le recit. */
+.bio-per__vide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  color: var(--brass);
+}
+
+.bio-per__corps { display: block; }
+.bio-per__ans {
+  display: block;
+  font-size: var(--fs-kicker);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brass-text);
+}
+.bio-per__t {
+  display: block;
+  margin-top: var(--sp-2);
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2vw, 1.75rem);
+  line-height: 1.2;
+  transition: color var(--dur-1) var(--ease);
+}
+.bio-per:hover .bio-per__t { color: var(--brass-text); }
+.bio-per__chapo {
+  display: block;
+  margin-top: var(--sp-3);
+  font-size: var(--fs-small);
+  line-height: 1.7;
+  color: var(--ink-2);
+  max-width: 62ch;
+}
+
+@media (max-width: 575px) {
+  /* Sous 576 px, l'image passe au-dessus : deux colonnes laisseraient au texte
+     une largeur ou aucun titre ne tient sur une ligne. */
+  .bio-per { grid-template-columns: 1fr; gap: var(--sp-4); }
+}
+
+/* --- Les jalons d'une periode ------------------------------------------- */
+/* La frise, reduite aux bornes de la periode et non depliable : la page porte
+   deja le recit, et un accordeon de plus ferait deux textes a ouvrir pour la
+   meme matiere. */
+.bio-jalons { list-style: none; margin: var(--sp-5) 0 0; padding: 0; }
+.bio-jalons li {
+  display: grid;
+  grid-template-columns: minmax(5rem, 8rem) 1fr;
+  gap: var(--sp-4);
+  padding-block: var(--sp-4);
+  border-bottom: 1px solid var(--rule);
+}
+.bio-jalons li:first-child { border-top: 1px solid var(--rule); }
+.bio-jalons__an {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  color: var(--brass-text);
+}
+.bio-jalons__t { font-size: var(--fs-small); line-height: 1.6; }
+
+/* --- Le fonds de ces annees --------------------------------------------- */
+.bio-fonds {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--sp-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.bio-fonds a {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: var(--sp-4);
+  align-items: center;
+  color: var(--ink);
+}
+.bio-fonds img,
+.bio-fonds__signe {
+  display: block;
+  width: 76px;
+  height: 76px;
+  object-fit: cover;
+  background: var(--paper-sunk);
+  filter: grayscale(1) contrast(1.04) sepia(0.14);
+}
+.bio-fonds__signe {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  filter: none;
+}
+.bio-fonds__t {
+  display: block;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  transition: color var(--dur-1) var(--ease);
+}
+.bio-fonds a:hover .bio-fonds__t { color: var(--brass-text); }
+.bio-fonds__meta {
+  display: block;
+  margin-top: var(--sp-2);
+  font-size: var(--fs-kicker);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* --- Avant, apres -------------------------------------------------------- */
+.bio-suite { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--sp-6); }
+.bio-suite__lien { display: block; color: var(--ink); }
+/* La periode suivante s'aligne a droite quand les deux tiennent sur une ligne :
+   le sens de lecture porte l'information, comme sur une pagination. */
+.bio-suite__lien--fin:not(:only-child) { text-align: right; }
+.bio-suite__sens {
+  display: block;
+  font-size: var(--fs-kicker);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.bio-suite__t {
+  display: block;
+  margin-top: var(--sp-2);
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+  line-height: 1.25;
+  transition: color var(--dur-1) var(--ease);
+}
+.bio-suite__lien:hover .bio-suite__t { color: var(--brass-text); }
+.bio-suite__ans { display: block; margin-top: var(--sp-2); font-size: var(--fs-small); color: var(--ink-3); }

@@ -22,11 +22,19 @@ $ld          = $ld          ?? '';
  * deviner. On ne les écrit que si on les connaît : annoncer 1200 × 630 pour
  * une image d'archive qui n'y ressemble pas donnerait un aperçu rogné de
  * travers, ce qui est pire que pas de dimensions du tout.
+ *
+ * **`$ogTaille` ne peut pas se replier par `??`**, et c'est ce qui manquait
+ * jusqu'au lot G10 : trois contrôleurs — archives, héritage, biographie —
+ * passent `null` pour dire « je ne connais pas les dimensions de cette
+ * dérivée », mais `??` traite « non fourni » et « fourni à null » de la même
+ * façon, et le placard reprenait ses 1200 × 630 par-dessus. Les aperçus des
+ * pièces du fonds annonçaient donc des dimensions fausses. `array_key_exists`
+ * distingue les deux cas, ce que `isset` ne fait pas non plus.
  */
 $ogType   = $ogType   ?? 'website';
 $ogImage  = $ogImage  ?? Site::url('/assets/img/og-image.jpg');
 $ogAlt    = $ogAlt    ?? 'Philippe Grégoire Yacé — Une destinée, 1920-1998';
-$ogTaille = $ogTaille ?? [1200, 630];
+$ogTaille = array_key_exists('ogTaille', get_defined_vars()) ? $ogTaille : [1200, 630];
 ?>
 <!DOCTYPE html>
 <html lang="<?= View::e(Langue::etiquette()) ?>">

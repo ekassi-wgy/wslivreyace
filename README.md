@@ -7,18 +7,17 @@ s'enrichir pendant des années. Ce brief, ce qu'il déplace et sa feuille de rou
 sont au **§9**, qui fait foi.
 
 **Le cahier des charges d'origine est entièrement livré**, à une exception près :
-le tunnel de commande. **Neuf des onze lots du nouveau périmètre le sont aussi.**
+le tunnel de commande. **Dix des onze lots du nouveau périmètre le sont aussi.**
 
 | | |
 |---|---|
-| **Back-office** | treize écrans : tableau de bord, actualités, événements, repères, **archives**, **héritage**, médiathèque cherchée et paginée, modération des témoignages, **contributions du public**, messages, commandes, paramètres, comptes |
-| **Site public** | accueil, Le livre, **auteur**, Biographie, **Archives** (fonds, catégorie, notice, **bibliothèque des discours**), **Héritage** (index et sujets), Actualités (liste, fiche, revue de presse), Événements, Témoignages, **Contribuez aux archives**, **Recherche**, Contact, Mentions légales, 404 |
+| **Back-office** | quatorze écrans : tableau de bord, actualités, événements, **biographie par périodes**, repères, **archives**, **héritage**, médiathèque cherchée et paginée, modération des témoignages, **contributions du public**, messages, commandes, paramètres, comptes |
+| **Site public** | accueil, Le livre, **auteur**, Biographie (**index et périodes**), **Archives** (fonds, catégorie, notice, **bibliothèque des discours**), **Héritage** (index et sujets), Actualités (liste, fiche, revue de presse), Événements, Témoignages, **Contribuez aux archives**, **Recherche**, Contact, Mentions légales, 404 |
 | **Socle** | bilingue par construction (anglais déclaré, fermé), plan du site et `robots.txt`, fil d'Ariane et données structurées partout, quarantaine des envois publics |
 
-**Restent : le tunnel de commande (G3), la biographie par périodes (G10) et la
-traduction anglaise (G11).**
+**Restent : le tunnel de commande (G3) et la traduction anglaise (G11).**
 
-⚠️ **Le dépôt est en avance sur le serveur.** Huit migrations attendent d'être
+⚠️ **Le dépôt est en avance sur le serveur.** Neuf migrations attendent d'être
 jouées — voir « Ce qui est en ligne » au §7 et les lots du §9.
 
 ---
@@ -887,7 +886,9 @@ Neuf tables, `utf8mb4`, InnoDB — voir `sql/001_schema.sql` :
 `soumission_publique` (`sql/005_soumission.sql`) pour les formulaires publics.
 
 Les migrations s'appliquent dans l'ordre de leur numéro ; il n'y a pas encore de
-table de suivi, le projet en est à six fichiers. `sql/003_media.sql` ajoute à
+table de suivi. **Les six premiers fichiers sont décrits ici, les neuf suivants
+au §9** — ce sont ceux du nouveau périmètre, et c'est là qu'ils sont listés dans
+l'ordre où les jouer. `sql/003_media.sql` ajoute à
 `media` le poids du fichier et l'unicité de son chemin ; `sql/004_commande.sql`
 ajoute à `commande` la provenance du paiement, le code de transaction, la note de
 suivi et la trace de remise ; `sql/005_soumission.sql` crée le journal des
@@ -1134,6 +1135,12 @@ les deux). Ce qu'il reste :
   panneau de réglages) gardent leurs styles dans `style.css`. Sans effet visible,
   mais quelques dizaines de kilo-octets pour rien. Les sept lots étant écrits, on
   sait maintenant ce qui sert : l'élagage est faisable, il n'attend plus rien.
+
+  S'y ajoute, côté public et pour vingt lignes, le **sommaire latéral collé** —
+  `.subnav` en CSS et son repérage de section en JavaScript. Il ne servait qu'aux
+  cinq chapitres de la biographie, que le lot G10 remplace par des pages. Gardé
+  parce qu'une page de texte long peut le redemander ; à retirer si aucune ne
+  le fait.
 - **Le tunnel de commande n'est pas écrit.** L'écran de suivi existe et la
   passerelle est arrêtée, mais rien ne crée encore de commande : il faut les
   pages publiques de la boutique d'abord. Conséquence pratique, l'écran restera
@@ -1162,6 +1169,16 @@ les deux). Ce qu'il reste :
   approche de l'écran. La question se reposera au-delà de la centaine de pièces,
   où c'est le poids du HTML et la longueur de la planche qui gêneront, pas les
   images.
+- **Le bouton « publier » des listes ne valide rien, sauf pour les périodes.**
+  Il n'écrit qu'une colonne de statut, sans passer par le formulaire ni par
+  `valider()` : un repère ou un sujet d'Héritage sans source peut donc être mis
+  en ligne depuis la liste, alors que sa fiche le refuserait. Le point
+  d'accroche existe depuis le lot G10 — `CrudController::refusDePublier()` — et
+  n'est implémenté que pour les périodes de la biographie, dont la publication
+  a des conditions que rien d'autre ne rattrape. L'étendre aux quatre autres
+  écrans est mécanique ; ce n'était pas le périmètre de ce lot, et changer d'un
+  coup le comportement de quatre écrans qu'un éditeur connaît demande d'être
+  annoncé.
 - **Pas d'export des commandes.** Ni CSV ni impression : la comptabilité devra
   relire l'écran ou la base. À voir quand il y aura des commandes.
 - **`reference/` pèse ~70 Mo dans l'arborescence servie.** Verrouillé en 403,
@@ -1231,8 +1248,8 @@ qui s'appuie sur ce qui suit doit d'abord vérifier la date.**
 point.** Les onze pages publiques étaient déployées, les huit écrans du
 back-office aussi, et les quatre migrations jouées en production.
 
-**Le même jour, l'écart s'est recreusé** : neuf lots du nouveau périmètre ont
-été écrits et poussés dans la foulée, avec huit migrations. **Rien n'en est
+**Le même jour, l'écart s'est recreusé** : dix lots du nouveau périmètre ont
+été écrits et poussés dans la foulée, avec neuf migrations. **Rien n'en est
 déployé.** La liste, dans l'ordre où les jouer, est au §9 — « Où en est ce
 périmètre ».
 
@@ -1469,9 +1486,12 @@ Le livre (§4.2) — **complet** : résumé long, mot de l'éditeur, fiche techn
 sommaire, extrait, feuilletage, où acheter. L'auteur (§4.3) y est traité en section
 plutôt qu'en page dédiée, faute de matière ; à détacher dès que le contenu existe.
 
-Biographie (§4.4) — **complet** : contexte historique, biographie structurée en cinq
-chapitres avec sommaire latéral collé, frise chronologique filtrable par période et
-dépliable, citations, galerie de portraits.
+Biographie (§4.4) — **complet** : contexte historique, parcours découpé en
+périodes administrables — chacune à son adresse, illustrée, portant les jalons
+de la frise et les pièces du fonds de ses années (lot G10) —, frise
+chronologique filtrable par période et dépliable, citations, galerie de
+portraits. *(Les cinq chapitres écrits en dur et leur sommaire d'ancres ont
+disparu avec ce lot : ils sont versés en brouillon dans l'écran des périodes.)*
 
 Actualités/Presse (§4.7) — **complet** : la liste filtrable par catégorie, la
 fiche par slug avec son illustration créditée et son balisage `NewsArticle`, et
@@ -1537,7 +1557,7 @@ la continuité du site de référence. Contrepartie assumée : le back-office es
 
 ### Où en est ce périmètre
 
-**État au 7 septembre 2026, fin de journée.** Neuf lots sur onze sont écrits,
+**État au 7 septembre 2026, fin de journée.** Dix lots sur onze sont écrits,
 testés et poussés ; **aucun n'est encore déployé.**
 
 | Lot | Objet | État |
@@ -1552,8 +1572,8 @@ testés et poussés ; **aucun n'est encore déployé.**
 | G7 | Héritage | livré |
 | G8 | Contribuez aux archives — quarantaine et modération | livré |
 | G9 | Recherche transversale, fil d'Ariane, 404 qui rattrape | livré |
+| G10 | Biographie par périodes — une adresse par période, frise et fonds rattachés | livré |
 | **G3** | **Boutique et tunnel de commande** | **à faire** — 4 à 6 j |
-| **G10** | **Biographie par périodes** | **à faire** — 4 à 5 j |
 | **G11** | **Version anglaise** | **à faire** — attend la traduction |
 
 **G3 n'a pas de date parce que le livre n'en a pas.** Le commanditaire a
@@ -1561,7 +1581,7 @@ confirmé le 7 septembre qu'aucune date de sortie n'est annoncée. C'est le seul
 lot dont le retard aurait une conséquence commerciale, et il demande quatre à
 six jours : **dès qu'une date est évoquée, il repasse en tête.**
 
-**Huit migrations à jouer, dans cet ordre**, et une seule fois :
+**Neuf migrations à jouer, dans cet ordre**, et une seule fois :
 
 | Fichier | Lot | Ce qu'il apporte |
 |---|---|---|
@@ -1573,6 +1593,7 @@ six jours : **dès qu'une date est évoquée, il repasse en tête.**
 | `sql/012_media_famille.sql` | G5 | la colonne `famille` sur `media` |
 | `sql/013_heritage.sql` | G7 | `heritage` et `heritage_media` |
 | `sql/014_contribution.sql` | G8 | `contribution` et `contribution_fichier` |
+| `sql/015_periode.sql` | G10 | `periode` et `periode_media`, l'amorce des cinq chapitres, et la colonne `repere.periode` qui **disparaît** |
 
 **Deux points de déploiement qu'aucune migration ne règle :**
 
@@ -1635,7 +1656,7 @@ d'analyse. Deux sont acquis, cinq à compléter, quatre à construire.
 |---|---|---|---|
 | 1 | Menu principal | à compléter | entrée Accueil et barre mobile (G0), bouton Commander effectif (G3), entrée Héritage (G7) |
 | 2 | Le livre | à compléter | préface et sa mise en avant, page auteur à URL propre, rattachement presse et événements de lancement |
-| 3 | Biographie et frise | à construire | douze périodes contre cinq chapitres, une adresse par période, frise à brancher sur la base et à illustrer |
+| 3 | Biographie et frise | **acquis** | livré aux lots G0 (frise branchée) et G10 (périodes, adresses, illustration, rattachement au fonds) ; attend le découpage éditorial |
 | 4 | Archives | à construire | six catégories, champs de catalogue, une adresse par pièce, PDF/audio/vidéo, page de discours, recherche |
 | 5 | Contribuez aux archives | **acquis** | livré au lot G8 |
 | 6 | Héritage | **acquis** | livré au lot G7 ; attend la matière éditoriale |
@@ -1645,12 +1666,14 @@ d'analyse. Deux sont acquis, cinq à compléter, quatre à construire.
 | 10 | Back-office du fonds | à compléter | dépôt multiple, recherche et pagination de la médiathèque, sauvegarde |
 | 11 | Architecture FR \| EN | à compléter | préfixe de langue, tables de traduction, `hreflang`, textes sortis des gabarits |
 
-**Le chapitre 3 mérite d'être lu deux fois.** La table `repere` et son écran
-d'administration existent, complets, depuis le lot C — mais **les deux frises
-publiques sont du HTML écrit en dur** (`templates/pages/accueil.php`,
-`templates/pages/biographie.php`). Ce qu'un éditeur saisit au back-office
-n'apparaît donc nulle part. La « frise chronologique interactive » que demande le
-brief est à moitié déjà payée : il s'agit de brancher, pas d'écrire.
+**Le chapitre 3 méritait d'être lu deux fois, et il l'a été en deux temps.** La
+table `repere` et son écran d'administration existaient, complets, depuis le
+lot C — mais **les deux frises publiques étaient du HTML écrit en dur**
+(`templates/pages/accueil.php`, `templates/pages/biographie.php`), et ce qu'un
+éditeur saisissait n'apparaissait nulle part. Le lot G0 les a branchées. Le
+lot G10 a fait le reste : les périodes en base, une adresse par période, et
+leur datation comme seul lien vers la frise et vers le fonds. **Ne manque plus
+que le découpage lui-même**, qui est éditorial et dû par l'auteur.
 
 ### Les six décisions — arrêtées
 
@@ -1739,7 +1762,7 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 | **G7** | Héritage | cinq rubriques adossées aux données, une page par sujet, rattachement des témoignages | **livré** |
 | **G8** | Contribuez aux archives | formulaire, quarantaine (décision 4), cession de droits, réception et validation au back-office | **livré** |
 | **G9** | Recherche et navigation | recherche transversale, fil d'Ariane et `BreadcrumbList` partout, 404 qui rattrape | **livré** |
-| **G10** | Biographie par périodes | les douze périodes en base, une adresse par période, frise illustrée et reliée aux archives | 4 – 5 j |
+| **G10** | Biographie par périodes | les périodes en base, une adresse par période, frise illustrée et reliée aux archives | **livré** |
 | **G11** | Version anglaise | traduction des contenus dans la structure posée en G1 ; aucune reprise de code | selon volume |
 
 **Ordre recommandé.** G0 et G1 d'abord, communs aux deux pistes. Puis G2 et G3
@@ -2347,6 +2370,146 @@ Données d'essai effacées.
 
 **Aucune migration.**
 
+### Lot G10 — livré
+
+La page Biographie portait **cinq chapitres écrits en dur dans le gabarit**,
+avec un sommaire d'ancres et cinq fois « texte à rédiger ». Le brief §3 en
+demande douze, chacune à son adresse, illustrées et reliées au fonds. Ce n'est
+pas une question de nombre : c'est le même déplacement qu'au lot G7 — ce qui
+était une page devient des pièces cataloguées.
+
+**Une période est définie par ses bornes, et tout le reste en découle.** C'est
+la seule décision du lot, et elle se voit partout : une période qui connaît son
+année de début et son année de fin sait quels repères de la frise la traversent
+et quelles pièces du fonds ont été produites pendant qu'elle durait. **Rien de
+ce rattachement n'est saisi.** Il n'y a pas de case « rattacher ce discours à
+cette période », pas de table de liaison entre `periode` et `archive` : il y a
+deux dates, et une comparaison. Un découpage revu déplace les repères et les
+pièces avec lui, sans qu'aucune fiche ne soit rouverte — ce qui compte, parce
+que ce découpage n'est pas encore arrêté.
+
+**La colonne `repere.periode` disparaît**, et c'est la contrepartie du même
+choix. Elle portait `p1` à `p4`, choisis dans un menu déroulant, et l'écran
+vérifiait ensuite que l'année de classement tombait bien dans la période
+retenue : deux saisies pour une seule information, et une erreur à corriger
+chaque fois que le découpage changeait. L'année suffit. Garder l'ENUM à côté de
+douze périodes en base aurait garanti que les deux divergent au premier
+découpage revu — la fiche du repère affiche donc désormais sa période au lieu de
+la demander, et la liste des repères l'affiche sans que personne l'entretienne.
+
+**Les bornes sont incluses et ne se chevauchent pas.** Une année appartient à
+une période et à une seule, sans quoi le même repère paraîtrait sous deux
+onglets de la frise et la même pièce sous deux récits. Le découpage `p1`-`p4`
+qui disparaît se chevauchait justement d'un an — 1980 fermait la troisième
+période et ouvrait la quatrième — et c'est précisément ce qu'il ne fallait pas
+reconduire. L'écran refuse le chevauchement **à la publication seulement** : un
+brouillon en cours de découpage passe forcément par des états incohérents, on
+déplace une borne puis l'autre, et refuser l'enregistrement intermédiaire
+obligerait à tenir le découpage entier dans sa tête plutôt que dans l'écran.
+
+**Trois conditions pour publier** : les deux bornes, la source, et l'absence de
+recouvrement. La source, comme partout ailleurs (CDC §6), et elle compte plus
+ici qu'ailleurs — la biographie est le seul endroit du site où l'on écrit la
+vie d'une personne réelle en continu, et une phrase non sourcée y passe pour un
+fait établi. Les bornes, parce qu'une période publiée sans dates ne porterait ni
+frise ni fonds : elle dirait qu'elle est une période sans en être une.
+
+**Un quatorzième écran, « Biographie », entre au back-office**, placé avant
+« Repères » : la période est le récit, le repère est le jalon qu'elle traverse,
+et c'est l'ordre dans lequel un éditeur travaille — on découpe, puis on date. Il
+suit le patron des notices d'archives et des sujets d'Héritage : plusieurs
+images par fiche, choisies dans la médiathèque, la première faisant la vignette
+et l'image de partage. La fiche montre en outre **ce que les bornes saisies
+recueillent déjà** — les repères de ces années, listés là où on pose les dates,
+parce qu'un découpage se juge à ce qu'il attrape.
+
+**Le bouton « publier » de la liste ne passait par aucune de ces règles**, et
+c'est un défaut qui préexistait au lot : il n'écrit qu'une colonne, sans
+formulaire, donc sans validation. `CrudController` reçoit un point d'accroche,
+`refusDePublier()`, qui rend le message empêchant la mise en ligne ; il est
+implémenté pour les périodes et rend `null` partout ailleurs, où le comportement
+est donc inchangé. **Dépublier ne se refuse jamais** : retirer une page du site
+est toujours permis, c'est la mettre en ligne qui se mérite. Voir la §6 pour ce
+qui reste ouvert sur les autres écrans.
+
+**L'amorce verse les cinq chapitres, en brouillon, et n'invente pas les douze.**
+Même geste qu'au lot G0 pour les sept repères — ne rien perdre du gabarit — mais
+une différence qui tient à ce qui est versé : les repères de G0 portaient des
+dates, ces cinq chapitres ne portent que la consigne de rédaction affichée en
+italique. Les publier reviendrait à publier « texte à rédiger » sur la
+biographie d'une figure historique réelle. Ils arrivent donc là où ils doivent
+être : dans l'écran de saisie, sous les yeux de l'auteur. Et ce ne sont pas les
+douze périodes du brief — quatre des cinq sont chronologiques, la cinquième,
+« L'homme privé », est thématique, ce qui est exactement pourquoi le brief
+demande de passer des chapitres aux périodes. **Le découpage en douze, daté et
+sourcé, reste dû par le commanditaire et l'auteur** ; l'écran est prêt à le
+recevoir, et aucune borne n'a été devinée ici.
+
+**Tant qu'aucune période n'est publiée, la page le dit et ne montre rien** —
+même règle qu'Héritage à son ouverture. Deux conséquences visibles, et
+assumées : les cinq chapitres d'attente ne paraissent plus sur le site public,
+et les onglets de la frise disparaissent, puisqu'ils suivent désormais les
+périodes. La frise reste entière et se lit d'un bloc ; les onglets reviennent
+avec le découpage. Un repère qu'aucune période publiée ne couvre reste sur la
+frise sans onglet pour le filtrer, et **l'écran des périodes le signale** : c'est
+le seul contrôle qui ne peut pas se faire à la saisie, et le seul qui se voie
+sur le site.
+
+**Les adresses sont plates — `/biographie/enfance-et-formation`** —, sur le
+modèle d'Héritage et pour la même raison : elles ont vocation à être imprimées
+et chaque segment compte (décision 3). Le millésime n'y entre pas : une borne se
+corrige, une adresse publiée ne se corrige plus.
+
+**La page d'une période porte ce que le brief appelle « relier la biographie aux
+archives »** : son récit, ses images, les jalons de la frise de ces années-là, et
+les pièces du fonds qui en sont datées. Plus la période précédente et la
+suivante — une biographie se lit dans l'ordre, et on arrive sur une période par
+un lien profond aussi souvent que par la page mère. Le lien vers le fonds ouvre
+le fonds entier et le dit : la planche des archives filtre par catégorie et par
+millésime exact, pas par intervalle, et annoncer un filtre qui n'existe pas
+serait pire que de ne rien annoncer.
+
+**La recherche transversale gagne une rubrique** (lot G9) : le récit d'une
+période est le texte le plus long du site après les transcriptions de discours,
+et il répond souvent mieux à un nom de lieu ou d'institution qu'une pièce
+isolée. Les périodes entrent aussi au plan du site, aux mêmes conditions que la
+page publique — publiées **et** datées : une adresse listée mais rendue en 404
+fait chuter la confiance accordée au plan entier.
+
+**Deux défauts anciens sont tombés en chemin**, tous deux invisibles à l'œil :
+
+- **`og:image:width` et `og:image:height` annonçaient 1200 × 630 pour toutes les
+  images d'archives.** Trois contrôleurs — archives, héritage, et maintenant
+  biographie — passent `null` pour dire « je ne connais pas les dimensions de
+  cette dérivée », mais la mise en page se repliait par `??`, qui ne distingue
+  pas « non fourni » de « fourni à null ». Les aperçus de partage des pièces du
+  fonds annonçaient donc des dimensions fausses, ce que le commentaire du
+  gabarit interdisait explicitement. `array_key_exists` distingue les deux cas.
+- **Le `<title>` d'une liste du back-office portait le nom de son dernier
+  contenu.** `actions-liste.php` est inclus par `require` dans la boucle, donc
+  dans la portée de la page, et il y écrasait `$titre` — que la mise en page
+  d'administration lit ensuite. Les listes vides y échappaient parce que la
+  boucle ne tournait pas, ce qui explique qu'il ait tenu depuis le lot C. Les
+  variables du partial portent désormais un préfixe.
+
+**Vérifié** : les cinq chapitres versés en brouillon et invisibles du public ;
+une période publiée sans borne, sans source, ou recouvrant une autre, refusée
+par la fiche **et** par le bouton de la liste ; l'année de fin antérieure à
+celle de début refusée ; les sept repères d'amorce répartis sous les bonnes
+périodes et les onglets nommés d'après elles ; un repère hors de toute période
+visible sous « Tout », signalé au back-office ; une pièce d'archive datée de
+1965 remontant sous la période 1959-1980 et une pièce de 2005 n'y remontant
+pas ; la période voisine d'avant et d'après ; le fil d'Ariane et le
+`BreadcrumbList` ; l'aperçu de partage tiré de la première image ; une période
+en brouillon et un slug inconnu rendus en 404 ; création, modification et
+suppression d'une fiche, images comprises, la suppression emportant ses
+liaisons. Données d'essai effacées, compte d'essai supprimé.
+
+**Une migration**, `sql/015_periode.sql` : les deux tables, l'amorce des cinq
+chapitres, et le `DROP COLUMN` sur `repere`. Elle ne se rejoue pas — la
+suppression de colonne lèverait une erreur, ce qui vaut mieux qu'une
+modification silencieuse.
+
 ### Ce que le brief ajoute à la liste des livrables attendus
 
 À la liste du §5 s'ajoutent, tous non techniques :
@@ -2356,7 +2519,7 @@ Données d'essai effacées.
 | **Texte de la préface**, ou l'extrait à mettre en exergue, plus le **nom et la qualité du préfacier** dans la forme exacte à citer. Le mécanisme est livré (G2) : il ne manque que la matière, et une case à cocher | commanditaire |
 | **Notice de l'auteur** — nom, qualité, biographie. Sa page reste en 404 tant que le nom n'est pas saisi | commanditaire / éditeur |
 | **Matière d'Héritage** — les dix sujets : pont, boulevard, buste de Marcory, Jacqueville, hommages, décorations, publications, musique | commanditaire |
-| **Découpage de la biographie** en douze périodes, texte validé et sourcé | commanditaire / auteur |
+| **Découpage de la biographie** en douze périodes : leurs bornes, leur texte validé et sourcé. Le mécanisme est livré (G10) — l'écran attend les dates et le récit, et cinq chapitres d'amorce y sont en brouillon | commanditaire / auteur |
 | **Fonds d'archives** et leurs crédits — chaque pièce publiée doit porter son fonds, son photographe ou son détenteur de droits ; le back-office refuse déjà la publication sans crédit | commanditaire / familles |
 | **Compte de la chaîne vidéo**, si la décision 2 est retenue | commanditaire |
 | **Politique de sauvegarde** — qui garde une copie des originaux, où, à quelle fréquence | hébergeur / commanditaire |

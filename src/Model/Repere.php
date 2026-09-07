@@ -17,24 +17,23 @@ final class Repere extends Modele
     protected const TABLE = 'repere';
 
     protected const ASSIGNABLES = [
-        'annee', 'tri', 'periode', 'titre', 'notice', 'source', 'statut',
-        'en_avant',
+        'annee', 'tri', 'titre', 'notice', 'source', 'statut', 'en_avant',
     ];
 
     /** Ordre chronologique : une frise ne se lit pas à l'envers. */
     protected const ORDRE = 'tri ASC, id ASC';
 
-    /**
-     * Les bornes reprennent exactement les filtres de la frise publique
-     * (templates/pages/biographie.php). Les faire diverger casserait le
-     * filtrage sans que rien ne le signale.
+    /*
+     * **La période d'un repère ne se saisit plus** (lot G10). Quatre valeurs
+     * `p1`-`p4` vivaient ici, choisies dans un menu déroulant sur la fiche du
+     * repère, et l'écran vérifiait que l'année de classement tombait bien dans
+     * la période retenue — deux saisies pour une seule information.
+     *
+     * Les périodes sont désormais en base (`App\Model\Periode`), datées et au
+     * nombre que le découpage éditorial exige. Celle d'un repère se déduit de
+     * son année : voir `Periode::contenant()`. Un ENUM figé à quatre valeurs
+     * aurait divergé du premier découpage revu.
      */
-    public const PERIODES = [
-        'p1' => '1920 — 1944',
-        'p2' => '1945 — 1958',
-        'p3' => '1959 — 1980',
-        'p4' => '1980 — 1998',
-    ];
 
     public const STATUTS = [
         'brouillon' => 'Brouillon',
@@ -56,22 +55,12 @@ final class Repere extends Modele
      * gabarit. Ce qu'un éditeur saisissait n'arrivait donc nulle part. Voir
      * README §9.
      *
-     * @param string|null $periode clé de PERIODES ; null = toutes
      * @return array<int,array<string,mixed>>
      */
-    public static function listerPubliees(?string $periode = null, ?int $limite = null): array
+    public static function listerPubliees(?int $limite = null): array
     {
-        $sql = 'SELECT * FROM ' . self::TABLE . ' WHERE ' . self::PUBLIQUE;
-        $params = [];
-
-        // Comparée à la liste blanche : une valeur inconnue ne part pas en
-        // requête, même liée.
-        if ($periode !== null && isset(self::PERIODES[$periode])) {
-            $sql .= ' AND periode = ?';
-            $params[] = $periode;
-        }
-
-        $sql .= ' ORDER BY ' . self::ORDRE;
+        $sql = 'SELECT * FROM ' . self::TABLE . ' WHERE ' . self::PUBLIQUE
+             . ' ORDER BY ' . self::ORDRE;
 
         // Entier casté, jamais un paramètre lié : MySQL refuse un placeholder
         // dans LIMIT quand les requêtes préparées ne sont pas émulées.
@@ -79,40 +68,26 @@ final class Repere extends Modele
             $sql .= ' LIMIT ' . max(1, $limite);
         }
 
-        return self::traduireToutes(Database::all($sql, $params));
+        return self::traduireToutes(Database::all($sql));
     }
 
     /**
-     * Les périodes qui portent au moins un repère publié, dans l'ordre de
-     * PERIODES.
+     * Les repères publiés dont l'année de classement tombe dans un intervalle.
      *
-     * Sert les filtres de la frise : un onglet « 1945 — 1958 » qui donne sur
-     * une frise vide est un lien mort. Même règle que les catégories
-     * d'actualités et d'archives — seuls paraissent les filtres qui mènent
-     * quelque part.
+     * C'est par là qu'une période de la biographie retrouve les jalons qui la
+     * traversent (lot G10). Le filtre porte sur `tri` et non sur `annee` :
+     * `annee` est une chaîne d'affichage — « v. 1945 », « — » — et ne se
+     * compare pas.
      *
-     * @return array<string,int> clé de période => nombre de repères
+     * @return array<int,array<string,mixed>>
      */
-    public static function periodesPubliees(): array
+    public static function entreAnnees(int $debut, int $fin): array
     {
-        $brut = [];
-
-        foreach (Database::all(
-            'SELECT periode, COUNT(*) AS n FROM ' . self::TABLE
-            . ' WHERE ' . self::PUBLIQUE . ' GROUP BY periode'
-        ) as $l) {
-            $brut[(string) $l['periode']] = (int) $l['n'];
-        }
-
-        $n = [];
-
-        foreach (array_keys(self::PERIODES) as $cle) {
-            if (($brut[$cle] ?? 0) > 0) {
-                $n[$cle] = $brut[$cle];
-            }
-        }
-
-        return $n;
+        return self::traduireToutes(Database::all(
+            'SELECT * FROM ' . self::TABLE . ' WHERE ' . self::PUBLIQUE
+            . ' AND tri BETWEEN ? AND ? ORDER BY ' . self::ORDRE,
+            [$debut, $fin]
+        ));
     }
 
     /**
@@ -140,11 +115,5 @@ final class Repere extends Modele
         }
 
         return self::traduireToutes(Database::all($sql));
-    }
-
-    /** Libellé d'affichage d'une période ; la clé brute si elle est inconnue. */
-    public static function periode(?string $cle): string
-    {
-        return self::PERIODES[(string) $cle] ?? (string) $cle;
     }
 }

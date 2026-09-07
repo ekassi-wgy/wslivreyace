@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 use App\Controller\ActualiteController;
 use App\Controller\ArchiveController;
+use App\Controller\BiographieController;
 use App\Controller\ContactController;
 use App\Controller\ContributionController;
 use App\Controller\EvenementController;
@@ -34,7 +35,19 @@ $router->get('/',            fn() => View::render('pages/accueil',    ['page' =>
  */
 $router->get('/le-livre',    [LivreController::class, 'livre']);
 $router->get('/auteur',      [LivreController::class, 'auteur']);
-$router->get('/biographie',  fn() => View::render('pages/biographie', ['page' => 'bio']));
+
+/*
+ * Biographie (brief §3, lot G10). Une adresse par période, comme il y en a une
+ * par notice d'archive et par sujet d'Héritage : le récit d'une époque se cite
+ * seul, dans un dossier de presse comme dans une note de bas de page.
+ *
+ * L'ordre de déclaration importe : `/biographie` avant `/biographie/{slug}`
+ * serait sans effet dans un sens comme dans l'autre — les deux motifs n'ont pas
+ * le même nombre de segments — mais la lisibilité veut qu'on aille de l'index
+ * à la pièce.
+ */
+$router->get('/biographie',         [BiographieController::class, 'page']);
+$router->get('/biographie/{slug}',  [BiographieController::class, 'periode']);
 
 /**
  * Actualités (CDC §4.7). La revue de presse a son adresse propre : ce n'est

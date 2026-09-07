@@ -7,6 +7,7 @@ use App\Model\Actualite;
 use App\Model\Archive;
 use App\Model\Evenement;
 use App\Model\Heritage;
+use App\Model\Periode;
 
 /**
  * Recherche transversale (brief §9, lot G9).
@@ -17,12 +18,13 @@ use App\Model\Heritage;
  * d'archive, dans un lieu de mémoire et peut-être dans une actualité, et le
  * visiteur n'a pas à deviner laquelle des trois rubriques ouvrir.
  *
- * **Une requête par entité, pas une union SQL.** Les cinq tables n'ont ni les
- * mêmes colonnes, ni les mêmes conditions de publication — un événement annulé
- * reste visible, une actualité sans date ne l'est pas. Une `UNION` aurait
- * demandé de recopier ces règles ici, où elles auraient divergé de leurs
- * modèles au premier changement. Cinq requêtes indexées coûtent moins cher
- * qu'une règle de publication fausse.
+ * **Une requête par entité, pas une union SQL.** Les tables parcourues n'ont ni
+ * les mêmes colonnes, ni les mêmes conditions de publication — un événement
+ * annulé reste visible, une actualité sans date ne l'est pas, une période de la
+ * biographie sans bornes non plus (lot G10). Une `UNION` aurait demandé de
+ * recopier ces règles ici, où elles auraient divergé de leurs modèles au
+ * premier changement. Quelques requêtes indexées coûtent moins cher qu'une
+ * règle de publication fausse.
  *
  * Les résultats sont normalisés : quelle que soit leur provenance, ils portent
  * un type, un titre, un chemin, une date et un extrait.
@@ -37,6 +39,7 @@ final class Recherche
      */
     public const TYPES = [
         'archives'    => ['libelle' => 'Archives',   'signe' => '🗂️'],
+        'biographie'  => ['libelle' => 'Biographie', 'signe' => '📖'],
         'heritage'    => ['libelle' => 'Héritage',   'signe' => '🏛️'],
         'actualites'  => ['libelle' => 'Actualités', 'signe' => '📰'],
         'evenements'  => ['libelle' => 'Événements', 'signe' => '📅'],
@@ -60,6 +63,7 @@ final class Recherche
 
         $resultats = [
             'archives'   => self::archives($terme, $parType),
+            'biographie' => self::biographie($terme, $parType),
             'heritage'   => self::heritage($terme, $parType),
             'actualites' => self::actualites($terme, $parType),
             'evenements' => self::evenements($terme, $parType),
@@ -109,6 +113,46 @@ final class Recherche
                 ]),
                 'date'    => Archive::date($a),
                 'contexte' => Archive::categorie((string) $a['categorie']),
+            ];
+        }
+
+        return $lignes;
+    }
+
+    /**
+     * Les périodes de la biographie (lot G10).
+     *
+     * Elles arrivent en seconde position, juste après le fonds : le récit d'une
+     * époque répond souvent mieux à un nom de lieu ou d'institution qu'une
+     * pièce isolée, et c'est le texte le plus long du site après les
+     * transcriptions de discours.
+     *
+     * Les mêmes conditions que la page publique, bornes comprises : une période
+     * sans dates n'a pas d'adresse qui réponde, et un résultat qui mène à une
+     * 404 est pire qu'un résultat de moins.
+     */
+    private static function biographie(string $terme, int $limite): array
+    {
+        $motif = self::motif($terme);
+
+        $lignes = [];
+
+        foreach (Database::all(
+            "SELECT * FROM periode WHERE statut = 'publie'"
+            . ' AND debut IS NOT NULL AND fin IS NOT NULL'
+            . ' AND (titre LIKE ? OR sous_titre LIKE ? OR recit LIKE ?)'
+            . ' ORDER BY debut ASC LIMIT ' . max(1, $limite),
+            [$motif, $motif, $motif]
+        ) as $p) {
+            $lignes[] = [
+                'titre'    => (string) $p['titre'],
+                'chemin'   => Periode::chemin($p),
+                'extrait'  => self::extrait($terme, [
+                    (string) ($p['sous_titre'] ?? ''),
+                    (string) ($p['recit'] ?? ''),
+                ]),
+                'date'     => Periode::annees($p),
+                'contexte' => 'Biographie',
             ];
         }
 
