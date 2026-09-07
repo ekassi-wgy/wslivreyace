@@ -67,13 +67,11 @@ $ld = json_encode(array_filter([
 
         <?php /* Fil d'Ariane : trois niveaux de profondeur, un visiteur arrivé
                  par un partage doit pouvoir remonter (brief §9). */ ?>
-        <nav class="fil reveal" aria-label="Fil d'Ariane">
-          <ol>
-            <li><a href="<?= $lien('/archives') ?>">Archives</a></li>
-            <li><a href="<?= $lien('/archives/' . $cat) ?>"><?= View::e(Archive::categorie($cat)) ?></a></li>
-            <li aria-current="page"><?= View::e((string) $notice['titre']) ?></li>
-          </ol>
-        </nav>
+        <?php $fil = [
+          ['Archives', '/archives'],
+          [Archive::categorie($cat), '/archives/' . $cat],
+          [(string) $notice['titre'], null],
+        ]; require dirname(__DIR__) . '/partials/fil.php'; ?>
 
         <h1 class="t-d1 reveal"><?= View::e((string) $notice['titre']) ?></h1>
 

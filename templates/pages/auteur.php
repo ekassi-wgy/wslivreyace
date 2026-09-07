@@ -39,12 +39,8 @@ $ld = json_encode(array_filter([
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal">—</p></div>
       <div class="col-lg-8">
-        <nav class="fil reveal" aria-label="Fil d'Ariane">
-          <ol>
-            <li><a href="<?= $lien('/le-livre') ?>">Le livre</a></li>
-            <li aria-current="page">L'auteur</li>
-          </ol>
-        </nav>
+        <?php $fil = [['Le livre', '/le-livre'], ["L'auteur", null]];
+              require dirname(__DIR__) . '/partials/fil.php'; ?>
         <p class="kicker reveal">L'auteur</p>
         <h1 class="t-d1 reveal"><?= View::e($nom) ?></h1>
         <?php if (trim($qualite) !== ''): ?>

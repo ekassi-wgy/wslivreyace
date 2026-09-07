@@ -97,6 +97,11 @@ $ld = json_encode(
         <p class="section-num reveal"><?= View::e(DateFr::annee($debut)) ?></p>
       </div>
       <div class="col-lg-8">
+        <?php $fil = [
+          ['Événements', '/evenements'],
+          [(string) $evenement['titre'], null],
+        ]; require dirname(__DIR__) . '/partials/fil.php'; ?>
+
         <p class="kicker reveal">
           <?= $annule ? 'Rendez-vous annulé' : ($passe ? 'Rendez-vous passé' : 'À venir') ?>
         </p>

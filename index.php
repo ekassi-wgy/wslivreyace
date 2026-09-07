@@ -16,6 +16,7 @@ use App\Controller\ContributionController;
 use App\Controller\EvenementController;
 use App\Controller\HeritageController;
 use App\Controller\LivreController;
+use App\Controller\RechercheController;
 use App\Controller\SeoController;
 use App\Controller\TemoignageController;
 use App\Core\Router;
@@ -110,6 +111,14 @@ $router->post('/temoignages', [TemoignageController::class, 'deposer']);
  * dès la première publication sans que personne ne le sache. Voir le
  * contrôleur. Lecture seule, aucune session.
  */
+/*
+ * Recherche transversale (brief §9, lot G9). Une adresse et non un panneau
+ * surgissant : une recherche se partage, se met en favori, et la page 404 peut
+ * y renvoyer avec un terme pré-rempli — ce qui compte quand des adresses sont
+ * imprimées (décision 3).
+ */
+$router->get('/recherche', [RechercheController::class, 'page']);
+
 $router->get('/sitemap.xml', [SeoController::class, 'sitemap']);
 $router->get('/robots.txt',  [SeoController::class, 'robots']);
 

@@ -1584,7 +1584,7 @@ d'analyse. Deux sont acquis, cinq à compléter, quatre à construire.
 | 6 | Héritage | **acquis** | livré au lot G7 ; attend la matière éditoriale |
 | 7 | Actualités | **acquis** | quatre catégories à ajouter à l'énumération |
 | 8 | Page d'accueil | **acquis** | validée telle quelle ; suivra les lots |
-| 9 | Partage et référencement | à compléter | `sitemap.xml`, `robots.txt`, fil d'Ariane, balisage des archives, adresse par pièce |
+| 9 | Partage et référencement | **acquis** | complété par G0 (plan, robots), G4 (adresse par pièce, balisage) et G9 (recherche, fil d'Ariane) |
 | 10 | Back-office du fonds | à compléter | dépôt multiple, recherche et pagination de la médiathèque, sauvegarde |
 | 11 | Architecture FR \| EN | à compléter | préfixe de langue, tables de traduction, `hreflang`, textes sortis des gabarits |
 
@@ -1681,7 +1681,7 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 | **G6** | Bibliothèque des discours | l'index chronologique par décennie, et ce que chaque pièce porte | **livré** |
 | **G7** | Héritage | cinq rubriques adossées aux données, une page par sujet, rattachement des témoignages | **livré** |
 | **G8** | Contribuez aux archives | formulaire, quarantaine (décision 4), cession de droits, réception et validation au back-office | **livré** |
-| **G9** | Recherche et navigation | recherche interne, filtres par année, catégorie et mot-clé, fil d'Ariane, données structurées | 3 – 4 j |
+| **G9** | Recherche et navigation | recherche transversale, fil d'Ariane et `BreadcrumbList` partout, 404 qui rattrape | **livré** |
 | **G10** | Biographie par périodes | les douze périodes en base, une adresse par période, frise illustrée et reliée aux archives | 4 – 5 j |
 | **G11** | Version anglaise | traduction des contenus dans la structure posée en G1 ; aucune reprise de code | selon volume |
 
@@ -2233,6 +2233,62 @@ remis à vide.
 |---|---|
 | `sql/014_contribution.sql` | les tables `contribution` et `contribution_fichier` |
 | `quarantaine/` | le dossier fermé — **son `.htaccess` doit partir au déploiement** |
+
+### Lot G9 — livré
+
+Chaque rubrique avait déjà sa recherche : le fonds depuis G4, les discours
+depuis G6. Ce qui manquait, c'est **la question qu'on pose quand on ne sait pas
+où chercher** — « Jacqueville » se trouve dans une notice d'archive, dans un
+lieu de mémoire, dans une actualité et dans un événement, et le visiteur n'a
+pas à deviner laquelle des quatre rubriques ouvrir.
+
+**Une requête par entité, pas une `UNION` SQL.** Les tables n'ont ni les mêmes
+colonnes ni les mêmes conditions de publication — un événement annulé reste
+visible, une actualité sans date ne l'est pas. Une union aurait demandé de
+recopier ces règles dans la recherche, où elles auraient divergé de leurs
+modèles au premier changement. Quatre requêtes indexées coûtent moins cher
+qu'une règle de publication fausse.
+
+**L'extrait s'ouvre là où le terme apparaît**, pas au début du texte. Rendre les
+deux cents premiers signes d'une transcription de discours ne dirait rien : le
+mot cherché est peut-être à la page cinq. C'est ce qui permet de juger d'un
+résultat sans l'ouvrir — et c'est là que la transcription saisie au lot G6 paie.
+
+**Les résultats sont groupés par rubrique**, non mélangés par pertinence :
+savoir qu'on a trouvé « Jacqueville » dans une archive **et** dans un lieu de
+mémoire vaut mieux qu'un classement dont on ne sait pas ce qui le décide.
+
+**La page de résultats est en `noindex, follow`** : elle change à chaque contenu
+ajouté et duplique ce que les pages disent déjà. Google traite ces pages comme
+du remplissage, et le plan du site ne l'annonce pas.
+
+**Une loupe dans la barre, pas une huitième entrée** : la barre porte les sept
+que le brief demande, et « Rechercher » n'est pas une rubrique du site.
+
+**La 404 offre la recherche, et c'est le point de ce lot qui compte le plus à
+long terme.** La décision 3 prévoit des adresses imprimées — QR codes,
+filigranes, dossiers de presse, peut-être le livre. Une adresse imprimée finit
+par être mal recopiée, et la 404 est alors le dernier endroit où rattraper le
+visiteur. **Le champ est pré-rempli avec ce que l'adresse contenait** : qui tape
+`/archives/discours-de-1980` de travers cherche probablement « discours de
+1980 ». Le segment vient de la requête : il n'est employé que comme valeur d'un
+champ, échappé, et rejeté s'il ne ressemble pas à des mots.
+
+**Le fil d'Ariane est devenu un partial**, qui rend d'un même geste la liste
+visible et le `BreadcrumbList` structuré. Les écrire séparément aurait garanti
+qu'ils divergent, et un balisage qui contredit la page affichée est pire que pas
+de balisage. Il couvre désormais les fiches d'actualité et d'événement, qui n'en
+avaient pas — une fiche partagée sur WhatsApp est souvent la première page qu'on
+voit du site.
+
+**Vérifié** : « Jacqueville » trouvé dans les quatre rubriques, extrait centré
+sur le terme au milieu d'une transcription, `%` échappé — chercher « 100 % » ne
+rend pas tout le fonds —, terme trop court et sans résultat traités à part,
+`BreadcrumbList` valide dont le dernier élément ne se désigne pas lui-même, 404
+pré-remplie et rejetant un segment technique ou une tentative d'injection.
+Données d'essai effacées.
+
+**Aucune migration.**
 
 ### Ce que le brief ajoute à la liste des livrables attendus
 

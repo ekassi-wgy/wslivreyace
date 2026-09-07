@@ -80,6 +80,14 @@ $ld = json_encode(
         <p class="section-num reveal"><?= View::e(DateFr::annee((string) $actu['publie_le'])) ?></p>
       </div>
       <div class="col-lg-8">
+        <?php /* Fil d'Ariane et `BreadcrumbList` (lot G9). Une fiche partagée
+                 sur WhatsApp est souvent la première page qu'on voit du site :
+                 il faut pouvoir remonter de là. */ ?>
+        <?php $fil = [
+          ['Actualités', '/actualites'],
+          [(string) $actu['titre'], null],
+        ]; require dirname(__DIR__) . '/partials/fil.php'; ?>
+
         <p class="kicker reveal"><?= View::e($categorie) ?></p>
         <h1 class="t-d1 reveal"><?= View::e((string) $actu['titre']) ?></h1>
 

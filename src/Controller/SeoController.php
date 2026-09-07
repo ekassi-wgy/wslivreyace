@@ -45,6 +45,7 @@ final class SeoController
         '/evenements'      => '0.6',
         '/temoignages'     => '0.6',
         '/revue-de-presse' => '0.5',
+        '/contribuer'      => '0.5',
         '/contact'         => '0.4',
         '/mentions-legales' => '0.2',
     ];

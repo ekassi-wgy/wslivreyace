@@ -56,12 +56,8 @@ $ld = json_encode([
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal" aria-hidden="true">🎙️</p></div>
       <div class="col-lg-8">
-        <nav class="fil reveal" aria-label="Fil d'Ariane">
-          <ol>
-            <li><a href="<?= $lien('/archives') ?>">Archives</a></li>
-            <li aria-current="page">Discours</li>
-          </ol>
-        </nav>
+        <?php $fil = [['Archives', '/archives'], ['Discours', null]];
+              require dirname(__DIR__) . '/partials/fil.php'; ?>
         <p class="kicker reveal">Bibliothèque</p>
         <h1 class="t-d1 reveal">Discours.</h1>
         <p class="t-lead page-head__lead reveal">

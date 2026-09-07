@@ -35,12 +35,8 @@ $classe = static fn(string $c): string => 'form-control champ__saisie'
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal">—</p></div>
       <div class="col-lg-8">
-        <nav class="fil reveal" aria-label="Fil d'Ariane">
-          <ol>
-            <li><a href="<?= $lien('/archives') ?>">Archives</a></li>
-            <li aria-current="page">Contribuer</li>
-          </ol>
-        </nav>
+        <?php $fil = [['Archives', '/archives'], ['Contribuer', null]];
+              require dirname(__DIR__) . '/partials/fil.php'; ?>
         <p class="kicker reveal">Contribuez aux archives</p>
         <h1 class="t-d1 reveal">Vous avez connu<br>Philippe Grégoire Yacé&nbsp;?</h1>
         <p class="t-lead page-head__lead reveal">

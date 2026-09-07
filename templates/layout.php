@@ -36,6 +36,13 @@ $ogTaille = $ogTaille ?? [1200, 630];
 <title><?= htmlspecialchars($titre, ENT_QUOTES, 'UTF-8') ?></title>
 <meta name="description" content="<?= htmlspecialchars($description, ENT_QUOTES, 'UTF-8') ?>">
 
+<?php /* Posée par la page, et par elle seule. Une page de résultats de
+         recherche n'a rien à faire dans un index : elle change à chaque
+         contenu ajouté et duplique ce que les pages disent déjà (lot G9). */ ?>
+<?php if (($robots ?? '') !== ''): ?>
+<meta name="robots" content="<?= View::e($robots) ?>">
+<?php endif; ?>
+
 <?php /* Le SVG sert partout où il est compris ; l'.ico à la racine couvre les
          requêtes automatiques vers /favicon.ico et les navigateurs anciens. */ ?>
 <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">

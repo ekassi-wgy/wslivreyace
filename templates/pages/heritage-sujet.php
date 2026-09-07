@@ -47,13 +47,11 @@ $ld = json_encode(array_filter([
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal">—</p></div>
       <div class="col-lg-8">
-        <nav class="fil reveal" aria-label="Fil d'Ariane">
-          <ol>
-            <li><a href="<?= $lien('/heritage') ?>">Héritage</a></li>
-            <li><a href="<?= $lien('/heritage') ?>#<?= View::e($rubrique) ?>"><?= View::e(Heritage::rubrique($rubrique)) ?></a></li>
-            <li aria-current="page"><?= View::e((string) $sujet['titre']) ?></li>
-          </ol>
-        </nav>
+        <?php $fil = [
+          ['Héritage', '/heritage'],
+          [Heritage::rubrique($rubrique), '/heritage'],
+          [(string) $sujet['titre'], null],
+        ]; require dirname(__DIR__) . '/partials/fil.php'; ?>
 
         <h1 class="t-d1 reveal"><?= View::e((string) $sujet['titre']) ?></h1>
 

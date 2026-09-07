@@ -42,6 +42,15 @@ $lien = static fn(string $chemin): string => App\Core\Langue::chemin($chemin);
 <?php foreach ($liens as $cle => [$href, $libelle]): ?>
           <li><a href="<?= $lien($href) ?>"<?= $cle === $page ? ' aria-current="page"' : '' ?>><?= $libelle ?></a></li>
 <?php endforeach; ?>
+          <?php /* Une loupe et non une huitième entrée : la barre porte déjà
+                   les sept que le brief demande, et « Rechercher » n'est pas
+                   une rubrique du site (lot G9). */ ?>
+          <li><a class="nav-loupe" href="<?= $lien('/recherche') ?>" aria-label="Rechercher dans le site">
+            <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+              <circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <line x1="13" y1="13" x2="18" y2="18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </a></li>
           <li><a class="btn-pgy btn-pgy--sm" href="<?= $lien('/le-livre') ?>#acheter">Commander</a></li>
         </ul>
       </nav>
