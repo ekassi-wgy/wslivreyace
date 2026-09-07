@@ -103,7 +103,14 @@ final class SeoController
          * porte le contenu le plus recherché.
          */
         foreach (array_keys(\App\Model\Archive::comptesParCategorie()) as $cle) {
-            $chemins[] = ['chemin' => '/archives/' . $cle, 'priorite' => '0.7', 'maj' => null];
+            // La bibliothèque des discours est une page à part entière et non
+            // une simple planche filtrée (lot G6) : elle porte l'index
+            // chronologique du fonds le plus recherché.
+            $chemins[] = [
+                'chemin'   => '/archives/' . $cle,
+                'priorite' => $cle === 'discours' ? '0.8' : '0.7',
+                'maj'      => null,
+            ];
         }
 
         foreach (Database::all(

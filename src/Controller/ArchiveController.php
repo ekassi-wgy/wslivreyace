@@ -60,15 +60,42 @@ final class ArchiveController
 
         $recherche = trim((string) ($_GET['q'] ?? ''));
         $annee     = self::annee();
+        $notices   = Archive::chercher($categorie, $annee, $recherche);
 
-        View::render('pages/archives', [
+        $donnees = [
             'page'      => 'archives',
             'categorie' => $categorie,
-            'notices'   => self::avecCouvertures(Archive::chercher($categorie, $annee, $recherche)),
             'comptes'   => Archive::comptesParCategorie(),
             'annees'    => Archive::annees($categorie),
             'annee'     => $annee,
             'recherche' => $recherche,
+        ];
+
+        /*
+         * Les discours ont leur propre présentation (brief §4, lot G6).
+         *
+         * **La planche de vignettes ne leur convient pas** : un discours n'a
+         * souvent aucune image, et une grille de tuiles grises ne dit rien de
+         * ce qu'on y trouvera. L'index chronologique, lui, annonce pour chaque
+         * pièce sa date, son lieu et ce qu'elle porte — vidéo, enregistrement,
+         * transcription, document.
+         *
+         * Même adresse, même modèle, même filtres : seule la mise en page
+         * change. Une adresse propre — `/discours` — aurait fait deux chemins
+         * pour une même pièce, ce que la décision 3 interdit.
+         */
+        if ($categorie === 'discours') {
+            View::render('pages/discours', $donnees + [
+                'groupes'  => Archive::parDecennie($notices),
+                'contenus' => Archive::contenus($notices),
+                'total'    => count($notices),
+            ]);
+
+            return;
+        }
+
+        View::render('pages/archives', $donnees + [
+            'notices' => self::avecCouvertures($notices),
         ]);
     }
 

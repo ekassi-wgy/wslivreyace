@@ -1678,7 +1678,7 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 | **G3** | Commander | page de vente et tunnel sur la passerelle retenue ; l'écran de suivi attend depuis le lot E2 | 4 – 6 j |
 | **G4** | Modèle d'archives | notice et fichiers (décision 1), six catégories, champs de catalogue, page par notice, recherche, écran d'administration | **livré** |
 | **G5** | Formats et lecteurs | PDF, audio, plafonds par famille, lecteur et téléchargement de l'original | **livré** |
-| **G6** | Bibliothèque des discours | contexte historique, vidéo, audio, transcription intégrale, document original, index chronologique | 3 – 4 j |
+| **G6** | Bibliothèque des discours | l'index chronologique par décennie, et ce que chaque pièce porte | **livré** |
 | **G7** | Héritage | lieux de mémoire, hommages, décorations, publications, musique et culture ; rattachement des témoignages | 4 – 5 j |
 | **G8** | Contribuez aux archives | formulaire, quarantaine (décision 4), cession de droits, réception et validation au back-office | 3 – 4 j |
 | **G9** | Recherche et navigation | recherche interne, filtres par année, catégorie et mot-clé, fil d'Ariane, données structurées | 3 – 4 j |
@@ -2071,6 +2071,47 @@ aussi. Données d'essai et compte temporaire effacés, `medias/` remis à vide.
 | Fichier | Ce qu'il apporte |
 |---|---|
 | `sql/012_media_famille.sql` | la colonne `famille` sur `media`, et son index |
+
+### Lot G6 — livré
+
+Le brief décrit la bibliothèque des discours par un exemple : « 1980 — Discours
+de clôture de la 5ᵉ législature », avec sur la même page contexte historique,
+vidéo, audio, transcription intégrale et document original. **La page de notice
+porte tout cela depuis G4 et G5** ; ce qui manquait, c'était l'index qui y mène.
+
+**Un index et non une planche**, et c'est le cœur du lot. Un discours n'a
+souvent aucune image : la grille de vignettes des autres catégories lui donnait
+des tuiles grises qui ne disent rien. Chaque ligne annonce donc sa date, son
+lieu, et **ce que la pièce porte réellement** — vidéo, enregistrement,
+transcription, document. Sur une bibliothèque de deux cents discours, ouvrir une
+page pour découvrir qu'il n'y a qu'un titre est une perte de temps répétée deux
+cents fois.
+
+Les quatre indications ne viennent pas du même endroit — deux sont des colonnes
+de la notice, deux se lisent sur les fichiers rattachés — d'où une requête
+unique pour tout le lot plutôt qu'un appel par ligne.
+
+**Groupé par décennie et non par année.** La bibliothèque court sur quarante ans
+avec des trous, et une liste d'années dont la moitié est vide se lit mal. Les
+pièces non datées forment un groupe à part, en fin de liste, plutôt que d'être
+rangées sous une décennie inventée.
+
+**Même adresse, même modèle, même filtres : seule la mise en page change.**
+`/archives/discours` reste l'adresse ; lui en donner une propre — `/discours` —
+aurait fait deux chemins pour une même pièce, ce que la décision 3 interdit.
+Elle porte une priorité plus haute dans le plan du site : sa transcription est
+le contenu le plus recherché du fonds.
+
+**La recherche couvre la transcription**, et c'est tout l'intérêt de l'avoir
+saisie : on retrouve un discours par une phrase qu'on en a retenue.
+
+**Vérifié** sur quatre discours — un complet, deux partiels, un sans date : les
+décennies se forment dans l'ordre, les non datés ferment la marche, les quatre
+marques n'apparaissent que sur la pièce qui les porte, la recherche par un mot
+de la transcription retrouve la bonne. Une coquille corrigée au passage : le
+titre de groupe rendait « 1960s », pluriel anglais qui n'existe pas en français.
+
+**Aucune migration.**
 
 ### Ce que le brief ajoute à la liste des livrables attendus
 

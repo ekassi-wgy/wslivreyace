@@ -355,6 +355,102 @@ final class Archive extends Modele
         );
     }
 
+    /**
+     * Ce que porte chaque notice d'un lot, en une seule requête (lot G6).
+     *
+     * L'index des discours annonce, pour chaque pièce, ce qu'on y trouvera :
+     * une vidéo, un enregistrement, une transcription, un document. C'est le
+     * renseignement qui décide si l'on ouvre la page ou non — sur une
+     * bibliothèque de deux cents discours, cliquer pour découvrir qu'il n'y a
+     * qu'un titre est une perte de temps répétée deux cents fois.
+     *
+     * Les quatre indications ne viennent pas du même endroit : deux sont des
+     * colonnes de la notice, deux se lisent sur les fichiers rattachés. D'où
+     * la requête unique plutôt qu'un appel par ligne.
+     *
+     * @param array<int,array<string,mixed>> $notices
+     * @return array<int,array{video:bool,audio:bool,transcription:bool,document:bool}>
+     */
+    public static function contenus(array $notices): array
+    {
+        $flags = [];
+        $ids = [];
+
+        foreach ($notices as $n) {
+            if (!isset($n['id'])) {
+                continue;
+            }
+
+            $id = (int) $n['id'];
+            $ids[] = $id;
+
+            // Les deux colonnes sont déjà en main : rien à demander à la base.
+            $flags[$id] = [
+                'video'         => self::videoYoutube($n['video_url'] ?? null) !== null,
+                'transcription' => trim((string) ($n['transcription'] ?? '')) !== '',
+                'audio'         => false,
+                'document'      => false,
+            ];
+        }
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $marqueurs = implode(', ', array_fill(0, count($ids), '?'));
+
+        foreach (Database::all(
+            'SELECT am.archive_id, m.famille FROM archive_media am'
+            . ' JOIN media m ON m.id = am.media_id'
+            . " WHERE m.famille IN ('audio', 'document')"
+            . '   AND am.archive_id IN (' . $marqueurs . ')'
+            . ' GROUP BY am.archive_id, m.famille',
+            $ids
+        ) as $l) {
+            $flags[(int) $l['archive_id']][(string) $l['famille']] = true;
+        }
+
+        return $flags;
+    }
+
+    /**
+     * Les notices d'un lot regroupées par décennie, la plus ancienne d'abord.
+     *
+     * **Par décennie et non par année** : une bibliothèque de discours court
+     * sur quarante ans avec des trous, et une liste d'années dont la moitié
+     * est vide se lit mal. La décennie donne des paquets qui existent
+     * réellement.
+     *
+     * Les pièces non datées forment un groupe à part, en fin de liste, plutôt
+     * que d'être rangées d'office sous une décennie inventée.
+     *
+     * @param array<int,array<string,mixed>> $notices déjà triées
+     * @return array<string,array<int,array<string,mixed>>>
+     */
+    public static function parDecennie(array $notices): array
+    {
+        $groupes = [];
+
+        foreach ($notices as $n) {
+            $annee = (int) ($n['annee'] ?? 0);
+
+            $cle = $annee > 0
+                ? (string) (intdiv($annee, 10) * 10)
+                : 'sans-date';
+
+            $groupes[$cle][] = $n;
+        }
+
+        // Les non datées ferment la marche, quel que soit l'ordre des clés.
+        if (isset($groupes['sans-date'])) {
+            $sansDate = $groupes['sans-date'];
+            unset($groupes['sans-date']);
+            $groupes['sans-date'] = $sansDate;
+        }
+
+        return $groupes;
+    }
+
     // -- Libellés ------------------------------------------------------------
 
     /** Libellé d'une catégorie ; la clé brute si elle est inconnue. */
