@@ -1553,6 +1553,12 @@ Cela tranche au passage la question laissée ouverte au §7 : **Témoignages,
 appartiennent à Héritage, les événements se rattachent au livre et gardent leur
 agenda, le contact reste au pied.
 
+**Le menu se construit en trois temps**, et c'est pour cela qu'il n'a pas de lot
+à lui : **G0** pose l'entrée Accueil et rouvre la barre mobile pour sept entrées
+— le gabarit actuel en tient quatre plus un bouton ; **G3** rend le bouton
+Commander effectif, il pointe aujourd'hui sur une ancre ; **G7** active l'entrée
+Héritage, qui ne peut pas précéder la rubrique qu'elle ouvre.
+
 ### Lecture du brief, chapitre par chapitre
 
 Onze chapitres — les dix du brief, plus l'exigence bilingue ajoutée à la note
@@ -1560,7 +1566,7 @@ d'analyse. Deux sont acquis, cinq à compléter, quatre à construire.
 
 | # | Chapitre | État | Ce qui manque |
 |---|---|---|---|
-| 1 | Menu principal | à compléter | Héritage, entrée Accueil, barre mobile à sept entrées |
+| 1 | Menu principal | à compléter | entrée Accueil et barre mobile (G0), bouton Commander effectif (G3), entrée Héritage (G7) |
 | 2 | Le livre | à compléter | préface et sa mise en avant, page auteur à URL propre, rattachement presse et événements de lancement |
 | 3 | Biographie et frise | à construire | douze périodes contre cinq chapitres, une adresse par période, frise à brancher sur la base et à illustrer |
 | 4 | Archives | à construire | six catégories, champs de catalogue, une adresse par pièce, PDF/audio/vidéo, page de discours, recherche |
@@ -1653,7 +1659,7 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 
 | Lot | Objet | Contenu | Charge |
 |---|---|---|---|
-| **G0** | Gains immédiats | `sitemap.xml` et `robots.txt` ; frise branchée sur `repere` ; catégories d'actualités élargies ; vérification du domaine en configuration | 1 j |
+| **G0** | Gains immédiats | `sitemap.xml` et `robots.txt` ; frise branchée sur `repere` ; catégories d'actualités élargies ; entrée Accueil et barre mobile rouverte à sept entrées ; vérification du domaine en configuration | 1 – 2 j |
 | **G1** | Socle bilingue | routeur préfixé, tables de traduction, fichiers de langue, `hreflang`. Structure seule, aucun contenu traduit | 2 – 3 j |
 | **G2** | Le livre, complété | préface et sa mise en avant, page auteur à URL propre, rattachement de la revue de presse et des événements de lancement | 2 – 3 j |
 | **G3** | Commander | page de vente et tunnel sur la passerelle retenue ; l'écran de suivi attend depuis le lot E2 | 4 – 6 j |
