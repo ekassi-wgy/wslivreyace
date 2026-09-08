@@ -1293,8 +1293,8 @@ n'avait jamais été relevé jusque-là (voir §2, qui raisonnait dessus sans
 l'avoir constaté). `repere` porte ses sept entrées et ses quatre mises en avant ;
 `repere.periode` a bien disparu.
 
-**Ce qui reste est l'envoi des fichiers**, et c'est la plus grosse part : 99
-fichiers ont changé depuis le dernier état déployé, dont 46 nouveaux et **un
+**Ce qui reste est l'envoi des fichiers**, et c'est la plus grosse part : 112
+fichiers ont changé depuis le dernier état déployé, dont 54 nouveaux et **un
 supprimé** — `src/Core/DateFr.php`, renommé en `DateLisible.php` au lot G11 ;
 un envoi FTP n'efface rien, il faut donc le retirer à la main, faute de quoi
 deux classes coexistent et la lecture s'en trouve trompée.
@@ -2919,6 +2919,17 @@ de toute façon.
 F CFA » — et n'était affiché nulle part. Un tunnel qui calcule `prix × quantité
 + frais` ne peut pas partir de là, et garder les deux formes ferait diverger
 l'affiché et le facturé.
+
+**Les cases à cocher du back-office sortaient de leur bloc par la gauche.**
+Le thème attend le balisage de Bootstrap 4 — la case *dans* le libellé — et
+annule le `padding-left` de `.form-check` ; `champ_case()` écrit celui de
+Bootstrap 5, où Bootstrap pose une marge négative que ce `padding-left`
+compense. Les deux se cumulaient. **Quatre écrans en souffraient** depuis les
+lots C et G2 — les paramètres, la fiche d'un repère, celle d'un compte — sans
+que personne le remarque : un champ au-dessus masquait le décalage. La case
+« Ouvrir les commandes », seule en tête de son bloc, l'a donné à voir.
+Rétabli dans `pgy-admin.css`, qui charge après le thème, plutôt qu'en
+réécrivant un balisage standard déjà en place à cinq endroits.
 
 **Le routeur accepte le tiret bas dans un segment nommé.** Découvert ici :
 l'écran de traduction adresse ses rubriques par nom de table, et
