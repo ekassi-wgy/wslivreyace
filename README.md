@@ -7,13 +7,14 @@ s'enrichir pendant des années. Ce brief, ce qu'il déplace et sa feuille de rou
 sont au **§9**, qui fait foi.
 
 **Le cahier des charges d'origine est entièrement livré**, à une exception près :
-le tunnel de commande. **Dix des onze lots du nouveau périmètre le sont aussi.**
+le tunnel de commande. **Douze des treize lots du nouveau périmètre le sont
+aussi** — seul G3 reste à écrire.
 
 | | |
 |---|---|
-| **Back-office** | quatorze écrans : tableau de bord, actualités, événements, **biographie par périodes**, repères, **archives**, **héritage**, médiathèque cherchée et paginée, modération des témoignages, **contributions du public**, messages, commandes, paramètres, comptes |
+| **Back-office** | quinze écrans : tableau de bord, actualités, événements, **biographie par périodes**, repères, **archives**, **héritage**, médiathèque cherchée et paginée, **traductions**, modération des témoignages, **contributions du public**, messages, commandes, paramètres, comptes |
 | **Site public** | accueil, Le livre, **auteur**, Biographie (**index et périodes**), **Archives** (fonds, catégorie, notice, **bibliothèque des discours**), **Héritage** (index et sujets), Actualités (liste, fiche, revue de presse), Événements, Témoignages, **Contribuez aux archives**, **Recherche**, Contact, Mentions légales, 404 |
-| **Socle** | bilingue par construction (anglais déclaré, fermé), plan du site et `robots.txt`, fil d'Ariane et données structurées partout, quarantaine des envois publics |
+| **Socle** | **bilingue et ouvert** — `/en/` sert l'intégralité du site, interface traduite et contenus traduisibles depuis le back-office —, plan du site et `robots.txt`, fil d'Ariane et données structurées partout, quarantaine des envois publics |
 
 **Reste le tunnel de commande (G3).** La version anglaise (G11) est **livrée et
 ouverte** depuis le 8 septembre 2026 : `/en/` répond, l'interface est en
@@ -1649,10 +1650,11 @@ la continuité du site de référence. Contrepartie assumée : le back-office es
 
 ### Où en est ce périmètre
 
-**État au 8 septembre 2026.** Dix lots sur onze sont écrits, testés et poussés.
-**Leurs neuf migrations sont jouées en production ; leur code ne l'est pas** —
-tant qu'il ne l'est pas, ces tables sont en place et personne ne les voit. Le
-§7 porte l'état daté et la requête qui le vérifie.
+**État au 8 septembre 2026.** Douze lots sur treize sont écrits, testés et
+poussés — seul G3 reste à écrire. **Leurs neuf migrations sont jouées en
+production ; leur code ne l'est pas** — tant qu'il ne l'est pas, ces tables sont
+en place et personne ne les voit. Le §7 porte l'état daté et la requête qui le
+vérifie.
 
 | Lot | Objet | État |
 |---|---|---|
