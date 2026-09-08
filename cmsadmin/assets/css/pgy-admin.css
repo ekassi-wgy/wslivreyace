@@ -1074,3 +1074,35 @@ textarea.form-control::placeholder {
 
 .pgy-statut--acceptee { background: rgba(63,107,79,0.12); color: #3F6B4F; }
 .pgy-statut--refusee  { background: rgba(140,58,46,0.12); color: #8C3A2E; }
+
+/* --- Cases à cocher -----------------------------------------------------
+   Le thème du back-office attend le balisage de Bootstrap 4, où la case vit
+   *dans* le libellé : il annule donc le `padding-left` de `.form-check`
+   (style.css, « Checkboxes and Radios ») et décale le libellé de 1,75 rem.
+
+   `champ_case()` écrit le balisage de Bootstrap 5 — la case et le libellé sont
+   frères —, et Bootstrap y pose `float: left; margin-left: -1.5em` sur la case.
+   Les deux règles se cumulaient : sans le `padding-left` qui la compense, la
+   marge négative sortait la case du bloc par la gauche, pendant que le libellé
+   partait à droite. Quatre écrans en souffraient — les paramètres (deux cases),
+   la fiche d'un repère, celle d'une zone, celle d'un compte —, mais c'est la
+   case de la boutique, seule en tête de son bloc, qui l'a donné à voir.
+
+   On rétablit la géométrie de Bootstrap 5 plutôt que de réécrire le balisage :
+   il est standard, il est déjà en place à quatre endroits, et c'est le thème
+   qui est en retard d'une version. */
+.form-check .form-check-input {
+  float: none;
+  margin-left: 0;
+  margin-top: 0.15rem;
+}
+.form-check .form-check-label {
+  display: inline-block;
+  margin-left: 0.5rem;
+  vertical-align: top;
+}
+/* Le texte d'aide se range sous le libellé, pas sous la case : il commente ce
+   que le libellé annonce. */
+.form-check + .form-text {
+  margin-left: calc(1em + 0.5rem);
+}
