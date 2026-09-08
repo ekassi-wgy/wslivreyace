@@ -23,6 +23,7 @@ use App\Core\View;
 $titre       = t_nu('mentions.titre_page');
 $description = t_nu('mentions.description');
 
+$boite   = trim((string) ($contact['boite_postale'] ?? ''));
 $adresse = trim((string) ($contact['adresse'] ?? ''));
 $ville   = trim((string) ($contact['ville'] ?? ''));
 $pays    = trim((string) ($contact['pays'] ?? ''));
@@ -30,7 +31,16 @@ $email   = trim((string) ($contact['email'] ?? ''));
 $tel     = trim((string) ($contact['telephone'] ?? ''));
 $site    = trim((string) ($contact['site'] ?? ''));
 
-$postale = implode(', ', array_filter([$adresse, $ville, $pays]));
+/*
+ * Une seule ligne, mais deux adresses : la boîte postale et le siège se
+ * séparent d'un tiret et non d'une virgule. Enchaînées par des virgules, elles
+ * se liraient comme les morceaux d'une même adresse — un correspondant y
+ * chercherait un numéro de rue à écrire sur une enveloppe destinée à une boîte.
+ */
+$postale = implode(' — ', array_filter([
+    $boite,
+    implode(', ', array_filter([$adresse, $ville, $pays])),
+]));
 ?>
 
 <!-- ===================== EN-TÊTE DE PAGE ===================== -->

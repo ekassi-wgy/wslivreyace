@@ -54,13 +54,32 @@ $config = [
      * ce qui manque plutôt que de montrer un libellé sans contenu.
      */
     'contact' => [
-        'adresse'   => 'Cocody Ambassade, 10 rue Washington Booker',
-        'ville'     => 'Abidjan',
+        /*
+         * Deux adresses et non une : la boîte postale reçoit le courrier, la
+         * seconde dit où se trouve la structure. Les confondre sur une seule
+         * ligne ferait écrire un numéro de rue sur une enveloppe destinée à
+         * une boîte — la page Contact les empile, les mentions légales les
+         * séparent d'un tiret.
+         */
+        'boite_postale' => "15 BP 10125 Abidjan 15, République de Côte d'Ivoire",
+        'adresse'   => '7186, Boulevard Philippe Grégoire Yacé',
+        'ville'     => "00216 Marcory, District d'Abidjan",
         'pays'      => "Côte d'Ivoire",
         'email'     => 'contact@philippeyace.ci',
-        // Forme internationale pour le lien `tel:`, forme lisible pour l'œil.
-        'telephone' => '+225 05 64 00 00 80',
-        'tel_lien'  => '+22505640000080',
+        /*
+         * Forme lisible pour l'œil, forme internationale pour le lien `tel:`.
+         *
+         * **`tel_lien` vide veut dire « ce numéro ne se compose pas »**, et
+         * c'est le cas aujourd'hui : le numéro n'est pas arrêté, le masque le
+         * dit. La page Contact affiche alors le masque en texte simple au lieu
+         * d'un lien — un lien `tel:` sur des astérisques ouvrirait le
+         * composeur du téléphone sur un numéro impossible.
+         *
+         * Le jour où le numéro est connu, les deux lignes se remplissent
+         * ensemble et le lien revient de lui-même.
+         */
+        'telephone' => '+225 ** ** ** ** **',
+        'tel_lien'  => '',
         'site'      => 'https://www.philippeyace.ci',
     ],
 

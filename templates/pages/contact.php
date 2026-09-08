@@ -41,6 +41,7 @@ $classe = static function (string $nom) use ($erreurs): string {
     return 'form-control champ__saisie' . (isset($erreurs[$nom]) ? ' est-fautif' : '');
 };
 
+$boite   = trim((string) ($contact['boite_postale'] ?? ''));
 $adresse = trim((string) ($contact['adresse'] ?? ''));
 $ville   = trim((string) ($contact['ville'] ?? ''));
 $pays    = trim((string) ($contact['pays'] ?? ''));
@@ -69,14 +70,16 @@ $telLien = trim((string) ($contact['tel_lien'] ?? ''));
   <div class="shell">
     <div class="row" style="row-gap: var(--sp-7);">
 
-      <?php if ($adresse !== ''): ?>
+      <?php if ($boite !== '' || $adresse !== ''): ?>
         <div class="col-md-6 col-lg-3">
           <div class="coord reveal">
             <p class="coord__titre"><?= t('contact.adresse') ?></p>
             <p class="coord__valeur">
-              <?= View::e($adresse) ?>
-              <?php if ($ville !== ''): ?><br><?= View::e($ville) ?><?php endif; ?>
-              <?php if ($pays !== ''): ?><br><?= View::e($pays) ?><?php endif; ?>
+              <?php /* La boîte postale d'abord — c'est elle qu'on recopie sur
+                       une enveloppe —, puis l'adresse des lieux. Chaque ligne
+                       vide s'efface : la page se referme sur ce qu'elle a. */ ?>
+              <?php $lignes = array_filter([$boite, $adresse, $ville, $pays]); ?>
+              <?= implode('<br>', array_map([View::class, 'e'], $lignes)) ?>
             </p>
           </div>
         </div>
@@ -100,8 +103,18 @@ $telLien = trim((string) ($contact['tel_lien'] ?? ''));
             <p class="coord__valeur">
               <?php /* Le lien `tel:` porte la forme internationale sans espaces,
                        l'œil garde la forme lisible : un numéro composé depuis un
-                       téléphone ne doit pas dépendre de la typographie. */ ?>
-              <a class="link" href="tel:<?= View::e($telLien !== '' ? $telLien : $tel) ?>"><?= View::e($tel) ?></a>
+                       téléphone ne doit pas dépendre de la typographie.
+
+                       **Sans `tel_lien`, pas de lien.** Le numéro n'est pas
+                       arrêté et s'affiche masqué ; un `tel:` sur des astérisques
+                       ouvrirait le composeur sur un numéro impossible, et
+                       retomber sur la forme lisible ne ferait que déplacer le
+                       problème. Le masque se lit, il ne se clique pas. */ ?>
+              <?php if ($telLien !== ''): ?>
+                <a class="link" href="tel:<?= View::e($telLien) ?>"><?= View::e($tel) ?></a>
+              <?php else: ?>
+                <?= View::e($tel) ?>
+              <?php endif; ?>
             </p>
           </div>
         </div>

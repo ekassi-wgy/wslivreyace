@@ -1116,11 +1116,19 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
   | Nom et qualité du **directeur de la publication** | la structure éditrice |
   | Nom, adresse postale et téléphone de **l'hébergeur** | connu au choix du prestataire |
   | Capital social, si la forme juridique l'impose | la structure éditrice |
+  | **Numéro de téléphone de la structure éditrice** — affiché masqué en attendant | la structure éditrice |
 
-  Les coordonnées, elles, sont posées et vérifiées : adresse à Cocody
-  Ambassade, `contact@philippeyace.ci`, +225 05 64 00 00 80. Elles vivent dans
-  `config/config.php`, en un seul endroit pour les trois pages qui les
+  Les coordonnées, elles, sont posées : boîte postale
+  15 BP 10125 Abidjan 15, siège au 7186, Boulevard Philippe Grégoire Yacé,
+  00216 Marcory, District d'Abidjan, et `contact@philippeyace.ci`. Elles vivent
+  dans `config/config.php`, en un seul endroit pour les trois pages qui les
   affichent.
+
+  **Le téléphone n'est pas arrêté** et s'affiche `+225 ** ** ** ** **`. Il ne se
+  clique pas : `tel_lien` est vide dans la configuration, et la page Contact rend
+  alors le masque en texte simple — un lien `tel:` sur des astérisques ouvrirait
+  le composeur sur un numéro impossible. Le jour où le numéro est connu, les deux
+  lignes de `config/config.php` se remplissent ensemble et le lien revient.
 
   **À revoir le jour où la boutique ouvrira** : la section « données
   personnelles » décrit les deux formulaires existants. Un tunnel de commande
