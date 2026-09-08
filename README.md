@@ -1336,6 +1336,12 @@ SELECT '009', 'repères en base (7 après l''amorce)', (SELECT COUNT(*) FROM rep
 ORDER BY 1, 2;
 ```
 
+**Elle s'appuie sur `DATABASE()` : la base doit être sélectionnée avant de la
+lancer.** Dans phpMyAdmin, cliquer d'abord la base dans le panneau de gauche,
+puis l'onglet SQL. Lancée depuis l'onglet SQL du serveur, ou depuis
+`information_schema`, elle inspecte cette base-là et rend une liste de tables
+système qui n'a rien à voir — le piège ne dit pas son nom, il rend un résultat.
+
 `007` et `009` ne se contrôlent pas comme les autres, et les deux lignes le
 disent : `007` ne crée ni table ni colonne, il élargit un `ENUM` — le contrôle
 cherche donc `conference` dans le type de `actualite.categorie`. `009` ne
