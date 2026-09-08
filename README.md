@@ -1586,8 +1586,8 @@ six jours : **dès qu'une date est évoquée, il repasse en tête.**
 | Fichier | Lot | Ce qu'il apporte |
 |---|---|---|
 | `sql/007_actualite_categories.sql` | G0 | quatre catégories d'actualités |
-| `sql/008_repere_amorce.sql` | G0 | les sept repères de la frise — **seulement si `repere` est vide** |
-| `sql/009_repere_avant.sql` | G0 | la mise en avant des repères sur l'accueil |
+| `sql/008_repere_avant.sql` | G0 | la colonne `en_avant`, qui met un repère sur l'accueil |
+| `sql/009_repere_amorce.sql` | G0 | les sept repères de la frise — **seulement si `repere` est vide** |
 | `sql/010_traduction.sql` | G1 | la table de traduction |
 | `sql/011_archive.sql` | G4 | `archive` et `archive_media` |
 | `sql/012_media_famille.sql` | G5 | la colonne `famille` sur `media` |
@@ -1788,7 +1788,7 @@ gabarit. Ce qu'un éditeur saisissait n'arrivait nulle part.
 
 Trois choses en sont sorties, qui ne se voyaient pas avant :
 
-- **`sql/008_repere_amorce.sql` verse les sept entrées qui étaient affichées**,
+- **`sql/009_repere_amorce.sql` verse les sept entrées qui étaient affichées**,
   mot pour mot, pour que le site ne perde rien au passage. Elles arrivent en
   `publie` parce qu'elles l'étaient déjà, de fait. Six des sept portent encore
   « à documenter » : elles sont désormais **corrigeables**, ce qui était tout
@@ -1797,7 +1797,7 @@ Trois choses en sont sorties, qui ne se voyaient pas avant :
   bouton pour chaque entrée ; sur une saisie réduite à une date et un titre,
   ce bouton n'ouvrait rien. La ligne reste, ce n'est plus un bouton — un
   contrôle qui n'ouvre rien ment au clavier comme à la souris.
-- **L'accueil a gagné une colonne `en_avant`** (`sql/009_repere_avant.sql`).
+- **L'accueil a gagné une colonne `en_avant`** (`sql/008_repere_avant.sql`).
   En branchant la frise, l'accueil s'est mis à montrer les quatre premières
   entrées chronologiques — dont deux notices vides — là où le gabarit affichait
   les quatre dates marquantes. Remplacer une règle implicite par une autre
@@ -1836,13 +1836,22 @@ dedans — à sept entrées, la dernière sortait de l'écran sur un téléphone
 | Fichier | Ce qu'il apporte |
 |---|---|
 | `sql/007_actualite_categories.sql` | les quatre catégories d'actualités du brief |
-| `sql/008_repere_amorce.sql` | les sept repères qui étaient affichés en dur |
-| `sql/009_repere_avant.sql` | la colonne `en_avant` et les quatre jalons de l'accueil |
+| `sql/008_repere_avant.sql` | la colonne `en_avant`, et le rattrapage d'une base déjà saisie |
+| `sql/009_repere_amorce.sql` | les sept repères qui étaient affichés en dur, mise en avant comprise |
 
-`008` **ne se joue que sur une base dont la table `repere` est vide** : il n'a
+`009` **ne se joue que sur une base dont la table `repere` est vide** : il n'a
 aucun garde-fou contre le doublon, une ligne d'amorce n'ayant pas de clé
-naturelle sur laquelle en poser un. `007` et `009` se contrôlent comme les
+naturelle sur laquelle en poser un. `007` et `008` se contrôlent comme les
 précédentes — voir la requête au §7.
+
+**Ces deux fichiers ont échangé leurs numéros le 8 septembre**, et l'ordre est
+la correction elle-même. L'amorce nomme `en_avant` dans son `INSERT` ; tant
+qu'elle passait la première, elle s'arrêtait en production sur `#1054 Champ
+'en_avant' inconnu dans field list`, la colonne n'arrivant qu'au fichier
+suivant. Rien ne s'en voyait en local, où la base repart de `001_schema.sql` —
+mis à jour dans le même commit que le lot, `en_avant` comprise : **le défaut ne
+pouvait apparaître que sur une base installée avant G0, c'est-à-dire sur le
+serveur seul.** La colonne se pose désormais avant qu'on écrive dedans.
 
 ### Lot G1 — livré
 

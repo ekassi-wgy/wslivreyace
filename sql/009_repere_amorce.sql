@@ -19,16 +19,25 @@
 -- `en_avant` dit ce qui remonte sur l'accueil, où la place est comptée : les
 -- quatre dates établies, comme le gabarit les affichait avant ce lot. Les trois
 -- entrées encore à documenter restent sur la seule frise de la biographie.
--- Voir `sql/009_repere_avant.sql`, qui pose la colonne sur une base existante.
+--
+-- **Ce fichier portait le numéro 008 et passait avant `sql/008_repere_avant.sql`,
+-- qui pose la colonne `en_avant`.** L'ordre était intenable : sur une base
+-- installée avant le lot G0 — la production — la colonne n'existait pas encore
+-- au moment de cet `INSERT`, qui s'arrêtait sur `#1054 Champ 'en_avant' inconnu
+-- dans field list`. Rien ne s'en voyait en local, où la base repart de
+-- `001_schema.sql`, mis à jour dans le même commit que le lot. Les deux fichiers
+-- ont échangé leurs numéros : la colonne se pose avant qu'on écrive dedans.
 --
 -- `tri` porte l'année numérique du classement, `annee` la date affichée. Les
 -- deux diffèrent quand la date n'est pas établie : « — » se lit à l'écran,
 -- 1935 range la ligne au bon endroit. Ces valeurs de tri sont des estimations
 -- de position, pas des faits ; elles n'apparaissent nulle part.
 --
--- À jouer une seule fois, et seulement sur une base dont la table `repere` est
--- vide : le fichier n'a aucun garde-fou contre le doublon, une ligne d'amorce
--- n'ayant pas de clé naturelle sur laquelle en poser un.
+-- À jouer une seule fois, **après `sql/008_repere_avant.sql`**, et seulement
+-- sur une base dont la table `repere` est vide : le fichier n'a aucun garde-fou
+-- contre le doublon, une ligne d'amorce n'ayant pas de clé naturelle sur
+-- laquelle en poser un. Sur une base où l'éditeur a déjà saisi des repères, il
+-- ne se joue pas du tout — c'est `008` qui a alors mis les siens en avant.
 -- ============================================================================
 
 SET NAMES utf8mb4;
