@@ -20,8 +20,8 @@
 use App\Core\Langue;
 use App\Core\View;
 
-$titre       = t('mentions.titre_page');
-$description = t('mentions.description');
+$titre       = t_nu('mentions.titre_page');
+$description = t_nu('mentions.description');
 
 $adresse = trim((string) ($contact['adresse'] ?? ''));
 $ville   = trim((string) ($contact['ville'] ?? ''));

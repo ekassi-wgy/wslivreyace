@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Model;
 
+use App\Core\Lexique;
 use App\Core\Database;
 
 /**
@@ -498,9 +499,29 @@ final class Archive extends Modele
     // -- Libellés ------------------------------------------------------------
 
     /** Libellé d'une catégorie ; la clé brute si elle est inconnue. */
+    /**
+     * Le libellé public d'une catégorie, dans la langue de la page.
+     *
+     * **Les constantes restent en français, et c'est délibéré** : elles
+     * peuplent les menus déroulants du back-office, qui est francophone et le
+     * reste — les traduire aurait fait basculer l'écran de saisie d'un
+     * éditeur qui n'a rien demandé. Le lexique ne recouvre que ce que le
+     * public lit. Une clé absente du lexique retombe donc sur le français de
+     * la constante, ce qui est exactement le repli voulu (lot G11).
+     *
+     * `Lexique::brut()` et non `t()` : ce libellé rejoint des valeurs de base
+     * de données que tous les appelants échappent au moment de l'écrire. Rendu
+     * déjà échappé, il ressortirait en `l&amp;#039;ouvrage`.
+     */
     public static function categorie(?string $cle): string
     {
-        return self::CATEGORIES[(string) $cle] ?? (string) $cle;
+        $cle = (string) $cle;
+
+        if (Lexique::existe('archive.cat.' . $cle)) {
+            return Lexique::brut('archive.cat.' . $cle);
+        }
+
+        return self::CATEGORIES[$cle] ?? $cle;
     }
 
     /** Pictogramme d'une catégorie ; chaîne vide si elle est inconnue. */

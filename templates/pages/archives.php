@@ -16,12 +16,12 @@ use App\Model\Media;
 $titreCat = $categorie === null ? null : Archive::categorie($categorie);
 
 $titre = $titreCat === null
-    ? t('archives.titre_page')
-    : t('archives.titre_page_cat', ['categorie' => $titreCat]);
+    ? t_nu('archives.titre_page')
+    : t_nu('archives.titre_page_cat', ['categorie' => $titreCat]);
 
 $description = $titreCat === null
-    ? t('archives.description')
-    : t('archives.description_cat', ['categorie' => $titreCat]);
+    ? t_nu('archives.description')
+    : t_nu('archives.description_cat', ['categorie' => $titreCat]);
 
 /** Toute adresse interne passe par la langue courante (lot G1). */
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);

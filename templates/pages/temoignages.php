@@ -11,8 +11,8 @@ use App\Core\Csrf;
 use App\Core\Langue;
 use App\Core\View;
 
-$titre       = t('temoignages.titre_page');
-$description = t('temoignages.description');
+$titre       = t_nu('temoignages.titre_page');
+$description = t_nu('temoignages.description');
 
 /** Valeur à réafficher après une erreur — la saisie d'abord, le vide ensuite. */
 $val = static function (string $nom) use ($valeurs): string {

@@ -7,7 +7,7 @@
  */
 
 use App\Core\Admin;
-use App\Core\DateFr;
+use App\Core\DateLisible;
 use App\Core\View;
 use App\Model\Contribution;
 
@@ -70,7 +70,7 @@ foreach ($lignes as $l) {
                     $n = count(Contribution::fichiers($id));
                   ?>
                   <tr>
-                    <td class="text-muted"><?= View::e(DateFr::longue((string) $ligne['recu_le'])) ?></td>
+                    <td class="text-muted"><?= View::e(DateLisible::longue((string) $ligne['recu_le'])) ?></td>
                     <td>
                       <a class="pgy-lien-fiche" href="<?= Admin::url('/contributions/' . $id) ?>">
                         <?= View::e($qui) ?>

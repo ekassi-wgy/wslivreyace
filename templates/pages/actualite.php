@@ -7,7 +7,7 @@
  * compris le JSON-LD, qui est écrit dans un `<script>` (voir plus bas).
  */
 
-use App\Core\DateFr;
+use App\Core\DateLisible;
 use App\Core\Langue;
 use App\Core\Site;
 use App\Core\View;
@@ -15,12 +15,12 @@ use App\Model\Actualite;
 use App\Model\Media;
 
 $categorie = Actualite::categorie((string) $actu['categorie']);
-$dateTexte = DateFr::longueTexte((string) $actu['publie_le']);
+$dateTexte = DateLisible::longueTexte((string) $actu['publie_le']);
 $chapo     = trim((string) ($actu['chapo'] ?? ''));
 $source    = trim((string) ($actu['source'] ?? ''));
 $sourceUrl = trim((string) ($actu['source_url'] ?? ''));
 
-$titre = t('actualite.titre_page', ['titre' => (string) $actu['titre']]);
+$titre = t_nu('actualite.titre_page', ['titre' => (string) $actu['titre']]);
 
 /* La description de partage : le chapô s'il existe, sinon l'entrée du texte.
    Coupée sur un mot entier — une phrase tranchée au milieu d'un mot se voit
@@ -54,7 +54,7 @@ $donneesLd = array_filter([
     '@context'         => 'https://schema.org',
     '@type'            => 'NewsArticle',
     'headline'         => (string) $actu['titre'],
-    'datePublished'    => DateFr::iso((string) $actu['publie_le']),
+    'datePublished'    => DateLisible::iso((string) $actu['publie_le']),
     'inLanguage'       => 'fr',
     'mainEntityOfPage' => Site::url(Langue::chemin('/actualites/' . $actu['slug'])),
     'description'      => $description,
@@ -78,7 +78,7 @@ $ld = json_encode(
   <div class="shell">
     <div class="row">
       <div class="col-lg-2">
-        <p class="section-num reveal"><?= View::e(DateFr::annee((string) $actu['publie_le'])) ?></p>
+        <p class="section-num reveal"><?= View::e(DateLisible::annee((string) $actu['publie_le'])) ?></p>
       </div>
       <div class="col-lg-8">
         <?php /* Fil d'Ariane et `BreadcrumbList` (lot G9). Une fiche partagée
@@ -93,8 +93,8 @@ $ld = json_encode(
         <h1 class="t-d1 reveal"><?= View::e((string) $actu['titre']) ?></h1>
 
         <p class="article__meta reveal">
-          <time datetime="<?= View::e(DateFr::iso((string) $actu['publie_le'])) ?>">
-            <?= DateFr::longue((string) $actu['publie_le']) ?>
+          <time datetime="<?= View::e(DateLisible::iso((string) $actu['publie_le'])) ?>">
+            <?= DateLisible::longue((string) $actu['publie_le']) ?>
           </time>
           <?php if ($source !== ''): ?>
             <span class="article__organe"><?= View::e($source) ?></span>
@@ -183,8 +183,8 @@ $ld = json_encode(
         <div class="news">
 <?php foreach ($autres as $a): ?>
           <a class="news__i reveal" href="/actualites/<?= View::e((string) $a['slug']) ?>">
-            <time class="news__date" datetime="<?= View::e(DateFr::iso((string) $a['publie_le'])) ?>">
-              <?= DateFr::longue((string) $a['publie_le']) ?>
+            <time class="news__date" datetime="<?= View::e(DateLisible::iso((string) $a['publie_le'])) ?>">
+              <?= DateLisible::longue((string) $a['publie_le']) ?>
             </time>
             <span class="news__t"><?= View::e((string) $a['titre']) ?></span>
             <span class="news__cat"><?= View::e(Actualite::categorie((string) $a['categorie'])) ?></span>

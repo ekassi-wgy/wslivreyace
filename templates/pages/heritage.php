@@ -14,8 +14,8 @@ use App\Core\View;
 use App\Model\Heritage;
 use App\Model\Media;
 
-$titre       = t('heritage.titre_page');
-$description = t('heritage.description');
+$titre       = t_nu('heritage.titre_page');
+$description = t_nu('heritage.description');
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
 

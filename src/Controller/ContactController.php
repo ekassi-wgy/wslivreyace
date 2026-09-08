@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Core\Lexique;
+use App\Core\Langue;
 use App\Core\Config;
 use App\Core\Csrf;
 use App\Core\Debit;
@@ -81,16 +83,16 @@ final class ContactController
 
         Session::oublier('_contact_ouvert_le');
 
-        Session::message('succes', sprintf(
-            'Merci, %s. Votre message est bien arrivé et sera lu. '
-            . 'La réponse partira vers %s.',
-            $v->valeur('nom'),
-            $v->valeur('email')
-        ));
+        Session::message('succes', Lexique::nu('contact.succes', [
+            'nom'   => $v->valeur('nom'),
+            'email' => $v->valeur('email'),
+        ]));
 
         // Redirection après écriture : sans elle, un rafraîchissement de page
         // renverrait le même message.
-        header('Location: /contact#message', true, 303);
+        // Le préfixe de langue voyage avec la redirection : sans lui, un
+        // envoi depuis `/en/contact` renverrait le visiteur au français.
+        header('Location: ' . Langue::chemin('/contact') . '#message', true, 303);
         exit;
     }
 
@@ -110,18 +112,23 @@ final class ContactController
     {
         $v = new Validator($post);
 
-        $v->requis('nom', 'Votre nom')->longueur('nom', 'Votre nom', 2, 160)
-          ->requis('email', 'Votre adresse électronique')
-          ->courriel('email', 'Votre adresse électronique')
-          ->longueur('email', 'Votre adresse électronique', 0, 180)
-          ->parmi('sujet', 'Motif', array_keys(Message::SUJETS))
-          ->requis('contenu', 'Votre message')
-          ->longueur('contenu', 'Votre message', 20, 5000);
+        // Les libellés viennent du lexique : ils sont repris tels quels dans
+        // le message d'erreur que le visiteur lit (lot G11).
+        $nom     = Lexique::nu('champ.nom');
+        $email   = Lexique::nu('champ.email');
+        $message = Lexique::nu('champ.message');
+
+        $v->requis('nom', $nom)->longueur('nom', $nom, 2, 160)
+          ->requis('email', $email)
+          ->courriel('email', $email)
+          ->longueur('email', $email, 0, 180)
+          ->parmi('sujet', Lexique::nu('champ.motif'), array_keys(Message::SUJETS))
+          ->requis('contenu', $message)
+          ->longueur('contenu', $message, 20, 5000);
 
         // Piège à robots : champ masqué et retiré aux lecteurs d'écran.
         if (trim((string) ($post[self::LEURRE] ?? '')) !== '') {
-            $v->erreur('_global', 'Envoi refusé : un champ réservé au filtrage a été rempli. '
-                . 'Si vous voyez ce message par erreur, laissez le champ « site web » vide.');
+            $v->erreur('_global', Lexique::nu('form.leurre_refus'));
         }
 
         // Délai minimal. Le refus est dit, jamais silencieux : quelqu'un qui a
@@ -129,8 +136,7 @@ final class ContactController
         $ouvert = Session::get('_contact_ouvert_le');
 
         if (is_int($ouvert) && time() - $ouvert < self::DELAI_MINIMAL) {
-            $v->erreur('_global', 'Envoi trop rapide pour être relu. Reprenez votre texte '
-                . 'et renvoyez-le : il est resté dans le champ.');
+            $v->erreur('_global', Lexique::nu('form.trop_rapide'));
         }
 
         return $v;

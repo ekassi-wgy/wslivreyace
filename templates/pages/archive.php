@@ -11,7 +11,7 @@
  * ils dépendent du premier fichier, que le gabarit n'a pas à aller chercher.
  */
 
-use App\Core\DateFr;
+use App\Core\DateLisible;
 use App\Core\Langue;
 use App\Core\Site;
 use App\Core\View;

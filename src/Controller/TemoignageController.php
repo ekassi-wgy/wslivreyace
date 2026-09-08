@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Core\Lexique;
+use App\Core\Langue;
 use App\Core\Csrf;
 use App\Core\Debit;
 use App\Core\Session;
@@ -86,15 +88,14 @@ final class TemoignageController
 
         Session::oublier('_temoignage_ouvert_le');
 
-        Session::message('succes', sprintf(
-            'Merci, %s. Votre témoignage est bien arrivé. Il sera lu avant publication : '
-            . 'il porte sur une personne réelle, et rien ne paraît ici sans relecture.',
-            $v->valeur('auteur_nom')
-        ));
+        Session::message('succes', Lexique::nu('temoignages.succes', [
+            'nom' => $v->valeur('auteur_nom'),
+        ]));
 
         // Redirection après écriture : sans elle, un rafraîchissement de page
         // redéposerait le même témoignage.
-        header('Location: /temoignages#message', true, 303);
+        // Voir ContactController : le préfixe de langue suit la redirection.
+        header('Location: ' . Langue::chemin('/temoignages') . '#message', true, 303);
         exit;
     }
 
@@ -105,13 +106,19 @@ final class TemoignageController
     {
         $v = new Validator($post);
 
-        $v->requis('auteur_nom', 'Votre nom')->longueur('auteur_nom', 'Votre nom', 2, 160)
-          ->longueur('auteur_fonction', 'En quelle qualité', 0, 200)
-          ->requis('auteur_email', 'Votre adresse électronique')
-          ->courriel('auteur_email', 'Votre adresse électronique')
-          ->longueur('auteur_email', 'Votre adresse électronique', 0, 180)
-          ->requis('contenu', 'Votre témoignage')
-          ->longueur('contenu', 'Votre témoignage', 40, 5000);
+        // Les libellés viennent du lexique : le visiteur les relit dans le
+        // message d'erreur, ils doivent donc suivre la langue (lot G11).
+        $nom     = Lexique::nu('champ.nom');
+        $email   = Lexique::nu('champ.email');
+        $texte   = Lexique::nu('champ.temoignage');
+
+        $v->requis('auteur_nom', $nom)->longueur('auteur_nom', $nom, 2, 160)
+          ->longueur('auteur_fonction', Lexique::nu('champ.qualite'), 0, 200)
+          ->requis('auteur_email', $email)
+          ->courriel('auteur_email', $email)
+          ->longueur('auteur_email', $email, 0, 180)
+          ->requis('contenu', $texte)
+          ->longueur('contenu', $texte, 40, 5000);
 
         // L'adresse est exigée alors qu'elle ne s'affiche jamais : le
         // modérateur doit pouvoir revenir vers le signataire avant de publier
@@ -120,8 +127,7 @@ final class TemoignageController
         // Piège à robots. Le champ est masqué et retiré aux lecteurs d'écran ;
         // seul un automate le remplit.
         if (trim((string) ($post[self::LEURRE] ?? '')) !== '') {
-            $v->erreur('_global', "Envoi refusé : un champ réservé au filtrage a été rempli. "
-                . 'Si vous voyez ce message par erreur, laissez le champ « site web » vide.');
+            $v->erreur('_global', Lexique::nu('form.leurre_refus'));
         }
 
         // Délai minimal. Le refus est explicite plutôt que silencieux : perdre
@@ -130,8 +136,7 @@ final class TemoignageController
         $ouvert = Session::get('_temoignage_ouvert_le');
 
         if (is_int($ouvert) && time() - $ouvert < self::DELAI_MINIMAL) {
-            $v->erreur('_global', 'Envoi trop rapide pour être relu. Reprenez votre texte '
-                . 'et renvoyez-le : il est resté dans le champ.');
+            $v->erreur('_global', Lexique::nu('form.trop_rapide'));
         }
 
         return $v;

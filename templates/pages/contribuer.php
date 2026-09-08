@@ -11,8 +11,8 @@ use App\Core\Langue;
 use App\Core\Televersement;
 use App\Core\View;
 
-$titre       = t('contribuer.titre_page');
-$description = t('contribuer.description');
+$titre       = t_nu('contribuer.titre_page');
+$description = t_nu('contribuer.description');
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
 /**

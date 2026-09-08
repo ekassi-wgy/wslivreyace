@@ -9,7 +9,7 @@
  */
 
 use App\Core\Langue;
-use App\Core\DateFr;
+use App\Core\DateLisible;
 use App\Core\Site;
 use App\Core\View;
 use App\Model\Media;
@@ -22,7 +22,7 @@ $ville     = trim((string) ($evenement['ville'] ?? ''));
 $adresse   = implode(', ', array_filter([$lieu, $ville]));
 $inscrire  = trim((string) ($evenement['inscription_url'] ?? ''));
 
-$titre = t('evenement.titre_page', ['titre' => (string) $evenement['titre']]);
+$titre = t_nu('evenement.titre_page', ['titre' => (string) $evenement['titre']]);
 
 $description = trim(mb_strimwidth(
     preg_replace('/\s+/u', ' ', (string) ($evenement['description'] ?? '')) ?? '',
@@ -37,7 +37,7 @@ if ($description === '') {
         '%s — %s%s',
         (string) $evenement['titre'],
         $adresse === '' ? '' : $adresse . ', ',
-        DateFr::longueTexte($debut)
+        DateLisible::longueTexte($debut)
     ));
 }
 
@@ -62,8 +62,8 @@ $donneesLd = array_filter([
     '@context'         => 'https://schema.org',
     '@type'            => 'Event',
     'name'             => (string) $evenement['titre'],
-    'startDate'        => DateFr::isoHeure($debut),
-    'endDate'          => DateFr::isoHeure(is_string($fin) ? $fin : null),
+    'startDate'        => DateLisible::isoHeure($debut),
+    'endDate'          => DateLisible::isoHeure(is_string($fin) ? $fin : null),
     'eventStatus'      => $annule
         ? 'https://schema.org/EventCancelled'
         : 'https://schema.org/EventScheduled',
@@ -95,7 +95,7 @@ $ld = json_encode(
   <div class="shell">
     <div class="row">
       <div class="col-lg-2">
-        <p class="section-num reveal"><?= View::e(DateFr::annee($debut)) ?></p>
+        <p class="section-num reveal"><?= View::e(DateLisible::annee($debut)) ?></p>
       </div>
       <div class="col-lg-8">
         <?php $fil = [
@@ -109,8 +109,8 @@ $ld = json_encode(
         <h1 class="t-d1 reveal"><?= View::e((string) $evenement['titre']) ?></h1>
 
         <p class="article__meta reveal">
-          <time datetime="<?= View::e(DateFr::isoHeure($debut)) ?>">
-            <?= DateFr::intervalle($debut, is_string($fin) ? $fin : null) ?>
+          <time datetime="<?= View::e(DateLisible::isoHeure($debut)) ?>">
+            <?= DateLisible::intervalle($debut, is_string($fin) ? $fin : null) ?>
           </time>
           <?php /* Le lieu se lit, il ne s'étiquette pas : une adresse en
                    capitales espacées — le traitement que porte l'organe de

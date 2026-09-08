@@ -18,8 +18,8 @@ use App\Core\Csrf;
 use App\Core\View;
 use App\Model\Message;
 
-$titre       = t('contact.titre_page');
-$description = t('contact.description');
+$titre       = t_nu('contact.titre_page');
+$description = t_nu('contact.description');
 
 /** Valeur à réafficher après une erreur — la saisie d'abord, le vide ensuite. */
 $val = static function (string $nom) use ($valeurs): string {
@@ -166,9 +166,9 @@ $telLien = trim((string) ($contact['tel_lien'] ?? ''));
           <div class="champ">
             <label class="form-label champ__titre" for="sujet"><?= t('contact.motif') ?></label>
             <select id="sujet" name="sujet" class="<?= $classe('sujet') ?>"<?= $aria('sujet') ?>>
-              <?php foreach (Message::SUJETS as $cle => $libelle): ?>
+              <?php foreach (array_keys(Message::SUJETS) as $cle): ?>
                 <option value="<?= View::e($cle) ?>"<?= $val('sujet') === $cle ? ' selected' : '' ?>>
-                  <?= View::e($libelle) ?>
+                  <?= View::e(Message::sujet($cle)) ?>
                 </option>
               <?php endforeach; ?>
             </select>

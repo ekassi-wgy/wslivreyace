@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Core\Lexique;
+use App\Core\Langue;
 use App\Core\Csrf;
 use App\Core\Debit;
 use App\Core\Quarantaine;
@@ -59,11 +61,9 @@ final class ContributionController
          * trois scans.
          */
         if (\App\Core\Televersement::envoiTronque()) {
-            self::afficher([], ['_global' => sprintf(
-                "L'envoi dépasse ce que le serveur accepte en une fois (%s au total). "
-                . 'Envoyez vos pièces en plusieurs fois.',
-                \App\Core\Televersement::poids(\App\Core\Televersement::limiteServeur())
-            )], 413);
+            self::afficher([], ['_global' => Lexique::nu('contribuer.envoi_tronque', [
+                'poids' => \App\Core\Televersement::poids(\App\Core\Televersement::limiteServeur()),
+            ])], 413);
         }
 
         Csrf::exiger();
@@ -109,16 +109,20 @@ final class ContributionController
 
         Session::oublier('_contribution_ouvert_le');
 
-        Session::message('succes', sprintf(
-            'Merci, %s. Votre contribution est bien arrivée%s. Elle sera examinée avant '
-            . "toute publication — c'est la règle du fonds, et elle vaut pour toutes les "
-            . 'pièces. Nous vous écrirons à %s.',
-            $v->valeur('nom'),
-            $fichiers === [] ? '' : sprintf(' avec %d fichier%s', count($fichiers), count($fichiers) > 1 ? 's' : ''),
-            $v->valeur('email')
-        ));
+        $combien = match (true) {
+            $fichiers === []      => '',
+            count($fichiers) > 1  => Lexique::nu('contribuer.avec_fichiers',   ['nombre' => count($fichiers)]),
+            default               => Lexique::nu('contribuer.avec_un_fichier', ['nombre' => count($fichiers)]),
+        };
 
-        header('Location: /contribuer#message', true, 303);
+        Session::message('succes', Lexique::nu('contribuer.succes', [
+            'nom'      => $v->valeur('nom'),
+            'fichiers' => $combien,
+            'email'    => $v->valeur('email'),
+        ]));
+
+        // Voir ContactController : le préfixe de langue suit la redirection.
+        header('Location: ' . Langue::chemin('/contribuer') . '#message', true, 303);
         exit;
     }
 
@@ -129,16 +133,21 @@ final class ContributionController
     {
         $v = new Validator($post);
 
-        $v->requis('nom', 'Votre nom')->longueur('nom', 'Votre nom', 2, 120)
-          ->longueur('prenom', 'Votre prénom', 0, 120)
-          ->requis('email', 'Votre adresse électronique')
-          ->courriel('email', 'Votre adresse électronique')
-          ->longueur('email', 'Votre adresse électronique', 0, 180)
-          ->longueur('telephone', 'Votre téléphone', 0, 40)
-          ->requis('description', "Description de l'archive")
-          ->longueur('description', "Description de l'archive", 20, 3000)
-          ->longueur('date_approx', 'Date approximative', 0, 60)
-          ->longueur('source', 'Origine de la pièce', 0, 300);
+        // Voir TemoignageController : les libellés suivent la langue (lot G11).
+        $nom         = Lexique::nu('champ.nom');
+        $email       = Lexique::nu('champ.email');
+        $description = Lexique::nu('champ.description');
+
+        $v->requis('nom', $nom)->longueur('nom', $nom, 2, 120)
+          ->longueur('prenom', Lexique::nu('champ.prenom'), 0, 120)
+          ->requis('email', $email)
+          ->courriel('email', $email)
+          ->longueur('email', $email, 0, 180)
+          ->longueur('telephone', Lexique::nu('champ.telephone'), 0, 40)
+          ->requis('description', $description)
+          ->longueur('description', $description, 20, 3000)
+          ->longueur('date_approx', Lexique::nu('champ.date_approx'), 0, 60)
+          ->longueur('source', Lexique::nu('champ.origine'), 0, 300);
 
         /*
          * La cession de droits, et c'est une exigence juridique et non une
@@ -153,7 +162,7 @@ final class ContributionController
         // Piège à robots : champ masqué, retiré aux lecteurs d'écran. Un
         // visiteur ne le voit pas, un robot le remplit.
         if (trim((string) ($post[self::LEURRE] ?? '')) !== '') {
-            $v->erreur('_global', "Votre envoi n'a pas pu être traité.");
+            $v->erreur('_global', Lexique::nu('contribuer.echec'));
         }
 
         // Délai minimal. En session et non dans un champ caché : un champ
@@ -161,7 +170,7 @@ final class ContributionController
         $ouvert = (int) Session::get('_contribution_ouvert_le', 0);
 
         if ($ouvert > 0 && (time() - $ouvert) < self::DELAI_MINIMAL) {
-            $v->erreur('_global', 'Votre envoi est parti un peu vite. Réessayez dans quelques secondes.');
+            $v->erreur('_global', Lexique::nu('contribuer.trop_vite'));
         }
 
         return $v;

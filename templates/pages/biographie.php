@@ -22,8 +22,8 @@ use App\Model\Periode;
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
 
-$titre       = t('biographie.titre_page');
-$description = t('biographie.description');
+$titre       = t_nu('biographie.titre_page');
+$description = t_nu('biographie.description');
 $ld          = <<<'JSONLD'
 {
   "@context": "https://schema.org", "@type": "Person",

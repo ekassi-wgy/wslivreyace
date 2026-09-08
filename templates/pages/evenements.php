@@ -12,11 +12,11 @@
  */
 
 use App\Core\Langue;
-use App\Core\DateFr;
+use App\Core\DateLisible;
 use App\Core\View;
 
-$titre       = t('evenements.titre_page');
-$description = t('evenements.description');
+$titre       = t_nu('evenements.titre_page');
+$description = t_nu('evenements.description');
 
 /**
  * Rendu d'une entrée d'agenda. Écrit une fois : les deux listes n'affichent
@@ -31,10 +31,10 @@ $entree = static function (array $e, bool $passe): void {
     <li class="agenda__i reveal<?= $annule ? ' est-annule' : '' ?>">
       <a class="agenda__lien" href="<?= Langue::chemin('/evenements/' . (string) $e['slug']) ?>">
 
-        <time class="agenda__quand" datetime="<?= View::e(DateFr::isoHeure($debut)) ?>">
+        <time class="agenda__quand" datetime="<?= View::e(DateLisible::isoHeure($debut)) ?>">
           <span class="agenda__jour"><?= (int) date('j', strtotime($debut)) ?></span>
-          <span class="agenda__mois"><?= View::e(DateFr::moisCourt($debut)) ?></span>
-          <span class="agenda__an"><?= View::e(DateFr::annee($debut)) ?></span>
+          <span class="agenda__mois"><?= View::e(DateLisible::moisCourt($debut)) ?></span>
+          <span class="agenda__an"><?= View::e(DateLisible::annee($debut)) ?></span>
         </time>
 
         <span class="agenda__corps">
@@ -44,7 +44,7 @@ $entree = static function (array $e, bool $passe): void {
               <?= View::e(implode(', ', array_filter([$lieu, $ville]))) ?>
             </span>
           <?php endif; ?>
-          <span class="agenda__horaire"><?= DateFr::intervalle($debut, $e['fin_le'] ?? null) ?></span>
+          <span class="agenda__horaire"><?= DateLisible::intervalle($debut, $e['fin_le'] ?? null) ?></span>
         </span>
 
         <?php if ($annule): ?>

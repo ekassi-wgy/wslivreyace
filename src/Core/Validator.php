@@ -16,6 +16,18 @@ namespace App\Core;
  */
 final class Validator
 {
+    /*
+     * **Les messages viennent du lexique depuis le lot G11**, et par
+     * `Lexique::nu()` : ils sont rendus par les gabarits, qui les échappent
+     * comme n'importe quelle autre chaîne. Échappés ici, ils ressortiraient
+     * échappés deux fois.
+     *
+     * Le libellé du champ est fourni par l'appelant plutôt que déduit de son
+     * nom technique : « Votre adresse électronique » se lit, « auteur_email »
+     * non. Les formulaires publics le prennent au lexique, le back-office
+     * l'écrit en français — il ne bascule pas.
+     */
+
     /** @var array<string,mixed> */
     private array $donnees;
 
@@ -38,7 +50,7 @@ final class Validator
     public function requis(string $champ, string $libelle): self
     {
         if ($this->valeur($champ) === '') {
-            $this->erreur($champ, "Le champ « $libelle » est obligatoire.");
+            $this->erreur($champ, Lexique::nu('validation.requis', ['libelle' => $libelle]));
         }
         return $this;
     }
@@ -47,7 +59,7 @@ final class Validator
     {
         $v = $this->valeur($champ);
         if ($v !== '' && !filter_var($v, FILTER_VALIDATE_EMAIL)) {
-            $this->erreur($champ, "« $libelle » n'est pas une adresse électronique valide.");
+            $this->erreur($champ, Lexique::nu('validation.courriel', ['libelle' => $libelle]));
         }
         return $this;
     }
@@ -63,9 +75,9 @@ final class Validator
         $n = mb_strlen($v, 'UTF-8');
 
         if ($n < $min) {
-            $this->erreur($champ, "« $libelle » doit faire au moins $min caractères.");
+            $this->erreur($champ, Lexique::nu('validation.trop_court', ['libelle' => $libelle, 'min' => $min]));
         } elseif ($max !== null && $n > $max) {
-            $this->erreur($champ, "« $libelle » ne doit pas dépasser $max caractères.");
+            $this->erreur($champ, Lexique::nu('validation.trop_long', ['libelle' => $libelle, 'max' => $max]));
         }
         return $this;
     }
@@ -75,7 +87,7 @@ final class Validator
     {
         $v = $this->valeur($champ);
         if ($v !== '' && !in_array($v, $valeurs, true)) {
-            $this->erreur($champ, "La valeur de « $libelle » n'est pas reconnue.");
+            $this->erreur($champ, Lexique::nu('validation.inconnue', ['libelle' => $libelle]));
         }
         return $this;
     }
@@ -87,14 +99,14 @@ final class Validator
             return $this;
         }
         if (filter_var($v, FILTER_VALIDATE_INT) === false) {
-            $this->erreur($champ, "« $libelle » doit être un nombre entier.");
+            $this->erreur($champ, Lexique::nu('validation.entier', ['libelle' => $libelle]));
             return $this;
         }
         $n = (int) $v;
         if ($min !== null && $n < $min) {
-            $this->erreur($champ, "« $libelle » ne peut pas être inférieur à $min.");
+            $this->erreur($champ, Lexique::nu('validation.min', ['libelle' => $libelle, 'min' => $min]));
         } elseif ($max !== null && $n > $max) {
-            $this->erreur($champ, "« $libelle » ne peut pas dépasser $max.");
+            $this->erreur($champ, Lexique::nu('validation.max', ['libelle' => $libelle, 'max' => $max]));
         }
         return $this;
     }
@@ -116,7 +128,7 @@ final class Validator
         $schema = strtolower((string) parse_url($v, PHP_URL_SCHEME));
 
         if (!filter_var($v, FILTER_VALIDATE_URL) || !in_array($schema, ['http', 'https'], true)) {
-            $this->erreur($champ, "« $libelle » doit être une adresse web commençant par http:// ou https://.");
+            $this->erreur($champ, Lexique::nu('validation.url', ['libelle' => $libelle]));
         }
         return $this;
     }
@@ -130,7 +142,7 @@ final class Validator
         }
         $d = \DateTimeImmutable::createFromFormat('Y-m-d', $v);
         if ($d === false || $d->format('Y-m-d') !== $v) {
-            $this->erreur($champ, "« $libelle » n'est pas une date valide.");
+            $this->erreur($champ, Lexique::nu('validation.date', ['libelle' => $libelle]));
         }
         return $this;
     }

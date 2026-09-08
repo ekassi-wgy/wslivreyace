@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Les deux seules fonctions globales du projet, et elles ne sont pas là par
+ * Les trois seules fonctions globales du projet, et elles ne sont pas là par
  * commodité.
  *
  * Tout le reste passe par des classes : c'est plus sûr, c'est cherchable, et
@@ -31,6 +31,20 @@ if (!function_exists('t')) {
     function t(string $cle, array $valeurs = []): string
     {
         return Lexique::t($cle, $valeurs);
+    }
+}
+
+if (!function_exists('t_nu')) {
+    /**
+     * Un texte d'interface entièrement nu, pour un contexte qui échappera plus
+     * loin : `$titre` et `$description` d'un gabarit de page, que la mise en
+     * page écrit elle-même dans des attributs. Jamais dans le corps d'une page.
+     *
+     * @param array<string,string|int> $valeurs
+     */
+    function t_nu(string $cle, array $valeurs = []): string
+    {
+        return Lexique::nu($cle, $valeurs);
     }
 }
 

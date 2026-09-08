@@ -1,8 +1,8 @@
 <?php
 /** Gabarit de page — le corps seul ; l'en-tête, la navigation et le pied
     viennent de templates/layout.php. */
-$titre       = t('accueil.titre_page');
-$description = t('accueil.description');
+$titre       = t_nu('accueil.titre_page');
+$description = t_nu('accueil.description');
 $ld = json_encode([
     '@context'   => 'https://schema.org',
     '@type'      => 'Book',
@@ -449,8 +449,8 @@ $compte = [
           <div class="news">
             <?php foreach ($dernieres as $a): ?>
               <a class="news__i reveal" href="<?= App\Core\Langue::chemin('/actualites/' . (string) $a['slug']) ?>">
-                <time class="news__date" datetime="<?= App\Core\View::e(App\Core\DateFr::iso((string) $a['publie_le'])) ?>">
-                  <?= App\Core\DateFr::longue((string) $a['publie_le']) ?>
+                <time class="news__date" datetime="<?= App\Core\View::e(App\Core\DateLisible::iso((string) $a['publie_le'])) ?>">
+                  <?= App\Core\DateLisible::longue((string) $a['publie_le']) ?>
                 </time>
                 <span class="news__t"><?= App\Core\View::e((string) $a['titre']) ?></span>
                 <span class="news__cat"><?= App\Core\View::e(App\Model\Actualite::categorie((string) $a['categorie'])) ?></span>

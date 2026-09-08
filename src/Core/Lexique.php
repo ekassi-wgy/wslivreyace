@@ -75,6 +75,25 @@ final class Lexique
         return self::remplacer(self::lire($cle), $valeurs, true);
     }
 
+    /**
+     * Un texte d'interface **entièrement nu**, pour un contexte qui échappera
+     * plus loin : le titre de page et la description de partage, que
+     * `templates/layout.php` écrit lui-même dans des attributs et échappe donc
+     * une fois. Passé par `t()`, « l'État » y ressortait en
+     * `l&amp;#039;État` — échappé deux fois.
+     *
+     * Les valeurs insérées ne sont pas échappées non plus, pour la même
+     * raison : elles subiront le même traitement en aval. **Ne pas l'employer
+     * dans un gabarit qui écrit directement dans la page** — c'est ce que
+     * `t()` et `brut()` sont là pour faire.
+     *
+     * @param array<string,string|int> $valeurs
+     */
+    public static function nu(string $cle, array $valeurs = []): string
+    {
+        return self::remplacer(self::lire($cle), $valeurs, false);
+    }
+
     /** La clé existe-t-elle au catalogue français ? Sert aux essais. */
     public static function existe(string $cle): bool
     {

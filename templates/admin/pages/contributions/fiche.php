@@ -10,7 +10,7 @@
 
 use App\Core\Admin;
 use App\Core\Csrf;
-use App\Core\DateFr;
+use App\Core\DateLisible;
 use App\Core\Televersement;
 use App\Core\View;
 use App\Model\Contribution;
@@ -25,7 +25,7 @@ $attente = $ligne['statut'] === 'en_attente';
   <div>
     <span class="pgy-surtitre">Modération</span>
     <h1><?= View::e($qui) ?></h1>
-    <p>Reçue le <?= View::e(DateFr::longue((string) $ligne['recu_le'])) ?>
+    <p>Reçue le <?= View::e(DateLisible::longue((string) $ligne['recu_le'])) ?>
        &middot; <span class="pgy-statut pgy-statut--<?= View::e((string) $ligne['statut']) ?>">
          <?= View::e(Contribution::STATUTS[$ligne['statut']] ?? (string) $ligne['statut']) ?></span></p>
   </div>
@@ -53,7 +53,7 @@ $attente = $ligne['statut'] === 'en_attente';
           <dt>Cession de droits</dt>
           <dd>
             <?php if (!empty($ligne['droits_le'])): ?>
-              Acceptée le <?= View::e(DateFr::longue((string) $ligne['droits_le'])) ?>
+              Acceptée le <?= View::e(DateLisible::longue((string) $ligne['droits_le'])) ?>
             <?php else: ?>
               <span class="pgy-statut pgy-statut--en_attente">non enregistrée</span>
             <?php endif; ?>
@@ -155,7 +155,7 @@ $attente = $ligne['statut'] === 'en_attente';
         <h4 class="card-title card-title-dash">Décision</h4>
         <p class="mb-2">
           <?= View::e(Contribution::STATUTS[$ligne['statut']] ?? '') ?>
-          le <?= View::e(DateFr::longue((string) $ligne['traite_le'])) ?>.
+          le <?= View::e(DateLisible::longue((string) $ligne['traite_le'])) ?>.
         </p>
         <?php if (!empty($ligne['note'])): ?>
           <p class="pgy-sous"><?= nl2br(View::e((string) $ligne['note'])) ?></p>

@@ -13,10 +13,10 @@ use App\Core\Recherche;
 use App\Core\View;
 
 $titre = $terme === ''
-    ? t('recherche.titre_page')
-    : t('recherche.titre_terme', ['terme' => $terme]);
+    ? t_nu('recherche.titre_page')
+    : t_nu('recherche.titre_terme', ['terme' => $terme]);
 
-$description = t('recherche.description');
+$description = t_nu('recherche.description');
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
 ?>

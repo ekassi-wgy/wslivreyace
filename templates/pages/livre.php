@@ -1,8 +1,8 @@
 <?php
 /** Gabarit de page — le corps seul ; l'en-tête, la navigation et le pied
     viennent de templates/layout.php. */
-$titre       = t('livre.titre_page');
-$description = t('livre.description');
+$titre       = t_nu('livre.titre_page');
+$description = t_nu('livre.description');
 $ld = json_encode([
     '@context'   => 'https://schema.org',
     '@type'      => 'Book',
@@ -15,7 +15,7 @@ use App\Core\Langue;
 use App\Core\View;
 use App\Model\Actualite;
 use App\Model\Evenement;
-use App\Core\DateFr;
+use App\Core\DateLisible;
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
 
@@ -299,7 +299,7 @@ $blocPreface = static function (array $preface, bool $enAvant): void {
               <li class="reveal">
                 <a href="<?= $lien('/evenements/' . $e['slug']) ?>"><?= View::e((string) $e['titre']) ?></a>
                 <span class="liste-nue__meta">
-                  <?= View::e(DateFr::longue((string) $e["debut_le"])) ?><?php
+                  <?= View::e(DateLisible::longue((string) $e["debut_le"])) ?><?php
                     $ou = trim((string) ($e['ville'] ?? ''));
                     echo $ou === '' ? '' : ' · ' . View::e($ou);
                   ?>

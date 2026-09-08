@@ -16,8 +16,8 @@
 use App\Core\Langue;
 use App\Core\View;
 
-$titre       = t('e404.titre_page');
-$description = t('e404.description');
+$titre       = t_nu('e404.titre_page');
+$description = t_nu('e404.description');
 $robots      = 'noindex, follow';
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);

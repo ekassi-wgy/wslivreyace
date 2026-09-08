@@ -15,11 +15,11 @@
  */
 
 use App\Core\Langue;
-use App\Core\DateFr;
+use App\Core\DateLisible;
 use App\Core\View;
 
-$titre       = t('presse.titre_page');
-$description = t('presse.description');
+$titre       = t_nu('presse.titre_page');
+$description = t_nu('presse.description');
 
 $total = array_sum(array_map('count', $parAnnee));
 ?>
@@ -78,8 +78,8 @@ $total = array_sum(array_map('count', $parAnnee));
                     <span class="news__chapo"><?= View::e((string) $e['chapo']) ?></span>
                   <?php endif; ?>
                 </span>
-                <time class="news__cat news__cat--date" datetime="<?= View::e(DateFr::iso((string) $e['publie_le'])) ?>">
-                  <?= DateFr::longue((string) $e['publie_le']) ?>
+                <time class="news__cat news__cat--date" datetime="<?= View::e(DateLisible::iso((string) $e['publie_le'])) ?>">
+                  <?= DateLisible::longue((string) $e['publie_le']) ?>
                 </time>
               </a>
 <?php endforeach; ?>

@@ -17,8 +17,8 @@ use App\Core\Site;
 use App\Core\View;
 use App\Model\Archive;
 
-$titre       = t('discours.titre_page');
-$description = t('discours.description');
+$titre       = t_nu('discours.titre_page');
+$description = t_nu('discours.description');
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
 

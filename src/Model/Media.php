@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Model;
 
+use App\Core\Lexique;
 use App\Core\Database;
 use App\Core\Televersement;
 
@@ -523,6 +524,8 @@ final class Media extends Modele
             }
         }
 
-        return 'Archive photographique';
+        // Un texte de remplacement se lit à voix haute : il suit la langue
+        // de la page comme le reste (lot G11).
+        return Lexique::brut('media.alternative_defaut');
     }
 }

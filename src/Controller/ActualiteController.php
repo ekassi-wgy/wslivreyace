@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Core\DateFr;
+use App\Core\DateLisible;
 use App\Core\View;
 use App\Model\Actualite;
 use App\Model\Media;
@@ -125,7 +125,7 @@ final class ActualiteController
         $groupes = [];
 
         foreach ($entrees as $e) {
-            $annee = DateFr::annee((string) ($e['publie_le'] ?? ''));
+            $annee = DateLisible::annee((string) ($e['publie_le'] ?? ''));
             $groupes[$annee][] = $e;
         }
 

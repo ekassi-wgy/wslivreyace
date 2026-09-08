@@ -17,10 +17,10 @@ use App\Core\View;
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
 
-$titre       = t('auteur.titre_page', ['nom' => $nom, 'livre' => $livreTitre]);
+$titre       = t_nu('auteur.titre_page', ['nom' => $nom, 'livre' => $livreTitre]);
 $description = trim($qualite) !== ''
-    ? t('auteur.description', ['nom' => $nom, 'qualite' => $qualite, 'livre' => $livreTitre])
-    : t('auteur.description_sans_qualite', ['nom' => $nom, 'livre' => $livreTitre]);
+    ? t_nu('auteur.description', ['nom' => $nom, 'qualite' => $qualite, 'livre' => $livreTitre])
+    : t_nu('auteur.description_sans_qualite', ['nom' => $nom, 'livre' => $livreTitre]);
 
 $ld = json_encode(array_filter([
     '@context' => 'https://schema.org',

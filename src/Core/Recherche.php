@@ -205,7 +205,7 @@ final class Recherche
                     (string) ($a['chapo'] ?? ''),
                     (string) ($a['contenu'] ?? ''),
                 ]),
-                'date'     => DateFr::longue((string) $a['publie_le']),
+                'date'     => DateLisible::longue((string) $a['publie_le']),
                 'contexte' => Actualite::categorie((string) $a['categorie']),
             ];
         }
@@ -231,7 +231,7 @@ final class Recherche
                 'titre'    => (string) $e['titre'],
                 'chemin'   => '/evenements/' . (string) $e['slug'],
                 'extrait'  => self::extrait($terme, [(string) ($e['description'] ?? '')]),
-                'date'     => DateFr::longue((string) $e['debut_le']),
+                'date'     => DateLisible::longue((string) $e['debut_le']),
                 'contexte' => trim((string) ($e['ville'] ?? '')),
             ];
         }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Model;
 
+use App\Core\Lexique;
 use App\Core\Database;
 
 /**
@@ -147,9 +148,27 @@ final class Message extends Modele
         )->execute([$statut, $utilisateurId, $id]);
     }
 
-    /** Libellé d'affichage d'un sujet ; la clé brute si elle est inconnue. */
+    /**
+     * Libellé d'affichage d'un sujet, dans la langue de la page ; la clé brute
+     * si elle est inconnue.
+     *
+     * **La constante reste en français, et c'est délibéré** : elle peuple
+     * aussi la boîte de réception du back-office, qui est francophone et le
+     * reste. Le lexique ne recouvre que ce que le public lit, et une clé qui y
+     * manque retombe sur le français — le repli voulu (lot G11).
+     *
+     * `Lexique::brut()` et non `t()` : ce libellé rejoint des valeurs de base
+     * de données que tous les appelants échappent au moment de l'écrire. Rendu
+     * déjà échappé, il ressortirait en `l&amp;#039;ouvrage`.
+     */
     public static function sujet(?string $cle): string
     {
-        return self::SUJETS[(string) $cle] ?? (string) $cle;
+        $cle = (string) $cle;
+
+        if (Lexique::existe('message.sujet.' . $cle)) {
+            return Lexique::brut('message.sujet.' . $cle);
+        }
+
+        return self::SUJETS[$cle] ?? $cle;
     }
 }

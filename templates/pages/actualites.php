@@ -15,12 +15,12 @@
  */
 
 use App\Core\Langue;
-use App\Core\DateFr;
+use App\Core\DateLisible;
 use App\Core\View;
 use App\Model\Actualite;
 
-$titre       = t('actualites.titre_page');
-$description = t('actualites.description');
+$titre       = t_nu('actualites.titre_page');
+$description = t_nu('actualites.description');
 
 /** La pastille « Presse » cède sa place au lien vers la revue de presse. */
 $aPresse  = isset($comptes['presse']);
@@ -102,8 +102,8 @@ $courante = $categorie === null ? '' : Actualite::categorie($categorie);
           <div class="news">
 <?php foreach ($entrees as $e): ?>
             <a class="news__i reveal" href="<?= Langue::chemin('/actualites/' . (string) $e['slug']) ?>">
-              <time class="news__date" datetime="<?= View::e(DateFr::iso((string) $e['publie_le'])) ?>">
-                <?= DateFr::longue((string) $e['publie_le']) ?>
+              <time class="news__date" datetime="<?= View::e(DateLisible::iso((string) $e['publie_le'])) ?>">
+                <?= DateLisible::longue((string) $e['publie_le']) ?>
               </time>
               <span class="news__body">
                 <span class="news__t"><?= View::e((string) $e['titre']) ?></span>
