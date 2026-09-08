@@ -8,11 +8,11 @@
  */
 
 use App\Core\Csrf;
+use App\Core\Langue;
 use App\Core\View;
 
-$titre       = 'Témoignages — Philippe Grégoire Yacé : une destinée';
-$description = "Ceux qui ont connu Philippe Grégoire Yacé racontent. Déposez votre témoignage : "
-             . 'il sera lu avant publication.';
+$titre       = t('temoignages.titre_page');
+$description = t('temoignages.description');
 
 /** Valeur à réafficher après une erreur — la saisie d'abord, le vide ensuite. */
 $val = static function (string $nom) use ($valeurs): string {
@@ -42,12 +42,9 @@ $classe = static function (string $nom) use ($erreurs): string {
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal">01</p></div>
       <div class="col-lg-8">
-        <p class="kicker reveal">Témoignages</p>
-        <h1 class="t-d1 reveal">Ceux qui l'ont connu.</h1>
-        <p class="t-lead page-head__lead reveal">
-          Un compagnon de route, un élève, un adversaire d'un jour, un voisin de
-          quartier. Ce que l'histoire officielle ne retient pas se garde ici.
-        </p>
+        <p class="kicker reveal"><?= t('temoignages.kicker') ?></p>
+        <h1 class="t-d1 reveal"><?= t('temoignages.titre') ?></h1>
+        <p class="t-lead page-head__lead reveal"><?= t('temoignages.lead') ?></p>
       </div>
     </div>
     <div class="rule reveal"></div>
@@ -62,13 +59,10 @@ $classe = static function (string $nom) use ($erreurs): string {
 
       <div class="row">
         <div class="col-lg-7">
-          <p class="t-lead reveal">
-            <em>Aucun témoignage n'est encore publié.</em> Les premiers arriveront
-            par le formulaire ci-dessous ; chacun est lu avant de paraître.
-          </p>
+          <p class="t-lead reveal"><?= t_brut('temoignages.vide') ?></p>
           <p class="reveal" style="margin-top: var(--sp-5);">
             <a class="btn-pgy" href="#deposer">
-              Déposer le premier <span class="btn-pgy__arrow" aria-hidden="true">→</span>
+              <?= t('temoignages.premier') ?> <span class="btn-pgy__arrow" aria-hidden="true">→</span>
             </a>
           </p>
         </div>
@@ -79,11 +73,13 @@ $classe = static function (string $nom) use ($erreurs): string {
       <div class="row" style="margin-bottom: var(--sp-7);">
         <div class="col-lg-8">
           <p class="kicker kicker--bare reveal">
-            <?= count($publiees) ?> témoignage<?= count($publiees) > 1 ? 's' : '' ?> publié<?= count($publiees) > 1 ? 's' : '' ?>
+            <?= count($publiees) > 1
+                  ? t('temoignages.compte',    ['nombre' => count($publiees)])
+                  : t('temoignages.compte_un', ['nombre' => count($publiees)]) ?>
           </p>
         </div>
         <div class="col-lg-4 d-flex align-items-end justify-content-lg-end">
-          <a class="link reveal" href="#deposer">Déposer le vôtre</a>
+          <a class="link reveal" href="#deposer"><?= t('temoignages.le_votre') ?></a>
         </div>
       </div>
 
@@ -114,8 +110,8 @@ $classe = static function (string $nom) use ($erreurs): string {
     <div class="row" style="margin-bottom: var(--sp-8);">
       <div class="col-lg-2"><p class="section-num reveal">02</p></div>
       <div class="col-lg-7">
-        <p class="kicker reveal">Votre tour</p>
-        <h2 class="t-d1 reveal">Déposer un témoignage</h2>
+        <p class="kicker reveal"><?= t('temoignages.form_kicker') ?></p>
+        <h2 class="t-d1 reveal"><?= t('temoignages.form_titre') ?></h2>
       </div>
     </div>
 
@@ -127,58 +123,51 @@ $classe = static function (string $nom) use ($erreurs): string {
           <p class="avis avis--refus" role="alert"><?= View::e($erreurs['_global']) ?></p>
         <?php endif; ?>
 
-        <form class="formulaire" method="post" action="/temoignages" novalidate>
+        <form class="formulaire" method="post" action="<?= Langue::chemin('/temoignages') ?>" novalidate>
           <?= Csrf::champ() ?>
 
           <div class="champ">
             <label class="form-label champ__titre" for="auteur_nom">
-              Votre nom <span class="champ__requis" aria-hidden="true">*</span>
+              <?= t('temoignages.nom') ?> <span class="champ__requis" aria-hidden="true">*</span>
             </label>
             <input type="text" id="auteur_nom" name="auteur_nom" required
                    maxlength="160" autocomplete="name"
                    class="<?= $classe('auteur_nom') ?>"
                    value="<?= View::e($val('auteur_nom')) ?>"<?= $aria('auteur_nom') ?>>
             <?= $err('auteur_nom') ?>
-            <p class="champ__aide">Il paraîtra sous votre témoignage s'il est publié.</p>
+            <p class="champ__aide"><?= t('temoignages.nom_aide') ?></p>
           </div>
 
           <div class="champ">
-            <label class="form-label champ__titre" for="auteur_fonction">En quelle qualité</label>
+            <label class="form-label champ__titre" for="auteur_fonction"><?= t('temoignages.qualite') ?></label>
             <input type="text" id="auteur_fonction" name="auteur_fonction"
                    maxlength="200" class="<?= $classe('auteur_fonction') ?>"
-                   placeholder="Ancien collaborateur, historien, voisin de Yopougon…"
+                   placeholder="<?= t('temoignages.qualite_ph') ?>"
                    value="<?= View::e($val('auteur_fonction')) ?>"<?= $aria('auteur_fonction') ?>>
             <?= $err('auteur_fonction') ?>
-            <p class="champ__aide">Facultatif, mais c'est souvent ce qui situe un témoignage.</p>
+            <p class="champ__aide"><?= t('temoignages.qualite_aide') ?></p>
           </div>
 
           <div class="champ">
             <label class="form-label champ__titre" for="auteur_email">
-              Votre adresse électronique <span class="champ__requis" aria-hidden="true">*</span>
+              <?= t('temoignages.email') ?> <span class="champ__requis" aria-hidden="true">*</span>
             </label>
             <input type="email" id="auteur_email" name="auteur_email" required
                    maxlength="180" autocomplete="email"
                    class="<?= $classe('auteur_email') ?>"
                    value="<?= View::e($val('auteur_email')) ?>"<?= $aria('auteur_email') ?>>
             <?= $err('auteur_email') ?>
-            <p class="champ__aide">
-              <strong>Jamais affichée.</strong> Elle sert uniquement à vous recontacter avant
-              publication — un témoignage paraît sous votre nom, nous devons pouvoir le
-              vérifier auprès de vous.
-            </p>
+            <p class="champ__aide"><?= t_brut('temoignages.email_aide') ?></p>
           </div>
 
           <div class="champ">
             <label class="form-label champ__titre" for="contenu">
-              Votre témoignage <span class="champ__requis" aria-hidden="true">*</span>
+              <?= t('temoignages.texte') ?> <span class="champ__requis" aria-hidden="true">*</span>
             </label>
             <textarea id="contenu" name="contenu" rows="9" required
                       maxlength="5000" class="<?= $classe('contenu') ?>"<?= $aria('contenu') ?>><?= View::e($val('contenu')) ?></textarea>
             <?= $err('contenu') ?>
-            <p class="champ__aide">
-              Un souvenir précis vaut mieux qu'un éloge général : une date, un lieu, une
-              phrase entendue. Quarante caractères au minimum.
-            </p>
+            <p class="champ__aide"><?= t('temoignages.texte_aide') ?></p>
           </div>
 
           <?php /* Piège à robots : masqué à l'œil et retiré aux lecteurs d'écran,
@@ -186,34 +175,23 @@ $classe = static function (string $nom) use ($erreurs): string {
                    dit en clair plutôt que silencieux — perdre le texte de quelqu'un
                    en lui laissant croire qu'il est parti serait pire. */ ?>
           <div class="leurre" aria-hidden="true">
-            <label for="<?= View::e($leurre) ?>">Site web — laissez ce champ vide</label>
+            <label for="<?= View::e($leurre) ?>"><?= t('temoignages.leurre') ?></label>
             <input type="text" id="<?= View::e($leurre) ?>" name="<?= View::e($leurre) ?>"
                    tabindex="-1" autocomplete="off" value="">
           </div>
 
           <button class="btn-pgy" type="submit">
-            Envoyer <span class="btn-pgy__arrow" aria-hidden="true">→</span>
+            <?= t('temoignages.envoyer') ?> <span class="btn-pgy__arrow" aria-hidden="true">→</span>
           </button>
         </form>
       </div>
 
       <div class="col-lg-4 offset-lg-1">
         <div class="note reveal">
-          <p class="note__titre">Ce qui se passe ensuite</p>
-          <p>
-            Votre texte n'apparaît pas tout de suite. Il est lu, et publié seulement
-            s'il est vérifiable — c'est la règle que s'impose ce site : Philippe
-            Grégoire Yacé est une figure historique réelle, et rien ne lui sera
-            attribué sans source.
-          </p>
-          <p>
-            Vous pouvez être recontacté avant publication. Votre adresse ne paraît
-            jamais, ne part vers aucun service tiers, et n'alimente aucune lettre
-            d'information.
-          </p>
-          <p class="note__pied">
-            Cinq envois par heure au maximum, depuis une même connexion.
-          </p>
+          <p class="note__titre"><?= t('temoignages.note_titre') ?></p>
+          <p><?= t('temoignages.note_1') ?></p>
+          <p><?= t('temoignages.note_2') ?></p>
+          <p class="note__pied"><?= t('temoignages.note_pied') ?></p>
         </div>
       </div>
 

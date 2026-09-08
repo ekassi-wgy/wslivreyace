@@ -40,7 +40,7 @@ $ld = json_encode(array_filter([
     'temporalCoverage' => (int) $periode['debut'] . '/' . (int) $periode['fin'],
     'isPartOf'      => [
         '@type' => 'WebPage',
-        'name'  => 'Biographie de Philippe Grégoire Yacé',
+        'name'  => t('periode.ld_page'),
         'url'   => Site::url(Langue::chemin('/biographie')),
     ],
     'about'         => ['@type' => 'Person', 'name' => 'Philippe Grégoire Yacé'],
@@ -53,7 +53,7 @@ $ld = json_encode(array_filter([
       <div class="col-lg-2"><p class="section-num reveal">—</p></div>
       <div class="col-lg-8">
         <?php $fil = [
-          ['Biographie', '/biographie'],
+          [t('biographie.fil'), '/biographie'],
           [(string) $periode['titre'], null],
         ]; require dirname(__DIR__) . '/partials/fil.php'; ?>
 
@@ -104,11 +104,11 @@ $ld = json_encode(array_filter([
         <?php /* La source, en pied du récit : le CDC §6 l'exige, et c'est ce
                  qui distingue une biographie d'un propos rapporté. */ ?>
         <?php if ($source !== ''): ?>
-          <p class="her-source reveal">Source : <?= View::e($source) ?></p>
+          <p class="her-source reveal"><?= t('periode.source') ?> <?= View::e($source) ?></p>
         <?php endif; ?>
 
         <div class="her-citer reveal">
-          <p class="arch-fiche__lbl">Adresse de cette page</p>
+          <p class="arch-fiche__lbl"><?= t('periode.adresse') ?></p>
           <p class="arch-fiche__url"><?= View::e(Site::url(Langue::chemin(Periode::chemin($periode)))) ?></p>
         </div>
 
@@ -124,7 +124,7 @@ $ld = json_encode(array_filter([
       <div class="row" style="margin-top: var(--sp-9);">
         <div class="col-lg-10 offset-lg-2">
           <div class="rule reveal" style="margin-bottom: var(--sp-6);"></div>
-          <p class="kicker reveal">Jalons</p>
+          <p class="kicker reveal"><?= t('periode.jalons') ?></p>
           <ul class="bio-jalons">
             <?php foreach ($reperes as $r): ?>
               <li class="reveal">
@@ -134,7 +134,7 @@ $ld = json_encode(array_filter([
             <?php endforeach; ?>
           </ul>
           <p class="reveal" style="margin-top: var(--sp-5);">
-            <a class="link" href="<?= $lien('/biographie') ?>#chronologie">La frise entière, 1920 — 1998</a>
+            <a class="link" href="<?= $lien('/biographie') ?>#chronologie"><?= t('periode.frise') ?></a>
           </p>
         </div>
       </div>
@@ -149,10 +149,8 @@ $ld = json_encode(array_filter([
       <div class="row" style="margin-top: var(--sp-9);">
         <div class="col-lg-10 offset-lg-2">
           <div class="rule reveal" style="margin-bottom: var(--sp-6);"></div>
-          <p class="kicker reveal">Le fonds, <?= View::e($annees) ?></p>
-          <p class="t-lead reveal" style="margin-bottom: var(--sp-6);">
-            Les pièces d'archives datées de ces années.
-          </p>
+          <p class="kicker reveal"><?= t('periode.fonds', ['annees' => $annees]) ?></p>
+          <p class="t-lead reveal" style="margin-bottom: var(--sp-6);"><?= t('periode.fonds_lead') ?></p>
 
           <ul class="bio-fonds">
             <?php foreach ($pieces as $piece): ?>
@@ -189,8 +187,8 @@ $ld = json_encode(array_filter([
                      entier : annoncer un filtre qui n'existe pas serait pire
                      que de ne rien annoncer. */ ?>
             <p class="reveal" style="margin-top: var(--sp-5);">
-              <?= (int) $totalPieces ?> pièces du fonds sont datées de ces années.
-              <a class="link" href="<?= $lien('/archives') ?>">Ouvrir le fonds</a>
+              <?= t('periode.fonds_compte', ['nombre' => (int) $totalPieces]) ?>
+              <a class="link" href="<?= $lien('/archives') ?>"><?= t('periode.fonds_lien') ?></a>
             </p>
           <?php endif; ?>
         </div>
@@ -204,17 +202,17 @@ $ld = json_encode(array_filter([
       <div class="row" style="margin-top: var(--sp-9);">
         <div class="col-lg-10 offset-lg-2">
           <div class="rule reveal" style="margin-bottom: var(--sp-6);"></div>
-          <nav class="bio-suite" aria-label="Périodes voisines">
+          <nav class="bio-suite" aria-label="<?= t('periode.voisines') ?>">
             <?php if ($precedente !== null): ?>
               <a class="bio-suite__lien reveal" href="<?= $lien(Periode::chemin($precedente)) ?>" rel="prev">
-                <span class="bio-suite__sens">Période précédente</span>
+                <span class="bio-suite__sens"><?= t('periode.precedente') ?></span>
                 <span class="bio-suite__t"><?= View::e((string) $precedente['titre']) ?></span>
                 <span class="bio-suite__ans"><?= View::e(Periode::annees($precedente)) ?></span>
               </a>
             <?php endif; ?>
             <?php if ($suivante !== null): ?>
               <a class="bio-suite__lien bio-suite__lien--fin reveal" href="<?= $lien(Periode::chemin($suivante)) ?>" rel="next">
-                <span class="bio-suite__sens">Période suivante</span>
+                <span class="bio-suite__sens"><?= t('periode.suivante') ?></span>
                 <span class="bio-suite__t"><?= View::e((string) $suivante['titre']) ?></span>
                 <span class="bio-suite__ans"><?= View::e(Periode::annees($suivante)) ?></span>
               </a>

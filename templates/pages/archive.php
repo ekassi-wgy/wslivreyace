@@ -53,7 +53,7 @@ $ld = json_encode(array_filter([
     ],
     'isPartOf'    => [
         '@type' => 'Collection',
-        'name'  => 'Fonds numérique Philippe Grégoire Yacé',
+        'name'  => t('archive.ld_collection'),
         'url'   => Site::url(Langue::chemin('/archives')),
     ],
 ]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
@@ -68,7 +68,7 @@ $ld = json_encode(array_filter([
         <?php /* Fil d'Ariane : trois niveaux de profondeur, un visiteur arrivé
                  par un partage doit pouvoir remonter (brief §9). */ ?>
         <?php $fil = [
-          ['Archives', '/archives'],
+          [t('archives.fil'), '/archives'],
           [Archive::categorie($cat), '/archives/' . $cat],
           [(string) $notice['titre'], null],
         ]; require dirname(__DIR__) . '/partials/fil.php'; ?>
@@ -117,18 +117,18 @@ $ld = json_encode(array_filter([
         <?php /* --- Enregistrements ------------------------------------- */ ?>
         <?php if ($sons !== []): ?>
           <div class="arch-bloc reveal">
-            <h2 class="t-d3">Écouter</h2>
+            <h2 class="t-d3"><?= t('archive.ecouter') ?></h2>
             <?php foreach ($sons as $s): ?>
               <figure class="arch-son">
                 <?php /* `preload="none"` : la page d'un discours peut porter
                          plusieurs pistes, et rien ne doit se télécharger avant
                          que le visiteur ne le demande. */ ?>
                 <audio controls preload="none" src="<?= View::e(Media::url((string) $s['fichier'])) ?>">
-                  Votre navigateur ne sait pas lire cet enregistrement.
-                  <a href="<?= View::e(Media::url((string) $s['fichier'])) ?>">Le télécharger</a>.
+                  <?= t('archive.audio_secours') ?>
+                  <a href="<?= View::e(Media::url((string) $s['fichier'])) ?>"><?= t('archive.audio_telecharger') ?></a>.
                 </audio>
                 <figcaption>
-                  <?= View::e(trim((string) ($s['titre'] ?? '')) ?: 'Enregistrement') ?>
+                  <?= trim((string) ($s['titre'] ?? '')) !== '' ? View::e((string) $s['titre']) : t('archive.enregistrement') ?>
                   <span class="arch-son__meta"><?= View::e(Media::etiquette($s)) ?></span>
                   <?php if (!empty($s['credit'])): ?>
                     <span class="arch-piece__credit"><?= View::e((string) $s['credit']) ?></span>
@@ -142,7 +142,7 @@ $ld = json_encode(array_filter([
         <?php /* --- Documents originaux --------------------------------- */ ?>
         <?php if ($documents !== []): ?>
           <div class="arch-bloc reveal">
-            <h2 class="t-d3">Document original</h2>
+            <h2 class="t-d3"><?= t('archive.document') ?></h2>
             <ul class="arch-docs">
               <?php foreach ($documents as $d): ?>
                 <li>
@@ -172,7 +172,7 @@ $ld = json_encode(array_filter([
               <?php $srcset = Media::srcset($f); ?>
               <figure class="arch-piece">
                 <a href="<?= View::e(Media::url((string) $f['fichier'])) ?>"
-                   title="Voir le fichier en pleine résolution">
+                   title="<?= t('archive.pleine_resolution') ?>">
                   <img loading="lazy" decoding="async"
                        src="<?= View::e(Media::urlMoyen((string) $f['fichier'])) ?>"
                        <?= $srcset === '' ? '' : 'srcset="' . View::e($srcset) . '" sizes="(max-width: 991px) 100vw, 58vw"' ?>
@@ -196,7 +196,7 @@ $ld = json_encode(array_filter([
         <?php $contexte = trim((string) ($notice['contexte'] ?? '')); ?>
         <?php if ($contexte !== ''): ?>
           <div class="arch-bloc reveal">
-            <h2 class="t-d3">Contexte historique</h2>
+            <h2 class="t-d3"><?= t('archive.contexte') ?></h2>
             <?= View::paragraphes($contexte, 't-body') ?>
           </div>
         <?php endif; ?>
@@ -205,7 +205,7 @@ $ld = json_encode(array_filter([
         <?php $texte = trim((string) ($notice['description'] ?? '')); ?>
         <?php if ($texte !== ''): ?>
           <div class="arch-bloc reveal">
-            <h2 class="t-d3">Description</h2>
+            <h2 class="t-d3"><?= t('archive.description') ?></h2>
             <?= View::paragraphes($texte, 't-body') ?>
           </div>
         <?php endif; ?>
@@ -214,7 +214,7 @@ $ld = json_encode(array_filter([
         <?php $transcription = trim((string) ($notice['transcription'] ?? '')); ?>
         <?php if ($transcription !== ''): ?>
           <div class="arch-bloc reveal">
-            <h2 class="t-d3">Transcription intégrale</h2>
+            <h2 class="t-d3"><?= t('archive.transcription') ?></h2>
             <div class="arch-transcription"><?= View::paragraphes($transcription, 't-body') ?></div>
           </div>
         <?php endif; ?>
@@ -224,15 +224,15 @@ $ld = json_encode(array_filter([
       <?php /* --- La fiche signalétique ------------------------------- */ ?>
       <aside class="col-lg-3">
         <div class="arch-fiche reveal">
-          <h2 class="kicker kicker--bare">Fiche</h2>
+          <h2 class="kicker kicker--bare"><?= t('archive.fiche') ?></h2>
           <dl>
-            <div><dt>Catégorie</dt><dd><a href="<?= $lien('/archives/' . $cat) ?>"><?= View::e(Archive::categorie($cat)) ?></a></dd></div>
-            <?php if ($quand !== ''): ?><div><dt>Date</dt><dd><?= View::e($quand) ?></dd></div><?php endif; ?>
+            <div><dt><?= t('archive.categorie') ?></dt><dd><a href="<?= $lien('/archives/' . $cat) ?>"><?= View::e(Archive::categorie($cat)) ?></a></dd></div>
+            <?php if ($quand !== ''): ?><div><dt><?= t('archive.date') ?></dt><dd><?= View::e($quand) ?></dd></div><?php endif; ?>
             <?php foreach ([
-              'lieu'      => 'Lieu',
-              'personnes' => 'Personnes présentes',
-              'source'    => 'Source',
-              'credit'    => 'Crédit',
+              'lieu'      => t('archive.lieu'),
+              'personnes' => t('archive.personnes'),
+              'source'    => t('archive.source'),
+              'credit'    => t('archive.credit'),
             ] as $champ => $libelle): ?>
               <?php $valeur = trim((string) ($notice[$champ] ?? '')); ?>
               <?php if ($valeur !== ''): ?>
@@ -253,7 +253,7 @@ $ld = json_encode(array_filter([
                    cite : l'adresse est ce qu'on recopie dans une note de bas
                    de page, un dossier de presse, un QR code (décision 3). */ ?>
           <div class="arch-fiche__citer">
-            <p class="arch-fiche__lbl">Citer cette archive</p>
+            <p class="arch-fiche__lbl"><?= t('archive.citer') ?></p>
             <p class="arch-fiche__url"><?= View::e(Site::url(Langue::chemin(Archive::chemin($notice)))) ?></p>
           </div>
         </div>
@@ -265,7 +265,7 @@ $ld = json_encode(array_filter([
       <div class="row" style="margin-top: var(--sp-9);">
         <div class="col-lg-10 offset-lg-2">
           <div class="rule reveal" style="margin-bottom: var(--sp-6);"></div>
-          <p class="kicker reveal">Dans la même catégorie</p>
+          <p class="kicker reveal"><?= t('archive.voisines') ?></p>
           <ul class="arch-voisines">
             <?php foreach (array_slice($voisines, 0, 4) as $v): ?>
               <li class="reveal">

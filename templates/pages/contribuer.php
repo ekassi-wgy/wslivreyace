@@ -11,9 +11,8 @@ use App\Core\Langue;
 use App\Core\Televersement;
 use App\Core\View;
 
-$titre       = 'Contribuez aux archives — Philippe Grégoire Yacé';
-$description = "Vous possédez une photographie, une vidéo, un discours, une lettre ou un "
-             . 'document lié au parcours de Philippe Grégoire Yacé ? Aidez-nous à préserver sa mémoire.';
+$titre       = t('contribuer.titre_page');
+$description = t('contribuer.description');
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
 /**
@@ -35,15 +34,11 @@ $classe = static fn(string $c): string => 'form-control champ__saisie'
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal">—</p></div>
       <div class="col-lg-8">
-        <?php $fil = [['Archives', '/archives'], ['Contribuer', null]];
+        <?php $fil = [[t('archives.fil'), '/archives'], [t('contribuer.fil'), null]];
               require dirname(__DIR__) . '/partials/fil.php'; ?>
-        <p class="kicker reveal">Contribuez aux archives</p>
-        <h1 class="t-d1 reveal">Vous avez connu<br>Philippe Grégoire Yacé&nbsp;?</h1>
-        <p class="t-lead page-head__lead reveal">
-          Vous possédez une photographie, une vidéo, un discours, une lettre, un
-          document ou un témoignage lié à son parcours&nbsp;? Aidez-nous à
-          préserver et transmettre sa mémoire.
-        </p>
+        <p class="kicker reveal"><?= t('contribuer.kicker') ?></p>
+        <h1 class="t-d1 reveal"><?= t_brut('contribuer.titre') ?></h1>
+        <p class="t-lead page-head__lead reveal"><?= t('contribuer.lead') ?></p>
       </div>
     </div>
   </div>
@@ -67,21 +62,21 @@ $classe = static fn(string $c): string => 'form-control champ__saisie'
                    d'écran, mais présent dans le HTML. Un visiteur ne le voit
                    pas, un robot le remplit. */ ?>
           <div class="leurre" aria-hidden="true">
-            <label for="<?= View::e($leurre) ?>">Ne remplissez pas ce champ</label>
+            <label for="<?= View::e($leurre) ?>"><?= t('contribuer.leurre') ?></label>
             <input type="text" id="<?= View::e($leurre) ?>" name="<?= View::e($leurre) ?>" tabindex="-1" autocomplete="off">
           </div>
 
           <fieldset>
-            <legend>Vous</legend>
+            <legend><?= t('contribuer.vous') ?></legend>
 
             <div class="champ-duo">
               <div class="champ">
-                <label class="champ__titre" for="nom">Nom <span class="champ__requis" aria-hidden="true">*</span></label>
+                <label class="champ__titre" for="nom"><?= t('contribuer.nom') ?> <span class="champ__requis" aria-hidden="true">*</span></label>
                 <input type="text" class="<?= $classe('nom') ?>" id="nom" name="nom" value="<?= $val('nom') ?>" required maxlength="120"<?= $aria('nom') ?>>
                 <?= $err('nom') ?>
               </div>
               <div class="champ">
-                <label class="champ__titre" for="prenom">Prénom</label>
+                <label class="champ__titre" for="prenom"><?= t('contribuer.prenom') ?></label>
                 <input type="text" class="<?= $classe('prenom') ?>" id="prenom" name="prenom" value="<?= $val('prenom') ?>" maxlength="120"<?= $aria('prenom') ?>>
                 <?= $err('prenom') ?>
               </div>
@@ -89,13 +84,13 @@ $classe = static fn(string $c): string => 'form-control champ__saisie'
 
             <div class="champ-duo">
               <div class="champ">
-                <label class="champ__titre" for="email">Adresse électronique <span class="champ__requis" aria-hidden="true">*</span></label>
+                <label class="champ__titre" for="email"><?= t('contribuer.email') ?> <span class="champ__requis" aria-hidden="true">*</span></label>
                 <input type="email" class="<?= $classe('email') ?>" id="email" name="email" value="<?= $val('email') ?>" required maxlength="180"<?= $aria('email') ?>>
-                <span class="champ__aide">Elle ne sera jamais publiée. Elle sert à vous répondre.</span>
+                <span class="champ__aide"><?= t('contribuer.email_aide') ?></span>
                 <?= $err('email') ?>
               </div>
               <div class="champ">
-                <label class="champ__titre" for="telephone">Téléphone</label>
+                <label class="champ__titre" for="telephone"><?= t('contribuer.telephone') ?></label>
                 <input type="tel" class="<?= $classe('telephone') ?>" id="telephone" name="telephone" value="<?= $val('telephone') ?>" maxlength="40"<?= $aria('telephone') ?>>
                 <?= $err('telephone') ?>
               </div>
@@ -103,57 +98,50 @@ $classe = static fn(string $c): string => 'form-control champ__saisie'
           </fieldset>
 
           <fieldset>
-            <legend>La pièce</legend>
+            <legend><?= t('contribuer.piece') ?></legend>
 
             <div class="champ">
-              <label class="champ__titre" for="description">Description <span class="champ__requis" aria-hidden="true">*</span></label>
+              <label class="champ__titre" for="description"><?= t('contribuer.description_champ') ?> <span class="champ__requis" aria-hidden="true">*</span></label>
               <textarea class="<?= $classe('description') ?>" id="description" name="description" rows="6" required maxlength="3000"<?= $aria('description') ?>><?= $val('description') ?></textarea>
-              <span class="champ__aide">
-                Ce que montre ou dit la pièce, qui y figure, dans quelles circonstances.
-                Tout ce dont vous vous souvenez nous aide, même incertain.
-              </span>
+              <span class="champ__aide"><?= t('contribuer.description_aide') ?></span>
               <?= $err('description') ?>
             </div>
 
             <div class="champ-duo">
               <div class="champ">
-                <label class="champ__titre" for="date_approx">Date approximative</label>
+                <label class="champ__titre" for="date_approx"><?= t('contribuer.date') ?></label>
                 <input type="text" class="<?= $classe('date_approx') ?>" id="date_approx" name="date_approx" value="<?= $val('date_approx') ?>"
-                       maxlength="60" placeholder="vers 1965, années 70…"<?= $aria('date_approx') ?>>
+                       maxlength="60" placeholder="<?= t('contribuer.date_ph') ?>"<?= $aria('date_approx') ?>>
                 <?= $err('date_approx') ?>
               </div>
               <div class="champ">
-                <label class="champ__titre" for="source">Origine de la pièce</label>
+                <label class="champ__titre" for="source"><?= t('contribuer.origine') ?></label>
                 <input type="text" class="<?= $classe('source') ?>" id="source" name="source" value="<?= $val('source') ?>"
-                       maxlength="300" placeholder="album de famille, fonds…"<?= $aria('source') ?>>
+                       maxlength="300" placeholder="<?= t('contribuer.origine_ph') ?>"<?= $aria('source') ?>>
                 <?= $err('source') ?>
               </div>
             </div>
 
             <div class="champ">
-              <label class="champ__titre" for="fichiers">Vos fichiers</label>
+              <label class="champ__titre" for="fichiers"><?= t('contribuer.fichiers') ?></label>
               <input type="file" id="fichiers" name="fichiers[]" multiple
                      accept="<?= View::e(Televersement::ACCEPTE) ?>"<?= $aria('fichiers') ?>>
               <span class="champ__aide">
-                Images, PDF ou enregistrements — <?= (int) $lotMax ?> fichiers au plus par envoi.
-                Vous pourrez en envoyer d'autres ensuite.
-                <br>Si la pièce est trop lourde ou si vous préférez nous la montrer
-                d'abord, décrivez-la simplement et nous vous répondrons.
+                <?= t('contribuer.fichiers_aide', ['nombre' => (int) $lotMax]) ?>
+                <br><?= t('contribuer.fichiers_aide2') ?>
               </span>
               <?= $err('fichiers') ?>
             </div>
           </fieldset>
 
           <fieldset>
-            <legend>Droits</legend>
+            <legend><?= t('contribuer.droits') ?></legend>
             <div class="champ champ--case">
               <label class="champ__titre" for="droits">
                 <input type="checkbox" id="droits" name="droits" value="1"
                        <?= ($valeurs['droits'] ?? '') === '1' ? 'checked' : '' ?> required<?= $aria('droits') ?>>
                 <span>
-                  Je certifie détenir les droits sur les pièces que j'envoie, ou être
-                  autorisé à les transmettre, et j'autorise leur publication sur ce
-                  site avec la mention de leur provenance. <span class="champ__requis" aria-hidden="true">*</span>
+                  <?= t('contribuer.droits_texte') ?> <span class="champ__requis" aria-hidden="true">*</span>
                 </span>
               </label>
               <?= $err('droits') ?>
@@ -162,7 +150,7 @@ $classe = static fn(string $c): string => 'form-control champ__saisie'
 
           <p class="champ__envoi">
             <button class="btn-pgy" type="submit">
-              Envoyer ma contribution
+              <?= t('contribuer.envoyer') ?>
               <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
             </button>
           </p>
@@ -171,17 +159,13 @@ $classe = static fn(string $c): string => 'form-control champ__saisie'
 
       <aside class="col-lg-3 offset-lg-1">
         <div class="contrib-note reveal">
-          <p class="kicker kicker--bare">Ce qu'il advient</p>
+          <p class="kicker kicker--bare"><?= t('contribuer.note_titre') ?></p>
           <ol class="contrib-etapes">
-            <li>Votre envoi arrive dans un espace fermé, que le site ne publie pas.</li>
-            <li>Un relecteur l'examine, et vous écrit.</li>
-            <li>S'il rejoint le fonds, il est catalogué, daté et crédité à votre nom
-                ou à celui que vous indiquez.</li>
+            <li><?= t('contribuer.etape_1') ?></li>
+            <li><?= t('contribuer.etape_2') ?></li>
+            <li><?= t('contribuer.etape_3') ?></li>
           </ol>
-          <p class="contrib-note__fin">
-            <strong>Rien n'est publié automatiquement</strong> — ni ici, ni ailleurs
-            sur ce site. Une pièce refusée est effacée de nos serveurs.
-          </p>
+          <p class="contrib-note__fin"><?= t_brut('contribuer.note_fin') ?></p>
         </div>
       </aside>
 

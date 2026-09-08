@@ -22,8 +22,8 @@ use App\Model\Periode;
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
 
-$titre       = 'Biographie — Philippe Grégoire Yacé (1920-1998)';
-$description = 'Le parcours de Philippe Grégoire Yacé : formation, engagement politique, carrière institutionnelle et chronologie 1920-1998.';
+$titre       = t('biographie.titre_page');
+$description = t('biographie.description');
 $ld          = <<<'JSONLD'
 {
   "@context": "https://schema.org", "@type": "Person",
@@ -42,8 +42,7 @@ JSONLD;
         <p class="kicker reveal">Philippe Grégoire Yacé</p>
         <h1 class="t-hero reveal" style="margin-bottom: var(--sp-5);">1920<br>1998</h1>
         <p class="t-lead page-head__lead reveal">
-          Président de l'Assemblée nationale de Côte d'Ivoire de 1959 à 1980,
-          secrétaire général du PDCI-RDA, puis président du Conseil économique et social.
+          <?= t('biographie.tete.lead') ?>
         </p>
       </div>
       <div class="col-lg-4 offset-lg-1">
@@ -55,7 +54,7 @@ JSONLD;
         <span class="frame reveal">
           <img decoding="async" fetchpriority="high" src="/assets/img/portrait.webp"
                width="1400" height="1750"
-               alt="Philippe Grégoire Yacé jeune homme, en veste claire et lunettes rondes — photographie d'archive">
+               alt="<?= t('biographie.tete.alt') ?>">
         </span>
       </div>
     </div>
@@ -69,17 +68,13 @@ JSONLD;
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal">01</p></div>
       <div class="col-lg-8">
-        <p class="kicker reveal">Contexte</p>
+        <p class="kicker reveal"><?= t('biographie.contexte.kicker') ?></p>
         <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-7);">
-          Une trajectoire<br>et un pays qui naît.
+          <?= t_brut('biographie.contexte.titre') ?>
         </h2>
         <div class="row"><div class="col-md-10 col-lg-9">
           <!-- CONTEXTE HISTORIQUE — à rédiger (CDC §4.4) -->
-          <p class="t-body reveal">
-            <em>Texte à rédiger.</em> Situer le personnage dans la Côte d'Ivoire
-            pré- et post-indépendance, son rôle aux côtés de Félix Houphouët-Boigny,
-            et la place de l'Assemblée nationale dans la construction de l'État.
-          </p>
+          <p class="t-body reveal"><?= t_brut('biographie.contexte.texte') ?></p>
         </div></div>
       </div>
     </div>
@@ -106,19 +101,15 @@ JSONLD;
     <div class="row" style="margin-bottom: var(--sp-8);">
       <div class="col-lg-2"><p class="section-num reveal">02</p></div>
       <div class="col-lg-7">
-        <p class="kicker reveal">Biographie</p>
-        <h2 class="t-d1 reveal">Le parcours.</h2>
+        <p class="kicker reveal"><?= t('biographie.parcours.kicker') ?></p>
+        <h2 class="t-d1 reveal"><?= t('biographie.parcours.titre') ?></h2>
       </div>
     </div>
 
     <?php if ($periodes === []): ?>
       <div class="row">
         <div class="col-lg-7 offset-lg-2">
-          <p class="t-lead reveal">
-            <em>Le récit par périodes se constitue.</em> Chaque période paraîtra ici
-            dès qu'elle sera rédigée et sourcée, avec sa page propre — et les repères
-            de la frise comme les pièces du fonds de ces années-là.
-          </p>
+          <p class="t-lead reveal"><?= t_brut('biographie.parcours.vide') ?></p>
         </div>
       </div>
     <?php else: ?>
@@ -185,8 +176,8 @@ JSONLD;
     <div class="row" style="margin-bottom: var(--sp-7);">
       <div class="col-lg-2"><p class="section-num reveal">03</p></div>
       <div class="col-lg-7">
-        <p class="kicker reveal">Chronologie</p>
-        <h2 class="t-d1 reveal">1920 — 1998.</h2>
+        <p class="kicker reveal"><?= t('biographie.chrono.kicker') ?></p>
+        <h2 class="t-d1 reveal"><?= t('biographie.chrono.titre') ?></h2>
       </div>
     </div>
 
@@ -195,8 +186,8 @@ JSONLD;
 <?php if (count($onglets) > 1): ?>
     <div class="row" style="margin-bottom: var(--sp-6);">
       <div class="col-lg-10 offset-lg-2">
-        <div class="chips reveal" role="group" aria-label="Filtrer par période">
-          <button class="chip is-active" type="button" data-period="tout" aria-pressed="true">Tout</button>
+        <div class="chips reveal" role="group" aria-label="<?= t('biographie.chrono.filtrer') ?>">
+          <button class="chip is-active" type="button" data-period="tout" aria-pressed="true"><?= t('biographie.chrono.tout') ?></button>
 <?php foreach ($onglets as $idPeriode => $per): ?>
           <button class="chip" type="button" data-period="p<?= (int) $idPeriode ?>" aria-pressed="false"><?= View::e((string) $per['titre']) ?></button>
 <?php endforeach; ?>
@@ -263,13 +254,10 @@ JSONLD;
   <div class="shell">
     <div class="row">
       <div class="col-lg-9 offset-lg-2">
-        <p class="kicker reveal">Citations</p>
+        <p class="kicker reveal"><?= t('biographie.citations.kicker') ?></p>
         <!-- CITATIONS — aucun propos ne doit être attribué sans source vérifiée -->
-        <blockquote class="quote reveal" style="margin:0;">
-          Emplacement réservé à une citation sourcée
-          de Philippe Grégoire Yacé.
-        </blockquote>
-        <p class="quote__src reveal">Source et date à préciser</p>
+        <blockquote class="quote reveal" style="margin:0;"><?= t('biographie.citations.texte') ?></blockquote>
+        <p class="quote__src reveal"><?= t('biographie.citations.source') ?></p>
       </div>
     </div>
   </div>
@@ -281,11 +269,11 @@ JSONLD;
     <div class="row" style="margin-bottom: var(--sp-8);">
       <div class="col-lg-2"><p class="section-num reveal">04</p></div>
       <div class="col-lg-7">
-        <p class="kicker reveal">Portraits</p>
-        <h2 class="t-d1 reveal">Images d'époque.</h2>
+        <p class="kicker reveal"><?= t('biographie.portraits.kicker') ?></p>
+        <h2 class="t-d1 reveal"><?= t('biographie.portraits.titre') ?></h2>
       </div>
       <div class="col-lg-3 d-flex align-items-end justify-content-lg-end">
-        <a class="link reveal" href="/archives?categorie=portrait">Toute la photothèque</a>
+        <a class="link reveal" href="<?= Langue::chemin('/archives') ?>?categorie=portrait"><?= t('biographie.portraits.lien') ?></a>
       </div>
     </div>
 
@@ -301,10 +289,7 @@ JSONLD;
 
       <div class="row">
         <div class="col-lg-7">
-          <p class="t-lead reveal">
-            <em>Les portraits d'époque paraîtront ici</em>, à mesure que les
-            archives sont numérisées et leurs droits vérifiés.
-          </p>
+          <p class="t-lead reveal"><?= t_brut('biographie.portraits.vide') ?></p>
         </div>
       </div>
 
@@ -313,7 +298,7 @@ JSONLD;
       <ul class="gal">
         <?php foreach ($portraits as $i => $img): ?>
           <li class="gal__i gal__i--<?= $trame[$i % count($trame)] ?> reveal">
-            <a class="gal__lien" href="/archives?categorie=portrait">
+            <a class="gal__lien" href="<?= Langue::chemin('/archives') ?>?categorie=portrait">
               <?php $srcset = Media::srcset($img); ?>
               <img loading="lazy" decoding="async"
                    src="<?= View::e(Media::urlVignette((string) $img['fichier'])) ?>"
@@ -333,13 +318,13 @@ JSONLD;
   <div class="shell">
     <div class="row align-items-center" style="row-gap: var(--sp-7);">
       <div class="col-lg-7 offset-lg-2">
-        <p class="kicker reveal">L'ouvrage</p>
+        <p class="kicker reveal"><?= t('biographie.ouvrage.kicker') ?></p>
         <h2 class="t-d2 reveal" style="margin-bottom: var(--sp-6);">
-          Le récit complet dans <em>Une destinée</em>.
+          <?= t_brut('biographie.ouvrage.titre') ?>
         </h2>
         <div class="reveal">
-          <a class="btn-pgy" href="/le-livre">
-            Découvrir le livre
+          <a class="btn-pgy" href="<?= Langue::chemin('/le-livre') ?>">
+            <?= t('biographie.ouvrage.cta') ?>
             <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
           </a>
         </div>

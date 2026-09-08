@@ -14,13 +14,13 @@
  * requête différente, elle mérite une URL.
  */
 
+use App\Core\Langue;
 use App\Core\DateFr;
 use App\Core\View;
 use App\Model\Actualite;
 
-$titre       = 'Actualités — Philippe Grégoire Yacé : une destinée';
-$description = "Parutions, dédicaces, hommages et rendez-vous autour de l'ouvrage "
-             . 'consacré à Philippe Grégoire Yacé.';
+$titre       = t('actualites.titre_page');
+$description = t('actualites.description');
 
 /** La pastille « Presse » cède sa place au lien vers la revue de presse. */
 $aPresse  = isset($comptes['presse']);
@@ -34,12 +34,9 @@ $courante = $categorie === null ? '' : Actualite::categorie($categorie);
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal">01</p></div>
       <div class="col-lg-8">
-        <p class="kicker reveal">Actualités</p>
-        <h1 class="t-d1 reveal">Autour de l'ouvrage.</h1>
-        <p class="t-lead page-head__lead reveal">
-          Ce qui se passe autour du livre et de la mémoire de Philippe Grégoire
-          Yacé&nbsp;: parutions, dédicaces, hommages et rendez-vous.
-        </p>
+        <p class="kicker reveal"><?= t('actualites.kicker') ?></p>
+        <h1 class="t-d1 reveal"><?= t('actualites.titre') ?></h1>
+        <p class="t-lead page-head__lead reveal"><?= t('actualites.lead') ?></p>
       </div>
     </div>
     <div class="rule reveal"></div>
@@ -51,13 +48,13 @@ $courante = $categorie === null ? '' : Actualite::categorie($categorie);
   <div class="shell">
 
     <?php if ($filtres !== [] || $aPresse): ?>
-      <nav class="filtres reveal" aria-label="Filtrer les actualités">
+      <nav class="filtres reveal" aria-label="<?= t('actualites.filtrer') ?>">
         <div class="chips">
-          <a class="chip<?= $categorie === null ? ' is-active' : '' ?>" href="/actualites"
-             <?= $categorie === null ? 'aria-current="page"' : '' ?>>Toutes</a>
+          <a class="chip<?= $categorie === null ? ' is-active' : '' ?>" href="<?= Langue::chemin('/actualites') ?>"
+             <?= $categorie === null ? 'aria-current="page"' : '' ?>><?= t('actualites.toutes') ?></a>
 <?php foreach ($filtres as $cle => $nombre): ?>
           <a class="chip<?= $categorie === $cle ? ' is-active' : '' ?>"
-             href="/actualites?categorie=<?= urlencode($cle) ?>"
+             href="<?= Langue::chemin('/actualites') ?>?categorie=<?= urlencode($cle) ?>"
              <?= $categorie === $cle ? 'aria-current="page"' : '' ?>>
             <?= View::e(Actualite::categorie($cle)) ?>
             <span class="chip__n"><?= (int) $nombre ?></span>
@@ -69,8 +66,10 @@ $courante = $categorie === null ? '' : Actualite::categorie($categorie);
                  à une autre page, qui présente les mêmes entrées par organe et
                  par année. Le lien la distingue donc des filtres. */ ?>
         <?php if ($aPresse): ?>
-          <a class="link" href="/revue-de-presse">
-            Revue de presse — <?= (int) $comptes['presse'] ?> article<?= $comptes['presse'] > 1 ? 's' : '' ?>
+          <a class="link" href="<?= Langue::chemin('/revue-de-presse') ?>">
+            <?= $comptes['presse'] > 1
+                  ? t('actualites.presse', ['nombre' => (int) $comptes['presse']])
+                  : t('actualites.presse_un', ['nombre' => (int) $comptes['presse']]) ?>
           </a>
         <?php endif; ?>
       </nav>
@@ -81,17 +80,11 @@ $courante = $categorie === null ? '' : Actualite::categorie($categorie);
       <div class="row">
         <div class="col-lg-7">
           <?php if ($categorie === null): ?>
-            <p class="t-lead reveal">
-              <em>Aucune actualité n'est encore publiée.</em> Les parutions,
-              dédicaces et rendez-vous autour de l'ouvrage paraîtront ici.
-            </p>
+            <p class="t-lead reveal"><?= t_brut('actualites.vide') ?></p>
           <?php else: ?>
-            <p class="t-lead reveal">
-              <em>Rien dans la catégorie «&nbsp;<?= View::e($courante) ?>&nbsp;»</em>
-              pour le moment.
-            </p>
+            <p class="t-lead reveal"><?= t_brut('actualites.vide_cat', ['categorie' => $courante]) ?></p>
             <p class="reveal" style="margin-top: var(--sp-5);">
-              <a class="link" href="/actualites">Voir toutes les actualités</a>
+              <a class="link" href="<?= Langue::chemin('/actualites') ?>"><?= t('actualites.voir_toutes') ?></a>
             </p>
           <?php endif; ?>
         </div>
@@ -108,7 +101,7 @@ $courante = $categorie === null ? '' : Actualite::categorie($categorie);
 
           <div class="news">
 <?php foreach ($entrees as $e): ?>
-            <a class="news__i reveal" href="/actualites/<?= View::e((string) $e['slug']) ?>">
+            <a class="news__i reveal" href="<?= Langue::chemin('/actualites/' . (string) $e['slug']) ?>">
               <time class="news__date" datetime="<?= View::e(DateFr::iso((string) $e['publie_le'])) ?>">
                 <?= DateFr::longue((string) $e['publie_le']) ?>
               </time>

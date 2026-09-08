@@ -17,9 +17,8 @@ use App\Core\Site;
 use App\Core\View;
 use App\Model\Archive;
 
-$titre       = 'Discours — Archives Philippe Grégoire Yacé';
-$description = "La bibliothèque des discours de Philippe Grégoire Yacé : contexte historique, "
-             . 'enregistrements, transcriptions intégrales et documents originaux.';
+$titre       = t('discours.titre_page');
+$description = t('discours.description');
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
 
@@ -31,21 +30,21 @@ $filtre = static function (?int $an) use ($lien, $recherche): string {
 
 /** Ce qu'une pièce porte, dit en toutes lettres plutôt qu'en pictogrammes seuls. */
 $marques = [
-    'video'         => ['🎥', 'Vidéo'],
-    'audio'         => ['🎙️', 'Enregistrement'],
-    'transcription' => ['📝', 'Transcription'],
-    'document'      => ['📄', 'Document'],
+    'video'         => ['🎥', t('discours.marque_video')],
+    'audio'         => ['🎙️', t('discours.marque_audio')],
+    'transcription' => ['📝', t('discours.marque_transcription')],
+    'document'      => ['📄', t('discours.marque_document')],
 ];
 
 $ld = json_encode([
     '@context' => 'https://schema.org',
     '@type'    => 'Collection',
-    'name'     => 'Discours de Philippe Grégoire Yacé',
+    'name'     => t('discours.ld_nom'),
     'url'      => Site::url(Langue::chemin('/archives/discours')),
     'about'    => ['@type' => 'Person', 'name' => 'Philippe Grégoire Yacé'],
     'isPartOf' => [
         '@type' => 'Collection',
-        'name'  => 'Fonds numérique Philippe Grégoire Yacé',
+        'name'  => t('discours.ld_fonds'),
         'url'   => Site::url(Langue::chemin('/archives')),
     ],
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
@@ -56,15 +55,11 @@ $ld = json_encode([
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal" aria-hidden="true">🎙️</p></div>
       <div class="col-lg-8">
-        <?php $fil = [['Archives', '/archives'], ['Discours', null]];
+        <?php $fil = [[t('archives.fil'), '/archives'], [t('discours.fil'), null]];
               require dirname(__DIR__) . '/partials/fil.php'; ?>
-        <p class="kicker reveal">Bibliothèque</p>
-        <h1 class="t-d1 reveal">Discours.</h1>
-        <p class="t-lead page-head__lead reveal">
-          Vingt et un ans au perchoir de l'Assemblée nationale, et la parole qui va avec.
-          Chaque discours porte son contexte, et lorsque l'archive existe, son
-          enregistrement, sa transcription intégrale et son document original.
-        </p>
+        <p class="kicker reveal"><?= t('discours.kicker') ?></p>
+        <h1 class="t-d1 reveal"><?= t('discours.titre') ?></h1>
+        <p class="t-lead page-head__lead reveal"><?= t('discours.lead') ?></p>
       </div>
     </div>
   </div>
@@ -77,24 +72,24 @@ $ld = json_encode([
       <div class="col-lg-10 offset-lg-2">
 
         <form class="arch-rech reveal" method="get" action="<?= $lien('/archives/discours') ?>" role="search">
-          <label class="arch-rech__label" for="q">Chercher dans les discours</label>
+          <label class="arch-rech__label" for="q"><?= t('discours.rechercher') ?></label>
           <div class="arch-rech__ligne">
             <?php /* La recherche du modèle couvre la transcription : c'est
                      l'intérêt de l'avoir saisie — on retrouve un discours par
                      une phrase qu'on en a retenue. */ ?>
             <input class="arch-rech__champ" type="search" id="q" name="q"
                    value="<?= View::e($recherche) ?>"
-                   placeholder="Un mot du discours, un lieu, une année…">
+                   placeholder="<?= t('discours.placeholder') ?>">
             <?php if ($annee !== null): ?>
               <input type="hidden" name="annee" value="<?= (int) $annee ?>">
             <?php endif; ?>
-            <button class="btn-pgy btn-pgy--sm" type="submit">Chercher</button>
+            <button class="btn-pgy btn-pgy--sm" type="submit"><?= t('discours.chercher') ?></button>
           </div>
         </form>
 
         <?php if ($annees !== []): ?>
-          <div class="chips chips--annees reveal" style="margin-top: var(--sp-5);" role="group" aria-label="Filtrer par année">
-            <a class="chip chip--fin<?= $annee === null ? ' is-active' : '' ?>" href="<?= $filtre(null) ?>">Toutes les années</a>
+          <div class="chips chips--annees reveal" style="margin-top: var(--sp-5);" role="group" aria-label="<?= t('discours.filtre_annee') ?>">
+            <a class="chip chip--fin<?= $annee === null ? ' is-active' : '' ?>" href="<?= $filtre(null) ?>"><?= t('discours.toutes_annees') ?></a>
             <?php foreach ($annees as $an => $n): ?>
               <a class="chip chip--fin<?= $an === $annee ? ' is-active' : '' ?>" href="<?= $filtre($an) ?>"><?= (int) $an ?></a>
             <?php endforeach; ?>
@@ -110,17 +105,18 @@ $ld = json_encode([
         <?php if ($groupes === []): ?>
           <p class="t-body reveal">
             <?php if ($recherche !== '' || $annee !== null): ?>
-              Aucun discours ne correspond à cette recherche.
-              <a class="link" href="<?= $lien('/archives/discours') ?>">Effacer les filtres</a>
+              <?= t('discours.vide_recherche') ?>
+              <a class="link" href="<?= $lien('/archives/discours') ?>"><?= t('discours.effacer') ?></a>
             <?php else: ?>
-              La bibliothèque des discours se constitue. Les premières pièces
-              seront versées prochainement.
+              <?= t('discours.vide') ?>
             <?php endif; ?>
           </p>
         <?php else: ?>
 
           <p class="kicker kicker--bare reveal" style="margin-bottom: var(--sp-6);">
-            <?= (int) $total ?> discours
+            <?= (int) $total > 1
+                  ? t('discours.compte', ['nombre' => (int) $total])
+                  : t('discours.compte_un', ['nombre' => (int) $total]) ?>
           </p>
 
           <?php foreach ($groupes as $cle => $lot): ?>
@@ -128,8 +124,8 @@ $ld = json_encode([
               <?php /* « Années 1960 » et non « 1960s » : le pluriel anglais
                        d'une décennie n'existe pas en français. */ ?>
               <h2 class="disc-groupe__titre"><?= $cle === 'sans-date'
-                  ? 'Date à établir'
-                  : 'Années ' . View::e($cle) ?></h2>
+                  ? t('discours.sans_date')
+                  : t('discours.decennie', ['annee' => $cle, 'annees' => $cle . 's']) ?></h2>
 
               <ol class="disc-liste">
                 <?php foreach ($lot as $d): ?>

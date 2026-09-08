@@ -8,6 +8,7 @@
  * durée, et il peut être annulé.
  */
 
+use App\Core\Langue;
 use App\Core\DateFr;
 use App\Core\Site;
 use App\Core\View;
@@ -21,7 +22,7 @@ $ville     = trim((string) ($evenement['ville'] ?? ''));
 $adresse   = implode(', ', array_filter([$lieu, $ville]));
 $inscrire  = trim((string) ($evenement['inscription_url'] ?? ''));
 
-$titre = $evenement['titre'] . ' — Philippe Grégoire Yacé : une destinée';
+$titre = t('evenement.titre_page', ['titre' => (string) $evenement['titre']]);
 
 $description = trim(mb_strimwidth(
     preg_replace('/\s+/u', ' ', (string) ($evenement['description'] ?? '')) ?? '',
@@ -67,7 +68,7 @@ $donneesLd = array_filter([
         ? 'https://schema.org/EventCancelled'
         : 'https://schema.org/EventScheduled',
     'inLanguage'       => 'fr',
-    'url'              => Site::url('/evenements/' . $evenement['slug']),
+    'url'              => Site::url(Langue::chemin('/evenements/' . $evenement['slug'])),
     'description'      => $description,
     'image'            => $media !== null ? Site::url(Media::url((string) $evenement['image'])) : '',
     'location'         => $adresse === '' ? '' : array_filter([
@@ -98,7 +99,7 @@ $ld = json_encode(
       </div>
       <div class="col-lg-8">
         <?php $fil = [
-          ['Événements', '/evenements'],
+          [t('evenements.fil'), '/evenements'],
           [(string) $evenement['titre'], null],
         ]; require dirname(__DIR__) . '/partials/fil.php'; ?>
 
@@ -136,8 +137,7 @@ $ld = json_encode(
                    page pour vérifier une adresse doit apprendre l'annulation
                    avant de lire l'adresse. */ ?>
           <p class="avis avis--refus reveal" role="status">
-            <strong>Ce rendez-vous est annulé.</strong> L'annonce reste en ligne
-            pour celles et ceux qui l'avaient noté.
+            <?= t_brut('evenement.annule') ?>
           </p>
         <?php endif; ?>
 
@@ -171,18 +171,18 @@ $ld = json_encode(
           <?php if ($inscrire !== '' && !$annule && !$passe): ?>
             <p class="article__source reveal">
               <a class="btn-pgy" href="<?= View::e($inscrire) ?>" rel="noopener">
-                S'inscrire <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
+                <?= t('evenement.inscrire') ?> <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
               </a>
             </p>
           <?php elseif ($inscrire !== '' && $passe && !$annule): ?>
             <p class="article__source reveal t-small">
-              Les inscriptions sont closes&nbsp;: ce rendez-vous a eu lieu.
+              <?= t('evenement.closes') ?>
             </p>
           <?php endif; ?>
         </div>
 
         <p class="article__retour reveal">
-          <a class="link" href="/evenements">Tous les événements</a>
+          <a class="link" href="<?= Langue::chemin('/evenements') ?>"><?= t('evenement.tous') ?></a>
         </p>
 
       </div>

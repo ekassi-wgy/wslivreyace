@@ -16,12 +16,12 @@ use App\Model\Media;
 $titreCat = $categorie === null ? null : Archive::categorie($categorie);
 
 $titre = $titreCat === null
-    ? 'Archives — Philippe Grégoire Yacé'
-    : $titreCat . ' — Archives Philippe Grégoire Yacé';
+    ? t('archives.titre_page')
+    : t('archives.titre_page_cat', ['categorie' => $titreCat]);
 
 $description = $titreCat === null
-    ? "Le fonds numérique Philippe Grégoire Yacé : photographies, vidéos, discours, documents, presse et correspondances."
-    : $titreCat . " du fonds numérique Philippe Grégoire Yacé.";
+    ? t('archives.description')
+    : t('archives.description_cat', ['categorie' => $titreCat]);
 
 /** Toute adresse interne passe par la langue courante (lot G1). */
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
@@ -43,15 +43,14 @@ $formes = ['gal__i--large', 'gal__i--haut', 'gal__i--carre', 'gal__i--pano'];
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal">—</p></div>
       <div class="col-lg-8">
-        <p class="kicker reveal">Fonds numérique</p>
-        <h1 class="t-d1 reveal"><?= View::e($titreCat ?? 'Archives.') ?></h1>
+        <p class="kicker reveal"><?= t('archives.kicker') ?></p>
+        <h1 class="t-d1 reveal"><?= $titreCat === null ? t('archives.titre') : View::e($titreCat) ?></h1>
         <p class="t-lead page-head__lead reveal">
           <?php if ($categorie === null): ?>
-            Photographies, vidéos, discours, documents, presse et correspondances.
-            Une bibliothèque qui s'enrichit — chaque pièce a sa page et son adresse.
+            <?= t('archives.lead') ?>
           <?php else: ?>
-            <?= View::e($titreCat) ?> du fonds Philippe Grégoire Yacé.
-            <a class="link" href="<?= $lien('/archives') ?>">Revenir au fonds entier</a>
+            <?= t('archives.lead_cat', ['categorie' => $titreCat]) ?>
+            <a class="link" href="<?= $lien('/archives') ?>"><?= t('archives.retour_fonds') ?></a>
           <?php endif; ?>
         </p>
       </div>
@@ -67,23 +66,23 @@ $formes = ['gal__i--large', 'gal__i--haut', 'gal__i--carre', 'gal__i--pano'];
       <div class="col-lg-10 offset-lg-2">
 
         <form class="arch-rech reveal" method="get" action="<?= $categorie === null ? $lien('/archives') : $lien('/archives/' . $categorie) ?>" role="search">
-          <label class="arch-rech__label" for="q">Rechercher dans le fonds</label>
+          <label class="arch-rech__label" for="q"><?= t('archives.rechercher') ?></label>
           <div class="arch-rech__ligne">
             <input class="arch-rech__champ" type="search" id="q" name="q"
                    value="<?= View::e($recherche) ?>"
-                   placeholder="Un nom, un lieu, une année, un mot du texte…">
+                   placeholder="<?= t('archives.placeholder') ?>">
             <?php /* L'année en cours voyage avec la recherche : chercher ne
                      doit pas défaire le filtre qu'on venait de poser. */ ?>
             <?php if ($annee !== null): ?>
               <input type="hidden" name="annee" value="<?= (int) $annee ?>">
             <?php endif; ?>
-            <button class="btn-pgy btn-pgy--sm" type="submit">Chercher</button>
+            <button class="btn-pgy btn-pgy--sm" type="submit"><?= t('archives.chercher') ?></button>
           </div>
         </form>
 
         <?php if ($comptes !== []): ?>
-          <div class="chips reveal" style="margin-top: var(--sp-5);" role="group" aria-label="Filtrer par catégorie">
-            <a class="chip<?= $categorie === null ? ' is-active' : '' ?>" href="<?= $filtre(null, $annee) ?>">Tout</a>
+          <div class="chips reveal" style="margin-top: var(--sp-5);" role="group" aria-label="<?= t('archives.filtre_cat') ?>">
+            <a class="chip<?= $categorie === null ? ' is-active' : '' ?>" href="<?= $filtre(null, $annee) ?>"><?= t('archives.tout') ?></a>
             <?php foreach ($comptes as $cle => $n): ?>
               <a class="chip<?= $cle === $categorie ? ' is-active' : '' ?>" href="<?= $filtre($cle, null) ?>">
                 <span aria-hidden="true"><?= Archive::signe($cle) ?></span>
@@ -95,8 +94,8 @@ $formes = ['gal__i--large', 'gal__i--haut', 'gal__i--carre', 'gal__i--pano'];
         <?php endif; ?>
 
         <?php if ($annees !== []): ?>
-          <div class="chips chips--annees reveal" style="margin-top: var(--sp-4);" role="group" aria-label="Filtrer par année">
-            <a class="chip chip--fin<?= $annee === null ? ' is-active' : '' ?>" href="<?= $filtre($categorie, null) ?>">Toutes les années</a>
+          <div class="chips chips--annees reveal" style="margin-top: var(--sp-4);" role="group" aria-label="<?= t('archives.filtre_annee') ?>">
+            <a class="chip chip--fin<?= $annee === null ? ' is-active' : '' ?>" href="<?= $filtre($categorie, null) ?>"><?= t('archives.toutes_annees') ?></a>
             <?php foreach ($annees as $an => $n): ?>
               <a class="chip chip--fin<?= $an === $annee ? ' is-active' : '' ?>" href="<?= $filtre($categorie, $an) ?>"><?= (int) $an ?></a>
             <?php endforeach; ?>
@@ -114,11 +113,10 @@ $formes = ['gal__i--large', 'gal__i--haut', 'gal__i--carre', 'gal__i--pano'];
       <div class="col-lg-10 offset-lg-2">
         <a class="contrib-appel reveal" href="<?= $lien('/contribuer') ?>">
           <span class="contrib-appel__texte">
-            <strong>Vous avez connu Philippe Grégoire Yacé&nbsp;?</strong>
-            Une photographie, une lettre, un enregistrement&nbsp;? Aidez-nous à
-            préserver et transmettre sa mémoire.
+            <strong><?= t('archives.appel_titre') ?></strong>
+            <?= t('archives.appel_texte') ?>
           </span>
-          <span class="contrib-appel__btn">Contribuez aux archives
+          <span class="contrib-appel__btn"><?= t('archives.appel_btn') ?>
             <span aria-hidden="true">&#8594;</span></span>
         </a>
       </div>
@@ -131,16 +129,18 @@ $formes = ['gal__i--large', 'gal__i--haut', 'gal__i--carre', 'gal__i--pano'];
         <?php if ($notices === []): ?>
           <p class="t-body reveal">
             <?php if ($recherche !== '' || $annee !== null): ?>
-              Aucune pièce ne correspond à cette recherche.
-              <a class="link" href="<?= $filtre($categorie, null) ?>">Effacer les filtres</a>
+              <?= t('archives.vide_recherche') ?>
+              <a class="link" href="<?= $filtre($categorie, null) ?>"><?= t('archives.effacer') ?></a>
             <?php else: ?>
-              Le fonds se constitue. Les premières pièces seront versées prochainement.
+              <?= t('archives.vide') ?>
             <?php endif; ?>
           </p>
         <?php else: ?>
 
           <p class="kicker kicker--bare reveal" style="margin-bottom: var(--sp-5);">
-            <?= count($notices) ?> pièce<?= count($notices) > 1 ? 's' : '' ?>
+            <?= count($notices) > 1
+                  ? t('archives.compte', ['nombre' => count($notices)])
+                  : t('archives.compte_un', ['nombre' => count($notices)]) ?>
           </p>
 
           <ul class="gal">

@@ -3,15 +3,22 @@
     viennent de templates/layout.php. */
 $titre       = t('accueil.titre_page');
 $description = t('accueil.description');
-$ld          = <<<'JSONLD'
-{
-  "@context": "https://schema.org", "@type": "Book",
-  "name": "Philippe Grégoire Yacé : une destinée (1920-1998)", "inLanguage": "fr",
-  "about": { "@type": "Person", "name": "Philippe Grégoire Yacé",
-    "birthDate": "1920", "deathDate": "1998", "nationality": "Ivoirienne",
-    "jobTitle": "Président de l\'Assemblée nationale de Côte d\'Ivoire (1959-1980)" }
-}
-JSONLD;
+$ld = json_encode([
+    '@context'   => 'https://schema.org',
+    '@type'      => 'Book',
+    'name'       => 'Philippe Grégoire Yacé : une destinée (1920-1998)',
+    // La langue de la page, et non « fr » en dur : un balisage qui contredit
+    // `<html lang>` désoriente le moteur au lieu de le renseigner (lot G11).
+    'inLanguage' => App\Core\Langue::code(),
+    'about'      => [
+        '@type'       => 'Person',
+        'name'        => 'Philippe Grégoire Yacé',
+        'birthDate'   => '1920',
+        'deathDate'   => '1998',
+        'nationality' => t('accueil.ld_nationalite'),
+        'jobTitle'    => t('accueil.ld_fonction'),
+    ],
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
 /**
  * Repères de la frise, lus une fois pour deux emplacements : le lien du hero,

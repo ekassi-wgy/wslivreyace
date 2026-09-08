@@ -13,11 +13,10 @@ use App\Core\Recherche;
 use App\Core\View;
 
 $titre = $terme === ''
-    ? 'Rechercher — Philippe Grégoire Yacé'
-    : sprintf('« %s » — recherche', $terme);
+    ? t('recherche.titre_page')
+    : t('recherche.titre_terme', ['terme' => $terme]);
 
-$description = 'Rechercher dans le fonds Philippe Grégoire Yacé : archives, discours, '
-             . 'biographie, héritage, actualités et événements.';
+$description = t('recherche.description');
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
 ?>
@@ -27,17 +26,17 @@ $lien = static fn(string $chemin): string => Langue::chemin($chemin);
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal">—</p></div>
       <div class="col-lg-8">
-        <p class="kicker reveal">Recherche</p>
-        <h1 class="t-d1 reveal">Chercher.</h1>
+        <p class="kicker reveal"><?= t('recherche.kicker') ?></p>
+        <h1 class="t-d1 reveal"><?= t('recherche.titre') ?></h1>
 
         <form class="arch-rech reveal" method="get" action="<?= $lien('/recherche') ?>" role="search"
               style="margin-top: var(--sp-6);">
-          <label class="arch-rech__label" for="q">Dans tout le site</label>
+          <label class="arch-rech__label" for="q"><?= t('recherche.label') ?></label>
           <div class="arch-rech__ligne">
             <input class="arch-rech__champ" type="search" id="q" name="q" value="<?= View::e($terme) ?>"
-                   placeholder="Un nom, un lieu, une année, un mot d'un discours…"
+                   placeholder="<?= t('recherche.placeholder') ?>"
                    autofocus>
-            <button class="btn-pgy btn-pgy--sm" type="submit">Chercher</button>
+            <button class="btn-pgy btn-pgy--sm" type="submit"><?= t('recherche.chercher') ?></button>
           </div>
         </form>
       </div>
@@ -51,31 +50,23 @@ $lien = static fn(string $chemin): string => Langue::chemin($chemin);
       <div class="col-lg-8 offset-lg-2">
 
         <?php if ($terme === ''): ?>
-          <p class="t-body reveal">
-            La recherche parcourt les archives — transcriptions des discours
-            comprises —, la biographie, l'héritage, les actualités et les
-            événements.
-          </p>
+          <p class="t-body reveal"><?= t('recherche.invite') ?></p>
 
         <?php elseif (mb_strlen($terme) < Recherche::MINIMUM): ?>
-          <p class="t-body reveal">
-            Il faut au moins <?= Recherche::MINIMUM ?> caractères pour chercher.
-          </p>
+          <p class="t-body reveal"><?= t('recherche.trop_court', ['minimum' => Recherche::MINIMUM]) ?></p>
 
         <?php elseif ($resultats === []): ?>
+          <p class="t-body reveal"><?= t_brut('recherche.aucun', ['terme' => $terme]) ?></p>
           <p class="t-body reveal">
-            Aucun résultat pour « <strong><?= View::e($terme) ?></strong> ».
-          </p>
-          <p class="t-body reveal">
-            Le fonds s'enrichit régulièrement : ce que vous cherchez n'y est
-            peut-être pas encore.
-            <a class="link" href="<?= $lien('/contribuer') ?>">Si vous le possédez, confiez-le-nous.</a>
+            <?= t('recherche.aucun_suite') ?>
+            <a class="link" href="<?= $lien('/contribuer') ?>"><?= t('recherche.aucun_lien') ?></a>
           </p>
 
         <?php else: ?>
           <p class="kicker kicker--bare reveal" style="margin-bottom: var(--sp-6);">
-            <?= (int) $total ?> résultat<?= $total > 1 ? 's' : '' ?>
-            pour « <?= View::e($terme) ?> »
+            <?= $total > 1
+                  ? t('recherche.compte',    ['nombre' => (int) $total, 'terme' => $terme])
+                  : t('recherche.compte_un', ['nombre' => (int) $total, 'terme' => $terme]) ?>
           </p>
 
           <?php foreach ($resultats as $type => $lot): ?>

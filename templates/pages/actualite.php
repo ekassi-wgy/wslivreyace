@@ -56,7 +56,7 @@ $donneesLd = array_filter([
     'headline'         => (string) $actu['titre'],
     'datePublished'    => DateFr::iso((string) $actu['publie_le']),
     'inLanguage'       => 'fr',
-    'mainEntityOfPage' => Site::url('/actualites/' . $actu['slug']),
+    'mainEntityOfPage' => Site::url(Langue::chemin('/actualites/' . $actu['slug'])),
     'description'      => $description,
     'image'            => $media !== null ? Site::url(Media::url((string) $actu['image'])) : '',
     'about'            => [
@@ -85,7 +85,7 @@ $ld = json_encode(
                  sur WhatsApp est souvent la première page qu'on voit du site :
                  il faut pouvoir remonter de là. */ ?>
         <?php $fil = [
-          ['Actualités', '/actualites'],
+          [t('actualites.fil'), '/actualites'],
           [(string) $actu['titre'], null],
         ]; require dirname(__DIR__) . '/partials/fil.php'; ?>
 
@@ -151,7 +151,7 @@ $ld = json_encode(
                      un navigateur ou une extension l'ouvrirait quand même. */ ?>
             <p class="article__source reveal">
               <a class="link" href="<?= View::e($sourceUrl) ?>" rel="noopener nofollow">
-                Lire l'article<?= $source !== '' ? ' sur ' . View::e($source) : ' original' ?>
+                <?= $source !== '' ? t('actualite.lire_sur', ['source' => $source]) : t('actualite.lire_original') ?>
                 <span aria-hidden="true">&#8599;</span>
               </a>
             </p>

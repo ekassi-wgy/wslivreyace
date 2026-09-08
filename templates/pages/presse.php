@@ -14,11 +14,12 @@
  * sites de presse.
  */
 
+use App\Core\Langue;
 use App\Core\DateFr;
 use App\Core\View;
 
-$titre       = 'Revue de presse — Philippe Grégoire Yacé : une destinée';
-$description = "Ce que la presse a écrit sur l'ouvrage consacré à Philippe Grégoire Yacé.";
+$titre       = t('presse.titre_page');
+$description = t('presse.description');
 
 $total = array_sum(array_map('count', $parAnnee));
 ?>
@@ -29,13 +30,9 @@ $total = array_sum(array_map('count', $parAnnee));
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal">02</p></div>
       <div class="col-lg-8">
-        <p class="kicker reveal">Revue de presse</p>
-        <h1 class="t-d1 reveal">Ce qui s'est écrit.</h1>
-        <p class="t-lead page-head__lead reveal">
-          Les articles parus dans la presse au sujet de l'ouvrage et de son
-          sujet. Chaque référence porte son organe et sa date&nbsp;; le lien
-          vers l'article d'origine est sur la fiche.
-        </p>
+        <p class="kicker reveal"><?= t('presse.kicker') ?></p>
+        <h1 class="t-d1 reveal"><?= t('presse.titre') ?></h1>
+        <p class="t-lead page-head__lead reveal"><?= t('presse.lead') ?></p>
       </div>
     </div>
     <div class="rule reveal"></div>
@@ -50,12 +47,9 @@ $total = array_sum(array_map('count', $parAnnee));
 
       <div class="row">
         <div class="col-lg-7">
-          <p class="t-lead reveal">
-            <em>La revue de presse est encore vide.</em> Les articles consacrés à
-            l'ouvrage y seront référencés au fur et à mesure de leur parution.
-          </p>
+          <p class="t-lead reveal"><?= t_brut('presse.vide') ?></p>
           <p class="reveal" style="margin-top: var(--sp-5);">
-            <a class="link" href="/actualites">Voir les actualités</a>
+            <a class="link" href="<?= Langue::chemin('/actualites') ?>"><?= t('presse.voir_actus') ?></a>
           </p>
         </div>
       </div>
@@ -65,7 +59,9 @@ $total = array_sum(array_map('count', $parAnnee));
       <div class="row">
         <div class="col-lg-10 offset-lg-2">
           <p class="kicker kicker--bare reveal">
-            <?= (int) $total ?> référence<?= $total > 1 ? 's' : '' ?>
+            <?= $total > 1
+                  ? t('presse.compte', ['nombre' => (int) $total])
+                  : t('presse.compte_un', ['nombre' => (int) $total]) ?>
           </p>
 
 <?php foreach ($parAnnee as $annee => $entrees): ?>
@@ -74,7 +70,7 @@ $total = array_sum(array_map('count', $parAnnee));
 
             <div class="news">
 <?php foreach ($entrees as $e): ?>
-              <a class="news__i reveal" href="/actualites/<?= View::e((string) $e['slug']) ?>">
+              <a class="news__i reveal" href="<?= Langue::chemin('/actualites/' . (string) $e['slug']) ?>">
                 <span class="news__organe"><?= View::e((string) ($e['source'] ?? '')) ?></span>
                 <span class="news__body">
                   <span class="news__t"><?= View::e((string) $e['titre']) ?></span>

@@ -11,12 +11,12 @@
  * l'agenda, et il permet de balayer la page sans lire les titres.
  */
 
+use App\Core\Langue;
 use App\Core\DateFr;
 use App\Core\View;
 
-$titre       = 'Événements — Philippe Grégoire Yacé : une destinée';
-$description = "Dédicaces, colloques et hommages autour de l'ouvrage consacré à "
-             . 'Philippe Grégoire Yacé.';
+$titre       = t('evenements.titre_page');
+$description = t('evenements.description');
 
 /**
  * Rendu d'une entrée d'agenda. Écrit une fois : les deux listes n'affichent
@@ -29,7 +29,7 @@ $entree = static function (array $e, bool $passe): void {
     $ville  = trim((string) ($e['ville'] ?? ''));
     ?>
     <li class="agenda__i reveal<?= $annule ? ' est-annule' : '' ?>">
-      <a class="agenda__lien" href="/evenements/<?= View::e((string) $e['slug']) ?>">
+      <a class="agenda__lien" href="<?= Langue::chemin('/evenements/' . (string) $e['slug']) ?>">
 
         <time class="agenda__quand" datetime="<?= View::e(DateFr::isoHeure($debut)) ?>">
           <span class="agenda__jour"><?= (int) date('j', strtotime($debut)) ?></span>
@@ -48,9 +48,9 @@ $entree = static function (array $e, bool $passe): void {
         </span>
 
         <?php if ($annule): ?>
-          <span class="agenda__etat agenda__etat--annule">Annulé</span>
+          <span class="agenda__etat agenda__etat--annule"><?= t('evenements.annule') ?></span>
         <?php elseif (!$passe): ?>
-          <span class="agenda__etat">À venir</span>
+          <span class="agenda__etat"><?= t('evenements.a_venir') ?></span>
         <?php endif; ?>
 
       </a>
@@ -65,13 +65,9 @@ $entree = static function (array $e, bool $passe): void {
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal">01</p></div>
       <div class="col-lg-8">
-        <p class="kicker reveal">Événements</p>
-        <h1 class="t-d1 reveal">Les rendez-vous.</h1>
-        <p class="t-lead page-head__lead reveal">
-          Dédicaces, colloques et hommages. Chaque rendez-vous porte son lieu et
-          son horaire&nbsp;; ceux qui sont annulés le restent affichés, et le
-          disent.
-        </p>
+        <p class="kicker reveal"><?= t('evenements.kicker') ?></p>
+        <h1 class="t-d1 reveal"><?= t('evenements.titre') ?></h1>
+        <p class="t-lead page-head__lead reveal"><?= t('evenements.lead') ?></p>
       </div>
     </div>
     <div class="rule reveal"></div>
@@ -85,15 +81,14 @@ $entree = static function (array $e, bool $passe): void {
       <div class="col-lg-10 offset-lg-2">
 
         <p class="kicker kicker--bare reveal" style="margin-bottom: var(--sp-6);">
-          <?= $aVenir === [] ? 'À venir' : count($aVenir) . ' rendez-vous à venir' ?>
+          <?php if ($aVenir === []): ?><?= t('evenements.a_venir') ?><?php else: ?><?= count($aVenir) > 1
+                  ? t('evenements.compte', ['nombre' => count($aVenir)])
+                  : t('evenements.compte_un', ['nombre' => count($aVenir)]) ?><?php endif; ?>
         </p>
 
         <?php if ($aVenir === []): ?>
 
-          <p class="t-lead reveal">
-            <em>Aucun rendez-vous n'est annoncé pour le moment.</em> Les dédicaces
-            et rencontres autour de l'ouvrage paraîtront ici.
-          </p>
+          <p class="t-lead reveal"><?= t_brut('evenements.vide') ?></p>
 
         <?php else: ?>
 
@@ -115,8 +110,8 @@ $entree = static function (array $e, bool $passe): void {
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal">02</p></div>
       <div class="col-lg-8">
-        <p class="kicker reveal">Déjà passés</p>
-        <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-8);">Ce qui s'est tenu.</h2>
+        <p class="kicker reveal"><?= t('evenements.passes_kicker') ?></p>
+        <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-8);"><?= t('evenements.passes_titre') ?></h2>
       </div>
     </div>
     <div class="row">

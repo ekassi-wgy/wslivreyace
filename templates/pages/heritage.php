@@ -14,16 +14,15 @@ use App\Core\View;
 use App\Model\Heritage;
 use App\Model\Media;
 
-$titre       = 'Héritage — Philippe Grégoire Yacé';
-$description = "Ce qui perpétue aujourd'hui la mémoire de Philippe Grégoire Yacé : "
-             . 'lieux, hommages, décorations, publications, musique et culture.';
+$titre       = t('heritage.titre_page');
+$description = t('heritage.description');
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
 
 $ld = json_encode([
     '@context' => 'https://schema.org',
     '@type'    => 'CollectionPage',
-    'name'     => 'Héritage de Philippe Grégoire Yacé',
+    'name'     => t('heritage.ld_nom'),
     'url'      => Site::url(Langue::chemin('/heritage')),
     'about'    => ['@type' => 'Person', 'name' => 'Philippe Grégoire Yacé'],
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
@@ -34,13 +33,9 @@ $ld = json_encode([
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal">—</p></div>
       <div class="col-lg-8">
-        <p class="kicker reveal">Héritage</p>
-        <h1 class="t-d1 reveal">Ce qui reste.</h1>
-        <p class="t-lead page-head__lead reveal">
-          Un pont, un boulevard, un buste, une chanson. Des distinctions, des
-          commémorations, des livres. Ce que la Côte d'Ivoire a gardé de
-          Philippe Grégoire Yacé, et ce qu'elle en dit encore.
-        </p>
+        <p class="kicker reveal"><?= t('heritage.kicker') ?></p>
+        <h1 class="t-d1 reveal"><?= t('heritage.titre') ?></h1>
+        <p class="t-lead page-head__lead reveal"><?= t('heritage.lead') ?></p>
       </div>
     </div>
   </div>
@@ -52,10 +47,7 @@ $ld = json_encode([
     <?php if ($groupes === []): ?>
       <div class="row">
         <div class="col-lg-8 offset-lg-2">
-          <p class="t-body reveal">
-            Cette rubrique se constitue. Les premiers sujets seront publiés
-            prochainement.
-          </p>
+          <p class="t-body reveal"><?= t('heritage.vide') ?></p>
         </div>
       </div>
     <?php endif; ?>
@@ -129,8 +121,8 @@ $ld = json_encode([
       <section class="her-rubrique" id="temoignages">
         <div class="row" style="margin-bottom: var(--sp-6);">
           <div class="col-lg-8 offset-lg-2">
-            <p class="kicker reveal">Témoignages</p>
-            <p class="t-lead reveal">Ceux qui l'ont connu, et ce qu'ils en disent.</p>
+            <p class="kicker reveal"><?= t('heritage.temoignages.kicker') ?></p>
+            <p class="t-lead reveal"><?= t('heritage.temoignages.lead') ?></p>
           </div>
         </div>
 
@@ -152,7 +144,7 @@ $ld = json_encode([
               <?php endforeach; ?>
             </ul>
             <p class="reveal" style="margin-top: var(--sp-6);">
-              <a class="link" href="<?= $lien('/temoignages') ?>">Lire tous les témoignages, ou déposer le vôtre</a>
+              <a class="link" href="<?= $lien('/temoignages') ?>"><?= t('heritage.temoignages.lien') ?></a>
             </p>
           </div>
         </div>
