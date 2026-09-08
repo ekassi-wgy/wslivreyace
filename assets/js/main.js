@@ -236,3 +236,89 @@
 
   targets.forEach(function (el) { observer.observe(el); });
 })();
+
+/* =====================================================================
+   Recapitulatif de commande (lot G3)
+
+   Il met a jour les trois montants pendant la saisie, et masque le bloc
+   de livraison quand le retrait est choisi.
+
+   CE N'EST QU'UN CONFORT. Le serveur recalcule le total a l'envoi, a
+   partir de la quantite et de la zone recues et des tarifs lus en base :
+   ce que ce script affiche n'entre jamais dans ce qui est enregistre.
+   Sans JavaScript, la page reste entierement utilisable — le bloc de
+   livraison est simplement toujours visible, et le recapitulatif garde
+   les valeurs rendues par le serveur.
+
+   Le formatage recopie celui de Commande::montant() : espace comme
+   separateur de milliers, « F CFA » pour le franc. Les deux se lisent
+   cote a cote sur la meme page, ils ne doivent pas diverger. */
+(function () {
+  "use strict";
+
+  var recap = document.getElementById("recap");
+  var form  = document.getElementById("formCommande");
+
+  if (!recap || !form) return;
+
+  var quantite = form.querySelector("#quantite");
+  var zone     = form.querySelector("#zone_id");
+  var bloc     = form.querySelector("#blocLivraison");
+  var modes    = form.querySelectorAll("input[name='livraison']");
+
+  var ligneLivre = document.getElementById("recapLigneLivre");
+  var sortieLivre = document.getElementById("recapLivre");
+  var sortieFrais = document.getElementById("recapFrais");
+  var sortieTotal = document.getElementById("recapTotal");
+
+  if (!quantite || !sortieLivre || !sortieFrais || !sortieTotal) return;
+
+  var devise = recap.getAttribute("data-devise") === "XOF" ? "F CFA" : recap.getAttribute("data-devise");
+  var prix   = parseInt(quantite.getAttribute("data-prix"), 10) || 0;
+
+  /* Le gabarit du libelle « 1 × exemplaire » est repris de ce que le
+     serveur a rendu : le nombre y est remplace, le reste — traduit — ne
+     bouge pas. */
+  var gabarit = ligneLivre ? ligneLivre.textContent.trim() : "";
+
+  function somme(montant) {
+    return String(montant).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " " + devise;
+  }
+
+  function modeChoisi() {
+    for (var i = 0; i < modes.length; i++) {
+      if (modes[i].checked) return modes[i].value;
+    }
+    return "retrait";
+  }
+
+  function fraisChoisis() {
+    if (modeChoisi() !== "livraison" || !zone) return 0;
+    var option = zone.options[zone.selectedIndex];
+    return option ? (parseInt(option.getAttribute("data-frais"), 10) || 0) : 0;
+  }
+
+  function rendre() {
+    var n = Math.max(1, parseInt(quantite.value, 10) || 1);
+    var frais = fraisChoisis();
+
+    if (ligneLivre && gabarit) {
+      ligneLivre.textContent = gabarit.replace(/\d+/, String(n));
+    }
+
+    sortieLivre.textContent = somme(prix * n);
+    sortieFrais.textContent = somme(frais);
+    sortieTotal.textContent = somme(prix * n + frais);
+
+    /* Le bloc de livraison disparait au retrait, mais reste dans le
+       document : le retirer ferait perdre la saisie si l'on hesite entre
+       les deux modes. */
+    if (bloc) bloc.hidden = modeChoisi() !== "livraison";
+  }
+
+  quantite.addEventListener("input", rendre);
+  if (zone) zone.addEventListener("change", rendre);
+  for (var i = 0; i < modes.length; i++) modes[i].addEventListener("change", rendre);
+
+  rendre();
+})();

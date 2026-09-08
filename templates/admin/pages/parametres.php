@@ -88,6 +88,59 @@ $total = count($champs);
       </div></div>
     </div>
 
+    <?php /* --- Boutique et livraison (lot G3) ------------------------------
+             Un groupe à part : la fiche technique décrit l'ouvrage, ceci
+             décide s'il se vend. Voir Parametre::BOUTIQUE. */ ?>
+    <div class="col-lg-8 grid-margin stretch-card">
+      <div class="card card-rounded"><div class="card-body">
+        <h4 class="card-title card-title-dash">Boutique et livraison</h4>
+        <p class="text-muted small">
+          Les commandes sont en <strong>paiement à la livraison</strong> : le client
+          ne paie rien en ligne, et l'argent est encaissé à la remise. Les tarifs de
+          livraison se règlent à l'écran
+          <a href="<?= App\Core\Admin::url('/zones') ?>">Zones de livraison</a>.
+        </p>
+
+        <?php foreach ($boutique as $cle => $champ): ?>
+          <?php if ($champ['type'] === 'case'): ?>
+            <?php champ_case($valeurs, $erreurs, $cle, $champ['libelle'], ['aide' => $champ['aide']]); ?>
+          <?php elseif ($champ['type'] === 'long'): ?>
+            <?php champ_zone($valeurs, $erreurs, $cle, $champ['libelle'], ['aide' => $champ['aide']]); ?>
+          <?php else: ?>
+            <?php champ_texte($valeurs, $erreurs, $cle, $champ['libelle'], [
+                'aide'      => $champ['aide'],
+                'attributs' => 'maxlength="200"'
+                    . ($champ['exemple'] === '' ? '' : ' placeholder="' . View::e($champ['exemple']) . '"'),
+            ]); ?>
+          <?php endif; ?>
+        <?php endforeach; ?>
+
+        <?php /* L'état réel, dit en clair : deux conditions et il les faut
+                 toutes, ce qu'une case à cocher seule ne laisse pas deviner. */ ?>
+        <?php if (App\Core\Boutique::ouverte()): ?>
+          <p class="alert alert-success mb-0">
+            <i class="mdi mdi-cart-check me-1" aria-hidden="true"></i>
+            <strong>Les commandes sont ouvertes</strong> — le prix est de
+            <?= View::e(App\Core\Boutique::prixLisible()) ?>.
+            <?php if (!App\Model\Zone::livraisonPossible()): ?>
+              Aucune zone ne porte de tarif : seul le retrait est proposé.
+            <?php endif; ?>
+          </p>
+        <?php else: ?>
+          <p class="alert alert-secondary mb-0">
+            <i class="mdi mdi-cart-off me-1" aria-hidden="true"></i>
+            <strong>Les commandes sont fermées.</strong>
+            <?php if (App\Core\Boutique::prix() === null): ?>
+              Le prix n'est pas renseigné — la case ne suffit pas.
+            <?php else: ?>
+              La case « Ouvrir les commandes » n'est pas cochée.
+            <?php endif; ?>
+            La page Commander reste en ligne et annonce l'ouverture à la parution.
+          </p>
+        <?php endif; ?>
+      </div></div>
+    </div>
+
     <div class="col-lg-4 grid-margin">
       <div class="card card-rounded"><div class="card-body">
         <h4 class="card-title card-title-dash">Ce qui est vérifié</h4>

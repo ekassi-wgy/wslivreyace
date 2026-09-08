@@ -24,6 +24,7 @@ use App\Controller\Admin\PeriodeController;
 use App\Controller\Admin\RepereController;
 use App\Controller\Admin\TemoignageController;
 use App\Controller\Admin\TraductionController;
+use App\Controller\Admin\ZoneController;
 use App\Core\Admin;
 use App\Core\Auth;
 use App\Core\Session;
@@ -148,6 +149,19 @@ $router->get($base . '/traductions',                    [TraductionController::c
 $router->get($base . '/traductions/{entite}',           [TraductionController::class, 'entite']);
 $router->get($base . '/traductions/{entite}/{id}',      [TraductionController::class, 'fiche']);
 $router->post($base . '/traductions/{entite}/{id}',     [TraductionController::class, 'enregistrer']);
+
+/*
+ * Zones de livraison (lot G3). Comme partout ailleurs, du général au
+ * particulier : `/zones/nouveau` avant `/zones/{id}`, sinon « nouveau » serait
+ * pris pour un identifiant.
+ */
+$router->get($base . '/zones',                  [ZoneController::class, 'liste']);
+$router->get($base . '/zones/nouveau',          [ZoneController::class, 'formulaireCreation']);
+$router->post($base . '/zones',                 [ZoneController::class, 'enregistrer']);
+$router->get($base . '/zones/{id}',             [ZoneController::class, 'formulaireEdition']);
+$router->post($base . '/zones/{id}',            [ZoneController::class, 'mettreAJour']);
+$router->post($base . '/zones/{id}/actif',      [ZoneController::class, 'basculer']);
+$router->post($base . '/zones/{id}/supprimer',  [ZoneController::class, 'supprimer']);
 
 $router->get($base . '/parametres',  [ParametreController::class, 'formulaire']);
 $router->post($base . '/parametres', [ParametreController::class, 'enregistrer']);

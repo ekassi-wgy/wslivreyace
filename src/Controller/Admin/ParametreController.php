@@ -24,8 +24,9 @@ final class ParametreController
         View::admin('parametres', [
             'titre'   => 'Paramètres',
             'actif'   => 'parametres',
-            'champs'  => Parametre::FICHE_LIVRE,
-            'autour'  => Parametre::AUTOUR_LIVRE,
+            'champs'   => Parametre::FICHE_LIVRE,
+            'autour'   => Parametre::AUTOUR_LIVRE,
+            'boutique' => Parametre::BOUTIQUE,
             'valeurs' => $valeurs !== [] ? $valeurs : Parametre::toutes(),
             'erreurs' => $erreurs,
             'remplis' => Parametre::ficheRemplie(),
@@ -41,8 +42,11 @@ final class ParametreController
         foreach (Parametre::FICHE_LIVRE as $cle => $champ) {
             $v->longueur($cle, $champ['libelle'], 0, 200);
 
+            // Les bornes sont propres au champ depuis le lot G3 : le prix de
+            // l'ouvrage et son nombre de pages n'ont pas le même ordre de
+            // grandeur, et une borne unique refusait 25 000 francs.
             match ($champ['type']) {
-                'entier' => $v->entier($cle, $champ['libelle'], 1, 10000),
+                'entier' => $v->entier($cle, $champ['libelle'], $champ['min'] ?? 1, $champ['max'] ?? 10000),
                 'isbn'   => self::validerIsbn($v, $cle, $champ['libelle']),
                 default  => null,
             };
@@ -54,6 +58,24 @@ final class ParametreController
             if ($champ['type'] === 'texte') {
                 $v->longueur($cle, $champ['libelle'], 0, 200);
             }
+        }
+
+        // Boutique et livraison (lot G3), même régime que ci-dessus.
+        foreach (Parametre::BOUTIQUE as $cle => $champ) {
+            if ($champ['type'] === 'texte') {
+                $v->longueur($cle, $champ['libelle'], 0, 200);
+            }
+        }
+
+        /*
+         * Ouvrir les commandes sans prix afficherait « 0 F CFA » sur la page
+         * de vente et enregistrerait des commandes gratuites. `Boutique` s'en
+         * garde déjà — elle exige les deux — mais un réglage qu'on coche sans
+         * effet visible est un réglage qui ment : le refus se dit ici.
+         */
+        if (($_POST['boutique_ouverte'] ?? '') === '1' && trim((string) ($_POST['livre_prix'] ?? '')) === '') {
+            $v->erreur('livre_prix', "Renseignez le prix avant d'ouvrir les commandes : "
+                . 'sans lui, la boutique resterait fermée malgré la case cochée.');
         }
 
         /*
@@ -78,7 +100,10 @@ final class ParametreController
             Parametre::ecrire($cle, $valeur === '' ? null : $valeur, $champ['libelle']);
         }
 
-        foreach (Parametre::AUTOUR_LIVRE as $cle => $champ) {
+        // `array_merge` et non l'opérateur de décomposition : celui-ci ne
+        // conserve les clés textuelles que depuis PHP 8.1, et une écriture qui
+        // dépend d'une version se relit mal sur un hébergement mutualisé.
+        foreach (array_merge(Parametre::AUTOUR_LIVRE, Parametre::BOUTIQUE) as $cle => $champ) {
             if ($champ['type'] === 'case') {
                 // Une case décochée ne poste rien : la valeur est écrite dans
                 // les deux cas, sinon décocher n'aurait aucun effet.

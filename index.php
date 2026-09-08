@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 use App\Controller\ActualiteController;
 use App\Controller\ArchiveController;
+use App\Controller\CommandeController;
 use App\Controller\BiographieController;
 use App\Controller\ContactController;
 use App\Controller\ContributionController;
@@ -131,6 +132,23 @@ $router->post('/temoignages', [TemoignageController::class, 'deposer']);
  * imprimées (décision 3).
  */
 $router->get('/recherche', [RechercheController::class, 'page']);
+
+/*
+ * Commander (brief §2, lot G3). **Paiement à la livraison** : aucune passerelle
+ * n'est appelée, et `App\Core\Paiement` continue de n'être que décrite.
+ *
+ * La page reste servie quand la boutique est fermée — elle explique alors
+ * pourquoi et renvoie vers l'ouvrage. Un bouton « Commander » menant à une 404
+ * ferait croire à une panne.
+ *
+ * `/commander/confirmation` avant rien d'autre : la référence voyage en
+ * session et non dans l'adresse, une confirmation portant la référence en URL
+ * étant partageable — et montrant le nom, le téléphone et l'adresse du client
+ * à qui aurait le lien.
+ */
+$router->get('/commander',              [CommandeController::class, 'page']);
+$router->post('/commander',             [CommandeController::class, 'envoyer']);
+$router->get('/commander/confirmation', [CommandeController::class, 'confirmation']);
 
 $router->get('/sitemap.xml', [SeoController::class, 'sitemap']);
 $router->get('/robots.txt',  [SeoController::class, 'robots']);

@@ -16,6 +16,7 @@ use App\Model\Heritage;
 use App\Model\Parametre;
 use App\Model\Periode;
 use App\Model\Repere;
+use App\Model\Zone;
 
 /**
  * L'écran de traduction des contenus (lot G11).
@@ -115,6 +116,20 @@ final class TraductionController
                 'titre'   => ['libelle' => 'Titre',   'zone' => false],
                 'chapo'   => ['libelle' => 'Chapô',   'zone' => true],
                 'contenu' => ['libelle' => 'Contenu', 'zone' => true],
+            ],
+        ],
+        /*
+         * Les zones de livraison (lot G3). Seul le nom se traduit : le code
+         * ISO, le tarif et le rang ne sont pas de la langue. « Abidjan » ne se
+         * traduit pas non plus, mais « Reste du monde » si — et c'est
+         * l'éditeur qui sait lesquelles valent la peine.
+         */
+        'zone_livraison' => [
+            'modele' => Zone::class,
+            'titre'  => 'Zones de livraison',
+            'ordre'  => 'niveau ASC, ordre ASC, nom ASC',
+            'champs' => [
+                'nom' => ['libelle' => 'Nom', 'zone' => false],
             ],
         ],
         'evenement' => [

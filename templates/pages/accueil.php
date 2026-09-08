@@ -112,7 +112,7 @@ $preface = App\Controller\LivreController::preface(App\Model\Parametre::toutes()
                 <?= t_brut('accueil.hero.3_lead') ?>
               </p>
               <div class="hero__cta hero__fade" style="--d:680ms">
-                <a class="btn-pgy" href="<?= App\Core\Langue::chemin('/le-livre') ?>#acheter">
+                <a class="btn-pgy" href="<?= App\Core\Langue::chemin('/commander') ?>">
                   <?= t('accueil.hero.3_cta') ?>
                   <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
                 </a>
@@ -214,7 +214,7 @@ $preface = App\Controller\LivreController::preface(App\Model\Parametre::toutes()
           <div><dt><?= t('accueil.ouvrage.isbn') ?></dt><dd><?= t('accueil.ouvrage.a_renseigner') ?></dd></div>
         </dl>
 
-        <a class="btn-pgy reveal" href="<?= App\Core\Langue::chemin('/le-livre') ?>#acheter">
+        <a class="btn-pgy reveal" href="<?= App\Core\Langue::chemin('/commander') ?>">
           <?= t('accueil.ouvrage.cta') ?>
           <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
         </a>
@@ -476,7 +476,7 @@ $compte = [
           <?= t_brut('accueil.commander.titre') ?>
         </h2>
         <div class="reveal">
-          <a class="btn-pgy" href="#">
+          <a class="btn-pgy" href="<?= App\Core\Langue::chemin('/commander') ?>">
             <?= t('accueil.commander.cta') ?>
             <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
           </a>

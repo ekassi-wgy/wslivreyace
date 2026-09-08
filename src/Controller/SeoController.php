@@ -46,6 +46,16 @@ final class SeoController
         '/temoignages'     => '0.6',
         '/revue-de-presse' => '0.5',
         '/contribuer'      => '0.5',
+        /*
+         * Commander est listée même boutique fermée (lot G3) : la page existe
+         * alors et répond 200 — elle annonce que les commandes ouvriront à la
+         * parution. C'est un contenu, pas une 404 déguisée, et la faire
+         * découvrir au moteur le jour de l'ouverture serait tard.
+         *
+         * `/commander/confirmation` n'y est pas et n'y sera jamais : elle se
+         * lit une fois, depuis la session, et porte `noindex`.
+         */
+        '/commander'       => '0.7',
         '/contact'         => '0.4',
         '/mentions-legales' => '0.2',
     ];

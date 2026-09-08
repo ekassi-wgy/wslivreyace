@@ -7,19 +7,24 @@ s'enrichir pendant des années. Ce brief, ce qu'il déplace et sa feuille de rou
 sont au **§9**, qui fait foi.
 
 **Le cahier des charges d'origine est entièrement livré**, à une exception près :
-le tunnel de commande. **Douze des treize lots du nouveau périmètre le sont
-aussi** — seul G3 reste à écrire.
+le tunnel de commande — **qui existe désormais** (lot G3). **Les treize lots du
+nouveau périmètre sont écrits.**
 
 | | |
 |---|---|
-| **Back-office** | quinze écrans : tableau de bord, actualités, événements, **biographie par périodes**, repères, **archives**, **héritage**, médiathèque cherchée et paginée, **traductions**, modération des témoignages, **contributions du public**, messages, commandes, paramètres, comptes |
-| **Site public** | accueil, Le livre, **auteur**, Biographie (**index et périodes**), **Archives** (fonds, catégorie, notice, **bibliothèque des discours**), **Héritage** (index et sujets), Actualités (liste, fiche, revue de presse), Événements, Témoignages, **Contribuez aux archives**, **Recherche**, Contact, Mentions légales, 404 |
+| **Back-office** | seize écrans : tableau de bord, actualités, événements, **biographie par périodes**, repères, **archives**, **héritage**, médiathèque cherchée et paginée, **traductions**, **zones de livraison**, modération des témoignages, **contributions du public**, messages, commandes, paramètres, comptes |
+| **Site public** | accueil, Le livre, **auteur**, **Commander**, Biographie (**index et périodes**), **Archives** (fonds, catégorie, notice, **bibliothèque des discours**), **Héritage** (index et sujets), Actualités (liste, fiche, revue de presse), Événements, Témoignages, **Contribuez aux archives**, **Recherche**, Contact, Mentions légales, 404 |
 | **Socle** | **bilingue et ouvert** — `/en/` sert l'intégralité du site, interface traduite et contenus traduisibles depuis le back-office —, plan du site et `robots.txt`, fil d'Ariane et données structurées partout, quarantaine des envois publics |
 
-**Reste le tunnel de commande (G3).** La version anglaise (G11) est **livrée et
-ouverte** depuis le 8 septembre 2026 : `/en/` répond, l'interface est en
-anglais, et les contenus s'y traduisent depuis le back-office — un champ non
-traduit affiche le français plutôt que rien.
+**La boutique est livrée et fermée** (G3) : les commandes se prennent en
+**paiement à la livraison**, avec des frais gérables par pays, ville et
+commune, et s'ouvriront d'une case à cocher le jour où l'ouvrage aura une date.
+Le paiement en ligne est une phase 2 — la structure l'attend, aucune migration
+ne sera nécessaire.
+
+**La version anglaise (G11) est livrée et ouverte** depuis le 8 septembre 2026 :
+`/en/` répond, l'interface est en anglais, et les contenus s'y traduisent depuis
+le back-office — un champ non traduit affiche le français plutôt que rien.
 
 ⚠️ **Le dépôt est en avance sur le serveur, mais l'écart s'est réduit de
 moitié le 8 septembre 2026 : les quinze migrations sont jouées en production.**
@@ -179,21 +184,25 @@ livreyace/                  ← racine web
 │   │                       Admin, Session, Csrf, Auth,
 │   │                       Validator, Slug, Site, DateLisible,
 │   │                       Langue, Lexique, Traduction,
-│   │                       Televersement, Paiement, Debit    [interdit]
+│   │                       Boutique, Televersement, Paiement,
+│   │                       Debit                             [interdit]
 │   ├── helpers.php         t(), t_brut(), t_nu()             [interdit]
 │   ├── lang/               fr.php, en.php — les textes de
 │   │                       l'interface, versionnés           [interdit]
-│   ├── Controller/         Actualite, Archive, Contact,
-│   │                       Evenement, Temoignage (public)    [interdit]
+│   ├── Controller/         Actualite, Archive, Commande,
+│   │                       Contact, Evenement, Temoignage,
+│   │                       Contribution, Recherche (public)  [interdit]
 │   ├── Controller/Admin/   Auth, Crud (Actualite, Evenement,
 │   │                       Repere, Archive, Heritage,
 │   │                       Periode), Temoignage, Message,
 │   │                       Media, Commande, Compte,
-│   │                       Contribution, Traduction,
+│   │                       Contribution, Traduction, Zone,
 │   │                       Parametre                         [interdit]
 │   └── Model/              Modele, Actualite, Evenement,
 │                           Repere, Temoignage, Message,
-│                           Media, Commande, Parametre,
+│                           Media, Commande, Zone, Parametre,
+│                           Archive, Heritage, Periode,
+│                           Contribution,
 │                           Utilisateur, TentativeConnexion    [interdit]
 ├── templates/
 │   ├── layout.php          mise en page du site public       [interdit]
@@ -1277,9 +1286,9 @@ back-office aussi, et les quatre migrations jouées en production.
 été écrits et poussés dans la foulée, avec neuf migrations. La liste, dans
 l'ordre où les jouer, est au §9 — « Où en est ce périmètre ».
 
-**État au 8 septembre 2026 : la base est à jour, le code ne l'est pas.** Les
-neuf migrations du nouveau périmètre ont été jouées dans la journée, `007` à
-`015`, une à une dans phpMyAdmin — le serveur est un **MariaDB 10.5.26**, ce qui
+**État au 8 septembre 2026 : la base est à jour jusqu'à `015`, le code ne l'est
+pas, et `016` s'est ajoutée depuis.** Les neuf migrations du nouveau périmètre
+ont été jouées dans la journée, `007` à `015`, une à une dans phpMyAdmin — le serveur est un **MariaDB 10.5.26**, ce qui
 n'avait jamais été relevé jusque-là (voir §2, qui raisonnait dessus sans
 l'avoir constaté). `repere` porte ses sept entrées et ses quatre mises en avant ;
 `repere.periode` a bien disparu.
@@ -1304,6 +1313,7 @@ il n'en est que le résumé.
 | `sql/005_soumission.sql` | journal des soumissions publiques (limitation de débit) | jouée |
 | `sql/006_message.sql` | table des messages du formulaire de contact (lot F4) | jouée |
 | `sql/007_actualite_categories.sql` → `sql/015_periode.sql` | tout le nouveau périmètre, neuf fichiers | jouées le 8 septembre |
+| `sql/016_boutique.sql` | la boutique : zones de livraison, décompte figé des commandes, statuts du paiement à la livraison | **à jouer** |
 
 **`001_schema.sql` ne se rejoue jamais sur une base installée.** Il a été mis à
 jour pour qu'une installation neuve n'ait pas à rejouer l'historique, mais ses
@@ -1360,6 +1370,10 @@ SELECT o.migration, o.controle,
     UNION ALL SELECT '015', 'table',   'periode', '', 'table periode'
     UNION ALL SELECT '015', 'table',   'periode_media', '', 'table periode_media'
     UNION ALL SELECT '015', 'retiree', 'repere', 'periode', 'periode retirée de repere'
+    UNION ALL SELECT '016', 'table',   'zone_livraison', '', 'table zone_livraison'
+    UNION ALL SELECT '016', 'colonne', 'commande', 'prix_unitaire', 'prix_unitaire sur commande'
+    UNION ALL SELECT '016', 'colonne', 'commande', 'frais_livraison', 'frais_livraison sur commande'
+    UNION ALL SELECT '016', 'colonne', 'commande', 'zone_id', 'zone_id sur commande'
   ) AS o
 UNION ALL
 SELECT '007', 'catégories du brief sur actualite',
@@ -1368,6 +1382,13 @@ SELECT '007', 'catégories du brief sur actualite',
            AND column_name = 'categorie' AND column_type LIKE '%conference%')
 UNION ALL
 SELECT '009', 'repères en base (7 après l''amorce)', (SELECT COUNT(*) FROM repere)
+UNION ALL
+SELECT '016', 'statut « confirmée » sur commande',
+       (SELECT COUNT(*) FROM information_schema.columns
+         WHERE table_schema = DATABASE() AND table_name = 'commande'
+           AND column_name = 'statut' AND column_type LIKE '%confirmee%')
+UNION ALL
+SELECT '016', 'zones de livraison amorcées (16 attendues)', (SELECT COUNT(*) FROM zone_livraison)
 ORDER BY 1, 2;
 ```
 
@@ -1377,10 +1398,17 @@ puis l'onglet SQL. Lancée depuis l'onglet SQL du serveur, ou depuis
 `information_schema`, elle inspecte cette base-là et rend une liste de tables
 système qui n'a rien à voir — le piège ne dit pas son nom, il rend un résultat.
 
-`007` et `009` ne se contrôlent pas comme les autres, et les deux lignes le
+**La ligne `zone_livraison` ne s'exécute que si la table existe** : sur une base
+où `016` n'est pas encore jouée, la requête entière échoue sur elle. C'est
+voulu — un contrôle qui rendrait « 0 » ferait croire que la table est vide
+alors qu'elle n'existe pas, et les deux se corrigent différemment.
+
+`007`, `009` et `016` ne se contrôlent pas comme les autres, et les lignes le
 disent : `007` ne crée ni table ni colonne, il élargit un `ENUM` — le contrôle
-cherche donc `conference` dans le type de `actualite.categorie`. `009` ne
-touche pas au schéma du tout.
+cherche donc `conference` dans le type de `actualite.categorie`, et `016` fait
+de même avec `confirmee` dans `commande.statut`. `009` et `016` rendent en
+outre un décompte plutôt qu'un `1` : l'un verse des données, l'autre amorce
+seize zones de livraison.
 
 Depuis la bascule de collation (voir §2), les fichiers SQL se chargent aussi
 bien sous MySQL que sous MariaDB — il n'y a plus de ligne à corriger avant
@@ -1650,8 +1678,7 @@ la continuité du site de référence. Contrepartie assumée : le back-office es
 
 ### Où en est ce périmètre
 
-**État au 8 septembre 2026.** Douze lots sur treize sont écrits, testés et
-poussés — seul G3 reste à écrire. **Leurs neuf migrations sont jouées en
+**État au 8 septembre 2026.** Les treize lots sont écrits, testés et poussés. **Leurs neuf migrations sont jouées en
 production ; leur code ne l'est pas** — tant qu'il ne l'est pas, ces tables sont
 en place et personne ne les voit. Le §7 porte l'état daté et la requête qui le
 vérifie.
@@ -1669,17 +1696,20 @@ vérifie.
 | G8 | Contribuez aux archives — quarantaine et modération | livré |
 | G9 | Recherche transversale, fil d'Ariane, 404 qui rattrape | livré |
 | G10 | Biographie par périodes — une adresse par période, frise et fonds rattachés | livré |
-| **G3** | **Boutique et tunnel de commande** | **à faire** — 4 à 6 j |
+| G3 | Boutique et tunnel de commande — paiement à la livraison, boutique fermée | livré |
 | G11 | Version anglaise — mécanisme complet, **anglais ouvert** | livré |
 
-**G3 n'a pas de date parce que le livre n'en a pas.** Le commanditaire a
-confirmé le 7 septembre qu'aucune date de sortie n'est annoncée. C'est le seul
-lot dont le retard aurait une conséquence commerciale, et il demande quatre à
-six jours : **dès qu'une date est évoquée, il repasse en tête.**
+**G3 est écrit, et la boutique est fermée.** Le commanditaire a confirmé le
+7 septembre qu'aucune date de sortie n'est annoncée ; le lot a donc été livré
+avec un interrupteur plutôt qu'avec une date. Prendre des commandes en paiement
+à la livraison pour un ouvrage qui n'existe pas encore, c'est promettre une
+remise qu'on ne peut pas tenir. **L'ouverture tient en une case à cocher et un
+prix**, tous deux à l'écran Paramètres.
 
-**Neuf migrations à jouer, dans cet ordre**, et une seule fois. **Les neuf sont
-jouées en production depuis le 8 septembre** ; le contrôle est au §7. La liste
-reste ici pour une installation neuve, et pour dire ce que chacune apporte.
+**Dix migrations à jouer, dans cet ordre**, et une seule fois. **Les neuf premières sont
+jouées en production depuis le 8 septembre ; `016` ne l'est pas** — le contrôle
+est au §7. La liste reste ici pour une installation neuve, et pour dire ce que
+chacune apporte.
 
 | Fichier | Lot | Ce qu'il apporte | |
 |---|---|---|---|
@@ -1692,6 +1722,7 @@ reste ici pour une installation neuve, et pour dire ce que chacune apporte.
 | `sql/013_heritage.sql` | G7 | `heritage` et `heritage_media` | jouée |
 | `sql/014_contribution.sql` | G8 | `contribution` et `contribution_fichier` | jouée |
 | `sql/015_periode.sql` | G10 | `periode` et `periode_media`, l'amorce des cinq chapitres, et la colonne `repere.periode` qui **disparaît** | jouée |
+| `sql/016_boutique.sql` | G3 | `zone_livraison` et son amorce, quatre colonnes sur `commande`, deux statuts de plus, le prix numérique | **à jouer** |
 
 **Deux points de déploiement qu'aucune migration ne règle :**
 
@@ -1853,7 +1884,7 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 | **G0** | Gains immédiats | `sitemap.xml` et `robots.txt` ; frise branchée sur `repere` ; catégories d'actualités élargies ; entrée Accueil et barre mobile rouverte à sept entrées ; vérification du domaine en configuration | **livré** |
 | **G1** | Socle bilingue | routeur préfixé, table de traduction, `hreflang`, liens du chrome. Structure seule, aucun contenu traduit | **livré** |
 | **G2** | Le livre, complété | préface et sa mise en avant, page auteur à URL propre, rattachement de la revue de presse et des événements de lancement | **livré** |
-| **G3** | Commander | page de vente et tunnel sur la passerelle retenue ; l'écran de suivi attend depuis le lot E2 | 4 – 6 j |
+| **G3** | Commander | tunnel en **paiement à la livraison**, zones de livraison par pays/ville/commune à frais hérités, boutique ouvrable d'une case ; le paiement en ligne est une phase 2 | **livré** |
 | **G4** | Modèle d'archives | notice et fichiers (décision 1), six catégories, champs de catalogue, page par notice, recherche, écran d'administration | **livré** |
 | **G5** | Formats et lecteurs | PDF, audio, plafonds par famille, lecteur et téléchargement de l'original | **livré** |
 | **G6** | Bibliothèque des discours | l'index chronologique par décennie, et ce que chaque pièce porte | **livré** |
@@ -1863,16 +1894,20 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 | **G10** | Biographie par périodes | les périodes en base, une adresse par période, frise illustrée et reliée aux archives | **livré** |
 | **G11** | Version anglaise | interface sortie des gabarits, dates bilingues, écran de traduction du back-office, **anglais ouvert** ; reste la matière éditoriale | **livré** |
 
-**Ordre recommandé.** G0 et G1 d'abord, communs aux deux pistes. Puis G2 et G3
-pour la sortie du livre, G4 à G10 pour le fonds. G11 est fait et **ouvert** ;
-la traduction des contenus se verse au fil de l'eau, sans nouvelle livraison.
+**Ordre recommandé — et suivi.** G0 et G1 d'abord, communs aux deux pistes.
+Puis G2 et G3 pour la sortie du livre, G4 à G10 pour le fonds. G11 est fait et
+**ouvert** ; la traduction des contenus se verse au fil de l'eau, sans nouvelle
+livraison. G3 est fait et **fermé** : il s'ouvre le jour où l'ouvrage a une
+date, sans livraison non plus.
 
 **Une réserve sur cet ordre.** G4 est en seconde piste, mais **sa conception ne
 peut pas attendre** : G5 à G10 en dépendent tous, et corriger le modèle après le
 versement de plusieurs centaines de pièces serait douloureux. La décision 1 se
 tranche maintenant, même si la construction vient après la sortie. À l'inverse,
-G3 — le tunnel de commande — est le seul lot que rien n'appelle en dépendance :
-il se place où l'échéance commerciale l'exige.
+G3 — le tunnel de commande — était le seul lot que rien n'appelait en
+dépendance : il pouvait se placer où l'échéance commerciale l'exigeait. Il a
+finalement été écrit en dernier, et livré fermé — ce qui revient au même que
+de l'avoir écrit à temps, sans avoir eu à deviner la date.
 
 ### Lot G0 — livré
 
@@ -2744,6 +2779,160 @@ pas la destination. Et **la version anglaise des mentions légales est une
 traduction, pas un avis juridique** : le texte décrit fidèlement le
 comportement du site, mais qui engage la structure éditrice devra le relire.
 
+### Lot G3 — livré, et la boutique reste fermée
+
+**Le dernier lot du périmètre, et le seul qui touche à l'argent.** Il ouvre la
+commande en **paiement à la livraison**, et rien d'autre : aucune passerelle
+n'est appelée. `App\Core\Paiement` décrit carte.abidjan.net depuis le lot E2
+et continue de ne pas être appelée.
+
+**La boutique est livrée fermée.** Aucune date de parution n'est annoncée —
+le commanditaire l'a confirmé le 7 septembre — et prendre une commande payable
+à la remise pour un ouvrage qui n'existe pas encore, c'est promettre une
+livraison qu'on ne peut pas tenir. Elle s'ouvre à **deux conditions et il les
+faut toutes** : la case cochée *et* un prix saisi. Ouvrir sans prix afficherait
+« 0 F CFA » et enregistrerait des commandes gratuites ; l'écran des paramètres
+refuse la case sans le prix, et le dit.
+
+**La page `/commander` reste servie quand la boutique est fermée**, et annonce
+que les commandes ouvriront à la parution. Un bouton menant à une 404 fait
+croire à une panne ; un bouton qui ne fait rien ment au clavier comme à la
+souris.
+
+#### Les zones de livraison, et pourquoi les frais s'héritent
+
+Une table qui se référence elle-même, à trois niveaux — pays, ville, commune.
+Ils ont la même forme : un nom, un parent, un tarif. Trois tables auraient
+triplé les écrans et les jointures, et un quatrième niveau — un quartier
+d'Abidjan, un arrondissement de Paris — en aurait demandé une quatrième.
+
+**`frais` est nullable, et null veut dire « ceux du parent ».** C'est ce qui
+rend le système tenable à la main :
+
+```
+Côte d'Ivoire ......... 2 000 F      posé
+  Abidjan ............. 1 500 F      posé
+    Cocody ............ 1 000 F      posé
+    Yopougon .......... 1 500 F      hérité d'Abidjan
+    Treichville ....... 1 500 F      hérité d'Abidjan
+```
+
+On pose le pays, puis seulement les exceptions. Sans héritage, il faudrait un
+tarif pour chacune des treize communes du district, et pour chaque commune
+ajoutée ensuite. L'autre forme — un tableau plat de triplets avec un tarif
+chacun — explose en combinaisons et oblige à retrouver le tarif de la ville
+pour le recopier ; elle a été écartée pour cela.
+
+**Une zone dont personne, sur toute la remontée, ne porte de tarif n'est pas
+proposée.** Mieux vaut ne pas offrir la livraison quelque part que de la
+facturer zéro franc. Et **fermer un pays ferme ses villes et ses communes**,
+sans avoir à les décocher une à une : c'est le geste qu'on veut quand un
+transporteur cesse de desservir un secteur.
+
+L'amorce pose la Côte d'Ivoire, Abidjan et ses treize communes, plus une racine
+« Reste du monde » — **toutes sans tarif**. C'est du découpage administratif
+public, pas une liste validée, et tant qu'aucun montant n'est posé la livraison
+n'est proposée nulle part.
+
+#### Ce qu'une commande fige, et pourquoi
+
+Le prix de l'ouvrage et les tarifs de livraison changeront. Une commande de
+janvier doit garder ce qu'elle a coûté en janvier : recalculer un total ancien
+à partir des tarifs du jour ferait mentir la fiche de suivi, et une
+contestation se tranche sur ce qui a été facturé.
+
+`commande` gagne donc `prix_unitaire`, `frais_livraison`, `zone_id` et
+`zone_libelle` — cette dernière portant « Côte d'Ivoire · Abidjan · Cocody »
+**en texte**, parce qu'une zone peut être renommée ou supprimée. `montant`
+reste le total, ce qui laisse l'écran de suivi et le calcul de recette du lot
+E2 intacts.
+
+#### Les statuts, et la phase 2
+
+« initiée → payée → remise » décrivait un paiement **en ligne, avant**
+l'expédition. En paiement à la livraison, l'argent arrive **à la remise** :
+
+```
+initiée ──→ confirmée ──→ remise          (appel, puis remise encaissée)
+   └────────────┴───────→ annulée
+```
+
+`payee` et `echouee` sont **conservées et inatteignables** : rien ne les écrit
+tant qu'aucune passerelle n'encaisse, et un bouton « Constater le paiement »
+sur une commande payable à la livraison ferait enregistrer un encaissement qui
+n'a pas eu lieu. **La phase 2 rouvrira une ligne de `SUITES` — et aucune
+migration.** Réutiliser `payee` pour dire « confirmée » aurait tenu sans
+migration, mais aurait fait mentir le mot sur toutes les commandes et faussé le
+calcul de recette, qui compte `payee` et `remise`.
+
+#### Trois règles tenues sans discussion
+
+**Le total est recalculé côté serveur à l'envoi.** Ce que la page affiche est
+indicatif ; ce qui s'enregistre vient de `Boutique::total()`, relu en base à
+partir de la quantité et de la zone reçues. Un total posté se ramène à zéro
+franc en modifiant un champ. Éprouvé : zone fermée, zone inexistante, zone
+vide, quantité à 999 et livraison sans adresse sont refusées, et aucune n'a
+créé de commande.
+
+**Le formulaire de commande reçoit les protections des formulaires publics** —
+plafond de débit, piège à robots, délai minimal — et le plafond y est plus bas
+qu'ailleurs : **trois par heure**. C'est le seul formulaire du site sans
+barrière de paiement. Une commande payable à la livraison ne coûte rien à
+passer, et une rafale de commandes fantaisistes ne se voit qu'au moment où
+quelqu'un décroche son téléphone pour les confirmer une à une.
+
+**Le téléphone est obligatoire**, alors qu'il ne l'est nulle part ailleurs sur
+le site : en paiement à la livraison, la commande se confirme par un appel.
+Sans numéro, elle ne peut ni être confirmée ni être livrée.
+
+#### Ce que le lot a décidé au passage
+
+**Une page, un formulaire.** Le site vend un seul ouvrage : il n'y a pas de
+panier, seulement une quantité. Un tunnel en trois étapes pour un produit
+unique est une cérémonie — trois pages à charger, trois occasions
+d'abandonner, et un état à porter entre elles.
+
+**Un seul menu déroulant pour la zone**, portant le chemin complet et son
+tarif — « Abidjan · Cocody — 1 000 F CFA ». Trois menus en cascade exigeraient
+du JavaScript pour se remplir l'un l'autre, et sans lui on pourrait composer un
+triplet incohérent. Le récapitulatif se met à jour par script s'il y en a un,
+et la page reste entièrement utilisable s'il n'y en a pas — le serveur
+recalcule de toute façon.
+
+**La référence est dictable au téléphone** : `PGY-4F2K9A`, six signes pris dans
+un alphabet sans O ni I ni 0 ni 1. Le paiement à la livraison impose l'appel :
+la référence doit survivre à la voix. Aléatoire et non séquentielle — une
+référence qui s'incrémente annonce à chaque client combien d'exemplaires ont
+été vendus avant lui.
+
+**La confirmation se lit en session, pas dans l'adresse.** Une page
+`/commander/PGY-4F2K9A` serait partageable, et montrerait le nom, le téléphone
+et l'adresse d'un client à qui aurait le lien.
+
+**Pas de courriel de confirmation** : le lot F4 a tranché que `mail()` échoue
+en silence sur un mutualisé, et c'est pourquoi les messages sont stockés. La
+confirmation est à l'écran, avec la référence, et la commande attend dans le
+back-office — où quelqu'un appelle, ce que le paiement à la livraison impose
+de toute façon.
+
+**Le prix de l'ouvrage devient un nombre.** Il était en texte libre — « 25 000
+F CFA » — et n'était affiché nulle part. Un tunnel qui calcule `prix × quantité
++ frais` ne peut pas partir de là, et garder les deux formes ferait diverger
+l'affiché et le facturé.
+
+**Le routeur accepte le tiret bas dans un segment nommé.** Découvert ici :
+l'écran de traduction adresse ses rubriques par nom de table, et
+`zone_livraison` en porte un — la route ne correspondait pas et l'écran
+répondait 404. Élargir ne relâche aucune garde : un segment fantaisiste atteint
+le contrôleur au lieu du repli du routeur, et le contrôleur rend la même 404.
+
+**Une migration**, `sql/016_boutique.sql`. Éprouvée sur une reconstruction de
+la production avant d'être jouée en développement.
+
+| Fichier | Ce qu'il apporte |
+|---|---|
+| `sql/016_boutique.sql` | `zone_livraison` et son amorce, quatre colonnes sur `commande`, deux statuts de plus, le prix numérique |
+
 ### Ce que le brief ajoute à la liste des livrables attendus
 
 À la liste du §5 s'ajoutent, tous non techniques :
@@ -2757,4 +2946,5 @@ comportement du site, mais qui engage la structure éditrice devra le relire.
 | **Fonds d'archives** et leurs crédits — chaque pièce publiée doit porter son fonds, son photographe ou son détenteur de droits ; le back-office refuse déjà la publication sans crédit | commanditaire / familles |
 | **Compte de la chaîne vidéo**, si la décision 2 est retenue | commanditaire |
 | **Politique de sauvegarde** — qui garde une copie des originaux, où, à quelle fréquence | hébergeur / commanditaire |
+| **Prix de l'ouvrage en francs CFA**, et le **point de retrait** avec ses horaires. Ce sont les deux valeurs qui ouvrent la boutique : sans prix elle reste fermée, sans point de retrait le retrait n'est pas proposé. Les **tarifs de livraison** se posent ensuite, zone par zone | commanditaire / éditeur |
 | **Traduction anglaise des contenus** — biographie, notices d'archives, sujets d'Héritage, préface. **L'anglais est ouvert** : chaque champ traduit depuis le back-office retire une phrase française des pages `/en/`, et un champ non traduit y affiche le français | commanditaire / traducteur |

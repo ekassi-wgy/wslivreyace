@@ -8,15 +8,21 @@ use App\Core\Database;
 /**
  * Commandes de l'ouvrage (CDC §4.9).
  *
- * **Une commande ne naît pas dans le back-office.** Elle naît du tunnel de
- * paiement, qui la crée et l'inscrit ici avec ce que la passerelle a rendu.
- * L'administration la suit : elle constate le paiement, marque la remise,
- * annote. Aucun écran ne crée ni ne supprime de commande — c'est une pièce
- * comptable, et une pièce comptable ne s'efface pas parce qu'elle gêne.
+ * **Une commande ne naît pas dans le back-office.** Elle naît du tunnel public
+ * (`/commander`, lot G3), qui la crée avec ce que le client a saisi et ce que
+ * `App\Core\Boutique` a calculé. L'administration la suit : elle confirme,
+ * marque la remise, annote. Aucun écran ne crée ni ne supprime de commande —
+ * c'est une pièce comptable, et une pièce comptable ne s'efface pas parce
+ * qu'elle gêne.
+ *
+ * **Le paiement se fait à la livraison** (lot G3). Aucune passerelle n'est
+ * appelée : `App\Core\Paiement` la décrit depuis le lot E2 et continue de ne
+ * pas être appelée. Les statuts portent pourtant les deux parcours — voir
+ * SUITES — pour que la phase 2 se branche sans migration.
  *
  * Le statut suit un chemin, pas un menu déroulant : voir SUITES. Une commande
- * ne repasse jamais « initiée » — le paiement a eu lieu ou non, et rien dans
- * le back-office ne peut le défaire.
+ * ne repasse jamais « initiée » — ce qui a eu lieu a eu lieu, et rien dans le
+ * back-office ne peut le défaire.
  */
 final class Commande extends Modele
 {
@@ -34,40 +40,178 @@ final class Commande extends Modele
     /** Les dernières d'abord : une commande se traite quand elle arrive. */
     protected const ORDRE = 'cree_le DESC, id DESC';
 
+    /**
+     * Les six statuts, et à quel parcours chacun appartient.
+     *
+     *   initiee    les deux      la commande est arrivée, personne n'a encore agi
+     *   confirmee  livraison     appelée et confirmée, l'exemplaire part
+     *   payee      phase 2       la passerelle a encaissé, avant la remise
+     *   echouee    phase 2       la passerelle a refusé
+     *   annulee    les deux      le client renonce, ou la commande est injoignable
+     *   remise     les deux      l'exemplaire est entre les mains du client
+     *
+     * En paiement à la livraison, `remise` vaut aussi encaissement : l'argent
+     * change de main au même moment que le livre.
+     */
     public const STATUTS = [
-        'initiee' => 'Initiée',
-        'payee'   => 'Payée',
-        'echouee' => 'Échouée',
-        'remise'  => 'Remise',
+        'initiee'   => 'Initiée',
+        'confirmee' => 'Confirmée',
+        'payee'     => 'Payée',
+        'echouee'   => 'Échouée',
+        'annulee'   => 'Annulée',
+        'remise'    => 'Remise',
     ];
 
     /**
      * Suites autorisées, par statut de départ.
      *
-     * « Payée » depuis « initiée » se saisit à la main quand le paiement a été
-     * constaté auprès de la passerelle — le back-office ne décide pas d'un
-     * paiement, il en prend acte. « Remise » clôt le parcours : l'exemplaire
-     * est entre les mains du client. Une commande échouée reste en base, elle
-     * dit qu'une tentative a eu lieu.
+     * **Le chemin du paiement à la livraison**, qui est le seul ouvert
+     * aujourd'hui :
+     *
+     *     initiée ──→ confirmée ──→ remise
+     *        └────────────┴───────→ annulée
+     *
+     * On confirme d'abord — un appel au client, que le paiement à la livraison
+     * impose de toute façon — puis on remet. « Remise » clôt le parcours et
+     * vaut encaissement. « Annulée » est atteignable des deux premiers états :
+     * un client renonce, ou reste injoignable.
+     *
+     * **`payee` n'est atteignable depuis nulle part**, et c'est voulu : rien
+     * ne l'écrit tant qu'aucune passerelle n'encaisse, et un bouton
+     * « Constater le paiement » sur une commande payable à la livraison ferait
+     * enregistrer un encaissement qui n'a pas eu lieu. La phase 2 rouvrira
+     * `initiee => ['payee', 'echouee', ...]` — une ligne, et aucune migration.
      */
     public const SUITES = [
-        'initiee' => ['payee', 'echouee'],
-        'payee'   => ['remise'],
-        'echouee' => [],
-        'remise'  => [],
+        'initiee'   => ['confirmee', 'annulee'],
+        'confirmee' => ['remise', 'annulee'],
+        'payee'     => ['remise'],
+        'echouee'   => [],
+        'annulee'   => [],
+        'remise'    => [],
     ];
 
-    /** Libellé du bouton qui mène à chaque statut. */
+    /**
+     * Libellé du bouton qui mène à chaque statut.
+     *
+     * « Remise et encaissée » dit les deux choses parce qu'elles n'en font
+     * qu'une en paiement à la livraison : celui qui clique vient de recevoir
+     * l'argent. Écrire « Marquer remise » laisserait croire qu'un encaissement
+     * reste à saisir ailleurs.
+     */
     public const VERBES = [
-        'payee'   => 'Constater le paiement',
-        'echouee' => 'Marquer échouée',
-        'remise'  => 'Marquer remise',
+        'confirmee' => 'Confirmer la commande',
+        'payee'     => 'Constater le paiement',
+        'echouee'   => 'Marquer échouée',
+        'annulee'   => 'Annuler la commande',
+        'remise'    => 'Remise et encaissée',
     ];
+
+    /**
+     * Ce qu'on écrit dans `mode_paiement` pour une commande payée à la
+     * livraison. `passerelle` reste nulle : aucune passerelle n'a été appelée,
+     * et l'y inscrire ferait croire le contraire à la relecture.
+     */
+    public const MODE_LIVRAISON = 'a-la-livraison';
 
     public const LIVRAISONS = [
         'retrait'   => 'Retrait',
         'livraison' => 'Livraison',
     ];
+
+    /**
+     * Enregistre une commande venue du tunnel public (lot G3).
+     *
+     * **Le total n'est pas reçu, il est passé par `App\Core\Boutique` qui
+     * l'a calculé** : le contrôleur ne fait que transmettre. Le prix unitaire
+     * et les frais sont figés dans la ligne, ainsi que la chaîne lisible de la
+     * zone — le tarif changera, la zone peut être renommée, et une commande
+     * doit garder ce qu'elle a facturé.
+     *
+     * La référence est fabriquée ici, à la dernière seconde, et réessayée sur
+     * collision : deux commandes passées à la même seconde sont rares mais pas
+     * impossibles, et la contrainte d'unicité de la colonne est ce qui fait
+     * foi — pas un `SELECT` préalable, qui laisserait une fenêtre entre les
+     * deux.
+     *
+     * @param array<string,mixed> $client  nom, email, tel, adresse
+     * @param array<string,mixed> $calcul  ce que `Boutique::total()` a rendu
+     */
+    public static function passer(array $client, array $calcul, string $livraison): string
+    {
+        $pdo = Database::pdo();
+
+        $sql = 'INSERT INTO commande
+                  (reference, client_nom, client_email, client_tel,
+                   quantite, prix_unitaire, frais_livraison, montant, devise,
+                   mode_paiement, livraison, zone_id, zone_libelle, adresse, statut)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+
+        // Cinq essais : au-delà, ce n'est plus une collision de référence mais
+        // une panne, et l'exception doit remonter plutôt que boucler.
+        for ($essai = 0; $essai < 5; $essai++) {
+            $reference = self::reference();
+
+            try {
+                $pdo->prepare($sql)->execute([
+                    $reference,
+                    (string) $client['nom'],
+                    (string) $client['email'],
+                    ($client['tel'] ?? '') === '' ? null : (string) $client['tel'],
+                    (int) $calcul['quantite'],
+                    (int) $calcul['prix_unitaire'],
+                    (int) $calcul['frais'],
+                    (int) $calcul['total'],
+                    \App\Core\Boutique::DEVISE,
+                    self::MODE_LIVRAISON,
+                    $livraison,
+                    $calcul['zone_id'],
+                    $calcul['zone_libelle'] === '' ? null : (string) $calcul['zone_libelle'],
+                    ($client['adresse'] ?? '') === '' ? null : (string) $client['adresse'],
+                    'initiee',
+                ]);
+
+                return $reference;
+            } catch (\PDOException $e) {
+                // 23000 : violation de contrainte. Seule l'unicité de la
+                // référence peut se rejouer ; tout le reste doit remonter.
+                if ($e->getCode() !== '23000' || !str_contains($e->getMessage(), 'uk_commande_reference')) {
+                    throw $e;
+                }
+            }
+        }
+
+        throw new \RuntimeException('Impossible de générer une référence de commande unique.');
+    }
+
+    /**
+     * Une référence dictable au téléphone : `PGY-4F2K9A`.
+     *
+     * **Six signes, pris dans un alphabet sans O ni I ni 0 ni 1** — un client
+     * la lit au téléphone à quelqu'un qui la note, et « O » contre « 0 » est
+     * l'erreur classique. Le paiement à la livraison impose cet appel : la
+     * référence doit survivre à la voix.
+     *
+     * Aléatoire et non séquentielle : une référence qui s'incrémente annonce à
+     * chaque client combien d'exemplaires ont été vendus avant lui.
+     */
+    public static function reference(): string
+    {
+        $alphabet = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';   // ni O, ni I, ni 0, ni 1
+        $signes   = '';
+
+        for ($i = 0; $i < 6; $i++) {
+            $signes .= $alphabet[random_int(0, strlen($alphabet) - 1)];
+        }
+
+        return 'PGY-' . $signes;
+    }
+
+    /** Une commande, retrouvée par sa référence — pour la page de confirmation. */
+    public static function parReference(string $reference): ?array
+    {
+        return Database::one('SELECT * FROM commande WHERE reference = ?', [$reference]);
+    }
 
     /**
      * @param string|null $statut null = toutes
@@ -123,6 +267,14 @@ final class Commande extends Modele
      *
      * @return array<int,array{devise:string,montant:float,exemplaires:int,commandes:int}>
      */
+    /**
+     * La recette réellement encaissée.
+     *
+     * `payee` et `remise`, et rien d'autre. En paiement à la livraison,
+     * l'argent n'arrive qu'à la remise : compter les commandes confirmées
+     * gonflerait la recette de ce qui n'est pas encore payé — et une commande
+     * confirmée peut encore être annulée sur le pas de la porte.
+     */
     public static function encaisse(): array
     {
         $lignes = Database::all(
@@ -145,10 +297,18 @@ final class Commande extends Modele
     }
 
     /** Commandes payées mais pas encore remises — ce qui attend quelqu'un. */
+    /**
+     * Combien d'exemplaires attendent d'être remis.
+     *
+     * `confirmee` et `payee` : la première est le parcours du paiement à la
+     * livraison, la seconde celui de la phase 2. Les deux décrivent une
+     * commande dont l'exemplaire n'est pas encore parti, et c'est ce que le
+     * tableau de bord annonce.
+     */
     public static function aRemettre(): int
     {
         return (int) (Database::one(
-            "SELECT COUNT(*) AS n FROM commande WHERE statut = 'payee'"
+            "SELECT COUNT(*) AS n FROM commande WHERE statut IN ('confirmee','payee')"
         )['n'] ?? 0);
     }
 

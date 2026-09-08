@@ -51,6 +51,26 @@ final class View
         self::render('admin/pages/' . $template, $data, $status, 'admin/layout');
     }
 
+    /**
+     * « de » élidé devant une voyelle : « d'Abidjan », « de Cocody ».
+     *
+     * Une chaîne composée par le code — « hérité de » suivi d'un nom saisi par
+     * l'éditeur — ne peut pas deviner ce qui suit. « de Abidjan » ne s'écrit
+     * pas, et c'est le genre de détail qui trahit un gabarit (lot G3).
+     *
+     * Le h muet n'est pas traité : il ne se déduit pas de l'orthographe —
+     * « d'Héritage » contre « de Hollande » — et une règle qui se trompe une
+     * fois sur deux vaut moins qu'une règle qui ne prétend rien.
+     */
+    public static function de(string $mot): string
+    {
+        $premiere = mb_strtolower(mb_substr(ltrim($mot), 0, 1));
+
+        return in_array($premiere, ['a', 'e', 'i', 'o', 'u', 'y', 'à', 'â', 'é', 'è', 'ê', 'î', 'ô', 'û'], true)
+            ? "d'" . $mot
+            : 'de ' . $mot;
+    }
+
     /** Échappement HTML. Toute donnée issue de la base passe par ici. */
     public static function e(?string $v): string
     {

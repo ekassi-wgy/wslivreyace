@@ -66,8 +66,19 @@ final class Router
         $regex = '';
 
         foreach ($morceaux as $morceau) {
+            /*
+             * Le tiret bas est accepté depuis le lot G3. Les slugs du site n'en
+             * portent pas — `App\Core\Slug` translittère en `[a-z0-9-]` — mais
+             * l'écran de traduction adresse ses rubriques par **nom de table**,
+             * et les tables en portent : `zone_livraison`. Sans lui, la route
+             * ne correspondait pas et l'écran répondait 404.
+             *
+             * Élargir ne relâche aucune garde : un segment fantaisiste atteint
+             * le contrôleur au lieu du repli du routeur, et le contrôleur rend
+             * la même 404 après n'avoir rien trouvé.
+             */
             $regex .= preg_match('#^\{([a-z_]+)\}$#', $morceau, $m) === 1
-                ? '(?P<' . $m[1] . '>[a-z0-9\-]+)'
+                ? '(?P<' . $m[1] . '>[a-z0-9_\-]+)'
                 : preg_quote($morceau, '#');
         }
 

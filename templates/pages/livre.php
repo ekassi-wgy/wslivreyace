@@ -329,7 +329,7 @@ $blocPreface = static function (array $preface, bool $enAvant): void {
           <?= t_brut('livre.acheter.titre') ?>
         </h2>
         <div class="reveal">
-          <a class="btn-pgy" href="#">
+          <a class="btn-pgy" href="<?= $lien('/commander') ?>">
             <?= t('livre.acheter.cta') ?>
             <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
           </a>

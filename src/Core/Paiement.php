@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Model\Commande;
+
 /**
  * Passerelle de paiement : ce que le site sait d'elle, en un seul endroit.
  *
@@ -86,6 +88,17 @@ final class Paiement
     public static function libelleMode(?string $mode): string
     {
         $mode = (string) $mode;
+
+        /*
+         * Le paiement à la livraison n'est pas un mode de la passerelle : il
+         * n'en traverse aucune. Il est nommé ici parce que c'est ici qu'on
+         * vient chercher le libellé d'un `commande.mode_paiement`, et qu'un
+         * écran de suivi affichant « a-la-livraison » en clair serait une
+         * fuite de nom technique (lot G3).
+         */
+        if ($mode === Commande::MODE_LIVRAISON) {
+            return 'Paiement à la livraison';
+        }
 
         return self::MODES[$mode]['libelle'] ?? ($mode === '' ? '—' : $mode);
     }

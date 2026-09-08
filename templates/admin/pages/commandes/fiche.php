@@ -61,6 +61,14 @@ $recue   = strtotime((string) $ligne['cree_le']);
         <dt>Remise</dt>
         <dd><?= View::e(Commande::LIVRAISONS[$ligne['livraison']] ?? $ligne['livraison']) ?></dd>
 
+        <?php /* La zone est écrite en toutes lettres dans la commande (lot G3) :
+                 elle a pu être renommée ou supprimée depuis, et c'est ce qui a
+                 été facturé qui fait foi. */ ?>
+        <?php if (!empty($ligne['zone_libelle'])): ?>
+          <dt>Zone</dt>
+          <dd><?= View::e((string) $ligne['zone_libelle']) ?></dd>
+        <?php endif; ?>
+
         <?php if (!empty($ligne['adresse'])): ?>
           <dt>Adresse</dt>
           <dd><?= nl2br(View::e($ligne['adresse'])) ?></dd>
@@ -117,10 +125,19 @@ $recue   = strtotime((string) $ligne['cree_le']);
           <?php endforeach; ?>
         </div>
 
+        <?php /* La consigne suit le statut, et dit le geste réel. En paiement
+                 à la livraison (lot G3), « remise » vaut encaissement : c'est
+                 le même moment. */ ?>
         <p class="form-text mt-3 mb-0">
-          <?= $statut === 'initiee'
-              ? 'Le back-office ne décide pas d\'un paiement, il en prend acte : ne constatez le paiement qu\'après l\'avoir vu chez ' . View::e(Paiement::nom()) . '.'
-              : 'Marquez la remise quand l\'exemplaire a été retiré ou livré.' ?>
+          <?= match ($statut) {
+              'initiee'   => 'Appelez le client pour confirmer la commande avant de la préparer : '
+                           . 'en paiement à la livraison, c\'est l\'appel qui engage.',
+              'confirmee' => 'Marquez la remise quand l\'exemplaire a été retiré ou livré. '
+                           . 'L\'argent est encaissé à ce moment-là, et la recette le compte alors.',
+              'payee'     => 'Le paiement a été constaté chez ' . View::e(Paiement::nom())
+                           . ' : il ne reste qu\'à remettre l\'exemplaire.',
+              default     => 'Marquez la remise quand l\'exemplaire a été retiré ou livré.',
+          } ?>
         </p>
       <?php endif; ?>
 
@@ -138,8 +155,24 @@ $recue   = strtotime((string) $ligne['cree_le']);
       <h4 class="card-title card-title-dash">Paiement</h4>
 
       <dl class="pgy-donnees">
+        <?php /* Le décompte tel qu'il a été facturé, et non recalculé : le prix
+                 de l'ouvrage et les tarifs de livraison changeront, et une
+                 contestation se tranche sur ce qui a été facturé (lot G3). */ ?>
+        <dt>Exemplaires</dt>
+        <dd>
+          <?= (int) $ligne['quantite'] ?> ×
+          <?= View::e(Commande::montant((float) $ligne['prix_unitaire'], (string) $ligne['devise'])) ?>
+        </dd>
+
+        <dt>Livraison</dt>
+        <dd>
+          <?= (int) $ligne['frais_livraison'] === 0
+              ? '<span class="text-muted">sans frais</span>'
+              : View::e(Commande::montant((float) $ligne['frais_livraison'], (string) $ligne['devise'])) ?>
+        </dd>
+
         <dt>Montant</dt>
-        <dd><?= View::e(Commande::montant((float) $ligne['montant'], (string) $ligne['devise'])) ?></dd>
+        <dd><strong><?= View::e(Commande::montant((float) $ligne['montant'], (string) $ligne['devise'])) ?></strong></dd>
 
         <dt>Mode</dt>
         <dd><?= View::e(Paiement::libelleMode($ligne['mode_paiement'])) ?></dd>

@@ -124,6 +124,8 @@ final class Parametre
             'type'    => 'entier',
             'aide'    => '',
             'exemple' => '320',
+            'min'     => 1,
+            'max'     => 10000,
         ],
         'livre_isbn' => [
             'libelle' => 'ISBN',
@@ -132,16 +134,62 @@ final class Parametre
             'exemple' => '978-2-1234-5678-9',
         ],
         'livre_prix' => [
-            'libelle' => 'Prix',
-            'type'    => 'texte',
-            'aide'    => 'Devise comprise : le site dessert plusieurs zones.',
-            'exemple' => '25 000 F CFA',
+            'libelle' => 'Prix en francs CFA',
+            'type'    => 'entier',
+            'aide'    => "Le nombre seul, sans espaces ni devise : le site l'affiche « 25 000 F CFA » "
+                       . "et s'en sert pour calculer les commandes. Sans prix, la boutique reste fermée.",
+            'exemple' => '25000',
+            // Un livre à plus de dix millions de francs est une faute de
+            // frappe, pas un tarif ; le plancher écarte le zéro, qui rendrait
+            // l'ouvrage gratuit sans que personne ne s'en aperçoive.
+            'min'     => 1,
+            'max'     => 10000000,
         ],
         'livre_format' => [
             'libelle' => 'Format',
             'type'    => 'texte',
             'aide'    => '',
             'exemple' => 'Relié, 240 × 310 mm',
+        ],
+    ];
+
+    /**
+     * La boutique et la livraison (lot G3).
+     *
+     * **Un groupe à part et non des champs ajoutés à la fiche technique** : la
+     * fiche décrit l'ouvrage, ceci décide s'il se vend. Les mêler ferait
+     * qu'ouvrir la boutique passerait pour une correction de fiche, et
+     * `ficheRemplie()` — qui compte ce qui reste à fournir avant mise en
+     * ligne — se mettrait à réclamer un point de retrait.
+     *
+     * @var array<string,array{libelle:string,type:string,aide:string,exemple:string}>
+     */
+    public const BOUTIQUE = [
+        'boutique_ouverte' => [
+            'libelle' => 'Ouvrir les commandes',
+            'type'    => 'case',
+            'aide'    => "À cocher le jour où l'ouvrage peut être remis. Décochée, la page "
+                       . 'Commander reste en ligne et annonce que les commandes ouvriront à '
+                       . "la parution — plutôt qu'un bouton qui ne fait rien. Un prix est "
+                       . 'exigé en plus de la case : sans lui la boutique reste fermée.',
+            'exemple' => '',
+        ],
+        'retrait_lieu' => [
+            'libelle' => 'Point de retrait',
+            'type'    => 'long',
+            'aide'    => "L'adresse où l'on vient chercher un exemplaire, avec ses horaires. "
+                       . "Vide, le retrait n'est pas proposé du tout : offrir « retrait sur "
+                       . 'place » sans dire où est une promesse creuse, et le client s\'en '
+                       . 'aperçoit après avoir commandé.',
+            'exemple' => '',
+        ],
+        'commande_message' => [
+            'libelle' => 'Message affiché après commande',
+            'type'    => 'long',
+            'aide'    => 'Ce que le client lit sur la page de confirmation, sous sa référence. '
+                       . 'Le délai de rappel, le mode de paiement accepté à la remise, un numéro '
+                       . "à joindre. Vide, le site s'en tient à sa formule standard.",
+            'exemple' => '',
         ],
     ];
 

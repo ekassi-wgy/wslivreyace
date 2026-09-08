@@ -54,6 +54,17 @@ final class Debit
          * de quoi envoyer plusieurs lots à un contributeur de bonne foi.
          */
         'contribution' => ['plafond' => 3, 'fenetre' => 60, 'nom' => 'contribution', 'pluriel' => 'contributions'],
+        /*
+         * Trois par heure (lot G3). C'est le formulaire le plus exposé du
+         * site : **le seul sans barrière de paiement**. Une commande en
+         * paiement à la livraison ne coûte rien à passer, et une rafale de
+         * commandes fantaisistes ne se voit qu'au moment où quelqu'un
+         * décroche son téléphone pour les confirmer une à une.
+         *
+         * Trois laisse de quoi se reprendre — on se trompe de quantité, on
+         * corrige une adresse — sans ouvrir la porte au remplissage.
+         */
+        'commande' => ['plafond' => 3, 'fenetre' => 60, 'nom' => 'commande', 'pluriel' => 'commandes'],
     ];
 
     /**

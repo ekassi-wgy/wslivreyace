@@ -130,6 +130,15 @@ final class Admin
             ],
             ['rubrique' => 'Administration'],
             [
+                'cle'    => 'zones',
+                'titre'  => 'Zones de livraison',
+                'icone'  => 'mdi-truck-delivery-outline',
+                'url'    => self::url('/zones'),
+                // Comme les commandes : un tarif de livraison est une décision
+                // commerciale, pas une décision éditoriale (lot G3).
+                'role'   => 'admin',
+            ],
+            [
                 'cle'    => 'commandes',
                 'titre'  => 'Commandes',
                 'icone'  => 'mdi-package-variant-closed',

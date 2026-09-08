@@ -75,7 +75,10 @@ $lien = static fn(string $chemin): string => App\Core\Langue::chemin($chemin);
             </ul>
           </li>
 <?php endif; ?>
-          <li><a class="btn-pgy btn-pgy--sm" href="<?= $lien('/le-livre') ?>#acheter"><?= t('nav.commander') ?></a></li>
+          <?php /* Le bouton mène au tunnel depuis le lot G3, et non plus à
+                   l'ancre d'achat de la page du livre. La page de commande
+                   reste servie même boutique fermée : elle explique. */ ?>
+          <li><a class="btn-pgy btn-pgy--sm" href="<?= $lien('/commander') ?>"><?= t('nav.commander') ?></a></li>
         </ul>
       </nav>
 
