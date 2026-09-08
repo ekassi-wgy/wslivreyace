@@ -6,10 +6,14 @@ namespace App\Core;
 /**
  * La langue de la page en cours (lot G1, README §9).
  *
- * **Ce lot pose la structure, il ne traduit rien.** L'objectif est qu'ouvrir
- * la version anglaise, le jour où la communication internationale démarrera,
- * ne demande pas de rouvrir le routeur, les modèles et les dix-huit gabarits.
- * Il n'y a donc, volontairement, aucun contenu anglais dans ce dépôt.
+ * **Le lot G1 posait la structure sans rien traduire ; G11 l'a remplie et
+ * l'anglais est ouvert depuis le 8 septembre 2026.** Le pari de G1 a tenu :
+ * ouvrir n'a demandé de rouvrir ni le routeur, ni les modèles, ni les
+ * gabarits — seulement un mot dans `LANGUES`.
+ *
+ * Les textes de l'interface vivent dans `src/lang/` ; les contenus saisis se
+ * traduisent depuis le back-office. Aucun contenu anglais n'est écrit en dur
+ * dans ce dépôt, et ce n'est pas près de changer.
  *
  * Trois choix qui se prennent une fois :
  *
@@ -32,18 +36,32 @@ final class Langue
     /**
      * Les langues du site, par code ISO 639-1.
      *
-     * `active` dit si la langue est ouverte au public. **L'anglais est déclaré
-     * mais fermé** : ses adresses répondent 404 tant que rien n'est traduit.
-     * Servir des pages françaises sous `/en/` apprendrait aux moteurs que le
-     * site ment sur son contenu, et c'est long à défaire.
+     * `active` dit si la langue est ouverte au public. **L'anglais est ouvert
+     * depuis le 8 septembre 2026**, sur décision du commanditaire ; il était
+     * déclaré et fermé depuis le lot G1, et son mécanisme complet depuis G11.
      *
-     * Ouvrir l'anglais tiendra en un mot : `'active' => true`.
+     * Ce que l'ouverture engage, et qu'il vaut mieux avoir écrit :
+     *
+     * - **L'interface est traduite, les contenus ne le sont pas encore.** Un
+     *   champ sans traduction retombe sur le français (voir `Traduction` et
+     *   `Lexique`), donc une page anglaise reste lisible — mais elle mêle les
+     *   deux langues tant que l'éditeur n'a pas versé la matière depuis
+     *   l'écran de traduction du back-office.
+     * - **Les moteurs indexent ce qu'ils voient.** Le `hreflang`, le
+     *   `x-default` et le sitemap dédoublé s'écrivent désormais, et annoncent
+     *   une version anglaise. Une page annoncée anglaise dont le corps est
+     *   français perd de la confiance, et c'est long à regagner. Le remède
+     *   n'est pas de refermer mais de traduire : chaque champ posé retire une
+     *   phrase française de la page.
+     * - **Refermer se fait du même mot**, et sans casse : `/en/` repasse en
+     *   404, le `hreflang` disparaît, le sélecteur de langue aussi, et les
+     *   traductions déjà saisies restent en base à attendre.
      *
      * @var array<string,array{nom:string,locale:string,active:bool}>
      */
     public const LANGUES = [
         'fr' => ['nom' => 'Français', 'locale' => 'fr_FR', 'active' => true],
-        'en' => ['nom' => 'English',  'locale' => 'en_GB', 'active' => false],
+        'en' => ['nom' => 'English',  'locale' => 'en_GB', 'active' => true],
     ];
 
     /**

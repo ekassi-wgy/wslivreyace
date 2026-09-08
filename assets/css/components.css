@@ -1624,6 +1624,36 @@ main > .shell > .avis:first-child { margin-top: var(--sp-7); }
 .nav-loupe:hover { color: var(--brass-text); }
 .nav-loupe::after { display: none; }
 
+/* Le sélecteur de langue (lot G11).
+   Deux sigles séparés d'un filet, à la façon de la loupe voisine : c'est un
+   commutateur, pas une huitième rubrique, et lui donner le poids d'une entrée
+   de menu ferait croire à une section du site. La langue courante est marquée
+   par la couleur pleine et non par un soulignement — le filet de `.nav-menu a`
+   sert au survol, et deux signes pour deux choses différentes se confondent. */
+.nav-langues {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.nav-langues li + li { border-left: 1px solid var(--rule, rgba(0,0,0,.18)); padding-left: 0.5rem; }
+.nav-menu .nav-langues a {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-3, var(--ink-2));
+  padding-block: 0.2rem;
+}
+.nav-menu .nav-langues a::after { display: none; }
+.nav-menu .nav-langues a:hover { color: var(--brass-text); }
+/* La langue en cours ne se clique pas pour rien : elle reste lisible et se
+   distingue, sans devenir un bouton mort — le lien pointe la même page. */
+.nav-menu .nav-langues a[aria-current="true"] {
+  color: var(--ink);
+  font-weight: 500;
+}
+
 .rech-groupe { margin-bottom: var(--sp-8); }
 .rech-groupe__titre {
   display: flex;

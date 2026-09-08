@@ -15,10 +15,10 @@ le tunnel de commande. **Dix des onze lots du nouveau périmètre le sont aussi.
 | **Site public** | accueil, Le livre, **auteur**, Biographie (**index et périodes**), **Archives** (fonds, catégorie, notice, **bibliothèque des discours**), **Héritage** (index et sujets), Actualités (liste, fiche, revue de presse), Événements, Témoignages, **Contribuez aux archives**, **Recherche**, Contact, Mentions légales, 404 |
 | **Socle** | bilingue par construction (anglais déclaré, fermé), plan du site et `robots.txt`, fil d'Ariane et données structurées partout, quarantaine des envois publics |
 
-**Reste le tunnel de commande (G3).** La version anglaise (G11) est **prête et
-fermée** : le site est traduisible de bout en bout, écran de traduction
-compris, et ne demande plus qu'un mot — `true` — le jour où la matière
-éditoriale arrivera.
+**Reste le tunnel de commande (G3).** La version anglaise (G11) est **livrée et
+ouverte** depuis le 8 septembre 2026 : `/en/` répond, l'interface est en
+anglais, et les contenus s'y traduisent depuis le back-office — un champ non
+traduit affiche le français plutôt que rien.
 
 ⚠️ **Le dépôt est en avance sur le serveur, mais l'écart s'est réduit de
 moitié le 8 septembre 2026 : les quinze migrations sont jouées en production.**
@@ -1668,7 +1668,7 @@ tant qu'il ne l'est pas, ces tables sont en place et personne ne les voit. Le
 | G9 | Recherche transversale, fil d'Ariane, 404 qui rattrape | livré |
 | G10 | Biographie par périodes — une adresse par période, frise et fonds rattachés | livré |
 | **G3** | **Boutique et tunnel de commande** | **à faire** — 4 à 6 j |
-| G11 | Version anglaise — mécanisme complet, anglais fermé | livré |
+| G11 | Version anglaise — mécanisme complet, **anglais ouvert** | livré |
 
 **G3 n'a pas de date parce que le livre n'en a pas.** Le commanditaire a
 confirmé le 7 septembre qu'aucune date de sortie n'est annoncée. C'est le seul
@@ -1859,12 +1859,11 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 | **G8** | Contribuez aux archives | formulaire, quarantaine (décision 4), cession de droits, réception et validation au back-office | **livré** |
 | **G9** | Recherche et navigation | recherche transversale, fil d'Ariane et `BreadcrumbList` partout, 404 qui rattrape | **livré** |
 | **G10** | Biographie par périodes | les périodes en base, une adresse par période, frise illustrée et reliée aux archives | **livré** |
-| **G11** | Version anglaise | interface sortie des gabarits, dates bilingues, écran de traduction du back-office ; **reste la matière éditoriale** | **livré** (hors traduction) |
+| **G11** | Version anglaise | interface sortie des gabarits, dates bilingues, écran de traduction du back-office, **anglais ouvert** ; reste la matière éditoriale | **livré** |
 
 **Ordre recommandé.** G0 et G1 d'abord, communs aux deux pistes. Puis G2 et G3
-pour la sortie du livre, G4 à G10 pour le fonds. G11 quand la communication
-internationale démarre — **son code est fait, il n'attend plus que la
-traduction des contenus.**
+pour la sortie du livre, G4 à G10 pour le fonds. G11 est fait et **ouvert** ;
+la traduction des contenus se verse au fil de l'eau, sans nouvelle livraison.
 
 **Une réserve sur cet ordre.** G4 est en seconde piste, mais **sa conception ne
 peut pas attendre** : G5 à G10 en dépendent tous, et corriger le modèle après le
@@ -2617,7 +2616,7 @@ chapitres, et le `DROP COLUMN` sur `repere`. Elle ne se rejoue pas — la
 suppression de colonne lèverait une erreur, ce qui vaut mieux qu'une
 modification silencieuse.
 
-### Lot G11 — livré, et l'anglais reste fermé
+### Lot G11 — livré, et l'anglais ouvert
 
 **Le lot G1 avait posé la structure ; celui-ci rend le site réellement
 traduisible.** Le plan du §9 annonçait « aucune reprise de code » et la section
@@ -2664,8 +2663,10 @@ spacé dès qu'une borne contient une espace.
 fiche.** Traduire n'est pas éditer — deux gestes, souvent deux personnes,
 parfois deux moments séparés de plusieurs semaines ; et le français doit se
 lire **en regard**, sans quoi on traduit à côté. Rien ne s'y publie : il se
-confie sans risque. Il paraît **avant** que l'anglais ne soit ouvert, ce qui
-est tout l'intérêt — la matière se verse pendant que `/en/` répond encore 404.
+confie sans risque. Il **ne dépend pas de l'ouverture** : il s'appuie sur les
+langues *déclarées* et non sur les langues ouvertes, de sorte que la matière
+pouvait se verser pendant que `/en/` répondait encore 404 — et qu'elle
+continuerait de se verser si l'anglais était refermé.
 
 **Ce qui se traduit y est déclaré, pas déduit des colonnes.** Une entité porte
 des champs qui ne se traduisent pas — un slug, une année, un crédit photo, une
@@ -2689,14 +2690,35 @@ l'anglais en apparence :
   réglages. Comblé **sans migration** — la table accepte `ligne_id = 0`, aucune
   ligne de `parametre` n'ayant d'identifiant qui puisse entrer en collision.
 
-**L'anglais reste fermé, et c'est le raisonnement de G1 qu'on ne change pas :**
-servir des pages à moitié françaises sous `/en/` apprendrait aux moteurs que le
-site ment sur son contenu, et c'est long à défaire. Il s'ouvrira d'un mot —
-`'active' => true` dans `App\Core\Langue::LANGUES` — le jour où la matière
-sera là.
+**L'anglais a été ouvert le 8 septembre 2026, sur décision du commanditaire.**
+Le lot avait été livré fermé — le raisonnement de G1 étant que servir des pages
+à moitié françaises sous `/en/` apprend aux moteurs que le site ment sur son
+contenu. L'ouverture a été décidée ensuite, et le moment s'y prêtait : la base
+ne portait alors que **sept repères publiés** et aucun autre contenu, de sorte
+que `/en/` sert une interface entièrement anglaise et sept notices encore
+françaises — pas une page à trous.
 
-**Vérifié l'anglais ouvert le temps des essais, puis refermé** : les dix-sept
-adresses publiques répondent dans les deux langues, `hreflang`, `x-default` et
+**Ce que l'ouverture engage.** Le `hreflang`, le `x-default` et le sitemap
+dédoublé s'écrivent désormais, et annoncent une version anglaise ; le plan du
+site passe de douze à vingt-quatre adresses. Une page annoncée anglaise dont le
+corps reste français perd de la confiance auprès des moteurs, et c'est long à
+regagner. **Le remède n'est pas de refermer mais de traduire** : chaque champ
+posé depuis l'écran de traduction retire une phrase française de la page.
+
+**Refermer se fait du même mot** — `'active' => false` dans
+`App\Core\Langue::LANGUES` — et sans casse : `/en/` repasse en 404, le
+`hreflang` et le sélecteur de langue disparaissent, et les traductions déjà
+saisies restent en base à attendre.
+
+**Le sélecteur de langue a reçu son style à cette occasion.** Il n'en avait pas :
+tant que l'anglais était fermé, il ne paraissait sur aucune page et personne ne
+l'avait vu. Deux sigles séparés d'un filet, à la façon de la loupe voisine —
+c'est un commutateur, pas une huitième rubrique, et lui donner le poids d'une
+entrée de menu ferait croire à une section du site. Il pointe **la même page**
+dans l'autre langue, jamais la racine : changer de langue ne doit pas faire
+perdre sa place.
+
+**Vérifié** : les dix-sept adresses publiques répondent dans les deux langues, `hreflang`, `x-default` et
 le sitemap dédoublé s'écrivent, un POST réel sur le formulaire de contact
 refuse en anglais, l'écran de traduction enregistre une période et deux
 paramètres, et la page anglaise rend « Childhood and education » là où la
@@ -2733,4 +2755,4 @@ comportement du site, mais qui engage la structure éditrice devra le relire.
 | **Fonds d'archives** et leurs crédits — chaque pièce publiée doit porter son fonds, son photographe ou son détenteur de droits ; le back-office refuse déjà la publication sans crédit | commanditaire / familles |
 | **Compte de la chaîne vidéo**, si la décision 2 est retenue | commanditaire |
 | **Politique de sauvegarde** — qui garde une copie des originaux, où, à quelle fréquence | hébergeur / commanditaire |
-| **Traduction anglaise des contenus** — biographie, notices d'archives, sujets d'Héritage, préface. Le mécanisme est livré (G11), écran de traduction compris : il ne manque que la matière, et l'anglais s'ouvre d'un mot | commanditaire / traducteur |
+| **Traduction anglaise des contenus** — biographie, notices d'archives, sujets d'Héritage, préface. **L'anglais est ouvert** : chaque champ traduit depuis le back-office retire une phrase française des pages `/en/`, et un champ non traduit y affiche le français | commanditaire / traducteur |
