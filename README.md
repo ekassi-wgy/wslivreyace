@@ -1249,9 +1249,15 @@ point.** Les onze pages publiques étaient déployées, les huit écrans du
 back-office aussi, et les quatre migrations jouées en production.
 
 **Le même jour, l'écart s'est recreusé** : dix lots du nouveau périmètre ont
-été écrits et poussés dans la foulée, avec neuf migrations. **Rien n'en est
-déployé.** La liste, dans l'ordre où les jouer, est au §9 — « Où en est ce
-périmètre ».
+été écrits et poussés dans la foulée, avec neuf migrations. La liste, dans
+l'ordre où les jouer, est au §9 — « Où en est ce périmètre ».
+
+**État au 8 septembre 2026 : le déploiement a commencé, et s'est arrêté après
+`009`.** Les migrations `007`, `008` et `009` sont jouées en production —
+constaté dans phpMyAdmin, `repere` y porte ses sept entrées et ses quatre mises
+en avant. **`010` à `015` restent à jouer.** L'envoi des fichiers n'a pas été
+mesuré et n'est pas affirmé ici. La requête ci-dessous dit l'état de la base
+mieux que ce paragraphe, qui vieillira.
 
 | Migration | Ce qu'elle apporte | État en production |
 |---|---|---|
@@ -1259,6 +1265,10 @@ périmètre ».
 | `sql/004_commande.sql` | provenance du paiement, code de transaction, note et trace de remise (lot E2) | jouée |
 | `sql/005_soumission.sql` | journal des soumissions publiques (limitation de débit) | jouée |
 | `sql/006_message.sql` | table des messages du formulaire de contact (lot F4) | jouée |
+| `sql/007_actualite_categories.sql` | quatre catégories d'actualités (lot G0) | jouée le 8 septembre |
+| `sql/008_repere_avant.sql` | colonne `en_avant` sur `repere` (lot G0) | jouée le 8 septembre |
+| `sql/009_repere_amorce.sql` | les sept repères de la frise (lot G0) | jouée le 8 septembre |
+| `sql/010_traduction.sql` → `sql/015_periode.sql` | le reste du nouveau périmètre | **à jouer** |
 
 **`001_schema.sql` ne se rejoue jamais sur une base installée.** Il a été mis à
 jour pour qu'une installation neuve n'ait pas à rejouer l'historique, mais ses
@@ -1270,24 +1280,66 @@ name`. `005` et `006` créent des tables en `IF NOT EXISTS` : les rejouer ne
 casse rien, mais ne rattrape rien non plus si la table existe sous une autre
 forme.
 
-**La requête de contrôle reste ici**, et elle resservira à chaque migration à
-venir : elle dit où en est une base sans qu'on ait à la croire sur parole —
-quatre `1` sur une base à jour, un `0` sur chaque migration manquante.
+**La requête de contrôle reste ici, et elle couvre désormais les quinze
+migrations.** Elle dit où en est une base sans qu'on ait à la croire sur parole,
+et se colle telle quelle dans phpMyAdmin après chaque fichier : **`1` partout**
+sur une base à jour, un `0` sur chaque migration manquante. La ligne `009` fait
+exception et porte un décompte — l'amorce verse des données, pas une structure ;
+on y attend `7`.
+
+Elle est écrite comme une liste d'objets attendus plutôt qu'en dix-huit
+requêtes empilées : la liste se relit, et une migration à venir s'y ajoute d'une
+ligne. La ligne `015` se lit à l'envers des autres — `periode retirée de repere`
+vaut `1` quand la colonne a bien disparu.
 
 ```sql
-SELECT 'octets sur media' AS controle, COUNT(*) AS present
-  FROM information_schema.columns
- WHERE table_schema = DATABASE() AND table_name = 'media' AND column_name = 'octets'
-UNION ALL SELECT 'passerelle sur commande', COUNT(*)
-  FROM information_schema.columns
- WHERE table_schema = DATABASE() AND table_name = 'commande' AND column_name = 'passerelle'
-UNION ALL SELECT 'table soumission_publique', COUNT(*)
-  FROM information_schema.tables
- WHERE table_schema = DATABASE() AND table_name = 'soumission_publique'
-UNION ALL SELECT 'table message', COUNT(*)
-  FROM information_schema.tables
- WHERE table_schema = DATABASE() AND table_name = 'message';
+SELECT o.migration, o.controle,
+       CASE o.attendu
+         WHEN 'table' THEN
+           (SELECT COUNT(*) FROM information_schema.tables t
+             WHERE t.table_schema = DATABASE() AND t.table_name = o.objet)
+         WHEN 'colonne' THEN
+           (SELECT COUNT(*) FROM information_schema.columns c
+             WHERE c.table_schema = DATABASE() AND c.table_name = o.objet
+               AND c.column_name = o.membre)
+         WHEN 'retiree' THEN
+           1 - (SELECT COUNT(*) FROM information_schema.columns c
+                 WHERE c.table_schema = DATABASE() AND c.table_name = o.objet
+                   AND c.column_name = o.membre)
+       END AS present
+  FROM (
+              SELECT '003' AS migration, 'colonne' AS attendu, 'media' AS objet,
+                     'octets' AS membre, 'octets sur media' AS controle
+    UNION ALL SELECT '004', 'colonne', 'commande', 'passerelle', 'passerelle sur commande'
+    UNION ALL SELECT '005', 'table',   'soumission_publique', '', 'table soumission_publique'
+    UNION ALL SELECT '006', 'table',   'message', '', 'table message'
+    UNION ALL SELECT '008', 'colonne', 'repere', 'en_avant', 'en_avant sur repere'
+    UNION ALL SELECT '010', 'table',   'traduction', '', 'table traduction'
+    UNION ALL SELECT '011', 'table',   'archive', '', 'table archive'
+    UNION ALL SELECT '011', 'table',   'archive_media', '', 'table archive_media'
+    UNION ALL SELECT '012', 'colonne', 'media', 'famille', 'famille sur media'
+    UNION ALL SELECT '013', 'table',   'heritage', '', 'table heritage'
+    UNION ALL SELECT '013', 'table',   'heritage_media', '', 'table heritage_media'
+    UNION ALL SELECT '014', 'table',   'contribution', '', 'table contribution'
+    UNION ALL SELECT '014', 'table',   'contribution_fichier', '', 'table contribution_fichier'
+    UNION ALL SELECT '015', 'table',   'periode', '', 'table periode'
+    UNION ALL SELECT '015', 'table',   'periode_media', '', 'table periode_media'
+    UNION ALL SELECT '015', 'retiree', 'repere', 'periode', 'periode retirée de repere'
+  ) AS o
+UNION ALL
+SELECT '007', 'catégories du brief sur actualite',
+       (SELECT COUNT(*) FROM information_schema.columns
+         WHERE table_schema = DATABASE() AND table_name = 'actualite'
+           AND column_name = 'categorie' AND column_type LIKE '%conference%')
+UNION ALL
+SELECT '009', 'repères en base (7 après l''amorce)', (SELECT COUNT(*) FROM repere)
+ORDER BY 1, 2;
 ```
+
+`007` et `009` ne se contrôlent pas comme les autres, et les deux lignes le
+disent : `007` ne crée ni table ni colonne, il élargit un `ENUM` — le contrôle
+cherche donc `conference` dans le type de `actualite.categorie`. `009` ne
+touche pas au schéma du tout.
 
 Depuis la bascule de collation (voir §2), les fichiers SQL se chargent aussi
 bien sous MySQL que sous MariaDB — il n'y a plus de ligne à corriger avant
@@ -1558,7 +1610,10 @@ la continuité du site de référence. Contrepartie assumée : le back-office es
 ### Où en est ce périmètre
 
 **État au 7 septembre 2026, fin de journée.** Dix lots sur onze sont écrits,
-testés et poussés ; **aucun n'est encore déployé.**
+testés et poussés ; **aucun n'est encore déployé.** — *Le 8 septembre, le
+déploiement a commencé par la base : les migrations `007` à `009` sont jouées,
+`010` à `015` restent à faire. Voir le §7, qui porte l'état daté et la requête
+qui le vérifie.*
 
 | Lot | Objet | État |
 |---|---|---|
@@ -1581,19 +1636,21 @@ confirmé le 7 septembre qu'aucune date de sortie n'est annoncée. C'est le seul
 lot dont le retard aurait une conséquence commerciale, et il demande quatre à
 six jours : **dès qu'une date est évoquée, il repasse en tête.**
 
-**Neuf migrations à jouer, dans cet ordre**, et une seule fois :
+**Neuf migrations à jouer, dans cet ordre**, et une seule fois. **Les trois
+premières sont jouées en production depuis le 8 septembre** ; le contrôle est
+au §7.
 
-| Fichier | Lot | Ce qu'il apporte |
-|---|---|---|
-| `sql/007_actualite_categories.sql` | G0 | quatre catégories d'actualités |
-| `sql/008_repere_avant.sql` | G0 | la colonne `en_avant`, qui met un repère sur l'accueil |
-| `sql/009_repere_amorce.sql` | G0 | les sept repères de la frise — **seulement si `repere` est vide** |
-| `sql/010_traduction.sql` | G1 | la table de traduction |
-| `sql/011_archive.sql` | G4 | `archive` et `archive_media` |
-| `sql/012_media_famille.sql` | G5 | la colonne `famille` sur `media` |
-| `sql/013_heritage.sql` | G7 | `heritage` et `heritage_media` |
-| `sql/014_contribution.sql` | G8 | `contribution` et `contribution_fichier` |
-| `sql/015_periode.sql` | G10 | `periode` et `periode_media`, l'amorce des cinq chapitres, et la colonne `repere.periode` qui **disparaît** |
+| Fichier | Lot | Ce qu'il apporte | |
+|---|---|---|---|
+| `sql/007_actualite_categories.sql` | G0 | quatre catégories d'actualités | jouée |
+| `sql/008_repere_avant.sql` | G0 | la colonne `en_avant`, qui met un repère sur l'accueil | jouée |
+| `sql/009_repere_amorce.sql` | G0 | les sept repères de la frise — **seulement si `repere` est vide** | jouée |
+| `sql/010_traduction.sql` | G1 | la table de traduction | à jouer |
+| `sql/011_archive.sql` | G4 | `archive` et `archive_media` | à jouer |
+| `sql/012_media_famille.sql` | G5 | la colonne `famille` sur `media` | à jouer |
+| `sql/013_heritage.sql` | G7 | `heritage` et `heritage_media` | à jouer |
+| `sql/014_contribution.sql` | G8 | `contribution` et `contribution_fichier` | à jouer |
+| `sql/015_periode.sql` | G10 | `periode` et `periode_media`, l'amorce des cinq chapitres, et la colonne `repere.periode` qui **disparaît** | à jouer |
 
 **Deux points de déploiement qu'aucune migration ne règle :**
 
