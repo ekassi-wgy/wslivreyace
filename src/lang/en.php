@@ -67,7 +67,7 @@ return [
     'pied.evenements'       => 'Events',
     'pied.temoignages'      => 'Tributes',
     'pied.contact'          => 'Contact',
-    'pied.droits'           => 'All rights reserved. Publishing body to be confirmed.',
+    'pied.droits'           => 'Philippe Grégoire YACÉ. All rights reserved.',
     'pied.mentions'         => 'Legal notice',
     'pied.confidentialite'  => 'Privacy',
 

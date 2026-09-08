@@ -20,7 +20,12 @@ $lien = static fn(string $chemin): string => App\Core\Langue::chemin($chemin);
           <li><a href="<?= $lien('/le-livre') ?>"><?= t('pied.livre') ?></a></li>
           <li><a href="<?= $lien('/le-livre') ?>#auteur"><?= t('pied.auteur') ?></a></li>
           <li><a href="<?= $lien('/le-livre') ?>#extrait"><?= t('pied.extraits') ?></a></li>
-          <li><a href="<?= $lien('/le-livre') ?>#acheter"><?= t('pied.commander') ?></a></li>
+          <?php /* Vers `/commander`, comme le bouton de la navigation — et non
+                   vers l'ancre « Où se procurer l'ouvrage » de la page du livre,
+                   qui n'était pas la page de commande mais la liste des points
+                   de vente. La page reste servie quand la boutique est fermée :
+                   elle annonce alors l'ouverture à la parution. */ ?>
+          <li><a href="<?= $lien('/commander') ?>"><?= t('pied.commander') ?></a></li>
         </ul>
       </div>
       <div class="col-lg-2 foot__col">

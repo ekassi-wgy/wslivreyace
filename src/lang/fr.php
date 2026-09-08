@@ -84,7 +84,7 @@ return [
     'pied.evenements'       => 'Événements',
     'pied.temoignages'      => 'Témoignages',
     'pied.contact'          => 'Contact',
-    'pied.droits'           => 'Tous droits réservés. Structure porteuse à renseigner.',
+    'pied.droits'           => 'Philippe Grégoire YACÉ. Tous droits réservés.',
     'pied.mentions'         => 'Mentions légales',
     'pied.confidentialite'  => 'Confidentialité',
 
