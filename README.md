@@ -15,7 +15,10 @@ le tunnel de commande. **Dix des onze lots du nouveau périmètre le sont aussi.
 | **Site public** | accueil, Le livre, **auteur**, Biographie (**index et périodes**), **Archives** (fonds, catégorie, notice, **bibliothèque des discours**), **Héritage** (index et sujets), Actualités (liste, fiche, revue de presse), Événements, Témoignages, **Contribuez aux archives**, **Recherche**, Contact, Mentions légales, 404 |
 | **Socle** | bilingue par construction (anglais déclaré, fermé), plan du site et `robots.txt`, fil d'Ariane et données structurées partout, quarantaine des envois publics |
 
-**Restent : le tunnel de commande (G3) et la traduction anglaise (G11).**
+**Reste le tunnel de commande (G3).** La version anglaise (G11) est **prête et
+fermée** : le site est traduisible de bout en bout, écran de traduction
+compris, et ne demande plus qu'un mot — `true` — le jour où la matière
+éditoriale arrivera.
 
 ⚠️ **Le dépôt est en avance sur le serveur, mais l'écart s'est réduit de
 moitié le 8 septembre 2026 : les quinze migrations sont jouées en production.**
@@ -173,13 +176,19 @@ livreyace/                  ← racine web
 │   ├── bootstrap.php       autoload + régime d'erreurs       [interdit]
 │   ├── Core/               Config, Database, Router, View,
 │   │                       Admin, Session, Csrf, Auth,
-│   │                       Validator, Slug, Site, DateFr,
+│   │                       Validator, Slug, Site, DateLisible,
+│   │                       Langue, Lexique, Traduction,
 │   │                       Televersement, Paiement, Debit    [interdit]
+│   ├── helpers.php         t(), t_brut(), t_nu()             [interdit]
+│   ├── lang/               fr.php, en.php — les textes de
+│   │                       l'interface, versionnés           [interdit]
 │   ├── Controller/         Actualite, Archive, Contact,
 │   │                       Evenement, Temoignage (public)    [interdit]
 │   ├── Controller/Admin/   Auth, Crud (Actualite, Evenement,
-│   │                       Repere), Temoignage, Message,
+│   │                       Repere, Archive, Heritage,
+│   │                       Periode), Temoignage, Message,
 │   │                       Media, Commande, Compte,
+│   │                       Contribution, Traduction,
 │   │                       Parametre                         [interdit]
 │   └── Model/              Modele, Actualite, Evenement,
 │                           Repere, Temoignage, Message,
@@ -467,8 +476,9 @@ JSON-LD étant écrit en dur. Vérifié : une actualité titrée
 `</script><script>alert(1)</script>` sort en `\u003C` dans le JSON-LD, en
 entités dans le titre, la description et les balises Open Graph.
 
-**Les dates sont écrites en français par une table de douze mois**
-(`App\Core\DateFr`), et non par `IntlDateFormatter`, `setlocale` ou
+**Les dates sont écrites par une table de douze mois par langue**
+(`App\Core\DateLisible`, nommée `DateFr` jusqu'au lot G11 où elle a appris
+l'anglais), et non par `IntlDateFormatter`, `setlocale` ou
 `strftime` — même raison que la translittération des slugs : ces trois-là
 dépendent de la machine. `ext-intl` n'est pas garantie sur un hébergement
 mutualisé, `setlocale` exige que la locale `fr_FR` soit installée, et
@@ -578,7 +588,7 @@ bascule accorde le jour entier : `fin_le` est facultative, une dédicace d'un
 après-midi saisie sans heure de fin ne doit pas passer aux archives à l'instant
 où elle commence.
 
-**Les dates s'écrivent comme on les dit.** `App\Core\DateFr` a gagné les
+**Les dates s'écrivent comme on les dit.** `App\Core\DateLisible` a gagné les
 heures et les intervalles : « 14 mars 2026, de 18 h 30 à 21 h », « du 14 au
 16 mars 2026 », « du 28 décembre 2025 au 3 janvier 2026 ». La langue a une forme
 pour chaque cas et les employer est ce qui sépare un agenda d'un tableau de base
@@ -1209,8 +1219,8 @@ les deux). Ce qu'il reste :
 intégré et jeu d'icônes dérivé de sa lettre ; contrôleur frontal, routeur, PDO,
 mise en page unique ; base `livreyace_sbd`, onze tables ; étanchéité des
 dossiers applicatifs vérifiée sur Apache. Deux briques transverses s'y sont
-ajoutées avec les lots publics : `App\Core\DateFr`, qui écrit les dates en
-français sans dépendre de la machine, et `View::paragraphes`, qui rend échappé
+ajoutées avec les lots publics : `App\Core\DateLisible`, qui écrit les dates
+sans dépendre de la machine, et `View::paragraphes`, qui rend échappé
 tout corps de texte saisi au back-office.
 
 **Le back-office** — **entier**, ses sept lots livrés : de l'ossature aux
@@ -1273,11 +1283,15 @@ n'avait jamais été relevé jusque-là (voir §2, qui raisonnait dessus sans
 l'avoir constaté). `repere` porte ses sept entrées et ses quatre mises en avant ;
 `repere.periode` a bien disparu.
 
-**Ce qui reste est l'envoi des fichiers**, et c'est la plus grosse part : 77
-fichiers ont changé depuis le dernier état déployé, dont 37 nouveaux, aucun
-supprimé. Les quatre pièges de cet envoi sont listés plus bas — « Côté
-fichiers » — et le premier est que `quarantaine/` ne contient que des fichiers
-commençant par un point, que les clients FTP masquent.
+**Ce qui reste est l'envoi des fichiers**, et c'est la plus grosse part : 99
+fichiers ont changé depuis le dernier état déployé, dont 46 nouveaux et **un
+supprimé** — `src/Core/DateFr.php`, renommé en `DateLisible.php` au lot G11 ;
+un envoi FTP n'efface rien, il faut donc le retirer à la main, faute de quoi
+deux classes coexistent et la lecture s'en trouve trompée.
+
+Les quatre pièges de cet envoi sont listés plus bas — « Côté fichiers » — et le
+premier est que `quarantaine/` ne contient que des fichiers commençant par un
+point, que les clients FTP masquent.
 
 **Ce paragraphe vieillira ; la requête ci-dessous, non.** Elle est la mesure,
 il n'en est que le résumé.
@@ -1478,7 +1492,7 @@ que lire ce que le back-office remplissait déjà ; F4 a repris le formulaire de
 F1, dont le barème de débit était même déjà déclaré.
 
 **Ce que F2 a laissé derrière lui**, et dont F3 a hérité sans avoir à l'écrire :
-`App\Core\DateFr` pour les dates en français, `View::paragraphes` pour les
+`App\Core\DateLisible` pour les dates en français, `View::paragraphes` pour les
 corps de texte saisis en clair, l'image de partage choisie par page, et le
 patron d'une page publique adossée à une entité — liste filtrée par lien, fiche
 par slug, 404 pour un brouillon. Les événements ont suivi exactement la même
@@ -1487,7 +1501,7 @@ propre — la trame de la planche, la visionneuse, les heures et les intervalles
 de dates, la seconde taille d'image.
 
 **Ce que F3 laisse à son tour :** les tailles dérivées et le `srcset` de
-`App\Model\Media`, les heures et intervalles de `DateFr`, et une visionneuse
+`App\Model\Media`, les heures et intervalles de `DateLisible`, et une visionneuse
 qui ne tient à rien d'autre qu'à une liste de tuiles — elle resservira le jour
 où une fiche portera plusieurs images.
 
@@ -1654,7 +1668,7 @@ tant qu'il ne l'est pas, ces tables sont en place et personne ne les voit. Le
 | G9 | Recherche transversale, fil d'Ariane, 404 qui rattrape | livré |
 | G10 | Biographie par périodes — une adresse par période, frise et fonds rattachés | livré |
 | **G3** | **Boutique et tunnel de commande** | **à faire** — 4 à 6 j |
-| **G11** | **Version anglaise** | **à faire** — attend la traduction |
+| G11 | Version anglaise — mécanisme complet, anglais fermé | livré |
 
 **G3 n'a pas de date parce que le livre n'en a pas.** Le commanditaire a
 confirmé le 7 septembre qu'aucune date de sortie n'est annoncée. C'est le seul
@@ -1845,11 +1859,12 @@ ni la numérisation, ni la saisie éditoriale, ni la traduction.
 | **G8** | Contribuez aux archives | formulaire, quarantaine (décision 4), cession de droits, réception et validation au back-office | **livré** |
 | **G9** | Recherche et navigation | recherche transversale, fil d'Ariane et `BreadcrumbList` partout, 404 qui rattrape | **livré** |
 | **G10** | Biographie par périodes | les périodes en base, une adresse par période, frise illustrée et reliée aux archives | **livré** |
-| **G11** | Version anglaise | traduction des contenus dans la structure posée en G1 ; aucune reprise de code | selon volume |
+| **G11** | Version anglaise | interface sortie des gabarits, dates bilingues, écran de traduction du back-office ; **reste la matière éditoriale** | **livré** (hors traduction) |
 
 **Ordre recommandé.** G0 et G1 d'abord, communs aux deux pistes. Puis G2 et G3
 pour la sortie du livre, G4 à G10 pour le fonds. G11 quand la communication
-internationale démarre.
+internationale démarre — **son code est fait, il n'attend plus que la
+traduction des contenus.**
 
 **Une réserve sur cet ordre.** G4 est en seconde piste, mais **sa conception ne
 peut pas attendre** : G5 à G10 en dépendent tous, et corriger le modèle après le
@@ -1979,11 +1994,12 @@ des deux séries finisse par manquer une adresse.
 page. Un `href="/le-livre"` écrit en dur ramènerait le visiteur anglophone au
 français sans le dire.
 
-**Ce que G1 ne fait pas, délibérément :** les textes des gabarits de page ne
-sont pas encore sortis dans un fichier de langue. C'est du travail mécanique,
-page par page, sans conséquence architecturale — il se fera avec G11, ou au fil
-des pages qu'on rouvre. Ce qui devait être décidé maintenant l'est ; le reste
-peut attendre sans coûter davantage.
+**Ce que G1 ne faisait pas, délibérément :** les textes des gabarits de page
+n'étaient pas encore sortis dans un fichier de langue. C'était du travail
+mécanique, page par page, sans conséquence architecturale, et il a été fait au
+lot G11 — 533 clés. Ce qui devait être décidé au lot G1 l'était ; le reste
+pouvait attendre sans coûter davantage, et n'a effectivement rien coûté de
+plus.
 
 **Vérifié en ouvrant l'anglais le temps d'un test** : `/en/` répond, `<html
 lang="en">`, `hreflang` et `x-default` s'écrivent, le sitemap se dédouble en
@@ -2601,6 +2617,109 @@ chapitres, et le `DROP COLUMN` sur `repere`. Elle ne se rejoue pas — la
 suppression de colonne lèverait une erreur, ce qui vaut mieux qu'une
 modification silencieuse.
 
+### Lot G11 — livré, et l'anglais reste fermé
+
+**Le lot G1 avait posé la structure ; celui-ci rend le site réellement
+traduisible.** Le plan du §9 annonçait « aucune reprise de code » et la section
+G1 disait le contraire — que les textes des gabarits sortiraient avec G11.
+C'est G1 qui avait raison, et quatre chantiers l'ont montré.
+
+**Deux choses se traduisent sur ce site, et elles n'ont pas le même régime.**
+C'est la décision du lot, et tout en découle :
+
+| | Où ça vit | Qui le change |
+|---|---|---|
+| **Les contenus** — une notice, un récit de période, une actualité | table `traduction`, en base | l'éditeur, depuis le back-office |
+| **Les textes du site** — « Lire la suite », « Retour aux archives », « Ouvrir le menu » | `src/lang/fr.php` et `en.php`, dans le dépôt | le développeur, avec le code qui les affiche |
+
+Les mélanger aurait été une faute des deux côtés : demander à un éditeur de
+traduire « Fermer » depuis un écran d'administration, ou livrer une mise à jour
+de code pour corriger une notice. **533 clés**, français et anglais au complet
+des deux côtés — l'écart entre les deux catalogues est nul, et se vérifie d'une
+ligne.
+
+**Le repli est le même des deux côtés** : une clé absente de l'anglais retombe
+sur le français, donc une page anglaise incomplète reste lisible. C'est ce qui
+permettra d'ouvrir rubrique par rubrique au lieu d'attendre que tout soit
+traduit.
+
+**`t()` échappe, et c'est délibéré.** Ces chaînes finissent presque toutes dans
+du HTML, et un helper qui n'échappe pas oblige à écrire `View::e(t(...))`
+plusieurs centaines de fois — ce qu'on oublie une fois. Deux variantes existent
+parce que deux contextes l'exigent : `t_brut()` pour les phrases portant une
+mise en exergue, qu'un découpage en trois morceaux rendrait intraduisibles, et
+`t_nu()` pour `$titre` et `$description`, que la mise en page échappe
+elle-même. Sans cette troisième forme, « l'État » ressortait en
+`l&amp;#039;État`.
+
+**`DateFr` devient `DateLisible` et écrit dans les deux langues.** Le nom était
+juste tant qu'elle n'écrivait qu'en français ; « 12 septembre 2026 » servi sous
+`/en/` était le genre de détail qui trahit une traduction faite à moitié. Le
+français ne bouge pas — « 1er mars », « 18 h 30 », « du 28 février au 3 mars
+2026 » — et l'anglais suit ses propres règles : pas d'ordinal dans une date
+complète, douze heures avec un point, et le tiret demi-cadratin d'intervalle,
+spacé dès qu'une borne contient une espace.
+
+**L'écran de traduction est un écran à part, et non un panneau sur chaque
+fiche.** Traduire n'est pas éditer — deux gestes, souvent deux personnes,
+parfois deux moments séparés de plusieurs semaines ; et le français doit se
+lire **en regard**, sans quoi on traduit à côté. Rien ne s'y publie : il se
+confie sans risque. Il paraît **avant** que l'anglais ne soit ouvert, ce qui
+est tout l'intérêt — la matière se verse pendant que `/en/` répond encore 404.
+
+**Ce qui se traduit y est déclaré, pas déduit des colonnes.** Une entité porte
+des champs qui ne se traduisent pas — un slug, une année, un crédit photo, une
+URL de vidéo — et proposer de traduire un slug est une invitation à casser une
+adresse.
+
+Trois défauts que le lot a mis au jour, et qui n'avaient rien à voir avec
+l'anglais en apparence :
+
+- **Trente-et-un liens internes et deux actions de formulaire étaient écrits en
+  dur** — `href="/le-livre"`, `action="/contact"`. Sous `/en/`, chacun ramenait
+  au français sans le dire, et les formulaires postaient vers la route
+  française depuis une page anglaise. C'est précisément ce contre quoi le
+  commentaire de `nav.php` mettait en garde depuis G1.
+- **Trois redirections après envoi perdaient le préfixe de langue.** Le
+  visiteur repartait sur la page française avec son accusé de réception anglais
+  posé en session, qu'il lisait donc au mauvais endroit.
+- **`parametre` n'était pas traduisible du tout.** Sa clé primaire est `cle`,
+  une chaîne ; `Traduction` s'indexe sur un entier. Or il porte
+  `preface_texte`, `preface_extrait` et `auteur_bio` : de la prose, pas des
+  réglages. Comblé **sans migration** — la table accepte `ligne_id = 0`, aucune
+  ligne de `parametre` n'ayant d'identifiant qui puisse entrer en collision.
+
+**L'anglais reste fermé, et c'est le raisonnement de G1 qu'on ne change pas :**
+servir des pages à moitié françaises sous `/en/` apprendrait aux moteurs que le
+site ment sur son contenu, et c'est long à défaire. Il s'ouvrira d'un mot —
+`'active' => true` dans `App\Core\Langue::LANGUES` — le jour où la matière
+sera là.
+
+**Vérifié l'anglais ouvert le temps des essais, puis refermé** : les dix-sept
+adresses publiques répondent dans les deux langues, `hreflang`, `x-default` et
+le sitemap dédoublé s'écrivent, un POST réel sur le formulaire de contact
+refuse en anglais, l'écran de traduction enregistre une période et deux
+paramètres, et la page anglaise rend « Childhood and education » là où la
+française rend « Enfance et formation ». Aucun double échappement sur les
+quatorze pages. Compte et données d'essai effacés.
+
+**Aucune migration.** La table `traduction` du lot G1 suffisait, `ligne_id = 0`
+compris.
+
+**Ce qui reste, et qui n'est pas du code : la matière.** Traduire la biographie,
+les notices d'archives, les sujets d'Héritage et la préface est un travail
+éditorial sur une figure historique réelle — le CDC §6 exige qu'on ne publie
+rien sur Yacé sans source, et cela vaut dans les deux langues. Les **textes
+d'interface**, eux, sont traduits : ce sont des libellés d'outil, pas des faits.
+
+**Deux réserves à consigner.** Les textes éditoriaux d'attente de l'accueil et
+de la page du livre — « Résumé long à fournir », « Texte à rédiger par
+l'éditeur » — sont passés au lexique parce qu'ils y étaient déjà en dur. Leur
+vraie place est la base, sous la main de l'éditeur ; le lexique est un progrès,
+pas la destination. Et **la version anglaise des mentions légales est une
+traduction, pas un avis juridique** : le texte décrit fidèlement le
+comportement du site, mais qui engage la structure éditrice devra le relire.
+
 ### Ce que le brief ajoute à la liste des livrables attendus
 
 À la liste du §5 s'ajoutent, tous non techniques :
@@ -2614,3 +2733,4 @@ modification silencieuse.
 | **Fonds d'archives** et leurs crédits — chaque pièce publiée doit porter son fonds, son photographe ou son détenteur de droits ; le back-office refuse déjà la publication sans crédit | commanditaire / familles |
 | **Compte de la chaîne vidéo**, si la décision 2 est retenue | commanditaire |
 | **Politique de sauvegarde** — qui garde une copie des originaux, où, à quelle fréquence | hébergeur / commanditaire |
+| **Traduction anglaise des contenus** — biographie, notices d'archives, sujets d'Héritage, préface. Le mécanisme est livré (G11), écran de traduction compris : il ne manque que la matière, et l'anglais s'ouvre d'un mot | commanditaire / traducteur |
