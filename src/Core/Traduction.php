@@ -25,6 +25,20 @@ final class Traduction
     private const TABLE = 'traduction';
 
     /**
+     * L'identifiant conventionnel des lignes qui n'en ont pas (lot G11).
+     *
+     * `parametre` a `cle` pour clé primaire et pas d'`id`, quand cette table
+     * s'indexe sur un entier. Plutôt qu'une migration élargissant `ligne_id`,
+     * les paramètres se rangent tous sous `ligne_id = 0` : aucune ligne de
+     * `parametre` n'a d'identifiant qui puisse entrer en collision, la clé
+     * unique porte déjà sur `(entite, ligne_id, langue, champ)`, et le nom du
+     * paramètre tient lieu de `champ` — ce qu'il est déjà.
+     *
+     * Vaut pour toute entité future sans identifiant entier.
+     */
+    public const SANS_ID = 0;
+
+    /**
      * Traductions déjà lues pendant cette requête, par entité et par langue.
      *
      * Une page d'accueil affiche des actualités, des témoignages, des repères

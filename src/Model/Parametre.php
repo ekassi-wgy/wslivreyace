@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Model;
 
 use App\Core\Database;
+use App\Core\Langue;
+use App\Core\Traduction;
 
 /**
  * Contenus éditables sans toucher au code (CDC §4.2).
@@ -152,13 +154,55 @@ final class Parametre
             $valeurs[$l['cle']] = $l['valeur'];
         }
 
-        return $valeurs;
+        return self::traduites($valeurs);
     }
 
     public static function lire(string $cle, ?string $defaut = null): ?string
     {
         $l = Database::one('SELECT valeur FROM parametre WHERE cle = ?', [$cle]);
-        return $l['valeur'] ?? $defaut;
+
+        return self::traduites([$cle => $l['valeur'] ?? $defaut])[$cle];
+    }
+
+    /**
+     * Recouvre les valeurs traduites, en anglais comme ailleurs (lot G11).
+     *
+     * **`parametre` ne passe pas par `Modele` et n'a pas d'identifiant** : sa
+     * clé primaire est `cle`, une chaîne, quand `Traduction` s'indexe sur un
+     * entier. Le trou était réel — `preface_texte`, `preface_extrait` et
+     * `auteur_bio` sont de la prose, pas des réglages, et seraient restés
+     * français sur une page anglaise.
+     *
+     * Il se comble **sans migration** : la table `traduction` accepte
+     * `ligne_id = 0`, aucune ligne de `parametre` n'ayant d'identifiant qui
+     * puisse entrer en collision, et sa clé unique porte déjà sur le
+     * quadruplet `(entite, ligne_id, langue, champ)`. Le nom du paramètre tient
+     * lieu de `champ`, ce qu'il est déjà.
+     *
+     * En français la méthode ne fait rien et n'interroge rien, comme le reste
+     * de `Traduction` : le coût du bilinguisme reste nul tant que le site est
+     * monolingue.
+     *
+     * @param array<string,string|null> $valeurs
+     * @return array<string,string|null>
+     */
+    private static function traduites(array $valeurs): array
+    {
+        if (Langue::estDefaut() || $valeurs === []) {
+            return $valeurs;
+        }
+
+        /*
+         * `Traduction::ligne()` attend une ligne portant un `id` : on lui en
+         * fabrique une, avec l'identifiant conventionnel des paramètres. Elle
+         * ne recouvre que les clés déjà présentes, donc rien n'apparaît qui ne
+         * soit déjà attendu par l'appelant.
+         */
+        $ligne = Traduction::ligne('parametre', ['id' => Traduction::SANS_ID] + $valeurs);
+
+        unset($ligne['id']);
+
+        return $ligne;
     }
 
     /**

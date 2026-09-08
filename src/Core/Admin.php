@@ -103,6 +103,12 @@ final class Admin
                 'icone'  => 'mdi-image-multiple-outline',
                 'url'    => self::url('/medias'),
             ],
+            [
+                'cle'    => 'traductions',
+                'titre'  => 'Traductions',
+                'icone'  => 'mdi-translate',
+                'url'    => self::url('/traductions'),
+            ],
             ['rubrique' => 'Modération'],
             [
                 'cle'    => 'temoignages',

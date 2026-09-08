@@ -23,6 +23,7 @@ use App\Controller\Admin\ParametreController;
 use App\Controller\Admin\PeriodeController;
 use App\Controller\Admin\RepereController;
 use App\Controller\Admin\TemoignageController;
+use App\Controller\Admin\TraductionController;
 use App\Core\Admin;
 use App\Core\Auth;
 use App\Core\Session;
@@ -133,6 +134,20 @@ $router->get($base . '/medias/{id}',            [MediaController::class, 'formul
 $router->post($base . '/medias/{id}',           [MediaController::class, 'mettreAJour']);
 $router->post($base . '/medias/{id}/statut',    [MediaController::class, 'basculerStatut']);
 $router->post($base . '/medias/{id}/supprimer', [MediaController::class, 'supprimer']);
+
+/*
+ * Traductions (lot G11). Un écran à part et non un panneau sur chaque fiche :
+ * traduire n'est pas éditer, et le traducteur doit avoir le français en
+ * regard. Voir le contrôleur.
+ *
+ * L'ordre de déclaration compte : `/traductions/{entite}` avant
+ * `/traductions/{entite}/{id}` va du général au particulier, comme partout
+ * ailleurs dans ce fichier.
+ */
+$router->get($base . '/traductions',                    [TraductionController::class, 'index']);
+$router->get($base . '/traductions/{entite}',           [TraductionController::class, 'entite']);
+$router->get($base . '/traductions/{entite}/{id}',      [TraductionController::class, 'fiche']);
+$router->post($base . '/traductions/{entite}/{id}',     [TraductionController::class, 'enregistrer']);
 
 $router->get($base . '/parametres',  [ParametreController::class, 'formulaire']);
 $router->post($base . '/parametres', [ParametreController::class, 'enregistrer']);
