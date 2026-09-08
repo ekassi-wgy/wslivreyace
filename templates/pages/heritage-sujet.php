@@ -48,7 +48,7 @@ $ld = json_encode(array_filter([
       <div class="col-lg-2"><p class="section-num reveal">—</p></div>
       <div class="col-lg-8">
         <?php $fil = [
-          ['Héritage', '/heritage'],
+          [t('nav.heritage'), '/heritage'],
           [Heritage::rubrique($rubrique), '/heritage'],
           [(string) $sujet['titre'], null],
         ]; require dirname(__DIR__) . '/partials/fil.php'; ?>
@@ -116,11 +116,11 @@ $ld = json_encode(array_filter([
                  c'est ce qui distingue une notice d'un propos rapporté. */ ?>
         <?php $source = trim((string) ($sujet['source'] ?? '')); ?>
         <?php if ($source !== ''): ?>
-          <p class="her-source reveal">Source : <?= View::e($source) ?></p>
+          <p class="her-source reveal"><?= t('heritage_sujet.source') ?> <?= View::e($source) ?></p>
         <?php endif; ?>
 
         <div class="her-citer reveal">
-          <p class="arch-fiche__lbl">Adresse de cette page</p>
+          <p class="arch-fiche__lbl"><?= t('heritage_sujet.adresse') ?></p>
           <p class="arch-fiche__url"><?= View::e(Site::url(Langue::chemin(Heritage::chemin($sujet)))) ?></p>
         </div>
 

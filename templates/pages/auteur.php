@@ -17,10 +17,10 @@ use App\Core\View;
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
 
-$titre       = $nom . " — auteur de « " . $livreTitre . " »";
+$titre       = t('auteur.titre_page', ['nom' => $nom, 'livre' => $livreTitre]);
 $description = trim($qualite) !== ''
-    ? $nom . ', ' . $qualite . ", auteur de « " . $livreTitre . " »."
-    : $nom . ", auteur de « " . $livreTitre . " ».";
+    ? t('auteur.description', ['nom' => $nom, 'qualite' => $qualite, 'livre' => $livreTitre])
+    : t('auteur.description_sans_qualite', ['nom' => $nom, 'livre' => $livreTitre]);
 
 $ld = json_encode(array_filter([
     '@context' => 'https://schema.org',
@@ -39,9 +39,9 @@ $ld = json_encode(array_filter([
     <div class="row">
       <div class="col-lg-2"><p class="section-num reveal">—</p></div>
       <div class="col-lg-8">
-        <?php $fil = [['Le livre', '/le-livre'], ["L'auteur", null]];
+        <?php $fil = [[t('auteur.fil_livre'), '/le-livre'], [t('auteur.kicker'), null]];
               require dirname(__DIR__) . '/partials/fil.php'; ?>
-        <p class="kicker reveal">L'auteur</p>
+        <p class="kicker reveal"><?= t('auteur.kicker') ?></p>
         <h1 class="t-d1 reveal"><?= View::e($nom) ?></h1>
         <?php if (trim($qualite) !== ''): ?>
           <p class="t-lead page-head__lead reveal"><?= View::e($qualite) ?></p>
@@ -58,7 +58,7 @@ $ld = json_encode(array_filter([
         <?php if (trim($bio) !== ''): ?>
           <?= View::paragraphes($bio, 't-body') ?>
         <?php else: ?>
-          <p class="t-body reveal"><em>Notice biographique à compléter.</em></p>
+          <p class="t-body reveal"><em><?= t('auteur.notice_vide') ?></em></p>
         <?php endif; ?>
 
         <p class="reveal" style="margin-top: var(--sp-7);">

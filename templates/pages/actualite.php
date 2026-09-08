@@ -8,6 +8,7 @@
  */
 
 use App\Core\DateFr;
+use App\Core\Langue;
 use App\Core\Site;
 use App\Core\View;
 use App\Model\Actualite;
@@ -19,7 +20,7 @@ $chapo     = trim((string) ($actu['chapo'] ?? ''));
 $source    = trim((string) ($actu['source'] ?? ''));
 $sourceUrl = trim((string) ($actu['source_url'] ?? ''));
 
-$titre = $actu['titre'] . ' — Philippe Grégoire Yacé : une destinée';
+$titre = t('actualite.titre_page', ['titre' => (string) $actu['titre']]);
 
 /* La description de partage : le chapô s'il existe, sinon l'entrée du texte.
    Coupée sur un mot entier — une phrase tranchée au milieu d'un mot se voit
@@ -158,7 +159,7 @@ $ld = json_encode(
         </div>
 
         <p class="article__retour reveal">
-          <a class="link" href="/actualites">Toutes les actualités</a>
+          <a class="link" href="<?= Langue::chemin('/actualites') ?>"><?= t('actualite.toutes') ?></a>
         </p>
 
       </div>
@@ -174,7 +175,7 @@ $ld = json_encode(
   <div class="shell">
     <div class="row" style="margin-bottom: var(--sp-7);">
       <div class="col-lg-8 offset-lg-2">
-        <p class="kicker reveal">À lire également</p>
+        <p class="kicker reveal"><?= t('actualite.a_lire') ?></p>
       </div>
     </div>
     <div class="row">

@@ -35,7 +35,7 @@ if ($fil !== []):
         $elements[] = $element;
     }
 ?>
-<nav class="fil reveal" aria-label="Fil d'Ariane">
+<nav class="fil reveal" aria-label="<?= t('fil.aria') ?>">
   <ol>
     <?php foreach ($fil as $i => [$libelle, $chemin]): ?>
       <li<?= $chemin === null ? ' aria-current="page"' : '' ?>>

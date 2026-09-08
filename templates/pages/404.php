@@ -16,8 +16,8 @@
 use App\Core\Langue;
 use App\Core\View;
 
-$titre       = 'Page introuvable — Philippe Grégoire Yacé';
-$description = "La page demandée n'existe pas.";
+$titre       = t('e404.titre_page');
+$description = t('e404.description');
 $robots      = 'noindex, follow';
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
@@ -38,28 +38,27 @@ $suppose = preg_match('/^[\p{L}\p{N} ]{3,60}$/u', $suppose) === 1 ? $suppose : '
     <div class="row">
       <div class="col-lg-2"><p class="section-num">404</p></div>
       <div class="col-lg-8">
-        <p class="kicker">Page introuvable</p>
-        <h1 class="t-d1">Cette page n'existe pas.</h1>
+        <p class="kicker"><?= t('e404.kicker') ?></p>
+        <h1 class="t-d1"><?= t('e404.titre') ?></h1>
         <p class="t-lead page-head__lead">
-          Le lien est peut-être ancien, mal recopié, ou la page a été déplacée.
-          Cherchez ce que vous vouliez trouver&nbsp;:
+          <?= t('e404.lead') ?>
         </p>
 
         <form class="arch-rech" method="get" action="<?= $lien('/recherche') ?>" role="search"
               style="margin-top: var(--sp-6);">
-          <label class="arch-rech__label" for="q">Rechercher dans le site</label>
+          <label class="arch-rech__label" for="q"><?= t('e404.label') ?></label>
           <div class="arch-rech__ligne">
             <input class="arch-rech__champ" type="search" id="q" name="q"
                    value="<?= View::e($suppose) ?>"
-                   placeholder="Un nom, un lieu, une année…">
-            <button class="btn-pgy btn-pgy--sm" type="submit">Chercher</button>
+                   placeholder="<?= t('e404.placeholder') ?>">
+            <button class="btn-pgy btn-pgy--sm" type="submit"><?= t('e404.chercher') ?></button>
           </div>
         </form>
 
         <p style="margin-top: var(--sp-7);">
-          <a class="link" href="<?= $lien('/') ?>">Retour à l'accueil</a>
+          <a class="link" href="<?= $lien('/') ?>"><?= t('e404.retour') ?></a>
           &nbsp;·&nbsp;
-          <a class="link" href="<?= $lien('/archives') ?>">Parcourir les archives</a>
+          <a class="link" href="<?= $lien('/archives') ?>"><?= t('e404.archives') ?></a>
         </p>
       </div>
     </div>

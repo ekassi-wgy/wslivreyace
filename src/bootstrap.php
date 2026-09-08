@@ -23,6 +23,13 @@ spl_autoload_register(static function (string $class): void {
     }
 });
 
+/*
+ * Les fonctions globales `t()` et `t_brut()` (lot G11). Chargées ici plutôt
+ * qu'appelées à la demande : elles servent dans presque tous les gabarits, et
+ * un `require` oublié ne se verrait qu'à l'exécution de la page concernée.
+ */
+require __DIR__ . '/helpers.php';
+
 error_reporting(E_ALL);
 
 if (App\Core\Config::debug()) {

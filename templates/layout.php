@@ -8,7 +8,7 @@ use App\Core\View;
  * Mise en page unique du site. $contenu est le corps de la page, déjà rendu
  * par View::render. $titre, $description et $ld sont posés par le gabarit de page.
  */
-$titre       = $titre       ?? 'Philippe Grégoire Yacé — Une destinée';
+$titre       = $titre       ?? t('layout.titre_defaut');
 $description = $description ?? '';
 $ld          = $ld          ?? '';
 
@@ -106,7 +106,7 @@ $ogTaille = array_key_exists('ogTaille', get_defined_vars()) ? $ogTaille : [1200
 </head>
 
 <body>
-<a class="skip-link" href="#main">Aller au contenu</a>
+<a class="skip-link" href="#main"><?= t('layout.aller_contenu') ?></a>
 
 <?php require __DIR__ . '/partials/logo-symbole.php'; ?>
 

@@ -1,8 +1,8 @@
 <?php
 /** Gabarit de page — le corps seul ; l'en-tête, la navigation et le pied
     viennent de templates/layout.php. */
-$titre       = 'Philippe Grégoire Yacé — Une destinée (1920-1998)';
-$description = "La biographie de Philippe Grégoire Yacé, figure de la construction de l'État ivoirien.";
+$titre       = t('accueil.titre_page');
+$description = t('accueil.description');
 $ld          = <<<'JSONLD'
 {
   "@context": "https://schema.org", "@type": "Book",
@@ -48,17 +48,15 @@ $preface = App\Controller\LivreController::preface(App\Model\Parametre::toutes()
                 <span class="mask"><span class="mask__i" style="--d:320ms">destinée</span></span>
               </h1>
               <p class="t-lead hero__lead hero__fade" style="--d:560ms">
-                La biographie de Philippe Grégoire Yacé — un parcours qui épouse
-                celui de la Côte d'Ivoire, de la veille de l'indépendance aux
-                dernières années du siècle.
+                <?= t('accueil.hero.1_lead') ?>
               </p>
               <div class="hero__cta hero__fade" style="--d:680ms">
-                <a class="btn-pgy" href="/le-livre">
-                  Découvrir l'ouvrage
+                <a class="btn-pgy" href="<?= App\Core\Langue::chemin('/le-livre') ?>">
+                  <?= t('accueil.hero.1_cta') ?>
                   <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
                 </a>
 <?php if ($jalons !== []): ?>
-                <a class="link" href="#reperes">Parcourir les repères</a>
+                <a class="link" href="#reperes"><?= t('accueil.hero.1_lien') ?></a>
 <?php endif; ?>
               </div>
             </div>
@@ -79,12 +77,11 @@ $preface = App\Controller\LivreController::preface(App\Model\Parametre::toutes()
                 <span class="mask"><span class="mask__i" style="--d:320ms">1998</span></span>
               </h1>
               <p class="t-lead hero__lead hero__fade" style="--d:560ms">
-                Soixante-dix-huit années traversées par la naissance d'une nation.
-                <em>Texte à compléter par l'éditeur.</em>
+                <?= t_brut('accueil.hero.2_lead') ?>
               </p>
               <div class="hero__cta hero__fade" style="--d:680ms">
-                <a class="btn-pgy" href="/biographie">
-                  L'homme
+                <a class="btn-pgy" href="<?= App\Core\Langue::chemin('/biographie') ?>">
+                  <?= t('accueil.hero.2_cta') ?>
                   <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
                 </a>
               </div>
@@ -102,18 +99,17 @@ $preface = App\Controller\LivreController::preface(App\Model\Parametre::toutes()
             <div class="col-lg-7 col-xl-6">
               <p class="hero__count hero__fade" style="--d:120ms">03 — 03</p>
               <h1 class="t-hero hero__title">
-                <span class="mask"><span class="mask__i" style="--d:200ms">L'ouvrage</span></span>
+                <span class="mask"><span class="mask__i" style="--d:200ms"><?= t('accueil.hero.3_titre') ?></span></span>
               </h1>
               <p class="t-lead hero__lead hero__fade" style="--d:560ms">
-                Un volume relié, richement documenté et illustré d'archives inédites.
-                <em>Descriptif à compléter par l'éditeur.</em>
+                <?= t_brut('accueil.hero.3_lead') ?>
               </p>
               <div class="hero__cta hero__fade" style="--d:680ms">
-                <a class="btn-pgy" href="/le-livre#acheter">
-                  Commander
+                <a class="btn-pgy" href="<?= App\Core\Langue::chemin('/le-livre') ?>#acheter">
+                  <?= t('accueil.hero.3_cta') ?>
                   <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
                 </a>
-                <a class="link" href="/le-livre#acheter">Points de vente</a>
+                <a class="link" href="<?= App\Core\Langue::chemin('/le-livre') ?>#acheter"><?= t('accueil.hero.3_lien') ?></a>
               </div>
             </div>
           </div>
@@ -124,7 +120,7 @@ $preface = App\Controller\LivreController::preface(App\Model\Parametre::toutes()
   </div>
 
   <!-- Indicateurs : peau maison branchée sur l'instance Bootstrap -->
-  <div class="hero__nav" role="tablist" aria-label="Diapositives">
+  <div class="hero__nav" role="tablist" aria-label="<?= t('accueil.hero.diapos_aria') ?>">
     <button class="hero__dot is-active" type="button" role="tab" aria-current="true">
       <i aria-hidden="true"></i>01
     </button>
@@ -145,7 +141,7 @@ $preface = App\Controller\LivreController::preface(App\Model\Parametre::toutes()
   <div class="shell">
     <div class="row">
       <div class="col-lg-8 offset-lg-2">
-        <p class="kicker reveal">Préface</p>
+        <p class="kicker reveal"><?= t('accueil.preface.kicker') ?></p>
         <?php if ($preface['extrait'] !== ''): ?>
           <blockquote class="quote reveal" style="margin: 0;"><?= App\Core\View::e($preface['extrait']) ?></blockquote>
         <?php endif; ?>
@@ -155,7 +151,7 @@ $preface = App\Controller\LivreController::preface(App\Model\Parametre::toutes()
           ?>
         </p>
         <p class="reveal" style="margin-top: var(--sp-6);">
-          <a class="link" href="<?= App\Core\Langue::chemin('/le-livre') ?>#preface">Lire la préface</a>
+          <a class="link" href="<?= App\Core\Langue::chemin('/le-livre') ?>#preface"><?= t('accueil.preface.lien') ?></a>
         </p>
       </div>
     </div>
@@ -172,25 +168,16 @@ $preface = App\Controller\LivreController::preface(App\Model\Parametre::toutes()
         <p class="section-num reveal">01</p>
       </div>
       <div class="col-lg-9 col-xl-8">
-        <p class="kicker reveal">L'homme</p>
+        <p class="kicker reveal"><?= t('accueil.homme.kicker') ?></p>
         <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-7);">
-          Une vie publique adossée<br>à la construction d'un État.
+          <?= t_brut('accueil.homme.titre') ?>
         </h2>
         <div class="row">
           <div class="col-md-10 col-lg-9">
-            <p class="t-body reveal">
-              <em>Texte de présentation à rédiger par l'éditeur.</em> Ce paragraphe
-              tient la place du chapeau introductif : il pose en quelques lignes
-              la stature du personnage et l'angle retenu par l'ouvrage.
-            </p>
-            <p class="t-body reveal">
-              Président de l'Assemblée nationale de Côte d'Ivoire de 1959 à 1980,
-              secrétaire général du PDCI-RDA, puis président du Conseil économique
-              et social — Philippe Grégoire Yacé occupe pendant quatre décennies
-              une position centrale dans la vie institutionnelle du pays.
-            </p>
+            <p class="t-body reveal"><?= t_brut('accueil.homme.p1') ?></p>
+            <p class="t-body reveal"><?= t_brut('accueil.homme.p2') ?></p>
             <p class="reveal" style="margin-top: var(--sp-6);">
-              <a class="link" href="/biographie">Lire la biographie complète</a>
+              <a class="link" href="<?= App\Core\Langue::chemin('/biographie') ?>"><?= t('accueil.homme.lien') ?></a>
             </p>
           </div>
         </div>
@@ -206,32 +193,29 @@ $preface = App\Controller\LivreController::preface(App\Model\Parametre::toutes()
 
       <div class="col-lg-5 offset-lg-1 order-lg-2">
         <p class="section-num reveal">02</p>
-        <p class="kicker reveal">L'ouvrage</p>
-        <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-6);">Une destinée</h2>
-        <p class="t-lead reveal" style="margin-bottom: var(--sp-7);">
-          <em>Quatrième de couverture à fournir.</em> Quelques lignes suffisent :
-          l'objet du livre, sa méthode, ce qu'il apporte de neuf.
-        </p>
+        <p class="kicker reveal"><?= t('accueil.ouvrage.kicker') ?></p>
+        <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-6);"><?= t('accueil.ouvrage.titre') ?></h2>
+        <p class="t-lead reveal" style="margin-bottom: var(--sp-7);"><?= t_brut('accueil.ouvrage.lead') ?></p>
 
         <!-- FICHE TECHNIQUE — valeurs provisoires -->
         <dl class="specs reveal" style="margin-bottom: var(--sp-7);">
-          <div><dt>Auteur</dt><dd>À renseigner</dd></div>
-          <div><dt>Éditeur</dt><dd>À renseigner</dd></div>
-          <div><dt>Parution</dt><dd>À renseigner</dd></div>
-          <div><dt>Format</dt><dd>Relié, 240 × 310 mm</dd></div>
-          <div><dt>Pages</dt><dd>À renseigner</dd></div>
-          <div><dt>ISBN</dt><dd>À renseigner</dd></div>
+          <div><dt><?= t('accueil.ouvrage.auteur') ?></dt><dd><?= t('accueil.ouvrage.a_renseigner') ?></dd></div>
+          <div><dt><?= t('accueil.ouvrage.editeur') ?></dt><dd><?= t('accueil.ouvrage.a_renseigner') ?></dd></div>
+          <div><dt><?= t('accueil.ouvrage.parution') ?></dt><dd><?= t('accueil.ouvrage.a_renseigner') ?></dd></div>
+          <div><dt><?= t('accueil.ouvrage.format') ?></dt><dd><?= t('accueil.ouvrage.format_valeur') ?></dd></div>
+          <div><dt><?= t('accueil.ouvrage.pages') ?></dt><dd><?= t('accueil.ouvrage.a_renseigner') ?></dd></div>
+          <div><dt><?= t('accueil.ouvrage.isbn') ?></dt><dd><?= t('accueil.ouvrage.a_renseigner') ?></dd></div>
         </dl>
 
-        <a class="btn-pgy reveal" href="/le-livre#acheter">
-          Commander l'ouvrage
+        <a class="btn-pgy reveal" href="<?= App\Core\Langue::chemin('/le-livre') ?>#acheter">
+          <?= t('accueil.ouvrage.cta') ?>
           <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
         </a>
       </div>
 
       <div class="col-lg-5 order-lg-1">
         <span class="frame reveal">
-          <img loading="lazy" decoding="async" src="assets/img/couverture.svg" alt="Couverture de l'ouvrage — visuel provisoire">
+          <img loading="lazy" decoding="async" src="assets/img/couverture.svg" alt="<?= t('accueil.ouvrage.alt') ?>">
         </span>
       </div>
 
@@ -254,7 +238,12 @@ $preface = App\Controller\LivreController::preface(App\Model\Parametre::toutes()
  *
  * `$jalons` est lu en tête de gabarit : le lien du hero en dépend aussi.
  */
-$compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre dates'];
+$compte = [
+    1 => t('accueil.reperes.compte_1'),
+    2 => t('accueil.reperes.compte_2'),
+    3 => t('accueil.reperes.compte_3'),
+    4 => t('accueil.reperes.compte_4'),
+];
 ?>
 <?php if ($jalons !== []): ?>
 <section class="section" id="reperes">
@@ -262,8 +251,8 @@ $compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre 
     <div class="row" style="margin-bottom: var(--sp-8);">
       <div class="col-lg-2"><p class="section-num reveal">03</p></div>
       <div class="col-lg-7">
-        <p class="kicker reveal">Repères</p>
-        <h2 class="t-d1 reveal"><?= $compte[count($jalons)] ?? 'Des dates' ?>,<br>un siècle ivoirien.</h2>
+        <p class="kicker reveal"><?= t('accueil.reperes.kicker') ?></p>
+        <h2 class="t-d1 reveal"><?= $compte[count($jalons)] ?? t('accueil.reperes.compte_autre') ?><?= t_brut('accueil.reperes.titre_suite') ?></h2>
       </div>
     </div>
 
@@ -288,7 +277,7 @@ $compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre 
 <?php if (count($jalons) >= 4): ?>
     <div class="row" style="margin-top: var(--sp-7);">
       <div class="col-lg-10 offset-lg-2">
-        <a class="link reveal" href="/biographie#chronologie">Voir la chronologie complète</a>
+        <a class="link reveal" href="<?= App\Core\Langue::chemin('/biographie') ?>#chronologie"><?= t('accueil.reperes.lien') ?></a>
       </div>
     </div>
 <?php endif; ?>
@@ -301,12 +290,9 @@ $compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre 
   <div class="shell">
     <div class="row">
       <div class="col-lg-9 offset-lg-2">
-        <p class="kicker reveal">Extrait</p>
-        <blockquote class="quote reveal" style="margin:0;">
-          Emplacement réservé à un extrait de l'ouvrage,
-          à choisir par l'éditeur.
-        </blockquote>
-        <p class="quote__src reveal">Une destinée — chapitre à préciser</p>
+        <p class="kicker reveal"><?= t('accueil.extrait.kicker') ?></p>
+        <blockquote class="quote reveal" style="margin:0;"><?= t('accueil.extrait.texte') ?></blockquote>
+        <p class="quote__src reveal"><?= t('accueil.extrait.source') ?></p>
       </div>
     </div>
   </div>
@@ -318,11 +304,11 @@ $compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre 
     <div class="row" style="margin-bottom: var(--sp-8);">
       <div class="col-lg-2"><p class="section-num reveal">04</p></div>
       <div class="col-lg-7">
-        <p class="kicker reveal">Galerie</p>
-        <h2 class="t-d1 reveal">Archives.</h2>
+        <p class="kicker reveal"><?= t('accueil.galerie.kicker') ?></p>
+        <h2 class="t-d1 reveal"><?= t('accueil.galerie.titre') ?></h2>
       </div>
       <div class="col-lg-3 d-flex align-items-end justify-content-lg-end">
-        <a class="link reveal" href="/archives">Toutes les archives</a>
+        <a class="link reveal" href="<?= App\Core\Langue::chemin('/archives') ?>"><?= t('accueil.galerie.lien') ?></a>
       </div>
     </div>
 
@@ -338,11 +324,7 @@ $compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre 
 
       <div class="row">
         <div class="col-lg-7">
-          <p class="t-lead reveal">
-            <em>Les archives seront publiées ici.</em> Photographies, documents
-            officiels et coupures&nbsp;: chaque pièce paraîtra avec sa légende et
-            son crédit.
-          </p>
+          <p class="t-lead reveal"><?= t_brut('accueil.galerie.vide') ?></p>
         </div>
       </div>
 
@@ -351,7 +333,7 @@ $compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre 
       <ul class="gal">
         <?php foreach ($planche as $i => $img): ?>
           <li class="gal__i gal__i--<?= $trame[$i % count($trame)] ?> reveal">
-            <a class="gal__lien" href="/archives">
+            <a class="gal__lien" href="<?= App\Core\Langue::chemin('/archives') ?>">
               <?php $srcset = App\Model\Media::srcset($img); ?>
               <img loading="lazy" decoding="async"
                    src="<?= App\Core\View::e(App\Model\Media::urlVignette((string) $img['fichier'])) ?>"
@@ -372,11 +354,11 @@ $compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre 
     <div class="row" style="margin-bottom: var(--sp-8);">
       <div class="col-lg-2"><p class="section-num reveal">05</p></div>
       <div class="col-lg-7">
-        <p class="kicker reveal">Témoignages</p>
-        <h2 class="t-d1 reveal">Ce qu'ils en disent.</h2>
+        <p class="kicker reveal"><?= t('accueil.temoignages.kicker') ?></p>
+        <h2 class="t-d1 reveal"><?= t('accueil.temoignages.titre') ?></h2>
       </div>
       <div class="col-lg-3 d-flex align-items-end justify-content-lg-end">
-        <a class="link reveal" href="/temoignages#deposer">Déposer un témoignage</a>
+        <a class="link reveal" href="<?= App\Core\Langue::chemin('/temoignages') ?>#deposer"><?= t('accueil.temoignages.deposer') ?></a>
       </div>
     </div>
 
@@ -391,13 +373,10 @@ $compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre 
 
       <div class="row">
         <div class="col-lg-7">
-          <p class="t-lead reveal">
-            <em>Les premiers témoignages seront affichés ici.</em> Vous avez connu
-            Philippe Grégoire Yacé, de près ou de loin&nbsp;? Votre souvenir a sa place.
-          </p>
+          <p class="t-lead reveal"><?= t_brut('accueil.temoignages.vide') ?></p>
           <p class="reveal" style="margin-top: var(--sp-5);">
-            <a class="btn-pgy btn-pgy--ghost" href="/temoignages#deposer">
-              Déposer un témoignage <span class="btn-pgy__arrow" aria-hidden="true">→</span>
+            <a class="btn-pgy btn-pgy--ghost" href="<?= App\Core\Langue::chemin('/temoignages') ?>#deposer">
+              <?= t('accueil.temoignages.deposer') ?> <span class="btn-pgy__arrow" aria-hidden="true">→</span>
             </a>
           </p>
         </div>
@@ -413,7 +392,7 @@ $compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre 
                        entier, l'accueil n'en montre que l'entrée. */ ?>
               <p class="testi__q"><?= App\Core\View::e(mb_strimwidth((string) $t['contenu'], 0, 260, '…')) ?></p>
               <p class="testi__a">
-                <?= App\Core\View::e($t['auteur_fonction'] ?? 'Témoignage') ?>
+                <?= App\Core\View::e($t['auteur_fonction'] ?? '') ?: t('accueil.temoignages.defaut') ?>
                 <span><?= App\Core\View::e($t['auteur_nom']) ?></span>
               </p>
             </div>
@@ -423,7 +402,7 @@ $compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre 
 
       <div class="row" style="margin-top: var(--sp-7);">
         <div class="col-12">
-          <a class="link reveal" href="/temoignages">Lire tous les témoignages</a>
+          <a class="link reveal" href="<?= App\Core\Langue::chemin('/temoignages') ?>"><?= t('accueil.temoignages.tous') ?></a>
         </div>
       </div>
 
@@ -437,11 +416,11 @@ $compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre 
     <div class="row" style="margin-bottom: var(--sp-8);">
       <div class="col-lg-2"><p class="section-num reveal">06</p></div>
       <div class="col-lg-7">
-        <p class="kicker reveal">Actualités</p>
-        <h2 class="t-d1 reveal">Autour de l'ouvrage.</h2>
+        <p class="kicker reveal"><?= t('accueil.actualites.kicker') ?></p>
+        <h2 class="t-d1 reveal"><?= t('accueil.actualites.titre') ?></h2>
       </div>
       <div class="col-lg-3 d-flex align-items-end justify-content-lg-end">
-        <a class="link reveal" href="/actualites">Toutes les actualités</a>
+        <a class="link reveal" href="<?= App\Core\Langue::chemin('/actualites') ?>"><?= t('accueil.actualites.lien') ?></a>
       </div>
     </div>
 
@@ -456,16 +435,13 @@ $compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre 
 
         <?php if ($dernieres === []): ?>
 
-          <p class="t-lead reveal">
-            <em>Les actualités paraîtront ici.</em> Parutions, dédicaces et
-            rendez-vous autour de l'ouvrage&nbsp;: rien n'est encore publié.
-          </p>
+          <p class="t-lead reveal"><?= t_brut('accueil.actualites.vide') ?></p>
 
         <?php else: ?>
 
           <div class="news">
             <?php foreach ($dernieres as $a): ?>
-              <a class="news__i reveal" href="/actualites/<?= App\Core\View::e((string) $a['slug']) ?>">
+              <a class="news__i reveal" href="<?= App\Core\Langue::chemin('/actualites/' . (string) $a['slug']) ?>">
                 <time class="news__date" datetime="<?= App\Core\View::e(App\Core\DateFr::iso((string) $a['publie_le'])) ?>">
                   <?= App\Core\DateFr::longue((string) $a['publie_le']) ?>
                 </time>
@@ -488,13 +464,13 @@ $compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre 
     <div class="row" style="margin-bottom: var(--sp-8);">
       <div class="col-lg-2"><p class="section-num reveal">07</p></div>
       <div class="col-lg-7">
-        <p class="kicker reveal">Se procurer l'ouvrage</p>
+        <p class="kicker reveal"><?= t('accueil.commander.kicker') ?></p>
         <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-6);">
-          En librairie<br>et en ligne.
+          <?= t_brut('accueil.commander.titre') ?>
         </h2>
         <div class="reveal">
           <a class="btn-pgy" href="#">
-            Commander en ligne
+            <?= t('accueil.commander.cta') ?>
             <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
           </a>
         </div>
@@ -507,15 +483,15 @@ $compte = [1 => 'Une date', 2 => 'Deux dates', 3 => 'Trois dates', 4 => 'Quatre 
         <div class="pos row g-0 reveal">
           <div class="pos__i col-md-4">
             <h3 class="t-d3">Abidjan</h3>
-            <p class="t-small">Enseigne et adresse à renseigner</p>
+            <p class="t-small"><?= t('accueil.commander.adresse') ?></p>
           </div>
           <div class="pos__i col-md-4">
             <h3 class="t-d3">Yamoussoukro</h3>
-            <p class="t-small">Enseigne et adresse à renseigner</p>
+            <p class="t-small"><?= t('accueil.commander.adresse') ?></p>
           </div>
           <div class="pos__i col-md-4">
             <h3 class="t-d3">Paris</h3>
-            <p class="t-small">Enseigne et adresse à renseigner</p>
+            <p class="t-small"><?= t('accueil.commander.adresse') ?></p>
           </div>
         </div>
       </div>
