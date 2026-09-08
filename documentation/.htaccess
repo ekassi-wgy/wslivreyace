@@ -1,0 +1,12 @@
+# ============================================================================
+# documentation/ — le manuel de l'éditeur, sa source et son générateur Word.
+#
+# Ce dossier vit à l'intérieur de la racine web. Sans cette règle, le manuel
+# serait servi sous le domaine public : il décrit l'administration du site et
+# donne l'adresse de son entrée. Apache refuse ici toute requête.
+#
+# Comme reference/, cela ne dispense pas de l'exclure du déploiement : il n'a
+# rien à faire sur le serveur, il se lit depuis le dépôt.
+# ============================================================================
+
+Require all denied

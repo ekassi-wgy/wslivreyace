@@ -1469,6 +1469,9 @@ valent pour tout déploiement futur :
   le fichier du serveur contient avant de conclure que l'envoi n'a pas pris.
 - **`reference/` n'a rien à faire en production** : 70 Mo verrouillés en 403,
   à exclure explicitement de la règle de déploiement.
+- **`documentation/` non plus** : le manuel de l'éditeur se lit depuis le dépôt,
+  pas depuis le serveur. Il porte le même `.htaccess` en `Require all denied` —
+  il décrit l'administration du site et donne l'adresse de son entrée.
 
 ### Le back-office, lot par lot
 
@@ -1627,6 +1630,35 @@ immatriculation, le directeur de la publication et l'hébergeur y restent à
 fournir. La loi impose de les publier, et ce sont les seules informations du
 site qu'aucun travail technique ne peut produire. Voir §5 pour la liste
 complète, dimensions comprises.
+
+## 7 bis. Le manuel de l'éditeur
+
+**Le back-office se prend en main sans nous.** `documentation/manuel-administration.html`
+est un manuel complet destiné à l'équipe éditoriale, écrit sans un mot de
+technique : se connecter, publier, déposer un fichier, modérer, ouvrir la
+boutique. Il porte la charte du site — mêmes jetons, mêmes filets, Bodoni et
+Jost — et se lit dans un navigateur.
+
+**Il documente ce que le code fait réellement**, et c'est ce qui lui donne sa
+valeur : les formats et les poids acceptés, les dimensions attendues à chaque
+emplacement, et surtout **les neuf règles qui font refuser une publication** —
+la source d'un repère, les bornes d'une période, le crédit d'une image, la date
+d'une actualité. Elles étaient jusqu'ici dispersées dans neuf contrôleurs et ne
+se découvraient qu'en butant dessus.
+
+| Fichier | Ce que c'est |
+|---|---|
+| `documentation/manuel-administration.html` | La source de vérité. S'ouvre dans un navigateur, s'imprime telle quelle. |
+| `documentation/generer-docx.py` | Produit la version Word. Son en-tête donne les deux commandes — celle du `.docx`, et celle du PDF tiré de la page HTML par Chrome. |
+
+**Les exports ne sont pas versionnés.** Le `.docx` et le PDF se régénèrent en
+une commande, et un binaire de 600 Ko dans un dépôt déployé par FTP partirait
+sur le serveur pour rien.
+
+**Il vieillira avec le site.** Toute règle de publication ajoutée ou modifiée
+doit y passer, faute de quoi il dira le contraire de ce que l'écran fait.
+
+---
 
 ## 8. Couverture du cahier des charges
 

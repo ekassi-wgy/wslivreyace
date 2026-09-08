@@ -1,0 +1,1683 @@
+<title>Administrer le site Yacé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Jost:wght@300;400;500;600&display=swap">
+
+<style>
+/* =========================================================================
+   Manuel d'administration — Philippe Grégoire Yacé
+   La charte est celle du site : papier chaud, encre chaude, laiton patiné,
+   filets plutôt que cartes, aucune ombre portée.
+   ========================================================================= */
+
+:root {
+  /* --- Papier et encre — les jetons du site ---------------------------- */
+  --paper:        #F7F4EE;
+  --paper-high:   #FCFAF6;
+  --paper-sunk:   #EFEAE0;
+  --ink:          #262523;
+  --ink-2:        #4D4D4D;
+  --ink-3:        #6B6862;
+
+  /* --- Laiton : deux valeurs, et c'est délibéré ------------------------
+     --brass sert les filets et le décor, --brass-text porte le texte.
+     Les confondre casserait le contraste. */
+  --brass:        #A88B5C;
+  --brass-text:   #7D6134;
+  --brass-wash:   rgba(168, 139, 92, 0.09);
+
+  --rule:         #DED7C9;
+  --rule-strong:  #C4BBA9;
+
+  --font-display: "Bodoni Moda", "Didot", "Times New Roman", serif;
+  --font-sans:    "Jost", "Futura", "Century Gothic", system-ui, sans-serif;
+
+  --mesure: 66ch;
+}
+
+/* Mode sombre par préférence système — mais jamais contre un choix clair. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:       #1E1D1B;
+    --paper-high:  #262523;
+    --paper-sunk:  #211F1D;
+    --ink:         #F7F4EE;
+    --ink-2:       rgba(247, 244, 238, 0.80);
+    --ink-3:       rgba(247, 244, 238, 0.60);
+    --brass:       #A88B5C;
+    --brass-text:  #C9B48D;
+    --brass-wash:  rgba(201, 180, 141, 0.10);
+    --rule:        rgba(247, 244, 238, 0.16);
+    --rule-strong: rgba(247, 244, 238, 0.28);
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper:       #1E1D1B;
+  --paper-high:  #262523;
+  --paper-sunk:  #211F1D;
+  --ink:         #F7F4EE;
+  --ink-2:       rgba(247, 244, 238, 0.80);
+  --ink-3:       rgba(247, 244, 238, 0.60);
+  --brass:       #A88B5C;
+  --brass-text:  #C9B48D;
+  --brass-wash:  rgba(201, 180, 141, 0.10);
+  --rule:        rgba(247, 244, 238, 0.16);
+  --rule-strong: rgba(247, 244, 238, 0.28);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.68;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Typographie -------------------------------------------------------- */
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.12;
+  text-wrap: balance;
+  margin: 0;
+}
+
+/* Bodoni sous 24 px perd ses empattements filiformes : les petits titres
+   passent au sans, comme sur le site. */
+h4, .sur, .etiq { font-family: var(--font-sans); }
+
+h1 { font-size: clamp(2.4rem, 5.2vw, 3.9rem); letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); }
+h3 { font-size: clamp(1.35rem, 2vw, 1.6rem); }
+h4 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
+
+p, li { max-width: var(--mesure); }
+p { margin: 0 0 1.05em; }
+
+a { color: var(--brass-text); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--ink); }
+a:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+strong { font-weight: 600; color: var(--ink); }
+em { font-style: italic; }
+
+code, .champ {
+  font-family: var(--font-sans);
+  font-size: 0.92em;
+  font-weight: 500;
+  background: var(--brass-wash);
+  padding: 0.08em 0.4em;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+/* Sur-titre : petites capitales espacées, le « kicker » du site. */
+.sur {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--brass-text);
+  margin: 0 0 0.9rem;
+}
+
+/* --- Ossature ----------------------------------------------------------- */
+
+.enveloppe {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 4vw, 3rem);
+}
+
+.tete {
+  padding: clamp(3rem, 7vw, 5.5rem) 0 clamp(2rem, 4vw, 3rem);
+  border-bottom: 1px solid var(--rule);
+}
+.tete__lead {
+  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  color: var(--ink-2);
+  max-width: 54ch;
+  margin-top: 1.6rem;
+}
+.tete__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  margin-top: 2.2rem;
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+
+/* Corps : sommaire collant à gauche, lecture à droite. */
+.corps {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  padding-bottom: 5rem;
+}
+@media (min-width: 1080px) {
+  .corps {
+    grid-template-columns: 232px minmax(0, 1fr);
+    gap: clamp(3rem, 6vw, 5.5rem);
+  }
+}
+
+/* --- Sommaire ----------------------------------------------------------- */
+
+.somm {
+  padding: 2.5rem 0 0;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 2.5rem;
+}
+@media (min-width: 1080px) {
+  .somm {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    max-height: 100vh;
+    overflow-y: auto;
+    padding: 3rem 0;
+    border-bottom: 0;
+    margin-bottom: 0;
+    border-right: 1px solid var(--rule);
+    padding-right: 1.5rem;
+  }
+}
+.somm ol { list-style: none; margin: 0; padding: 0; }
+.somm > ol > li { margin-bottom: 1.35rem; }
+.somm__part {
+  display: flex;
+  gap: 0.7rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 0.5rem;
+}
+.somm__part span { color: var(--brass); font-variant-numeric: tabular-nums; }
+.somm ol ol { padding-left: 1.4rem; }
+.somm ol ol li { margin-bottom: 0.15rem; }
+.somm a {
+  display: block;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  padding: 0.15rem 0;
+  color: var(--ink-2);
+  text-decoration: none;
+  max-width: none;
+}
+.somm a:hover { color: var(--brass-text); }
+
+/* --- Parties et sections ------------------------------------------------ */
+
+.partie { padding-top: clamp(3rem, 6vw, 4.5rem); }
+.partie__tete {
+  display: flex;
+  align-items: baseline;
+  gap: 1.1rem;
+  padding-bottom: 1.4rem;
+  margin-bottom: 2.4rem;
+  border-bottom: 2px solid var(--ink);
+}
+.partie__num {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--brass);
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+
+.sect { padding: 0 0 2.8rem; }
+.sect + .sect { border-top: 1px solid var(--rule); padding-top: 2.4rem; }
+.sect > h3 { margin-bottom: 0.9rem; }
+.sect__intro { color: var(--ink-2); }
+
+/* --- Listes ------------------------------------------------------------- */
+
+ul, ol.num { padding-left: 1.15rem; margin: 0 0 1.15em; }
+li { margin-bottom: 0.4rem; }
+ul { list-style: none; padding-left: 0; }
+ul > li {
+  position: relative;
+  padding-left: 1.15rem;
+}
+ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.72em;
+  width: 5px;
+  height: 1px;
+  background: var(--brass);
+}
+ol.num { counter-reset: pas; list-style: none; padding-left: 0; }
+ol.num > li {
+  counter-increment: pas;
+  position: relative;
+  padding-left: 2.1rem;
+  margin-bottom: 0.75rem;
+}
+ol.num > li::before {
+  content: counter(pas);
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--brass-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Encadrés : un filet de laiton, pas une carte ----------------------- */
+
+.note {
+  border-left: 2px solid var(--brass);
+  background: var(--brass-wash);
+  padding: 1.1rem 1.3rem 0.35rem;
+  margin: 1.6rem 0;
+  max-width: var(--mesure);
+}
+.note h4 { color: var(--brass-text); margin-bottom: 0.5rem; }
+.note p:last-child { margin-bottom: 0.75rem; }
+
+.note--sourd {
+  border-left-color: var(--rule-strong);
+  background: var(--paper-sunk);
+}
+.note--sourd h4 { color: var(--ink); }
+
+/* --- Tableaux ----------------------------------------------------------- */
+
+.tbl-enrouleur {
+  overflow-x: auto;
+  margin: 1.7rem 0 2rem;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  min-width: 520px;
+}
+th, td {
+  text-align: left;
+  padding: 0.72rem 1.1rem 0.72rem 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: 0; }
+th {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+  white-space: nowrap;
+}
+td:first-child { font-weight: 500; }
+.nb { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* --- Étiquettes d'état -------------------------------------------------- */
+
+.etiq {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 0.16rem 0.5rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 2px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.etiq--ligne { border-color: var(--brass); color: var(--brass-text); background: var(--brass-wash); }
+
+/* --- Fiche d'écran : le résumé en tête de chaque rubrique --------------- */
+
+.fiche {
+  display: grid;
+  gap: 0.15rem 1.6rem;
+  margin: 1.5rem 0 1.8rem;
+  padding: 1.2rem 0 1.3rem;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  max-width: var(--mesure);
+}
+@media (min-width: 640px) {
+  .fiche { grid-template-columns: 8.5rem minmax(0, 1fr); }
+}
+.fiche dt {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-top: 0.28rem;
+}
+.fiche dd { margin: 0 0 0.55rem; }
+.fiche dd:last-child { margin-bottom: 0; }
+
+/* --- Pied -------------------------------------------------------------- */
+
+.pied {
+  border-top: 1px solid var(--rule);
+  padding: 2.5rem 0 4rem;
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+
+/* --- Retour en haut ----------------------------------------------------- */
+
+.haut {
+  display: inline-block;
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink-3);
+}
+.haut:hover { color: var(--brass-text); }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation: none !important; transition: none !important; }
+}
+
+/* Une cible d'ancre ne doit pas se coller au bord haut de l'écran. */
+[id] { scroll-margin-top: 1.5rem; }
+
+/* --- Impression : un manuel finit sur un bureau ------------------------- */
+@media print {
+  :root {
+    --paper: #fff; --paper-high: #fff; --paper-sunk: #f4f2ec;
+    --ink: #1a1a1a; --ink-2: #333; --ink-3: #555;
+    --rule: #ccc; --rule-strong: #999;
+    --brass: #7D6134; --brass-text: #5c4726; --brass-wash: #f6f2e9;
+  }
+  body { font-size: 10.5pt; }
+  .haut { display: none; }
+  .corps { grid-template-columns: 1fr; }
+  /* Le sommaire reste : sur papier comme en PDF, c'est la page de garde du
+     manuel. Il n'est plus collant, il ne borne plus sa hauteur, et il rend la
+     main à la première partie. */
+  .somm {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    border-right: 0;
+    border-bottom: 0;
+    padding: 0 0 1rem;
+    page-break-after: always;
+  }
+  .somm > ol { columns: 2; column-gap: 2.5rem; }
+  .somm > ol > li { break-inside: avoid; }
+  .partie { page-break-before: always; padding-top: 0; }
+  .partie:first-of-type { page-break-before: avoid; }
+  .sect, .note, .tbl-enrouleur, .fiche { page-break-inside: avoid; }
+  a { color: inherit; text-decoration: none; }
+}
+</style>
+
+<div class="enveloppe">
+
+  <header class="tete" id="haut">
+    <p class="sur">Philippe Grégoire Yacé — une destinée</p>
+    <h1>Administrer le site</h1>
+    <p class="tete__lead">
+      Tout ce qu'il faut savoir pour tenir le site à jour : publier une actualité,
+      déposer une photographie, ouvrir la boutique, répondre à un visiteur.
+      Aucune connaissance technique n'est nécessaire.
+    </p>
+    <div class="tete__meta">
+      <span>Manuel de l'éditeur</span>
+      <span>Version du 8 septembre 2026</span>
+      <span>Se lit dans l'ordre, se consulte au besoin</span>
+    </div>
+  </header>
+
+  <div class="corps">
+
+    <!-- ===================== SOMMAIRE ===================== -->
+    <nav class="somm" aria-label="Sommaire">
+      <ol>
+        <li>
+          <p class="somm__part"><span>01</span> Prendre en main</p>
+          <ol>
+            <li><a href="#connexion">Se connecter</a></li>
+            <li><a href="#roles">Qui peut faire quoi</a></li>
+            <li><a href="#brouillon">Brouillon et publié</a></li>
+            <li><a href="#tour">Le tour du propriétaire</a></li>
+          </ol>
+        </li>
+        <li>
+          <p class="somm__part"><span>02</span> Les fichiers</p>
+          <ol>
+            <li><a href="#mediatheque">La médiathèque</a></li>
+            <li><a href="#formats">Formats et poids acceptés</a></li>
+            <li><a href="#dimensions">Dimensions à respecter</a></li>
+            <li><a href="#preparer">Préparer une image</a></li>
+            <li><a href="#videos">Les vidéos</a></li>
+          </ol>
+        </li>
+        <li>
+          <p class="somm__part"><span>03</span> Les contenus</p>
+          <ol>
+            <li><a href="#actualites">Actualités</a></li>
+            <li><a href="#evenements">Événements</a></li>
+            <li><a href="#biographie">Biographie</a></li>
+            <li><a href="#reperes">Repères</a></li>
+            <li><a href="#archives">Archives</a></li>
+            <li><a href="#heritage">Héritage</a></li>
+            <li><a href="#pdv">Points de vente</a></li>
+          </ol>
+        </li>
+        <li>
+          <p class="somm__part"><span>04</span> Ce qui vient des visiteurs</p>
+          <ol>
+            <li><a href="#temoignages">Témoignages</a></li>
+            <li><a href="#contributions">Contributions</a></li>
+            <li><a href="#messages">Messages</a></li>
+          </ol>
+        </li>
+        <li>
+          <p class="somm__part"><span>05</span> Le livre et la boutique</p>
+          <ol>
+            <li><a href="#parametres">Paramètres</a></li>
+            <li><a href="#ouvrir">Ouvrir les commandes</a></li>
+            <li><a href="#zones">Zones de livraison</a></li>
+            <li><a href="#commandes">Commandes</a></li>
+          </ol>
+        </li>
+        <li>
+          <p class="somm__part"><span>06</span> Réglages</p>
+          <ol>
+            <li><a href="#comptes">Comptes</a></li>
+            <li><a href="#traductions">Version anglaise</a></li>
+          </ol>
+        </li>
+        <li>
+          <p class="somm__part"><span>07</span> Aide-mémoire</p>
+          <ol>
+            <li><a href="#refus">Ce qui empêche de publier</a></li>
+            <li><a href="#recap-fichiers">Fichiers en un coup d'œil</a></li>
+            <li><a href="#problemes">Si quelque chose ne marche pas</a></li>
+          </ol>
+        </li>
+      </ol>
+    </nav>
+
+    <!-- ===================== CONTENU ===================== -->
+    <main>
+
+      <!-- ============ PARTIE 1 ============ -->
+      <section class="partie" id="partie-1">
+        <div class="partie__tete">
+          <span class="partie__num">01</span>
+          <h2>Prendre en main</h2>
+        </div>
+
+        <section class="sect" id="connexion">
+          <h3>Se connecter</h3>
+          <p class="sect__intro">
+            L'administration du site vit à une adresse séparée : celle du site, suivie
+            de <span class="champ">/cmsadmin</span>. Mettez-la en favori, vous y
+            reviendrez tous les jours.
+          </p>
+          <ol class="num">
+            <li>Ouvrez cette adresse dans votre navigateur.</li>
+            <li>Saisissez votre adresse électronique et votre mot de passe.</li>
+            <li>Vous arrivez sur le tableau de bord. Le menu est à gauche.</li>
+          </ol>
+
+          <div class="note">
+            <h4>Après plusieurs essais manqués, l'accès se bloque</h4>
+            <p>
+              Cinq mots de passe faux à la suite sur le même compte, et la connexion
+              est refusée pendant un quart d'heure — même avec le bon mot de passe.
+              C'est une protection contre les intrusions, pas une panne. Attendez,
+              puis réessayez calmement.
+            </p>
+          </div>
+
+          <p>
+            <strong>Pensez à vous déconnecter</strong> quand vous quittez un ordinateur
+            partagé : le bouton est en haut à droite. Sinon, la session se ferme d'elle-même
+            au bout d'un long moment d'inactivité.
+          </p>
+        </section>
+
+        <section class="sect" id="roles">
+          <h3>Qui peut faire quoi</h3>
+          <p class="sect__intro">
+            Il existe deux sortes de comptes. Le menu de gauche n'affiche que ce à quoi
+            votre compte a droit : si vous ne voyez pas une rubrique décrite ici, c'est
+            que votre compte n'y a pas accès.
+          </p>
+
+          <div class="tbl-enrouleur">
+            <table>
+              <thead>
+                <tr><th scope="col">Rôle</th><th scope="col">Ce qu'il peut faire</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Éditeur</td>
+                  <td>Tous les contenus, la médiathèque, la modération des témoignages,
+                      des contributions et des messages, les points de vente, les traductions.</td>
+                </tr>
+                <tr>
+                  <td>Administrateur</td>
+                  <td>Tout ce qui précède, <strong>plus</strong> les commandes, les zones de
+                      livraison et la gestion des comptes.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="sect" id="brouillon">
+          <h3>Brouillon et publié — la règle à retenir</h3>
+          <p class="sect__intro">
+            C'est le mécanisme le plus important du site, et il vaut pour presque tout
+            ce que vous saisirez.
+          </p>
+          <p>
+            Chaque contenu porte un état : <span class="etiq">Brouillon</span> ou
+            <span class="etiq etiq--ligne">Publié</span>.
+          </p>
+          <ul>
+            <li><strong>Brouillon</strong> — le contenu n'existe pas pour les visiteurs.
+                Il n'apparaît sur aucune page, et même quelqu'un qui devinerait son adresse
+                ne verrait rien. Vous pouvez le laisser en chantier des semaines.</li>
+            <li><strong>Publié</strong> — il est en ligne, tout de suite, pour tout le monde.</li>
+          </ul>
+          <p>
+            Un contenu nouveau naît toujours en brouillon. Pour le mettre en ligne, deux
+            chemins : le menu <span class="champ">Statut</span> dans sa fiche, ou — plus
+            rapide — le <strong>bouton en forme d'œil</strong> dans la liste, qui bascule
+            d'un état à l'autre sans ouvrir la fiche.
+          </p>
+
+          <div class="note">
+            <h4>Dépublier est toujours permis, publier se mérite</h4>
+            <p>
+              Retirer quelque chose du site ne demande jamais rien. Le mettre en ligne,
+              en revanche, peut être refusé : il manque une source, une date, une ville.
+              Le site vous dit alors précisément ce qui manque.
+              La liste complète de ces règles est <a href="#refus">à la fin de ce manuel</a>.
+            </p>
+          </div>
+        </section>
+
+        <section class="sect" id="tour">
+          <h3>Le tour du propriétaire</h3>
+          <p class="sect__intro">
+            Le menu de gauche est rangé en quatre familles. Voici à quoi sert chacune.
+          </p>
+
+          <div class="tbl-enrouleur">
+            <table>
+              <thead>
+                <tr><th scope="col">Famille</th><th scope="col">Rubriques</th><th scope="col">Ce qu'on y fait</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Contenus</td>
+                  <td>Actualités, Événements, Biographie, Repères, Archives, Héritage,
+                      Points de vente, Médiathèque, Traductions</td>
+                  <td>Tout ce que le visiteur lit et regarde. C'est là que vous passerez
+                      l'essentiel de votre temps.</td>
+                </tr>
+                <tr>
+                  <td>Modération</td>
+                  <td>Témoignages, Contributions, Messages</td>
+                  <td>Ce que les visiteurs vous envoient. Rien n'est publié sans votre accord.</td>
+                </tr>
+                <tr>
+                  <td>Administration</td>
+                  <td>Zones de livraison, Commandes, Paramètres, Comptes</td>
+                  <td>Le livre, sa vente, et les personnes qui accèdent à l'administration.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>
+            <strong>Toutes les listes fonctionnent pareil.</strong> Un tableau, une barre
+            de recherche, et sur chaque ligne trois boutons : l'œil pour publier ou
+            dépublier, le crayon pour modifier, la corbeille pour supprimer. Cliquer sur
+            le titre ouvre la fiche.
+          </p>
+          <p>
+            <strong>La suppression est définitive.</strong> Il n'y a pas de corbeille de
+            récupération. Le site demande confirmation, et c'est la seule barrière : en cas
+            de doute, dépubliez plutôt que de supprimer.
+          </p>
+          <a class="haut" href="#haut">↑ Haut de page</a>
+        </section>
+      </section>
+
+      <!-- ============ PARTIE 2 ============ -->
+      <section class="partie" id="partie-2">
+        <div class="partie__tete">
+          <span class="partie__num">02</span>
+          <h2>Les fichiers</h2>
+        </div>
+
+        <section class="sect" id="mediatheque">
+          <h3>La médiathèque : le magasin de tous les fichiers</h3>
+          <p class="sect__intro">
+            Photographies, documents scannés, enregistrements sonores : <strong>tout passe
+            par la médiathèque</strong>, et une seule fois. On ne dépose jamais un fichier
+            depuis la fiche d'une actualité ou d'une archive — on l'y rattache, en le
+            choisissant dans la médiathèque.
+          </p>
+          <p>
+            L'ordre de travail est donc toujours le même :
+          </p>
+          <ol class="num">
+            <li><strong>Déposer</strong> le fichier dans la médiathèque.</li>
+            <li><strong>Le renseigner</strong> : titre, légende, crédit, catégorie.</li>
+            <li><strong>Le rattacher</strong> depuis la fiche qui en a besoin.</li>
+          </ol>
+          <p>
+            Un même fichier peut servir à plusieurs endroits. Le déposer deux fois ne sert
+            à rien et encombre le serveur.
+          </p>
+
+          <h4>Déposer des fichiers</h4>
+          <p>
+            Le bouton de dépôt est en haut de l'écran Médiathèque. Vous pouvez en
+            sélectionner plusieurs d'un coup — <strong>vingt au maximum par envoi</strong>.
+            Au-delà, faites deux voyages.
+          </p>
+          <p>
+            Le nom de vos fichiers n'a aucune importance : le site le réécrit
+            automatiquement. Ce qui compte, c'est ce que vous saisissez ensuite.
+          </p>
+
+          <h4>Renseigner un fichier</h4>
+          <div class="tbl-enrouleur">
+            <table>
+              <thead>
+                <tr><th scope="col">Champ</th><th scope="col">À quoi il sert</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Titre</td><td>Obligatoire. Vous permet de retrouver le fichier dans la médiathèque. Soyez descriptif : « Yacé à l'Assemblée, 1962 » et non « photo 3 ».</td></tr>
+                <tr><td>Légende</td><td>Le texte affiché sous l'image sur le site. <strong>Sert aussi de description aux personnes non voyantes et aux moteurs de recherche</strong> — écrivez-la, elle compte double.</td></tr>
+                <tr><td>Crédit</td><td>Le photographe, le fonds ou l'institution qui détient la pièce. <strong>Obligatoire pour publier une image.</strong></td></tr>
+                <tr><td>Date de prise de vue</td><td>Texte libre : « 1962 », « vers 1958 », « mars 1970 ».</td></tr>
+                <tr><td>Catégorie</td><td>Portrait, Officiel, Privé, Document, Presse. Sert à filtrer la médiathèque quand elle sera grande.</td></tr>
+                <tr><td>Rang</td><td>L'ordre d'apparition dans la galerie. Le plus petit passe en premier.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="note">
+            <h4>Une image publiée doit porter son crédit</h4>
+            <p>
+              Le site refuse de publier une image dont le champ Crédit est vide. Ce n'est
+              pas une formalité : le fonds recevra des documents prêtés par des familles
+              et des organes de presse, et savoir de qui vient quoi protège l'éditeur.
+            </p>
+          </div>
+        </section>
+
+        <section class="sect" id="formats">
+          <h3>Formats et poids acceptés</h3>
+          <p class="sect__intro">
+            Trois familles de fichiers, trois limites de poids différentes. Un scan de
+            vingt pages n'a pas le même poids naturel qu'une photographie.
+          </p>
+
+          <div class="tbl-enrouleur">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Famille</th>
+                  <th scope="col">Formats acceptés</th>
+                  <th scope="col">Poids maximum</th>
+                  <th scope="col">Pour quoi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Images</td>
+                  <td>JPEG (.jpg), PNG, WebP</td>
+                  <td class="nb">8 Mo</td>
+                  <td>Photographies, portraits, reproductions</td>
+                </tr>
+                <tr>
+                  <td>Documents</td>
+                  <td>PDF uniquement</td>
+                  <td class="nb">30 Mo</td>
+                  <td>Correspondances, discours dactylographiés, coupures scannées</td>
+                </tr>
+                <tr>
+                  <td>Enregistrements</td>
+                  <td>MP3, M4A, OGG</td>
+                  <td class="nb">60 Mo</td>
+                  <td>Discours, allocutions, entretiens</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>
+            <strong>Deux limites supplémentaires sur les images :</strong>
+          </p>
+          <ul>
+            <li><strong>40 millions de pixels au maximum</strong> — soit, par exemple,
+                8 000 × 5 000 points. C'est très largement au-dessus de ce qu'un appareil
+                photo courant produit ; la limite ne se rencontre qu'avec un scan de très
+                grand format.</li>
+            <li><strong>Le format est vérifié dans le fichier lui-même</strong>, pas dans
+                son nom. Renommer un document en <span class="champ">.jpg</span> ne le fera
+                pas passer pour une image — le site le refusera, et c'est voulu.</li>
+          </ul>
+
+          <div class="note note--sourd">
+            <h4>Le site fabrique tout seul les versions réduites</h4>
+            <p>
+              À chaque dépôt d'image, deux copies allégées sont créées automatiquement :
+              une petite pour les vignettes, une moyenne pour l'affichage courant.
+              Vous n'avez rien à préparer de ce côté-là. Les photographies prises de
+              travers par un téléphone sont également redressées toutes seules.
+            </p>
+          </div>
+        </section>
+
+        <section class="sect" id="dimensions">
+          <h3>Dimensions à respecter</h3>
+          <p class="sect__intro">
+            Quelques emplacements du site ont une taille et un cadrage précis, parce que
+            l'image y occupe une place fixe dans la maquette. Partout ailleurs, le site
+            recadre tout seul.
+          </p>
+
+          <h4>Les emplacements à dimensions imposées</h4>
+          <div class="tbl-enrouleur">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Emplacement</th>
+                  <th scope="col">Dimensions</th>
+                  <th scope="col">Cadrage attendu</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Grande image d'accueil<br><span style="color:var(--ink-3);font-size:.85em">trois images qui défilent</span></td>
+                  <td class="nb">2000 × 2600 px</td>
+                  <td>Portrait. <strong>Placez le sujet dans la moitié droite</strong> : la
+                      moitié gauche est recouverte par un voile clair sur lequel s'écrit le texte.</td>
+                </tr>
+                <tr>
+                  <td>Couverture du livre</td>
+                  <td class="nb">1200 × 1550 px</td>
+                  <td>La couverture seule, sans décor autour. Proportion du livre réel
+                      (240 × 310 mm).</td>
+                </tr>
+                <tr>
+                  <td>Portrait en tête de biographie</td>
+                  <td class="nb">1400 × 1750 px</td>
+                  <td>Buste, cadrage serré. <em>Déjà livré.</em></td>
+                </tr>
+                <tr>
+                  <td>Portrait de l'auteur du livre</td>
+                  <td class="nb">1000 × 1250 px</td>
+                  <td>Portrait vertical classique.</td>
+                </tr>
+                <tr>
+                  <td>Extraits du livre</td>
+                  <td class="nb">1500 × 1000 px</td>
+                  <td>Double page photographiée à plat, horizontale.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Partout ailleurs : aucune dimension imposée</h4>
+          <p>
+            Les archives, la galerie, les illustrations d'actualités, les images
+            d'Héritage et de la biographie sont recadrées automatiquement selon quatre
+            proportions qui alternent dans la page : carré, portrait, paysage et
+            panoramique.
+          </p>
+          <p>
+            <strong>La seule règle : le sujet doit tenir au centre.</strong> Une
+            photographie cadrée très serré sur un bord sera coupée sur au moins une des
+            quatre proportions. Laissez un peu d'air autour du sujet.
+          </p>
+
+          <div class="note note--sourd">
+            <h4>Les archives sont uniformisées automatiquement</h4>
+            <p>
+              Le site applique de lui-même un traitement noir et blanc chaud aux images
+              d'archives, ce qui donne une allure homogène à des sources d'origines très
+              diverses. <strong>Ne retouchez pas vos scans</strong> : déposez-les tels
+              quels, en couleur si c'est ainsi qu'ils vous parviennent.
+            </p>
+          </div>
+        </section>
+
+        <section class="sect" id="preparer">
+          <h3>Préparer une image avant de la déposer</h3>
+          <p class="sect__intro">
+            Les fichiers d'origine sont presque toujours bien plus lourds que nécessaire.
+            Une minute de préparation fait gagner beaucoup de temps de chargement aux
+            visiteurs — dont beaucoup consultent le site depuis un téléphone.
+          </p>
+          <ol class="num">
+            <li><strong>Redimensionnez</strong> à la taille du tableau ci-dessus si
+                l'emplacement en impose une. Sinon, visez <strong>1600 points sur le plus
+                grand côté</strong> : c'est la taille que le site utilise pour l'affichage
+                courant, au-delà le poids est perdu.</li>
+            <li><strong>Enregistrez en JPEG, qualité 80.</strong> C'est le réglage qui donne
+                le meilleur rapport entre le poids et la netteté. La différence avec la
+                qualité 100 ne se voit pas à l'écran ; le poids, lui, est divisé par trois
+                ou quatre.</li>
+            <li><strong>Vérifiez le poids final.</strong> Une photographie bien préparée
+                pèse entre 150 et 600 Ko. Si vous approchez des 8 Mo, quelque chose n'a pas
+                été redimensionné.</li>
+          </ol>
+          <p>
+            Le PNG n'a d'intérêt que pour un logo ou un dessin au trait sur fond
+            transparent. Pour une photographie, il pèse cinq fois plus qu'un JPEG sans
+            rien apporter.
+          </p>
+        </section>
+
+        <section class="sect" id="videos">
+          <h3>Les vidéos ne se déposent pas</h3>
+          <p class="sect__intro">
+            Une heure d'archive vidéo pèse plusieurs gigaoctets et saturerait le site dès
+            la première consultation groupée. Les vidéos restent donc chez leur hébergeur.
+          </p>
+          <p>
+            La marche à suivre : mettez la vidéo en ligne sur <strong>YouTube</strong>,
+            puis collez son adresse dans le champ <span class="champ">Lien de la vidéo</span>
+            de la fiche d'archive ou d'Héritage. Le site l'affiche dans la page.
+          </p>
+          <p>
+            Seules les adresses YouTube sont reconnues — les deux formes
+            <span class="champ">youtube.com/watch…</span> et
+            <span class="champ">youtu.be/…</span> fonctionnent. Une adresse d'une autre
+            plateforme sera refusée à la saisie, plutôt que d'afficher un cadre vide sur
+            la page publique.
+          </p>
+          <a class="haut" href="#haut">↑ Haut de page</a>
+        </section>
+      </section>
+
+      <!-- ============ PARTIE 3 ============ -->
+      <section class="partie" id="partie-3">
+        <div class="partie__tete">
+          <span class="partie__num">03</span>
+          <h2>Les contenus</h2>
+        </div>
+
+        <section class="sect" id="actualites">
+          <h3>Actualités</h3>
+          <dl class="fiche">
+            <dt>Alimente</dt><dd>La page Actualités, la revue de presse, et l'aperçu sur l'accueil.</dd>
+            <dt>Obligatoire</dt><dd>Titre, catégorie.</dd>
+            <dt>Pour publier</dt><dd>Une date de publication. Et une source si la catégorie est « Presse ».</dd>
+            <dt>Images</dt><dd>Une seule, choisie dans la médiathèque.</dd>
+          </dl>
+          <p>
+            Une actualité, c'est une parution, une dédicace, une conférence, un article
+            de presse, un hommage. <strong>Neuf catégories</strong> sont proposées :
+            Parution, Dédicace, Événement, Conférence, Presse, Reportage, Interview,
+            Hommage, Archive retrouvée.
+          </p>
+          <p>
+            <strong>La catégorie « Presse » est particulière</strong> : elle fait
+            apparaître l'entrée dans la revue de presse, une page à part. C'est pourquoi
+            le site exige alors le nom de l'organe dans le champ
+            <span class="champ">Source</span> — un article sans son journal n'est pas
+            vérifiable.
+          </p>
+          <p>
+            <strong>La date de publication classe la page.</strong> Sans elle, une
+            actualité se rangerait n'importe où dans la liste ; c'est pour cela qu'elle
+            est exigée à la mise en ligne. Vous pouvez la postdater : l'entrée paraîtra
+            avec cette date.
+          </p>
+          <p>
+            Le <span class="champ">Chapô</span> est le paragraphe d'accroche affiché dans
+            la liste, avant qu'on ouvre l'article. Quatre cents caractères au maximum,
+            soit trois ou quatre phrases.
+          </p>
+        </section>
+
+        <section class="sect" id="evenements">
+          <h3>Événements</h3>
+          <dl class="fiche">
+            <dt>Alimente</dt><dd>L'agenda, et le bloc « à venir » de la page du livre.</dd>
+            <dt>Obligatoire</dt><dd>Titre, date et heure de début.</dd>
+            <dt>Pour publier</dt><dd>La ville.</dd>
+            <dt>Images</dt><dd>Une seule.</dd>
+          </dl>
+          <p>
+            L'agenda sépare tout seul ce qui vient de ce qui a eu lieu : vous n'avez rien
+            à archiver, la date s'en charge.
+          </p>
+          <p>
+            La date de fin est facultative — un événement d'une soirée n'en a pas besoin.
+            Si vous en mettez une, elle doit être postérieure au début : le site refuse
+            l'inverse, qui donnerait une durée négative sur la page publique.
+          </p>
+          <p>
+            <strong>Une ville est exigée pour publier.</strong> Un événement annoncé sans
+            lieu n'aide personne à s'y rendre. Le champ <span class="champ">Lieu</span>
+            porte le détail — la salle, l'institution ; le champ
+            <span class="champ">Ville</span> porte la ville seule.
+          </p>
+          <p>
+            Le <span class="champ">Lien d'inscription</span> est facultatif. S'il est
+            rempli, un bouton d'inscription paraît sur la fiche. L'adresse doit commencer
+            par <span class="champ">https://</span>.
+          </p>
+        </section>
+
+        <section class="sect" id="biographie">
+          <h3>Biographie</h3>
+          <dl class="fiche">
+            <dt>Alimente</dt><dd>La page Biographie, découpée en périodes ayant chacune sa propre adresse.</dd>
+            <dt>Obligatoire</dt><dd>Titre.</dd>
+            <dt>Pour publier</dt><dd>Les deux années de bornes, une source, et aucun chevauchement avec une autre période publiée.</dd>
+            <dt>Images</dt><dd>Plusieurs. La première cochée fait la vignette.</dd>
+          </dl>
+          <p>
+            La biographie n'est pas un long texte unique : elle est découpée en
+            <strong>périodes</strong>. Chacune porte un titre, un récit, deux années de
+            bornes, et vit à sa propre adresse — on peut donc envoyer le lien d'une seule
+            période dans un dossier de presse.
+          </p>
+          <p>
+            <strong>Les bornes font tout le reste.</strong> Une période qui connaît ses
+            années sait automatiquement quels repères de la frise elle traverse et quelles
+            pièces du fonds d'archives ont été produites pendant qu'elle durait. Vous ne
+            rattachez rien à la main : les années suffisent.
+          </p>
+
+          <div class="note">
+            <h4>Trois conditions pour publier une période</h4>
+            <p>
+              <strong>Les deux bornes</strong> — sans elles, la période ne retrouve ni sa
+              frise ni son fonds.<br>
+              <strong>Une source</strong> — c'est le seul endroit du site où l'on écrit la
+              vie d'une personne réelle en continu, et une phrase non sourcée y passe pour
+              un fait établi.<br>
+              <strong>Aucun chevauchement</strong> — deux périodes publiées ne peuvent pas
+              partager une année. Sinon le même repère paraîtrait sous deux récits. Le site
+              vous nomme la période qui gêne.
+            </p>
+          </div>
+
+          <p>
+            Dans le récit, <strong>une ligne vide sépare deux paragraphes</strong>. C'est
+            la seule mise en forme à connaître, et elle vaut pour tous les grands champs
+            de texte du site.
+          </p>
+          <p>
+            Cinq chapitres d'amorce vous attendent en brouillon. Ce sont d'anciens textes
+            de calage, sans dates : ils sont là pour être remplacés, pas publiés tels quels.
+          </p>
+        </section>
+
+        <section class="sect" id="reperes">
+          <h3>Repères de la frise</h3>
+          <dl class="fiche">
+            <dt>Alimente</dt><dd>La frise chronologique de la biographie, et les quatre jalons de l'accueil.</dd>
+            <dt>Obligatoire</dt><dd>Titre, année affichée, année de classement.</dd>
+            <dt>Pour publier</dt><dd>Une source.</dd>
+            <dt>Images</dt><dd>Aucune — une frise est du texte.</dd>
+          </dl>
+          <p>
+            Un repère est une date marquante : une naissance, une prise de fonction, une
+            distinction. Il tient en une ligne et une courte notice.
+          </p>
+          <p>
+            <strong>Deux champs d'année, et ce n'est pas une erreur.</strong>
+          </p>
+          <ul>
+            <li><span class="champ">Année affichée</span> — ce que le visiteur lit. Texte
+                libre, parce qu'une date d'archive est souvent imprécise :
+                « 1959 », « v. 1945 », « 1959-1960 », ou même « — ».</li>
+            <li><span class="champ">Année de classement</span> — un nombre, entre 1900 et
+                2100, qui range le repère au bon endroit sur la frise. Il n'apparaît nulle
+                part. Pour une date incertaine, mettez votre meilleure estimation.</li>
+          </ul>
+          <p>
+            <strong>La case « Afficher sur la page d'accueil »</strong> décide de ce qui
+            remonte en page d'accueil, où la place est comptée : <strong>les quatre
+            premiers repères cochés</strong> y paraissent, dans l'ordre chronologique.
+            Cocher la case ne publie rien par elle-même — un repère en brouillon coché
+            n'apparaît nulle part.
+          </p>
+          <p>
+            La période à laquelle appartient un repère ne se saisit pas : elle se déduit
+            de son année de classement.
+          </p>
+        </section>
+
+        <section class="sect" id="archives">
+          <h3>Archives</h3>
+          <dl class="fiche">
+            <dt>Alimente</dt><dd>Le fonds d'archives : l'index, les catégories, et une page par pièce.</dd>
+            <dt>Obligatoire</dt><dd>Titre, catégorie.</dd>
+            <dt>Pour publier</dt><dd>Un crédit <em>ou</em> une source — au moins l'un des deux.</dd>
+            <dt>Fichiers</dt><dd>Plusieurs, de toutes familles. Le premier coché fait la vignette.</dd>
+          </dl>
+          <p>
+            <strong>Une archive est une notice, pas un fichier.</strong> C'est la notion
+            la plus importante de cet écran : vous ne cataloguez pas une photographie,
+            vous décrivez une pièce — un événement, un document, un discours — à laquelle
+            plusieurs fichiers peuvent se rattacher. Une même cérémonie peut porter quatre
+            photographies, le programme en PDF et l'enregistrement du discours : c'est
+            une seule archive.
+          </p>
+          <p>
+            L'<span class="champ">Année</span> est facultative — une pièce est souvent mal
+            datée — mais si vous la donnez, elle doit tomber entre 1900 et 2100 : c'est
+            elle qui filtre et qui classe. Le champ
+            <span class="champ">Date affichée</span>, lui, est du texte libre pour l'œil.
+          </p>
+          <p>
+            Les champs <span class="champ">Personnes présentes</span> et
+            <span class="champ">Mots-clés</span> nourrissent la recherche du site.
+            Remplissez-les : c'est ce qui rendra le fonds consultable quand il comptera
+            des centaines de pièces.
+          </p>
+
+          <div class="note">
+            <h4>Crédit ou source : l'un des deux, au minimum</h4>
+            <p>
+              Le <span class="champ">Crédit</span> nomme le photographe ou le détenteur des
+              droits ; la <span class="champ">Source</span> nomme le fonds ou l'institution
+              qui détient la pièce. Le site accepte de publier avec l'un ou l'autre —
+              mais pas sans les deux.
+            </p>
+          </div>
+        </section>
+
+        <section class="sect" id="heritage">
+          <h3>Héritage</h3>
+          <dl class="fiche">
+            <dt>Alimente</dt><dd>La page Héritage, et une page par sujet.</dd>
+            <dt>Obligatoire</dt><dd>Titre, rubrique.</dd>
+            <dt>Pour publier</dt><dd>Une source.</dd>
+            <dt>Images</dt><dd>Plusieurs. La première cochée fait la vignette.</dd>
+          </dl>
+          <p>
+            Héritage rassemble ce qui perpétue la mémoire : un pont, un boulevard, un
+            buste, des décorations, des publications, une chanson. Cinq rubriques
+            organisent l'index :
+          </p>
+          <ul>
+            <li><strong>Lieux de mémoire</strong> — un pont, un boulevard, un buste.</li>
+            <li><strong>Hommages et commémorations</strong></li>
+            <li><strong>Décorations et distinctions</strong></li>
+            <li><strong>Livres et publications</strong></li>
+            <li><strong>Musique et culture</strong></li>
+          </ul>
+          <p>
+            <strong>Seules les rubriques qui portent quelque chose apparaissent</strong> sur
+            le site. Vous pouvez donc ouvrir Héritage avec deux sujets : la page montre ce
+            qui existe et se tait sur le reste.
+          </p>
+          <p>
+            Le champ <span class="champ">Ordre</span> règle le rang à l'intérieur de la
+            rubrique — le plus petit passe en premier.
+          </p>
+          <p>
+            <strong>La source est exigée pour publier</strong>, et elle compte
+            particulièrement ici : une liste de décorations se recopie de proche en proche
+            avec ses erreurs. Publier la nôtre sans référence ajouterait une source de
+            plus au malentendu.
+          </p>
+        </section>
+
+        <section class="sect" id="pdv">
+          <h3>Points de vente</h3>
+          <dl class="fiche">
+            <dt>Alimente</dt><dd>Le bloc « Où se procurer l'ouvrage », sur l'accueil et sur la page du livre.</dd>
+            <dt>Obligatoire</dt><dd>La ville, et elle seule.</dd>
+            <dt>Pour publier</dt><dd>Rien de plus.</dd>
+            <dt>Images</dt><dd>Aucune.</dd>
+          </dl>
+          <p>
+            Une fiche par librairie, par enseigne ou par lieu de dédicace. La
+            <strong>ville</strong> est le grand caractère affiché sur la carte ; l'enseigne
+            et l'adresse viennent en dessous.
+          </p>
+          <p>
+            Tout sauf la ville est facultatif, et <strong>un champ vide ne s'affiche
+            pas</strong> : la carte se referme proprement sur ce qu'elle a. Vous pouvez
+            donc créer « Bouaké » aujourd'hui et compléter l'enseigne la semaine prochaine.
+          </p>
+          <p>
+            Si vous remplissez le champ <span class="champ">Site</span> — avec
+            <span class="champ">https://</span> devant —, l'enseigne devient un lien vers
+            celui-ci. Le téléphone, lui, devient un lien d'appel sur les mobiles.
+          </p>
+          <p>
+            <strong>Trois villes sont déjà en ligne</strong> — Abidjan, Yamoussoukro,
+            Paris — sans enseigne ni adresse. Elles affichent « Enseigne et adresse à
+            renseigner », et l'écran vous le rappelle en haut de la liste tant que c'est
+            le cas.
+          </p>
+          <p>
+            Le nombre de points de vente est libre : la mise en page s'adapte toute seule,
+            qu'il y en ait deux ou huit.
+          </p>
+          <a class="haut" href="#haut">↑ Haut de page</a>
+        </section>
+      </section>
+
+      <!-- ============ PARTIE 4 ============ -->
+      <section class="partie" id="partie-4">
+        <div class="partie__tete">
+          <span class="partie__num">04</span>
+          <h2>Ce qui vient des visiteurs</h2>
+        </div>
+
+        <p style="max-width:var(--mesure);margin-bottom:2rem;color:var(--ink-2)">
+          Trois formulaires publics alimentent ces écrans. <strong>Rien de ce qui arrive
+          n'est jamais publié automatiquement</strong> : tout attend votre décision. Ces
+          écrans n'ont donc pas de bouton « créer » — on ne fabrique pas un témoignage,
+          on décide de celui qu'on reçoit.
+        </p>
+
+        <section class="sect" id="temoignages">
+          <h3>Témoignages</h3>
+          <p class="sect__intro">
+            Les visiteurs qui ont connu Philippe Grégoire Yacé peuvent déposer un souvenir.
+            Chaque dépôt arrive <span class="etiq">En attente</span>.
+          </p>
+          <p>Trois décisions vous sont offertes :</p>
+          <ul>
+            <li><strong>Publier</strong> — le témoignage paraît sur la page Témoignages et
+                peut remonter sur l'accueil.</li>
+            <li><strong>Refuser</strong> — il reste dans la liste, marqué comme refusé.
+                Vous gardez la trace sans rien mettre en ligne.</li>
+            <li><strong>Reprendre</strong> — le remettre en attente, si vous changez d'avis.</li>
+          </ul>
+          <p>
+            Vous pouvez <strong>corriger un témoignage avant de le publier</strong> —
+            une faute de frappe, une ponctuation. Ouvrez sa fiche depuis la liste.
+          </p>
+          <p>
+            Un visiteur ne peut pas envoyer plus de cinq témoignages par heure : c'est une
+            protection contre les envois automatisés, invisible pour quelqu'un de bonne foi.
+          </p>
+        </section>
+
+        <section class="sect" id="contributions">
+          <h3>Contributions du public</h3>
+          <p class="sect__intro">
+            Le formulaire « Contribuez aux archives » permet à un visiteur d'envoyer des
+            documents : une photographie de famille, une lettre, une coupure de presse.
+            C'est le seul endroit du site qui reçoit des fichiers d'inconnus.
+          </p>
+
+          <div class="note">
+            <h4>Ces fichiers ne sont pas en ligne</h4>
+            <p>
+              Tant qu'une contribution n'est pas acceptée, ses fichiers sont retenus dans
+              un espace fermé, inaccessible depuis l'extérieur. <strong>La seule façon de
+              les regarder est de passer par cet écran</strong>, où vous êtes identifié.
+              Aucun fichier envoyé par un inconnu ne devient visible sans votre accord.
+            </p>
+          </div>
+
+          <p>Ouvrez une contribution pour lire le message et examiner chaque fichier, puis :</p>
+          <ul>
+            <li><strong>Accepter</strong> — les fichiers rejoignent la médiathèque, où vous
+                les renseignez comme n'importe quel dépôt : titre, légende, crédit. Ils
+                arrivent en brouillon ; c'est vous qui les publiez ensuite.</li>
+            <li><strong>Refuser</strong> — la contribution est marquée refusée.</li>
+            <li><strong>Supprimer</strong> — la contribution et ses fichiers disparaissent
+                définitivement.</li>
+          </ul>
+          <p>
+            Un visiteur peut joindre <strong>cinq fichiers par envoi</strong>, et trois
+            envois par heure au maximum. Les formats et les poids acceptés sont exactement
+            les mêmes que dans la médiathèque.
+          </p>
+        </section>
+
+        <section class="sect" id="messages">
+          <h3>Messages</h3>
+          <p class="sect__intro">
+            Les messages du formulaire de contact arrivent ici plutôt que dans une boîte
+            mail : rien ne se perd, et plusieurs personnes peuvent les traiter.
+          </p>
+          <p>
+            Deux états seulement : <span class="etiq">Nouveau</span> et
+            <span class="etiq">Traité</span>. Marquez un message comme traité une fois que
+            vous y avez répondu — la réponse, elle, se fait depuis votre messagerie
+            habituelle, en cliquant sur l'adresse du visiteur.
+          </p>
+          <p>
+            Un message ne se modifie pas : il n'a pas vocation à être publié. Il se
+            supprime, en revanche, quand il n'a plus d'utilité.
+          </p>
+          <a class="haut" href="#haut">↑ Haut de page</a>
+        </section>
+      </section>
+
+      <!-- ============ PARTIE 5 ============ -->
+      <section class="partie" id="partie-5">
+        <div class="partie__tete">
+          <span class="partie__num">05</span>
+          <h2>Le livre et la boutique</h2>
+        </div>
+
+        <section class="sect" id="parametres">
+          <h3>Paramètres</h3>
+          <p class="sect__intro">
+            Cet écran ne contient pas des contenus mais des <strong>réglages</strong> : des
+            valeurs saisies une fois, qui alimentent plusieurs pages à la fois. Il est
+            rangé en trois groupes.
+          </p>
+
+          <h4>La fiche technique de l'ouvrage</h4>
+          <p>
+            Titre, auteur, éditeur, date de parution, nombre de pages, ISBN, prix, format.
+            Ces valeurs paraissent sur la page du livre, et certaines sont reprises par les
+            moteurs de recherche.
+          </p>
+          <ul>
+            <li><strong>La date de parution est du texte libre</strong> : « Mars 2026 »
+                convient très bien si le jour n'est pas arrêté.</li>
+            <li><strong>Le prix s'écrit en chiffres seuls</strong>, sans espace ni devise :
+                tapez <span class="champ">25000</span>, le site affiche « 25 000 F CFA ».
+                C'est aussi ce prix qui sert à calculer les commandes.</li>
+            <li><strong>L'ISBN</strong> s'accepte avec ou sans tirets.</li>
+          </ul>
+
+          <h4>La préface</h4>
+          <p>
+            Nom du préfacier, sa qualité, un extrait mis en exergue, et le texte complet.
+            Une ligne vide sépare deux paragraphes.
+          </p>
+          <p>
+            <strong>La case « Mettre la préface en avant »</strong> est un vrai levier
+            éditorial : cochée, la préface remonte en tête de la page du livre et un
+            bandeau paraît sur l'accueil. À cocher le jour où la préface est confirmée —
+            un nom de préfacier suffit à l'annoncer, même avant que le texte n'arrive.
+          </p>
+
+          <h4>L'auteur du livre</h4>
+          <p>
+            Nom, qualité, biographie. <strong>La page de l'auteur se publie toute seule dès
+            que le nom est renseigné</strong>, et reste introuvable tant qu'il est vide —
+            une fiche d'auteur sans auteur n'est pas une page.
+          </p>
+          <p>
+            Attention à ne pas confondre l'auteur <em>du livre</em> avec son <em>sujet</em>.
+          </p>
+        </section>
+
+        <section class="sect" id="ouvrir">
+          <h3>Ouvrir les commandes</h3>
+          <p class="sect__intro">
+            La boutique est livrée <strong>fermée</strong>, et c'est délibéré : prendre une
+            commande payable à la remise pour un ouvrage qui n'existe pas encore, c'est
+            promettre une livraison qu'on ne peut pas tenir.
+          </p>
+
+          <div class="note">
+            <h4>Deux conditions, et il les faut toutes les deux</h4>
+            <p>
+              <strong>La case « Ouvrir les commandes » cochée</strong>, dans les paramètres.<br>
+              <strong>Un prix saisi</strong>, dans la fiche technique.<br>
+              L'une sans l'autre ne suffit pas : ouvrir sans prix afficherait « 0 F CFA »
+              et enregistrerait des commandes gratuites. L'écran refuse la case tant que
+              le prix est vide, et le dit.
+            </p>
+          </div>
+
+          <p>
+            <strong>Tant que la boutique est fermée</strong>, la page Commander reste en
+            ligne et annonce que les commandes ouvriront à la parution. C'est voulu : un
+            bouton menant à une page introuvable fait croire à une panne.
+          </p>
+          <p>
+            Deux réglages accompagnent l'ouverture :
+          </p>
+          <ul>
+            <li><strong>Point de retrait</strong> — l'adresse où l'on vient chercher un
+                exemplaire, avec ses horaires. <strong>Laissé vide, le retrait n'est pas
+                proposé du tout</strong> : offrir « retrait sur place » sans dire où est
+                une promesse creuse.</li>
+            <li><strong>Message affiché après commande</strong> — ce que le client lit sous
+                sa référence : le délai de rappel, le mode de paiement accepté à la remise,
+                un numéro à joindre. Vide, le site s'en tient à sa formule standard.</li>
+          </ul>
+          <p>
+            Le paiement se fait <strong>à la livraison</strong>. Aucun paiement en ligne
+            n'est encaissé par le site aujourd'hui.
+          </p>
+        </section>
+
+        <section class="sect" id="zones">
+          <h3>Zones de livraison</h3>
+          <p class="sect__intro">
+            <span class="etiq">Administrateur</span> Les frais de livraison se règlent zone
+            par zone, dans une arborescence à trois niveaux : pays, ville, commune.
+          </p>
+          <p>
+            <strong>Les tarifs s'héritent</strong>, et c'est ce qui rend le système tenable
+            à la main. Laissez le champ des frais vide, et la zone prend le tarif de celle
+            qui la contient. Vous posez donc « Côte d'Ivoire = 2 000 », puis seulement les
+            exceptions : « Abidjan = 1 500 », « Cocody = 1 000 ».
+          </p>
+          <p>
+            Sans cet héritage, il faudrait saisir un tarif pour chacune des treize communes
+            du district, et pour chaque commune ajoutée ensuite.
+          </p>
+          <p>
+            <strong>Une zone dont ni elle ni aucune zone au-dessus ne porte de tarif n'est
+            pas livrable</strong> : le tunnel de commande ne la propose pas, plutôt que de
+            laisser commander à zéro franc.
+          </p>
+          <p>
+            Une zone qu'on ne dessert plus se <strong>décoche</strong> au lieu de se
+            supprimer : les commandes anciennes gardent ainsi leur libellé.
+          </p>
+        </section>
+
+        <section class="sect" id="commandes">
+          <h3>Commandes</h3>
+          <p class="sect__intro">
+            <span class="etiq">Administrateur</span> Une commande naît du formulaire public.
+            On ne la crée pas depuis l'administration, et <strong>on ne la supprime
+            jamais</strong> : c'est une pièce comptable.
+          </p>
+          <p>Le parcours normal d'une commande en paiement à la livraison :</p>
+          <ol class="num">
+            <li><strong>Initiée</strong> — le client vient de valider le formulaire.</li>
+            <li><strong>Confirmée</strong> — vous l'avez appelé, la commande est bonne.</li>
+            <li><strong>Remise</strong> — l'exemplaire est remis et encaissé. C'est le
+                terme du parcours.</li>
+          </ol>
+          <p>
+            À tout moment avant la remise, une commande peut être <strong>annulée</strong>.
+            Les états sont verrouillés dans cet ordre : on ne peut pas sauter une étape ni
+            revenir en arrière, ce qui évite qu'une commande remise repasse en attente.
+          </p>
+          <p>
+            Chaque commande porte une <strong>référence dictable au téléphone</strong> —
+            six signes du type <span class="champ">PGY-4F2K9A</span> — et un champ de
+            <strong>note</strong> où consigner ce qui s'est dit : un rappel, un report,
+            une adresse corrigée.
+          </p>
+          <a class="haut" href="#haut">↑ Haut de page</a>
+        </section>
+      </section>
+
+      <!-- ============ PARTIE 6 ============ -->
+      <section class="partie" id="partie-6">
+        <div class="partie__tete">
+          <span class="partie__num">06</span>
+          <h2>Réglages</h2>
+        </div>
+
+        <section class="sect" id="comptes">
+          <h3>Comptes</h3>
+          <p class="sect__intro">
+            <span class="etiq">Administrateur</span> Un compte par personne — jamais un
+            compte partagé : les traces de modération et de remise perdraient le nom de qui
+            a décidé.
+          </p>
+          <ul>
+            <li><strong>Le mot de passe fait douze caractères au minimum.</strong> Une
+                phrase dont vous vous souvenez vaut mieux qu'un assemblage de symboles
+                qu'il faudra noter quelque part.</li>
+            <li><strong>Un compte se désactive, il ne se supprime pas.</strong> C'est
+                pourquoi il n'y a pas de bouton de suppression : effacer un compte
+                effacerait la trace de ce qu'il a validé.</li>
+            <li>Vous pouvez <strong>réinitialiser le mot de passe</strong> d'une personne
+                qui a perdu le sien, depuis sa fiche.</li>
+            <li>Le site refuse de désactiver ou de rétrograder <strong>le dernier
+                administrateur actif</strong> : sans lui, plus personne ne pourrait
+                rouvrir la porte.</li>
+          </ul>
+        </section>
+
+        <section class="sect" id="traductions">
+          <h3>Version anglaise</h3>
+          <p class="sect__intro">
+            Le site est bilingue. Les boutons, les menus et les libellés sont déjà traduits ;
+            <strong>ce que vous saisissez, non</strong> — c'est l'objet de cet écran.
+          </p>
+          <p>
+            <strong>Un écran à part, et non un onglet sur chaque fiche.</strong> Traduire
+            n'est pas éditer : c'est souvent une autre personne, à un autre moment. Le
+            traducteur n'a pas à traverser un formulaire de saisie, avec son sélecteur
+            d'images et son bouton de publication, pour faire son travail.
+          </p>
+          <p>
+            L'écran présente <strong>le français à gauche et l'anglais à droite</strong>,
+            champ par champ. Choisissez une rubrique, puis une fiche.
+          </p>
+
+          <div class="note note--sourd">
+            <h4>Un champ non traduit affiche le français</h4>
+            <p>
+              Il n'y a donc <strong>aucun risque à traduire progressivement</strong> :
+              une page anglaise incomplète reste lisible, ce qui vaut mieux qu'une page à
+              trous. Commencez par ce qui compte — les titres, les chapôs — et complétez
+              au fil de l'eau.
+            </p>
+          </div>
+
+          <p>
+            <strong>Rien ne se publie depuis cet écran.</strong> Poser une traduction ne
+            change pas l'état d'une fiche et ne touche pas au français : c'est un écran
+            qu'on peut confier sans risque.
+          </p>
+          <p>
+            Tout ne se traduit pas, et c'est voulu. Une adresse web, une année, un crédit
+            photo, un nom propre n'ont pas de version anglaise — seuls les champs qui le
+            méritent vous sont proposés.
+          </p>
+          <a class="haut" href="#haut">↑ Haut de page</a>
+        </section>
+      </section>
+
+      <!-- ============ PARTIE 7 ============ -->
+      <section class="partie" id="partie-7">
+        <div class="partie__tete">
+          <span class="partie__num">07</span>
+          <h2>Aide-mémoire</h2>
+        </div>
+
+        <section class="sect" id="refus">
+          <h3>Ce qui empêche de publier</h3>
+          <p class="sect__intro">
+            Le site refuse certaines mises en ligne. Ce n'est jamais arbitraire : chaque
+            règle protège l'éditeur ou la lisibilité du site. Voici la liste complète.
+          </p>
+
+          <div class="tbl-enrouleur">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Rubrique</th>
+                  <th scope="col">Exigé pour publier</th>
+                  <th scope="col">Pourquoi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Repères</td>
+                  <td>Une source</td>
+                  <td>Rien n'est attribué à Yacé sans référence vérifiable.</td>
+                </tr>
+                <tr>
+                  <td>Biographie</td>
+                  <td>Les deux bornes, une source, aucun chevauchement</td>
+                  <td>Sans bornes, la période ne retrouve ni frise ni fonds. Deux périodes
+                      publiées ne peuvent pas partager une année.</td>
+                </tr>
+                <tr>
+                  <td>Héritage</td>
+                  <td>Une source</td>
+                  <td>Une liste de décorations se recopie avec ses erreurs.</td>
+                </tr>
+                <tr>
+                  <td>Archives</td>
+                  <td>Un crédit <em>ou</em> une source</td>
+                  <td>Une pièce publiée sans provenance expose l'éditeur.</td>
+                </tr>
+                <tr>
+                  <td>Médiathèque</td>
+                  <td>Un crédit</td>
+                  <td>Même raison : les fichiers viennent de familles et d'organes de presse.</td>
+                </tr>
+                <tr>
+                  <td>Actualités</td>
+                  <td>Une date de publication<br>+ une source si catégorie « Presse »</td>
+                  <td>Sans date, l'entrée se range n'importe où. Un article sans son journal
+                      n'est pas vérifiable.</td>
+                </tr>
+                <tr>
+                  <td>Événements</td>
+                  <td>Une ville</td>
+                  <td>Un événement annoncé sans lieu n'aide personne.</td>
+                </tr>
+                <tr>
+                  <td>Points de vente</td>
+                  <td>Rien de plus que la ville</td>
+                  <td>Une ville seule est déjà une information utile.</td>
+                </tr>
+                <tr>
+                  <td>Boutique</td>
+                  <td>La case cochée <em>et</em> un prix</td>
+                  <td>Ouvrir sans prix enregistrerait des commandes gratuites.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="sect" id="recap-fichiers">
+          <h3>Fichiers en un coup d'œil</h3>
+
+          <div class="tbl-enrouleur">
+            <table>
+              <thead>
+                <tr><th scope="col">Question</th><th scope="col">Réponse</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Formats d'image</td><td>JPEG, PNG, WebP — <span class="nb">8 Mo</span> maximum</td></tr>
+                <tr><td>Documents</td><td>PDF seulement — <span class="nb">30 Mo</span> maximum</td></tr>
+                <tr><td>Sons</td><td>MP3, M4A, OGG — <span class="nb">60 Mo</span> maximum</td></tr>
+                <tr><td>Vidéos</td><td>Non hébergées. Adresse YouTube collée dans la fiche</td></tr>
+                <tr><td>Fichiers par dépôt</td><td><span class="nb">20</span> au maximum</td></tr>
+                <tr><td>Taille d'image maximale</td><td><span class="nb">40</span> millions de pixels</td></tr>
+                <tr><td>Taille conseillée</td><td><span class="nb">1600 px</span> sur le plus grand côté, JPEG qualité 80</td></tr>
+                <tr><td>Poids visé par photo</td><td>entre <span class="nb">150</span> et <span class="nb">600 Ko</span></td></tr>
+                <tr><td>Grande image d'accueil</td><td><span class="nb">2000 × 2600 px</span>, sujet à droite</td></tr>
+                <tr><td>Couverture du livre</td><td><span class="nb">1200 × 1550 px</span></td></tr>
+                <tr><td>Portrait de biographie</td><td><span class="nb">1400 × 1750 px</span></td></tr>
+                <tr><td>Portrait de l'auteur</td><td><span class="nb">1000 × 1250 px</span></td></tr>
+                <tr><td>Extraits du livre</td><td><span class="nb">1500 × 1000 px</span></td></tr>
+                <tr><td>Archives et galerie</td><td>Aucune dimension imposée — sujet au centre</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="sect" id="problemes">
+          <h3>Si quelque chose ne marche pas</h3>
+
+          <h4>« J'ai enregistré, mais la page publique n'a pas changé »</h4>
+          <p>
+            Neuf fois sur dix, le contenu est resté en <span class="etiq">Brouillon</span>.
+            Vérifiez la colonne Statut dans la liste. Sinon, rafraîchissez la page publique
+            en forçant le rechargement.
+          </p>
+
+          <h4>« Mon image est refusée »</h4>
+          <p>
+            Trois causes possibles, dans l'ordre de fréquence : elle dépasse 8 Mo ; ce
+            n'est pas réellement un JPEG, un PNG ou un WebP malgré son nom ; elle dépasse
+            40 millions de pixels. Le message affiché vous dit laquelle.
+          </p>
+
+          <h4>« Le bouton de publication refuse et affiche un message »</h4>
+          <p>
+            C'est une des règles du <a href="#refus">tableau ci-dessus</a>. Le message
+            nomme précisément ce qui manque. Ouvrez la fiche, complétez, réessayez.
+          </p>
+
+          <h4>« Je ne vois pas la rubrique décrite dans ce manuel »</h4>
+          <p>
+            Votre compte est probablement un compte Éditeur : les commandes, les zones de
+            livraison et les comptes sont réservés aux administrateurs. Elles sont retirées
+            du menu, et non grisées.
+          </p>
+
+          <h4>« Je n'arrive plus à me connecter »</h4>
+          <p>
+            Après cinq essais manqués, l'accès se bloque un quart d'heure. Attendez.
+            Si vous avez perdu votre mot de passe, un administrateur peut le
+            réinitialiser depuis l'écran Comptes.
+          </p>
+
+          <h4>« J'ai supprimé quelque chose par erreur »</h4>
+          <p>
+            Il n'y a pas de corbeille : la suppression est définitive. Prenez l'habitude de
+            <strong>dépublier plutôt que de supprimer</strong> — un contenu dépublié est
+            invisible pour tout le monde et récupérable en un clic.
+          </p>
+          <a class="haut" href="#haut">↑ Haut de page</a>
+        </section>
+      </section>
+
+      <footer class="pied">
+        <p>
+          Manuel d'administration du site <strong>Philippe Grégoire Yacé — une
+          destinée</strong>. Rédigé le 8 septembre 2026, d'après le fonctionnement réel
+          de l'administration.
+        </p>
+        <p>
+          Les règles décrites ici sont celles que le site applique : quand il refuse une
+          publication, c'est l'une d'elles qui parle.
+        </p>
+      </footer>
+
+    </main>
+  </div>
+</div>
