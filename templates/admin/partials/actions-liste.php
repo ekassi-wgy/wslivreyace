@@ -24,7 +24,12 @@ use App\Core\View;
 $alId      = (int) $ligne['id'];
 $alStatut  = (string) ($ligne['statut'] ?? 'brouillon');
 $alChemin  = $config['chemin'];
-$alTitre   = (string) ($ligne['titre'] ?? '');
+/* La colonne qui identifie la ligne. `titre` partout, sauf là où l'entité n'en
+   a pas : un point de vente a une ville (lot G12). Voir la clé `libelle` de
+   `CrudController::config()` — les libellés lus ici et les messages écrits
+   là-bas doivent désigner la même chose, sans quoi la confirmation de
+   suppression et le message qui la suit ne parleraient pas de la même fiche. */
+$alTitre   = (string) ($ligne[$config['libelle'] ?? 'titre'] ?? '');
 $alEnLigne = $alStatut === 'publie';
 ?>
 <div class="pgy-actions">

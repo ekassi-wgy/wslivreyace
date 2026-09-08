@@ -1287,7 +1287,7 @@ back-office aussi, et les quatre migrations jouées en production.
 l'ordre où les jouer, est au §9 — « Où en est ce périmètre ».
 
 **État au 8 septembre 2026 : la base est à jour jusqu'à `015`, le code ne l'est
-pas, et `016` s'est ajoutée depuis.** Les neuf migrations du nouveau périmètre
+pas, et `016` puis `017` se sont ajoutées depuis.** Les neuf migrations du nouveau périmètre
 ont été jouées dans la journée, `007` à `015`, une à une dans phpMyAdmin — le serveur est un **MariaDB 10.5.26**, ce qui
 n'avait jamais été relevé jusque-là (voir §2, qui raisonnait dessus sans
 l'avoir constaté). `repere` porte ses sept entrées et ses quatre mises en avant ;
@@ -1314,6 +1314,7 @@ il n'en est que le résumé.
 | `sql/006_message.sql` | table des messages du formulaire de contact (lot F4) | jouée |
 | `sql/007_actualite_categories.sql` → `sql/015_periode.sql` | tout le nouveau périmètre, neuf fichiers | jouées le 8 septembre |
 | `sql/016_boutique.sql` | la boutique : zones de livraison, décompte figé des commandes, statuts du paiement à la livraison | **à jouer** |
+| `sql/017_point_de_vente.sql` | les points de vente, et l'amorce des trois villes qui étaient écrites dans les gabarits | **à jouer** |
 
 **`001_schema.sql` ne se rejoue jamais sur une base installée.** Il a été mis à
 jour pour qu'une installation neuve n'ait pas à rejouer l'historique, mais ses
@@ -1374,6 +1375,7 @@ SELECT o.migration, o.controle,
     UNION ALL SELECT '016', 'colonne', 'commande', 'prix_unitaire', 'prix_unitaire sur commande'
     UNION ALL SELECT '016', 'colonne', 'commande', 'frais_livraison', 'frais_livraison sur commande'
     UNION ALL SELECT '016', 'colonne', 'commande', 'zone_id', 'zone_id sur commande'
+    UNION ALL SELECT '017', 'table',   'point_de_vente', '', 'table point_de_vente'
   ) AS o
 UNION ALL
 SELECT '007', 'catégories du brief sur actualite',
@@ -1389,6 +1391,8 @@ SELECT '016', 'statut « confirmée » sur commande',
            AND column_name = 'statut' AND column_type LIKE '%confirmee%')
 UNION ALL
 SELECT '016', 'zones de livraison amorcées (16 attendues)', (SELECT COUNT(*) FROM zone_livraison)
+UNION ALL
+SELECT '017', 'points de vente amorcés (3 attendus)', (SELECT COUNT(*) FROM point_de_vente)
 ORDER BY 1, 2;
 ```
 
@@ -1398,17 +1402,18 @@ puis l'onglet SQL. Lancée depuis l'onglet SQL du serveur, ou depuis
 `information_schema`, elle inspecte cette base-là et rend une liste de tables
 système qui n'a rien à voir — le piège ne dit pas son nom, il rend un résultat.
 
-**La ligne `zone_livraison` ne s'exécute que si la table existe** : sur une base
-où `016` n'est pas encore jouée, la requête entière échoue sur elle. C'est
-voulu — un contrôle qui rendrait « 0 » ferait croire que la table est vide
-alors qu'elle n'existe pas, et les deux se corrigent différemment.
+**Les lignes `zone_livraison` et `point_de_vente` ne s'exécutent que si leur
+table existe** : sur une base où `016` ou `017` n'est pas encore jouée, la
+requête entière échoue sur elle. C'est voulu — un contrôle qui rendrait « 0 »
+ferait croire que la table est vide alors qu'elle n'existe pas, et les deux se
+corrigent différemment.
 
-`007`, `009` et `016` ne se contrôlent pas comme les autres, et les lignes le
-disent : `007` ne crée ni table ni colonne, il élargit un `ENUM` — le contrôle
-cherche donc `conference` dans le type de `actualite.categorie`, et `016` fait
-de même avec `confirmee` dans `commande.statut`. `009` et `016` rendent en
-outre un décompte plutôt qu'un `1` : l'un verse des données, l'autre amorce
-seize zones de livraison.
+`007`, `009`, `016` et `017` ne se contrôlent pas comme les autres, et les
+lignes le disent : `007` ne crée ni table ni colonne, il élargit un `ENUM` — le
+contrôle cherche donc `conference` dans le type de `actualite.categorie`, et
+`016` fait de même avec `confirmee` dans `commande.statut`. `009`, `016` et
+`017` rendent en outre un décompte plutôt qu'un `1` : ils versent des données —
+sept repères, seize zones de livraison, trois points de vente.
 
 Depuis la bascule de collation (voir §2), les fichiers SQL se chargent aussi
 bien sous MySQL que sous MariaDB — il n'y a plus de ligne à corriger avant
@@ -1601,10 +1606,12 @@ complète, dimensions comprises.
 ## 8. Couverture du cahier des charges
 
 Accueil (§4.1) — **complet** : hero slider, accroche, aperçu du livre, teaser
-biographie, frise de repères, témoignages, actualités, CTA commande.
+biographie, frise de repères, témoignages, actualités, CTA commande, points de
+vente.
 
 Le livre (§4.2) — **complet** : résumé long, mot de l'éditeur, fiche technique,
-sommaire, extrait, feuilletage, où acheter. L'auteur (§4.3) y est traité en section
+sommaire, extrait, feuilletage, où acheter — les points de vente sont
+administrables depuis le lot G12, et attendent leurs enseignes. L'auteur (§4.3) y est traité en section
 plutôt qu'en page dédiée, faute de matière ; à détacher dès que le contenu existe.
 
 Biographie (§4.4) — **complet** : contexte historique, parcours découpé en
@@ -1698,6 +1705,7 @@ vérifie.
 | G10 | Biographie par périodes — une adresse par période, frise et fonds rattachés | livré |
 | G3 | Boutique et tunnel de commande — paiement à la livraison, boutique fermée | livré |
 | G11 | Version anglaise — mécanisme complet, **anglais ouvert** | livré |
+| G12 | Points de vente — la grille « Où se procurer l'ouvrage » sort du gabarit | livré |
 
 **G3 est écrit, et la boutique est fermée.** Le commanditaire a confirmé le
 7 septembre qu'aucune date de sortie n'est annoncée ; le lot a donc été livré
@@ -1706,9 +1714,9 @@ avec un interrupteur plutôt qu'avec une date. Prendre des commandes en paiement
 remise qu'on ne peut pas tenir. **L'ouverture tient en une case à cocher et un
 prix**, tous deux à l'écran Paramètres.
 
-**Dix migrations à jouer, dans cet ordre**, et une seule fois. **Les neuf premières sont
-jouées en production depuis le 8 septembre ; `016` ne l'est pas** — le contrôle
-est au §7. La liste reste ici pour une installation neuve, et pour dire ce que
+**Onze migrations à jouer, dans cet ordre**, et une seule fois. **Les neuf
+premières sont jouées en production depuis le 8 septembre ; `016` et `017` ne le
+sont pas** — le contrôle est au §7. La liste reste ici pour une installation neuve, et pour dire ce que
 chacune apporte.
 
 | Fichier | Lot | Ce qu'il apporte | |
@@ -1723,6 +1731,7 @@ chacune apporte.
 | `sql/014_contribution.sql` | G8 | `contribution` et `contribution_fichier` | jouée |
 | `sql/015_periode.sql` | G10 | `periode` et `periode_media`, l'amorce des cinq chapitres, et la colonne `repere.periode` qui **disparaît** | jouée |
 | `sql/016_boutique.sql` | G3 | `zone_livraison` et son amorce, quatre colonnes sur `commande`, deux statuts de plus, le prix numérique | **à jouer** |
+| `sql/017_point_de_vente.sql` | G12 | `point_de_vente`, et l'amorce des trois villes qui vivaient dans les gabarits | **à jouer** |
 
 **Deux points de déploiement qu'aucune migration ne règle :**
 
@@ -2944,6 +2953,79 @@ la production avant d'être jouée en développement.
 |---|---|
 | `sql/016_boutique.sql` | `zone_livraison` et son amorce, quatre colonnes sur `commande`, deux statuts de plus, le prix numérique |
 
+### Lot G12 — livré
+
+**Un aplat gris occupait la moitié de « Où se procurer l'ouvrage », et personne
+ne savait ce qu'il attendait.** On y voyait un emplacement d'image, ou un
+cadre de carte à venir. C'était le fond du conteneur.
+
+**Le défaut.** Le bloc portait `class="pos row g-0"` avec trois `col-md-4` :
+la répartition en tiers venait du `display: flex` de Bootstrap. Or `.pos`
+déclare `display: grid` dans `assets/css/components.css`, chargé **après**
+Bootstrap — et sans `grid-template-columns`. La grille tombait à une colonne,
+les trois cartes s'empilaient sur un tiers de la largeur, et les deux tiers
+restants laissaient voir le fond du conteneur, peint en `--rule` (`#DED7C9`)
+pour dessiner les filets de 1 px entre les cellules. Le défaut datait du
+premier commit du dépôt.
+
+**Ni carte, ni dynamique.** Aucune Google Map n'a jamais été prévue : le CDC
+§4.2 demande un « où acheter », pas une cartographie, et une carte imposerait
+une clé d'API facturée et un bandeau de consentement pour un service tiers.
+
+**Les trois villes vivaient dans deux gabarits.** « Abidjan »,
+« Yamoussoukro » et « Paris » étaient écrites en dur dans
+`templates/pages/accueil.php` **et** dans `templates/pages/livre.php`, chacune
+sous une ligne « Enseigne et adresse à renseigner » qu'aucun écran ne
+permettait de renseigner. Trois villes qu'on ne pouvait ni corriger, ni
+compléter, ni augmenter d'une quatrième sans toucher au code.
+
+**Elles sont en base** (`point_de_vente`), avec leur écran dans « Contenus » —
+ville, enseigne, adresse, téléphone, site, rang, statut. Un seul champ
+obligatoire, la ville : c'est le grand caractère de la carte, et souvent la
+seule chose qu'on sache au moment où l'on crée la fiche. Tout le reste ne
+s'affiche que s'il est rempli.
+
+**L'amorce les verse en `publie`**, contrairement aux cinq chapitres de
+biographie du lot G10, versés en brouillon. La différence tient à ce qu'elles
+affirment : « texte à rédiger » sur la vie d'une figure historique n'a rien à
+faire en ligne, une ville où l'on vend le livre ne prétend rien de tel — et
+elle était déjà publiée, de fait. Les verser en brouillon aurait vidé la
+section sur les deux pages.
+
+**Aucune enseigne, aucune adresse n'a été inventée.** Les fiches affichent la
+même phrase qu'avant le lot ; l'écran d'administration compte celles qui en
+sont là et le signale en tête de liste. La matière est due par l'éditeur — elle
+est entrée dans la table des livrables non techniques ci-dessous.
+
+**Un seul gabarit pour les deux pages.** `templates/partials/points-de-vente.php`
+sert l'accueil et « Le livre ». Les deux copies avaient déjà divergé : elles
+appelaient `accueil.commander.adresse` et `livre.acheter.adresse` pour la même
+phrase. Une seule clé, `points_de_vente.a_renseigner`, les remplace.
+
+**Le nombre de colonnes n'est plus écrit nulle part.**
+`repeat(auto-fit, minmax(min(100%, 15rem), 1fr))` : le nombre de points de
+vente vient de la base, et trois colonnes en dur auraient rendu au gabarit ce
+que ce lot venait de lui retirer. La grille se referme d'elle-même sur mobile,
+et la section disparaît entièrement si rien n'est publié — un cadre vide vaut
+moins que pas de cadre.
+
+**`CrudController` a gagné une clé, `libelle`.** Une fiche de point de vente
+n'a pas de titre, elle a une ville. Sans cette clé, supprimer une fiche aurait
+annoncé « Le point de vente « — » a été supprimé » : le déroulé commun et le
+gabarit d'actions de liste lisaient tous deux `titre` en dur. `titre` reste le
+défaut, et aucun autre écran ne change.
+
+**Traduisible dès l'ouverture** : la ville et l'adresse sont déclarées à
+l'écran des traductions — « Londres » contre « London », et une adresse
+ivoirienne qui porte un repère plutôt qu'un numéro. Ni l'enseigne, ni le
+téléphone, ni le site : un nom propre ne se traduit pas.
+
+**Une migration**, `sql/017_point_de_vente.sql`.
+
+| Fichier | Ce qu'il apporte |
+|---|---|
+| `sql/017_point_de_vente.sql` | la table `point_de_vente` et l'amorce des trois villes, publiées, sans enseigne ni adresse |
+
 ### Ce que le brief ajoute à la liste des livrables attendus
 
 À la liste du §5 s'ajoutent, tous non techniques :
@@ -2957,5 +3039,6 @@ la production avant d'être jouée en développement.
 | **Fonds d'archives** et leurs crédits — chaque pièce publiée doit porter son fonds, son photographe ou son détenteur de droits ; le back-office refuse déjà la publication sans crédit | commanditaire / familles |
 | **Compte de la chaîne vidéo**, si la décision 2 est retenue | commanditaire |
 | **Politique de sauvegarde** — qui garde une copie des originaux, où, à quelle fréquence | hébergeur / commanditaire |
+| **Enseignes et adresses des points de vente** — les trois villes sont en base et publiées (G12), mais aucune ne dit encore où aller : l'accueil et la page du livre affichent « Enseigne et adresse à renseigner » sous Abidjan, Yamoussoukro et Paris | commanditaire / éditeur |
 | **Prix de l'ouvrage en francs CFA**, et le **point de retrait** avec ses horaires. Ce sont les deux valeurs qui ouvrent la boutique : sans prix elle reste fermée, sans point de retrait le retrait n'est pas proposé. Les **tarifs de livraison** se posent ensuite, zone par zone | commanditaire / éditeur |
 | **Traduction anglaise des contenus** — biographie, notices d'archives, sujets d'Héritage, préface. **L'anglais est ouvert** : chaque champ traduit depuis le back-office retire une phrase française des pages `/en/`, et un champ non traduit y affiche le français | commanditaire / traducteur |

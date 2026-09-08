@@ -33,6 +33,9 @@ return [
     'commun.champ_obligatoire' => 'Required field',
     'commun.chargement'        => 'Loading…',
 
+    // Points of sale (lot G12) — one key for both pages, see fr.php.
+    'points_de_vente.a_renseigner' => 'Shop and address to be confirmed',
+
     // --- Main navigation ------------------------------------------------------
     'nav.accueil'         => 'Home',
     'nav.livre'           => 'The book',
@@ -165,7 +168,6 @@ return [
     'accueil.commander.kicker'      => 'Getting the book',
     'accueil.commander.titre'       => 'In bookshops<br>and online.',
     'accueil.commander.cta'         => 'Order online',
-    'accueil.commander.adresse'     => 'Shop and address to be confirmed',
 
     // --- Book page ---------------------------------------------------------------
     'livre.titre_page'          => 'The book — Philippe Grégoire Yacé : une destinée',
@@ -219,7 +221,6 @@ return [
     'livre.acheter.kicker'      => 'Where to get the book',
     'livre.acheter.titre'       => 'In bookshops<br>and online.',
     'livre.acheter.cta'         => 'Order online',
-    'livre.acheter.adresse'     => 'Shop and address to be confirmed',
 
     // --- Biography ---------------------------------------------------------------
     'biographie.titre_page'       => 'Biography — Philippe Grégoire Yacé (1920-1998)',

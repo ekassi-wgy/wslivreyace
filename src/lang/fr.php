@@ -41,6 +41,18 @@ return [
     'commun.champ_obligatoire' => 'Champ obligatoire',
     'commun.chargement'        => 'Chargement…',
 
+    /*
+     * Les points de vente (lot G12). Une seule clé pour deux pages : le
+     * gabarit partagé `partials/points-de-vente.php` sert l'accueil et la
+     * page du livre, là où `accueil.commander.adresse` et
+     * `livre.acheter.adresse` disaient la même phrase de deux endroits.
+     *
+     * Ce n'est pas un texte d'attente comme les autres : il paraît sous une
+     * ville réelle, publiée, tant que l'éditeur n'a pas rempli l'enseigne et
+     * l'adresse depuis le back-office.
+     */
+    'points_de_vente.a_renseigner' => 'Enseigne et adresse à renseigner',
+
     // --- Navigation principale ----------------------------------------------
     'nav.accueil'      => 'Accueil',
     'nav.livre'        => 'Le livre',
@@ -173,7 +185,6 @@ return [
     'accueil.commander.kicker'      => 'Se procurer l\'ouvrage',
     'accueil.commander.titre'       => 'En librairie<br>et en ligne.',
     'accueil.commander.cta'         => 'Commander en ligne',
-    'accueil.commander.adresse'     => 'Enseigne et adresse à renseigner',
 
     // --- Page du livre -----------------------------------------------------------
     'livre.titre_page'          => 'Le livre — Philippe Grégoire Yacé : une destinée',
@@ -227,7 +238,6 @@ return [
     'livre.acheter.kicker'      => 'Où se procurer l\'ouvrage',
     'livre.acheter.titre'       => 'En librairie<br>et en ligne.',
     'livre.acheter.cta'         => 'Commander en ligne',
-    'livre.acheter.adresse'     => 'Enseigne et adresse à renseigner',
 
     // --- Biographie --------------------------------------------------------------
     'biographie.titre_page'       => 'Biographie — Philippe Grégoire Yacé (1920-1998)',

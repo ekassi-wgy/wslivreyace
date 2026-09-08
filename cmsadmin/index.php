@@ -21,6 +21,7 @@ use App\Controller\Admin\MediaController;
 use App\Controller\Admin\MessageController;
 use App\Controller\Admin\ParametreController;
 use App\Controller\Admin\PeriodeController;
+use App\Controller\Admin\PointDeVenteController;
 use App\Controller\Admin\RepereController;
 use App\Controller\Admin\TemoignageController;
 use App\Controller\Admin\TraductionController;
@@ -86,6 +87,12 @@ $crud('/periodes',   PeriodeController::class,   'nouvelle');
 $crud('/reperes',    RepereController::class,    'nouveau');
 $crud('/archives',   ArchiveController::class,   'nouvelle');
 $crud('/heritage',   HeritageController::class,  'nouveau');
+/*
+ * Les points de vente (lot G12). Même jeu de routes que les contenus, et
+ * c'en est un : ce qui paraît sous « Où se procurer l'ouvrage » se publie et
+ * se dépublie comme une actualité.
+ */
+$crud('/points-de-vente', PointDeVenteController::class, 'nouveau');
 
 /**
  * Modération des témoignages. Pas le même jeu de routes que les contenus : on

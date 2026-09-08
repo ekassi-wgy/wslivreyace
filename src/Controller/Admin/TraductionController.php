@@ -15,6 +15,7 @@ use App\Model\Evenement;
 use App\Model\Heritage;
 use App\Model\Parametre;
 use App\Model\Periode;
+use App\Model\PointDeVente;
 use App\Model\Repere;
 use App\Model\Zone;
 
@@ -140,6 +141,23 @@ final class TraductionController
                 'titre'       => ['libelle' => 'Titre',       'zone' => false],
                 'lieu'        => ['libelle' => 'Lieu',        'zone' => false],
                 'description' => ['libelle' => 'Description', 'zone' => true],
+            ],
+        ],
+        /*
+         * Les points de vente (lot G12). Ni l'enseigne, ni le téléphone, ni le
+         * site : une enseigne est un nom propre, et les deux autres ne sont pas
+         * de la langue. La ville pour « Londres » contre « London » ; l'adresse
+         * parce qu'elle porte souvent un repère plutôt qu'un numéro — « face à
+         * la cathédrale » se traduit, le nom de la rue non. À l'éditeur de voir
+         * lesquelles valent la peine, comme pour les zones de livraison.
+         */
+        'point_de_vente' => [
+            'modele' => PointDeVente::class,
+            'titre'  => 'Points de vente',
+            'ordre'  => 'ordre ASC, ville ASC, id ASC',
+            'champs' => [
+                'ville'   => ['libelle' => 'Ville',   'zone' => false],
+                'adresse' => ['libelle' => 'Adresse', 'zone' => false],
             ],
         ],
     ];

@@ -542,10 +542,34 @@
   color: var(--brass-soft);
 }
 
-/* --- Points de vente --------------------------------------------------- */
-.pos { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+/* --- Points de vente ---------------------------------------------------
+   Filet de 1 px par le fond : le conteneur est peint en couleur de filet, les
+   cellules en papier par-dessus, et le `gap` laisse voir le trait entre elles.
+   Aucune bordure sur les cellules — deux bordures adjacentes en feraient une
+   de 2 px sur les jointures intérieures.
+
+   LES COLONNES SE DÉCLARENT ICI, ET C'EST LA CORRECTION DU LOT G12. Le
+   balisage portait `row g-0` et des `col-md-4` de Bootstrap, dont le
+   `display: flex` était écrasé par le `display: grid` ci-dessous — cette
+   feuille est chargée après Bootstrap. La grille tombait donc à une seule
+   colonne, les trois cartes s'empilaient sur un tiers de la largeur, et les
+   deux tiers restants montraient le fond du conteneur : un aplat de #DED7C9
+   sur la moitié de la section, qu'on prenait pour un emplacement d'image en
+   attente.
+
+   `auto-fit` plutôt que `repeat(3, 1fr)` : le nombre de points de vente vient
+   de la base depuis ce lot, et trois colonnes écrites en dur redonneraient au
+   gabarit ce qu'on vient de lui retirer. */
+.pos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
 .pos__i { background: var(--paper); padding: clamp(1.5rem, 2.4vw, 2.25rem); }
 .pos__i h3 { margin-bottom: var(--sp-2); }
+.pos__tel { margin-top: var(--sp-2); }
 
 /* --- Pied de page ------------------------------------------------------ */
 .foot { background: var(--ink-deep); color: rgba(247, 244, 238, 0.68); }

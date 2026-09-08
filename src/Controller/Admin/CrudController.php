@@ -47,10 +47,17 @@ abstract class CrudController
      * la médiathèque est alors chargée avec le formulaire. Les repères n'en
      * portent pas — une frise chronologique est du texte.
      *
+     * `libelle` nomme la colonne qui **identifie une ligne** dans les messages
+     * et les confirmations de suppression. `titre` par défaut, parce que c'est
+     * le cas de tous les écrans du lot C ; les points de vente ont une ville et
+     * pas de titre (lot G12), et sans cette clé leurs messages annonceraient
+     * « Le point de vente « — » a été supprimé ». Le gabarit d'actions de liste
+     * la lit lui aussi, pour la même raison.
+     *
      * @return array{
      *   cle: string, chemin: string, singulier: string, pluriel: string,
      *   titre_creation: string, titre_edition: string,
-     *   feminin: bool, gabarit: string, media?: bool
+     *   feminin: bool, gabarit: string, media?: bool, libelle?: string
      * }
      */
     abstract protected static function config(): array;
@@ -141,7 +148,7 @@ abstract class CrudController
         Session::message('succes', sprintf(
             '%s « %s » a été supprimé%s.',
             $c['singulier'],
-            $ligne['titre'] ?? '—',
+            $ligne[$c['libelle'] ?? 'titre'] ?? '—',
             $c['feminin'] ? 'e' : ''
         ));
 
@@ -199,7 +206,7 @@ abstract class CrudController
         // s'accorde tout seul, là où « publiée / publié » demanderait le genre.
         Session::message('succes', sprintf(
             '« %s » %s.',
-            $ligne['titre'] ?? '—',
+            $ligne[$c['libelle'] ?? 'titre'] ?? '—',
             $nouveau === 'publie' ? 'passe en ligne' : 'repasse en brouillon'
         ));
 
@@ -238,7 +245,7 @@ abstract class CrudController
         Session::message('succes', sprintf(
             '%s « %s » %s',
             $c['singulier'],
-            $v->valeur('titre'),
+            $v->valeur($c['libelle'] ?? 'titre'),
             $message
         ));
 

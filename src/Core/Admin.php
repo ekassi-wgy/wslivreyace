@@ -97,6 +97,19 @@ final class Admin
                 'icone'  => 'mdi-bank-outline',
                 'url'    => self::url('/heritage'),
             ],
+            /*
+             * Les points de vente (lot G12). Dans « Contenus » et non dans
+             * « Administration », où vivent les zones de livraison : une
+             * librairie qui tient le livre en rayon est une information de
+             * communication, pas une décision commerciale. Celui qui rédige
+             * l'actualité d'une dédicace est celui qui sait où l'on achète.
+             */
+            [
+                'cle'    => 'points-de-vente',
+                'titre'  => 'Points de vente',
+                'icone'  => 'mdi-store-outline',
+                'url'    => self::url('/points-de-vente'),
+            ],
             [
                 'cle'    => 'medias',
                 'titre'  => 'Médiathèque',

@@ -33,6 +33,14 @@ $jalons = App\Model\Repere::listerEnAvant(4);
  * la préface présidentielle se confirme, et rien avant.
  */
 $preface = App\Controller\LivreController::preface(App\Model\Parametre::toutes());
+
+/**
+ * Les points de vente publiés (lot G12). Trois villes vivaient en dur ici et
+ * dans le gabarit du livre, sous une ligne « à renseigner » que rien ne
+ * permettait de renseigner. Table `point_de_vente`, écran « Points de vente »
+ * du back-office.
+ */
+$pointsDeVente = App\Model\PointDeVente::listerPublies();
 ?>
 
 <!-- ===================== HERO ===================== -->
@@ -486,21 +494,8 @@ $compte = [
 
     <div class="row">
       <div class="col-lg-10 offset-lg-2">
-        <!-- POINTS DE VENTE — à renseigner -->
-        <div class="pos row g-0 reveal">
-          <div class="pos__i col-md-4">
-            <h3 class="t-d3">Abidjan</h3>
-            <p class="t-small"><?= t('accueil.commander.adresse') ?></p>
-          </div>
-          <div class="pos__i col-md-4">
-            <h3 class="t-d3">Yamoussoukro</h3>
-            <p class="t-small"><?= t('accueil.commander.adresse') ?></p>
-          </div>
-          <div class="pos__i col-md-4">
-            <h3 class="t-d3">Paris</h3>
-            <p class="t-small"><?= t('accueil.commander.adresse') ?></p>
-          </div>
-        </div>
+        <!-- POINTS DE VENTE — table `point_de_vente`, lot G12 -->
+        <?php require dirname(__DIR__) . '/partials/points-de-vente.php'; ?>
       </div>
     </div>
   </div>

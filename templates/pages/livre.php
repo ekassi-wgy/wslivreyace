@@ -15,9 +15,17 @@ use App\Core\Langue;
 use App\Core\View;
 use App\Model\Actualite;
 use App\Model\Evenement;
+use App\Model\PointDeVente;
 use App\Core\DateLisible;
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
+
+/**
+ * Les points de vente publiés (lot G12), lus ici comme sur l'accueil : les
+ * deux pages portent la même section « Où se procurer l'ouvrage », et le même
+ * gabarit partagé la dessine désormais. Voir `App\Model\PointDeVente`.
+ */
+$pointsDeVente = PointDeVente::listerPublies();
 
 /**
  * Le bloc de préface, rendu à l'une ou l'autre place selon le réglage.
@@ -339,21 +347,8 @@ $blocPreface = static function (array $preface, bool $enAvant): void {
 
     <div class="row">
       <div class="col-lg-10 offset-lg-2">
-        <!-- POINTS DE VENTE — à renseigner (CDC §4.2) -->
-        <div class="pos row g-0 reveal">
-          <div class="pos__i col-md-4">
-            <h3 class="t-d3">Abidjan</h3>
-            <p class="t-small"><?= t('livre.acheter.adresse') ?></p>
-          </div>
-          <div class="pos__i col-md-4">
-            <h3 class="t-d3">Yamoussoukro</h3>
-            <p class="t-small"><?= t('livre.acheter.adresse') ?></p>
-          </div>
-          <div class="pos__i col-md-4">
-            <h3 class="t-d3">Paris</h3>
-            <p class="t-small"><?= t('livre.acheter.adresse') ?></p>
-          </div>
-        </div>
+        <!-- POINTS DE VENTE — table `point_de_vente` (CDC §4.2, lot G12) -->
+        <?php require dirname(__DIR__) . '/partials/points-de-vente.php'; ?>
       </div>
     </div>
   </div>
