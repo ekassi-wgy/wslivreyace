@@ -1301,11 +1301,22 @@ n'avait jamais été relevé jusque-là (voir §2, qui raisonnait dessus sans
 l'avoir constaté). `repere` porte ses sept entrées et ses quatre mises en avant ;
 `repere.periode` a bien disparu.
 
-**Ce qui reste est l'envoi des fichiers**, et c'est la plus grosse part : 112
-fichiers ont changé depuis le dernier état déployé, dont 54 nouveaux et **un
+**Ce qui reste est l'envoi des fichiers**, et c'est la plus grosse part : 117
+fichiers ont changé depuis le dernier état déployé, dont 59 nouveaux et **un
 supprimé** — `src/Core/DateFr.php`, renommé en `DateLisible.php` au lot G11 ;
 un envoi FTP n'efface rien, il faut donc le retirer à la main, faute de quoi
 deux classes coexistent et la lecture s'en trouve trompée.
+
+Le compte se mesure, il ne se retient pas — **hors `sql/` et `README.md`, qui
+ne s'envoient pas par FTP** : les migrations se jouent dans phpMyAdmin et le
+présent fichier ne sert qu'au dépôt. `d83dde1` est le dernier état mis en
+ligne, celui du 2 septembre.
+
+    git diff --name-status d83dde1 HEAD | grep -v '	sql/\|	README.md'
+
+**`config/config.php` est dans le lot**, et il porte les coordonnées publiques :
+l'adresse et le téléphone ont changé le 8 septembre, et ils n'atteindront la
+page Contact et les mentions légales que par ce fichier.
 
 Les quatre pièges de cet envoi sont listés plus bas — « Côté fichiers » — et le
 premier est que `quarantaine/` ne contient que des fichiers commençant par un
@@ -1446,10 +1457,16 @@ valent pour tout déploiement futur :
   en lisant la source d'une page en ligne — la balise `<link rel="canonical">`
   doit porter le domaine réel.
 - **Les coordonnées publiques sont dans `config/config.php`**, donc dans le
-  dépôt : adresse, courriel, téléphone, domaine. Elles alimentent la page
-  Contact, les mentions légales et le pied de page. Les corriger se fait à un
-  seul endroit ; les surcharger sur le serveur reste possible par
-  `config.local.php`, qui est fusionné par-dessus.
+  dépôt : boîte postale, adresse du siège, courriel, téléphone, domaine. Elles
+  alimentent la page Contact, les mentions légales et le pied de page. Les
+  corriger se fait à un seul endroit ; les surcharger sur le serveur reste
+  possible par `config.local.php`, qui est fusionné par-dessus.
+
+  **Et c'est justement le piège du prochain envoi** : si le `config.local.php`
+  du serveur porte une clé `contact`, elle recouvrira les nouvelles
+  coordonnées et la page Contact continuera d'afficher l'adresse de Cocody.
+  `array_replace_recursive` fusionne clé par clé — il faut donc vérifier ce que
+  le fichier du serveur contient avant de conclure que l'envoi n'a pas pris.
 - **`reference/` n'a rien à faire en production** : 70 Mo verrouillés en 403,
   à exclure explicitement de la règle de déploiement.
 
