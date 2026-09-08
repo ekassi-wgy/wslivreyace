@@ -17,8 +17,10 @@ le tunnel de commande. **Dix des onze lots du nouveau périmètre le sont aussi.
 
 **Restent : le tunnel de commande (G3) et la traduction anglaise (G11).**
 
-⚠️ **Le dépôt est en avance sur le serveur.** Neuf migrations attendent d'être
-jouées — voir « Ce qui est en ligne » au §7 et les lots du §9.
+⚠️ **Le dépôt est en avance sur le serveur, mais l'écart s'est réduit de
+moitié le 8 septembre 2026 : les quinze migrations sont jouées en production.**
+Le code, lui, n'est pas envoyé — c'est désormais tout ce qui sépare le serveur
+du dépôt. Voir « Ce qui est en ligne » au §7.
 
 ---
 
@@ -142,6 +144,18 @@ des dates, des identifiants ou des rangs numériques.
 `utf8mb4_0900_ai_ci` reste donc admis **en local**, et interdit dans un fichier
 destiné au serveur : un hébergement mutualisé sous MariaDB refuse le fichier
 entier, pas seulement la ligne fautive.
+
+**Ce n'est plus une précaution, c'est une mesure.** Le 8 septembre 2026, le
+serveur a répondu **MariaDB 10.5.26** quand le poste de développement tourne
+sous MySQL 8.0.40. Deux moteurs, deux comportements — MariaDB conserve par
+exemple les largeurs d'affichage (`int(10) unsigned` là où MySQL 8 écrit `int
+unsigned`), ce qui suffit à rendre bruyant un `diff` de schéma entre les deux.
+**Conséquence pour qui vérifie un fichier SQL : un essai local ne prouve rien
+pour la production.** Il faut relire ce que MariaDB 10.5 ne sait pas faire —
+colonnes générées, index fonctionnels, collations `_0900_` — et, pour les
+longueurs de clé, s'appuyer sur ce que le serveur porte déjà : `uk_media_fichier`
+sur `varchar(255)` en utf8mb4 fait 1020 octets, ce qui établit à lui seul que
+la vieille limite de 767 n'y est pas en vigueur.
 
 ```
 livreyace/                  ← racine web
@@ -1252,12 +1266,21 @@ back-office aussi, et les quatre migrations jouées en production.
 été écrits et poussés dans la foulée, avec neuf migrations. La liste, dans
 l'ordre où les jouer, est au §9 — « Où en est ce périmètre ».
 
-**État au 8 septembre 2026 : le déploiement a commencé, et s'est arrêté après
-`009`.** Les migrations `007`, `008` et `009` sont jouées en production —
-constaté dans phpMyAdmin, `repere` y porte ses sept entrées et ses quatre mises
-en avant. **`010` à `015` restent à jouer.** L'envoi des fichiers n'a pas été
-mesuré et n'est pas affirmé ici. La requête ci-dessous dit l'état de la base
-mieux que ce paragraphe, qui vieillira.
+**État au 8 septembre 2026 : la base est à jour, le code ne l'est pas.** Les
+neuf migrations du nouveau périmètre ont été jouées dans la journée, `007` à
+`015`, une à une dans phpMyAdmin — le serveur est un **MariaDB 10.5.26**, ce qui
+n'avait jamais été relevé jusque-là (voir §2, qui raisonnait dessus sans
+l'avoir constaté). `repere` porte ses sept entrées et ses quatre mises en avant ;
+`repere.periode` a bien disparu.
+
+**Ce qui reste est l'envoi des fichiers**, et c'est la plus grosse part : 77
+fichiers ont changé depuis le dernier état déployé, dont 37 nouveaux, aucun
+supprimé. Les quatre pièges de cet envoi sont listés plus bas — « Côté
+fichiers » — et le premier est que `quarantaine/` ne contient que des fichiers
+commençant par un point, que les clients FTP masquent.
+
+**Ce paragraphe vieillira ; la requête ci-dessous, non.** Elle est la mesure,
+il n'en est que le résumé.
 
 | Migration | Ce qu'elle apporte | État en production |
 |---|---|---|
@@ -1265,10 +1288,7 @@ mieux que ce paragraphe, qui vieillira.
 | `sql/004_commande.sql` | provenance du paiement, code de transaction, note et trace de remise (lot E2) | jouée |
 | `sql/005_soumission.sql` | journal des soumissions publiques (limitation de débit) | jouée |
 | `sql/006_message.sql` | table des messages du formulaire de contact (lot F4) | jouée |
-| `sql/007_actualite_categories.sql` | quatre catégories d'actualités (lot G0) | jouée le 8 septembre |
-| `sql/008_repere_avant.sql` | colonne `en_avant` sur `repere` (lot G0) | jouée le 8 septembre |
-| `sql/009_repere_amorce.sql` | les sept repères de la frise (lot G0) | jouée le 8 septembre |
-| `sql/010_traduction.sql` → `sql/015_periode.sql` | le reste du nouveau périmètre | **à jouer** |
+| `sql/007_actualite_categories.sql` → `sql/015_periode.sql` | tout le nouveau périmètre, neuf fichiers | jouées le 8 septembre |
 
 **`001_schema.sql` ne se rejoue jamais sur une base installée.** Il a été mis à
 jour pour qu'une installation neuve n'ait pas à rejouer l'historique, mais ses
@@ -1615,11 +1635,10 @@ la continuité du site de référence. Contrepartie assumée : le back-office es
 
 ### Où en est ce périmètre
 
-**État au 7 septembre 2026, fin de journée.** Dix lots sur onze sont écrits,
-testés et poussés ; **aucun n'est encore déployé.** — *Le 8 septembre, le
-déploiement a commencé par la base : les migrations `007` à `009` sont jouées,
-`010` à `015` restent à faire. Voir le §7, qui porte l'état daté et la requête
-qui le vérifie.*
+**État au 8 septembre 2026.** Dix lots sur onze sont écrits, testés et poussés.
+**Leurs neuf migrations sont jouées en production ; leur code ne l'est pas** —
+tant qu'il ne l'est pas, ces tables sont en place et personne ne les voit. Le
+§7 porte l'état daté et la requête qui le vérifie.
 
 | Lot | Objet | État |
 |---|---|---|
@@ -1642,21 +1661,21 @@ confirmé le 7 septembre qu'aucune date de sortie n'est annoncée. C'est le seul
 lot dont le retard aurait une conséquence commerciale, et il demande quatre à
 six jours : **dès qu'une date est évoquée, il repasse en tête.**
 
-**Neuf migrations à jouer, dans cet ordre**, et une seule fois. **Les trois
-premières sont jouées en production depuis le 8 septembre** ; le contrôle est
-au §7.
+**Neuf migrations à jouer, dans cet ordre**, et une seule fois. **Les neuf sont
+jouées en production depuis le 8 septembre** ; le contrôle est au §7. La liste
+reste ici pour une installation neuve, et pour dire ce que chacune apporte.
 
 | Fichier | Lot | Ce qu'il apporte | |
 |---|---|---|---|
 | `sql/007_actualite_categories.sql` | G0 | quatre catégories d'actualités | jouée |
 | `sql/008_repere_avant.sql` | G0 | la colonne `en_avant`, qui met un repère sur l'accueil | jouée |
 | `sql/009_repere_amorce.sql` | G0 | les sept repères de la frise — **seulement si `repere` est vide** | jouée |
-| `sql/010_traduction.sql` | G1 | la table de traduction | à jouer |
-| `sql/011_archive.sql` | G4 | `archive` et `archive_media` | à jouer |
-| `sql/012_media_famille.sql` | G5 | la colonne `famille` sur `media` | à jouer |
-| `sql/013_heritage.sql` | G7 | `heritage` et `heritage_media` | à jouer |
-| `sql/014_contribution.sql` | G8 | `contribution` et `contribution_fichier` | à jouer |
-| `sql/015_periode.sql` | G10 | `periode` et `periode_media`, l'amorce des cinq chapitres, et la colonne `repere.periode` qui **disparaît** | à jouer |
+| `sql/010_traduction.sql` | G1 | la table de traduction | jouée |
+| `sql/011_archive.sql` | G4 | `archive` et `archive_media` | jouée |
+| `sql/012_media_famille.sql` | G5 | la colonne `famille` sur `media` | jouée |
+| `sql/013_heritage.sql` | G7 | `heritage` et `heritage_media` | jouée |
+| `sql/014_contribution.sql` | G8 | `contribution` et `contribution_fichier` | jouée |
+| `sql/015_periode.sql` | G10 | `periode` et `periode_media`, l'amorce des cinq chapitres, et la colonne `repere.periode` qui **disparaît** | jouée |
 
 **Deux points de déploiement qu'aucune migration ne règle :**
 
@@ -1894,7 +1913,7 @@ logotype : sur un site de référence on arrive par un lien profond, et le retou
 doit se nommer. Le panneau mobile se borne à la hauteur visible et défile en
 dedans — à sept entrées, la dernière sortait de l'écran sur un téléphone bas.
 
-**Trois migrations à jouer, dans cet ordre :**
+**Trois migrations, dans cet ordre** (jouées en production le 8 septembre) :
 
 | Fichier | Ce qu'il apporte |
 |---|---|
