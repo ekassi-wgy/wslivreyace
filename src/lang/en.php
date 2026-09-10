@@ -71,6 +71,15 @@ return [
     'pied.mentions'         => 'Legal notice',
     'pied.confidentialite'  => 'Privacy',
 
+    // --- WhatsApp channel -----------------------------------------------------
+    'chaine.suivre'     => 'Follow',
+    'chaine.lien'       => 'The WhatsApp channel',
+    'chaine.pied_note'  => 'News about the book, as it happens.',
+    'chaine.titre'      => 'Follow the WhatsApp channel',
+    'chaine.texte'      => 'Every post from the site appears there too. Broadcast only — no phone number is visible.',
+    'chaine.rejoindre'  => 'Join',
+    'chaine.aria'       => 'Follow the WhatsApp channel — opens WhatsApp in a new tab',
+
     // --- Breadcrumb ------------------------------------------------------------
     'fil.aria' => 'Breadcrumb',
 

@@ -13,6 +13,11 @@ $lien = static fn(string $chemin): string => App\Core\Langue::chemin($chemin);
         <a class="logo" href="<?= $lien('/') ?>" aria-label="<?= t('nav.logo_aria') ?>">
           <svg class="logo__svg" aria-hidden="true" focusable="false"><use href="#pgy-logo"></use></svg>
         </a>
+        <?php /* La chaîne WhatsApp, sous le logotype : la colonne était à
+                 moitié vide et c'est le premier endroit où l'œil tombe dans le
+                 pied. Le partial ne rend rien si l'adresse est vide en
+                 configuration. */ ?>
+        <?php $variante = 'pied'; require __DIR__ . '/chaine.php'; ?>
       </div>
       <div class="col-lg-3 foot__col">
         <p><?= t('pied.ouvrage') ?></p>

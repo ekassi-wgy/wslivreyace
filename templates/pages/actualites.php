@@ -126,5 +126,20 @@ $courante = $categorie === null ? '' : Actualite::categorie($categorie);
 
     <?php endif; ?>
 
+    <?php /* Le bandeau vient après la liste, jamais avant : sur une page
+             éditoriale, un appel placé au-dessus du contenu repousse ce qu'on
+             est venu lire. Le lecteur arrivé au bout est justement celui qui
+             veut la suite — et si la liste est vide, il est la seule chose à
+             proposer.
+
+             Aligné sur la liste (`offset-lg-2`) plutôt que sur la pleine
+             largeur : il appartient à la colonne des actualités, il ne la
+             déborde pas. */ ?>
+    <div class="row" style="margin-top: var(--sp-8);">
+      <div class="col-lg-10 offset-lg-2">
+        <?php $variante = 'bande'; require dirname(__DIR__) . '/partials/chaine.php'; ?>
+      </div>
+    </div>
+
   </div>
 </section>

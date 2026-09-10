@@ -88,6 +88,18 @@ return [
     'pied.mentions'         => 'Mentions légales',
     'pied.confidentialite'  => 'Confidentialité',
 
+    // --- Chaîne WhatsApp ------------------------------------------------------
+    // Paraît à deux endroits — le pied et la page des actualités — depuis une
+    // seule source, `partials/chaine.php`. Rien ne s'affiche si l'adresse est
+    // vide dans `config/config.php`.
+    'chaine.suivre'     => 'Suivre',
+    'chaine.lien'       => 'La chaîne WhatsApp',
+    'chaine.pied_note'  => "L'actualité de l'ouvrage, en direct.",
+    'chaine.titre'      => 'Suivre la chaîne WhatsApp',
+    'chaine.texte'      => "Chaque publication du site y paraît aussi. Diffusion seule : aucun numéro n'est visible.",
+    'chaine.rejoindre'  => 'Rejoindre',
+    'chaine.aria'       => 'Suivre la chaîne WhatsApp — ouvre WhatsApp dans un nouvel onglet',
+
     // --- Fil d'Ariane ---------------------------------------------------------
     'fil.aria' => "Fil d'Ariane",
 

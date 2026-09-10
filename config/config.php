@@ -82,6 +82,26 @@ $config = [
         'tel_lien'  => '',
         'site'      => 'https://www.philippeyace.ci',
     ],
+    /*
+     * Réseaux publics.
+     *
+     * Ici pour la même raison que les coordonnées : une adresse de chaîne est
+     * une constante d'organisation, pas du contenu éditorial. Elle s'ouvre une
+     * fois et ne bouge plus ; lui bâtir un écran d'administration serait faire
+     * un formulaire pour une ligne qu'on ne rouvrira pas.
+     *
+     * **Une valeur vide n'affiche rien** — ni le bloc du pied, ni le bandeau
+     * des actualités. C'est ainsi qu'on ferme un canal : on vide la ligne, on
+     * ne touche à aucun gabarit. Même principe que `tel_lien` ci-dessus.
+     */
+    'reseaux' => [
+        /*
+         * Chaîne WhatsApp — diffusion seule. Les abonnés ne se voient pas
+         * entre eux et leur numéro n'est pas exposé : c'est ce que dit le
+         * bandeau, et c'est ce qui lève l'hésitation à s'abonner.
+         */
+        'whatsapp_chaine' => 'https://whatsapp.com/channel/0029VbDYE1j2Jl8F3ZEnci3h',
+    ],
 
     // Passerelle de paiement retenue : celle du site de référence. Elle peut
     // changer — c'est pourquoi l'hôte est ici et non dans le code. Voir
