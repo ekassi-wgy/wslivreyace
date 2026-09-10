@@ -202,7 +202,7 @@ livreyace/                  ← racine web
 │                           Repere, Temoignage, Message,
 │                           Media, Commande, Zone, Parametre,
 │                           Archive, Heritage, Periode,
-│                           Contribution,
+│                           Contribution, Citation,
 │                           Utilisateur, TentativeConnexion    [interdit]
 ├── templates/
 │   ├── layout.php          mise en page du site public       [interdit]
@@ -1449,6 +1449,7 @@ il n'en est que le résumé.
 | `sql/007_actualite_categories.sql` → `sql/015_periode.sql` | tout le nouveau périmètre, neuf fichiers | jouées le 8 septembre |
 | `sql/016_boutique.sql` | la boutique : zones de livraison, décompte figé des commandes, statuts du paiement à la livraison | **à jouer** |
 | `sql/017_point_de_vente.sql` | les points de vente, et l'amorce des trois villes qui étaient écrites dans les gabarits | **à jouer** |
+| `sql/018_citation.sql` | la table `citation` — vide, sans amorce | **à jouer** |
 
 **`001_schema.sql` ne se rejoue jamais sur une base installée.** Il a été mis à
 jour pour qu'une installation neuve n'ait pas à rejouer l'historique, mais ses
@@ -1924,6 +1925,7 @@ chacune apporte.
 | `sql/015_periode.sql` | G10 | `periode` et `periode_media`, l'amorce des cinq chapitres, et la colonne `repere.periode` qui **disparaît** | jouée |
 | `sql/016_boutique.sql` | G3 | `zone_livraison` et son amorce, quatre colonnes sur `commande`, deux statuts de plus, le prix numérique | **à jouer** |
 | `sql/017_point_de_vente.sql` | G12 | `point_de_vente`, et l'amorce des trois villes qui vivaient dans les gabarits | **à jouer** |
+| `sql/018_citation.sql` | G14 | `citation`, vide : les trois bandeaux ne portaient rien à reprendre | **à jouer** |
 
 **Deux points de déploiement qu'aucune migration ne règle :**
 
@@ -3218,6 +3220,68 @@ téléphone, ni le site : un nom propre ne se traduit pas.
 |---|---|
 | `sql/017_point_de_vente.sql` | la table `point_de_vente` et l'amorce des trois villes, publiées, sans enseigne ni adresse |
 
+### Lot G14 — livré
+
+**Trois bandeaux du site public affichaient leur propre consigne de
+remplissage.** « Emplacement réservé à un extrait de l'ouvrage, à choisir par
+l'éditeur », en grands caractères sur fond sombre, pleine largeur — sur
+l'accueil, sur la page du livre, et sur la biographie sous la forme
+« Emplacement réservé à une citation sourcée de Philippe Grégoire Yacé ».
+
+**Le défaut.** Les trois tiraient leur texte de `src/lang/fr.php`,
+c'est-à-dire du code : `accueil.extrait.*`, `livre.extrait.*`,
+`biographie.citations.*`. Aucun n'avait jamais reçu de contenu, et aucun ne
+pouvait en recevoir sans qu'on rouvre le lexique. Les deux « Extrait » étaient
+de surcroît **le même texte écrit deux fois**, mot pour mot, sous deux jeux de
+clés — la duplication que le lot G12 venait de retirer aux points de vente.
+
+**Ils sont en base** (`citation`), avec leur écran dans « Contenus » —
+emplacement, texte, source, statut, mise en avant.
+
+**Deux régimes, et il en faut deux.** `statut` dit si la citation est prête ;
+`en_avant` dit laquelle des citations prêtes occupe son emplacement. Sans le
+premier, une citation en cours de vérification serait indistinguable d'une
+citation écartée. Sans le second, deux citations publiées pour un même bandeau
+laisseraient à MySQL le soin de choisir laquelle paraît — ce qu'aucun ordre ne
+garantit.
+
+**L'activation est exclusive.** Cocher une citation décoche celle qui occupait
+la place, dans le même emplacement et nulle part ailleurs. Une case qui se
+comporte en bouton radio, parce qu'un bandeau ne montre qu'une citation :
+sans cette règle, l'éditeur en coche deux et se demande laquelle paraît. C'est
+`App\Model\Citation::activer()` qui la tient, appelée par le crochet
+`apresEcriture()` du déroulé CRUD commun.
+
+**La liste signale les emplacements muets, et distingue leurs trois causes** —
+aucune citation publiée, aucune mise en avant, ou une mise en avant qui n'est
+pas publiée. La troisième est celle qui déroute : la case est cochée,
+l'éditeur croit avoir agi, et rien ne paraît parce que le statut n'a pas suivi.
+Un bandeau absent ne laisse aucune trace dans le back-office ; c'est le seul
+endroit d'où il se voit.
+
+**Aucune amorce, et c'est délibéré.** Les trois blocs ne portaient rien à
+reprendre, seulement leur consigne. En inventer une reviendrait à attribuer un
+propos à un homme d'État sans source — ce que le gabarit de la biographie
+interdit en toutes lettres depuis le premier commit :
+
+    <!-- CITATIONS — aucun propos ne doit être attribué sans source vérifiée -->
+
+**Les trois sections disparaissent donc du site jusqu'à ce que l'éditeur les
+remplisse.** C'est un progrès, pas une régression : un bandeau qui affiche
+« Emplacement réservé » est pire qu'un bandeau absent. Même règle que partout
+ailleurs — une valeur vide ne s'affiche pas.
+
+**Traduisible dès l'ouverture** : `texte` et `source` sont déclarés à l'écran
+des traductions. La source autant que le texte — « Une destinée, chapitre IV »
+se dit « chapter IV », et « Assemblée nationale, 7 août 1960 » demande le nom
+anglais de l'institution.
+
+**Une migration**, `sql/018_citation.sql`.
+
+| Fichier | Ce qu'il apporte |
+|---|---|
+| `sql/018_citation.sql` | la table `citation`, **vide** — les trois bandeaux ne portaient aucun contenu à reprendre |
+
 ### Ce que le brief ajoute à la liste des livrables attendus
 
 À la liste du §5 s'ajoutent, tous non techniques :
@@ -3233,4 +3297,5 @@ téléphone, ni le site : un nom propre ne se traduit pas.
 | **Politique de sauvegarde** — qui garde une copie des originaux, où, à quelle fréquence | hébergeur / commanditaire |
 | **Enseignes et adresses des points de vente** — les trois villes sont en base et publiées (G12), mais aucune ne dit encore où aller : l'accueil et la page du livre affichent « Enseigne et adresse à renseigner » sous Abidjan, Yamoussoukro et Paris | commanditaire / éditeur |
 | **Prix de l'ouvrage en francs CFA**, et le **point de retrait** avec ses horaires. Ce sont les deux valeurs qui ouvrent la boutique : sans prix elle reste fermée, sans point de retrait le retrait n'est pas proposé. Les **tarifs de livraison** se posent ensuite, zone par zone | commanditaire / éditeur |
+| **Trois citations sourcées** — un extrait de l'ouvrage pour l'accueil, un autre pour la page du livre, un propos de Philippe Grégoire Yacé pour la biographie, chacun avec sa provenance. Le mécanisme est livré (G14) : les trois bandeaux restent absents du site tant qu'aucune citation n'est publiée et mise en avant | commanditaire / éditeur |
 | **Traduction anglaise des contenus** — biographie, notices d'archives, sujets d'Héritage, préface. **L'anglais est ouvert** : chaque champ traduit depuis le back-office retire une phrase française des pages `/en/`, et un champ non traduit y affiche le français | commanditaire / traducteur |
