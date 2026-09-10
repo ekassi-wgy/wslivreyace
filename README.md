@@ -1112,8 +1112,9 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
   de l'ouvrage ou le portrait ; le sujet doit tenir dans les 80 % centraux, les
   vignettes carrées de certaines plateformes rognant les bords.
 - **Adresse publique** — **le domaine est arrêté : `https://www.philippeyace.ci`**.
-  Il reste à le poser en `'url'` dans la section `app` de
-  `config/config.local.php`, sur le serveur. Il n'est volontairement pas écrit
+  Il se pose en `'url'` dans la section `app` de `config/config.local.php`, qui
+  existe sur le serveur depuis le 10 septembre ; **à confirmer**, la mise en
+  place n'ayant porté que sur les identifiants de base. Il n'est volontairement pas écrit
   dans `config/config.php` : le poste de développement rendrait alors des
   `canonical` pointant vers la production. Sans cette valeur, `canonical` et
   `og:image` retombent sur l'hôte de la requête, acceptable en développement,
@@ -1467,12 +1468,20 @@ valent pour tout déploiement futur :
   `canonical` et `og:image` retombent sur l'en-tête `Host` de la requête, que le
   client choisit.
 
-  **L'ordre de la première bascule compte**, et lui seul : créer ce fichier sur
-  le serveur *avant* d'envoyer le nouveau `config/config.php`. Il est inerte
-  tant que l'ancien `config.php` porte encore ses propres valeurs — le site ne
-  s'interrompt donc à aucun moment, et remettre l'ancien `config.php` suffirait
-  à revenir en arrière. Une fois posé, il n'y a plus jamais rien à éditer en
-  ligne.
+  **C'est fait : le fichier est en place sur le serveur depuis le 10 septembre,
+  avec les identifiants de production.** La première bascule est donc derrière
+  nous, et avec elle sa seule contrainte d'ordre — il fallait créer ce fichier
+  *avant* d'envoyer le nouveau `config/config.php`, sans quoi le serveur se
+  retrouvait sans identifiants. Le prochain envoi n'a plus à s'en soucier :
+  `config.php` part comme n'importe quel autre fichier, et **il n'y a plus
+  jamais rien à éditer en ligne.**
+
+  Restent deux valeurs du même fichier que le dépôt ne peut ni renseigner ni
+  vérifier, et qu'il faut confirmer une fois sur le serveur : `'debug' => false`
+  et `'url' => 'https://www.philippeyace.ci'`. La première se constate en
+  provoquant une erreur — aucune trace ne doit paraître ; la seconde en lisant
+  la source d'une page en ligne, où `<link rel="canonical">` doit porter le
+  domaine réel.
 
   S'il manque, le site ne rend plus une demi-page : `src/bootstrap.php` arrête
   tout et sert `templates/maintenance.php` en 503 avec un `Retry-After`. Un 500
