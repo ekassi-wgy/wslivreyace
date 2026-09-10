@@ -14,6 +14,7 @@ $ld = json_encode([
 use App\Core\Langue;
 use App\Core\View;
 use App\Model\Actualite;
+use App\Model\Citation;
 use App\Model\Evenement;
 use App\Model\PointDeVente;
 use App\Core\DateLisible;
@@ -26,6 +27,17 @@ $lien = static fn(string $chemin): string => Langue::chemin($chemin);
  * gabarit partagé la dessine désormais. Voir `App\Model\PointDeVente`.
  */
 $pointsDeVente = PointDeVente::listerPublies();
+
+/**
+ * La citation du bandeau « Extrait » (lot G14). Elle venait du lexique et
+ * portait le même texte que celle de l'accueil, mot pour mot, sous un second
+ * jeu de clés : deux copies d'un même bloc, dont une aurait fini par ne plus
+ * être tenue à jour. Ce sont désormais deux lignes de la table `citation`,
+ * distinctes et chacune à son emplacement.
+ *
+ * `null` fait disparaître la section entière.
+ */
+$citation = Citation::affichee('livre');
 
 /**
  * Le bloc de préface, rendu à l'une ou l'autre place selon le réglage.
@@ -188,17 +200,21 @@ $blocPreface = static function (array $preface, bool $enAvant): void {
 </section>
 
 <!-- ===================== EXTRAIT ===================== -->
+<?php if ($citation !== null): ?>
 <section class="section section--dark" id="extrait">
   <div class="shell">
     <div class="row">
       <div class="col-lg-9 offset-lg-2">
         <p class="kicker reveal"><?= t('livre.extrait.kicker') ?></p>
-        <blockquote class="quote reveal" style="margin:0;"><?= t('livre.extrait.texte') ?></blockquote>
-        <p class="quote__src reveal"><?= t('livre.extrait.source') ?></p>
+        <blockquote class="quote reveal" style="margin:0;"><?= View::e((string) $citation['texte']) ?></blockquote>
+        <?php if (trim((string) ($citation['source'] ?? '')) !== ''): ?>
+          <p class="quote__src reveal"><?= View::e((string) $citation['source']) ?></p>
+        <?php endif; ?>
       </div>
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <!-- ===================== FEUILLETAGE ===================== -->
 <section class="section">

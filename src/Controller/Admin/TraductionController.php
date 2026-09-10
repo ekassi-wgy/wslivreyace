@@ -11,6 +11,7 @@ use App\Core\Traduction;
 use App\Core\View;
 use App\Model\Actualite;
 use App\Model\Archive;
+use App\Model\Citation;
 use App\Model\Evenement;
 use App\Model\Heritage;
 use App\Model\Parametre;
@@ -72,6 +73,21 @@ final class TraductionController
                 'titre'      => ['libelle' => 'Titre',       'zone' => false],
                 'sous_titre' => ['libelle' => 'Sous-titre',  'zone' => false],
                 'recit'      => ['libelle' => 'Récit',       'zone' => true],
+            ],
+        ],
+        /*
+         * Les citations (lot G14). `source` se traduit autant que `texte` :
+         * « Une destinée, chapitre IV » se dit « chapter IV » en anglais, et
+         * « Assemblée nationale, 7 août 1960 » demande le nom anglais de
+         * l'institution.
+         */
+        'citation' => [
+            'modele' => Citation::class,
+            'titre'  => 'Citations',
+            'ordre'  => 'emplacement ASC, id DESC',
+            'champs' => [
+                'texte'  => ['libelle' => 'Texte',  'zone' => true],
+                'source' => ['libelle' => 'Source', 'zone' => false],
             ],
         ],
         'repere' => [

@@ -104,6 +104,17 @@ final class Admin
              * communication, pas une décision commerciale. Celui qui rédige
              * l'actualité d'une dédicace est celui qui sait où l'on achète.
              */
+            /*
+             * Les citations (lot G14). Placées avec les contenus et non avec
+             * les réglages : choisir la phrase qui ouvre l'accueil est un acte
+             * éditorial, au même titre qu'écrire une actualité.
+             */
+            [
+                'cle'    => 'citations',
+                'titre'  => 'Citations',
+                'icone'  => 'mdi-format-quote-close',
+                'url'    => self::url('/citations'),
+            ],
             [
                 'cle'    => 'points-de-vente',
                 'titre'  => 'Points de vente',

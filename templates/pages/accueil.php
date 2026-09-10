@@ -41,6 +41,17 @@ $preface = App\Controller\LivreController::preface(App\Model\Parametre::toutes()
  * du back-office.
  */
 $pointsDeVente = App\Model\PointDeVente::listerPublies();
+
+/**
+ * La citation du bandeau « Extrait » (lot G14). Elle venait du lexique, sous
+ * la forme d'un « Emplacement réservé à un extrait de l'ouvrage » qui
+ * s'affichait tel quel en ligne. Table `citation`, écran « Citations » du
+ * back-office, un seul extrait mis en avant par emplacement.
+ *
+ * `null` fait disparaître la section entière : un bandeau sombre pleine
+ * largeur autour d'un vide se remarquerait plus que son absence.
+ */
+$citation = App\Model\Citation::affichee('accueil');
 ?>
 
 <!-- ===================== HERO ===================== -->
@@ -301,17 +312,21 @@ $compte = [
 <?php endif; ?>
 
 <!-- ===================== CITATION ===================== -->
+<?php if ($citation !== null): ?>
 <section class="section section--dark">
   <div class="shell">
     <div class="row">
       <div class="col-lg-9 offset-lg-2">
         <p class="kicker reveal"><?= t('accueil.extrait.kicker') ?></p>
-        <blockquote class="quote reveal" style="margin:0;"><?= t('accueil.extrait.texte') ?></blockquote>
-        <p class="quote__src reveal"><?= t('accueil.extrait.source') ?></p>
+        <blockquote class="quote reveal" style="margin:0;"><?= App\Core\View::e((string) $citation['texte']) ?></blockquote>
+        <?php if (trim((string) ($citation['source'] ?? '')) !== ''): ?>
+          <p class="quote__src reveal"><?= App\Core\View::e((string) $citation['source']) ?></p>
+        <?php endif; ?>
       </div>
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <!-- ===================== 04 · GALERIE ===================== -->
 <section class="section" id="galerie">

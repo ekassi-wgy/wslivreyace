@@ -17,10 +17,25 @@
 
 use App\Core\Langue;
 use App\Core\View;
+use App\Model\Citation;
 use App\Model\Media;
 use App\Model\Periode;
 
 $lien = static fn(string $chemin): string => Langue::chemin($chemin);
+
+/**
+ * La citation du bandeau « Citations » (lot G14).
+ *
+ * Elle venait du lexique — « Emplacement réservé à une citation sourcée de
+ * Philippe Grégoire Yacé » — et ce texte d'attente s'affichait tel quel en
+ * ligne. Table `citation`, écran « Citations » du back-office.
+ *
+ * La consigne que ce gabarit porte depuis le premier jour vaut toujours, et
+ * c'est le back-office qui la tient désormais : aucun propos ne doit être
+ * attribué sans source vérifiée. `null` fait disparaître la section — mieux
+ * vaut pas de citation qu'une citation non sourcée.
+ */
+$citation = Citation::affichee('biographie');
 
 $titre       = t_nu('biographie.titre_page');
 $description = t_nu('biographie.description');
@@ -250,18 +265,22 @@ JSONLD;
 <?php endif; ?>
 
 <!-- ===================== CITATIONS ===================== -->
+<?php if ($citation !== null): ?>
 <section class="section section--dark">
   <div class="shell">
     <div class="row">
       <div class="col-lg-9 offset-lg-2">
         <p class="kicker reveal"><?= t('biographie.citations.kicker') ?></p>
         <!-- CITATIONS — aucun propos ne doit être attribué sans source vérifiée -->
-        <blockquote class="quote reveal" style="margin:0;"><?= t('biographie.citations.texte') ?></blockquote>
-        <p class="quote__src reveal"><?= t('biographie.citations.source') ?></p>
+        <blockquote class="quote reveal" style="margin:0;"><?= View::e((string) $citation['texte']) ?></blockquote>
+        <?php if (trim((string) ($citation['source'] ?? '')) !== ''): ?>
+          <p class="quote__src reveal"><?= View::e((string) $citation['source']) ?></p>
+        <?php endif; ?>
       </div>
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <!-- ===================== GALERIE ===================== -->
 <section class="section">

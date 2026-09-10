@@ -14,6 +14,7 @@ use App\Controller\Admin\ArchiveController;
 use App\Controller\Admin\AuthController;
 use App\Controller\Admin\ContributionController;
 use App\Controller\Admin\HeritageController;
+use App\Controller\Admin\CitationController;
 use App\Controller\Admin\CommandeController;
 use App\Controller\Admin\CompteController;
 use App\Controller\Admin\EvenementController;
@@ -93,6 +94,14 @@ $crud('/heritage',   HeritageController::class,  'nouveau');
  * se dépublie comme une actualité.
  */
 $crud('/points-de-vente', PointDeVenteController::class, 'nouveau');
+
+/*
+ * Les citations (lot G14). Même jeu de routes que les contenus : la phrase qui
+ * ouvre l'accueil se rédige, se publie et se dépublie comme une actualité. Ce
+ * qu'elle a de particulier — une seule paraît par emplacement — est tenu par
+ * le modèle, pas par les routes.
+ */
+$crud('/citations', CitationController::class, 'nouvelle');
 
 /**
  * Modération des témoignages. Pas le même jeu de routes que les contenus : on
