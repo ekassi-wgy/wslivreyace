@@ -102,6 +102,12 @@ return [
     'chaine.rejoindre'  => 'Rejoindre',
     'chaine.aria'       => 'Suivre la chaîne WhatsApp — ouvre WhatsApp dans un nouvel onglet',
 
+    // --- Réseaux sociaux ------------------------------------------------------
+    // La rangée de boutons du pied et de la page Contact. Les noms des réseaux
+    // sont des noms propres : ils ne se traduisent pas, seule la tournure autour.
+    'reseaux.suivre'    => 'Suivre',
+    'reseaux.aria'      => 'Philippe Grégoire Yacé sur :reseau — ouvre un nouvel onglet',
+
     // --- Fil d'Ariane ---------------------------------------------------------
     'fil.aria' => "Fil d'Ariane",
 

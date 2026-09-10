@@ -127,6 +127,20 @@ $telLien = trim((string) ($contact['tel_lien'] ?? ''));
         </div>
       </div>
 
+      <?php /* Les réseaux comme cinquième coordonnée, et non comme un encart
+               rapporté : ils reprennent le filet et l'intertitre des quatre
+               autres parce qu'ils répondent à la même question — où trouver
+               l'ouvrage et ceux qui le publient.
+
+               La grille en tient quatre par ligne : ce bloc ouvre donc une
+               seconde ligne. C'est assumé, la série se lit toujours comme une
+               série. */ ?>
+      <div class="col-md-6 col-lg-3">
+        <div class="coord reveal">
+          <?php $variante = 'contact'; require dirname(__DIR__) . '/partials/reseaux.php'; ?>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>

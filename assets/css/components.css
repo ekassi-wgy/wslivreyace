@@ -632,11 +632,8 @@
    Repasser au vert, si la decision changeait, tient en une declaration :
    `.chaine__glyphe { color: #25D366; }`. */
 
-.chaine { display: inline-flex; align-items: center; gap: 0.8rem; }
-/* Dimensionne en em : le glyphe suit la taille du texte qu'il accompagne
-   plutot que d'etre repris a chaque emplacement. */
+/* Dimensionne en em : le glyphe suit la taille du texte qu'il accompagne. */
 .chaine__glyphe { width: 1.35em; height: 1.35em; flex: none; fill: currentColor; }
-.chaine__fleche { font-size: 0.8em; opacity: 0.65; }
 
 /* Le bandeau : un filet et un fond legerement souleve, pas une carte a ombre.
    C'est la grammaire de .pos, et l'ombre portee diffuse est proscrite. */
@@ -671,6 +668,72 @@
   .chaine-bande .btn-pgy { width: 100%; justify-content: space-between; }
 }
 
+/* --- Reseaux sociaux ----------------------------------------------------
+   Une rangee de boutons, servie au pied et sur la page Contact.
+
+   Le carre au filet plutot que le glyphe nu, pour trois raisons : c'est un
+   bouton et non un lien, sa cible tactile fait 44px — le minimum recommande,
+   qu'un glyphe de 22px ne tient pas —, et le filet de 1px est deja la grammaire
+   du site (.pos, .coord, .chaine-bande). Aucun arrondi : le fichier en proscrit
+   le principe des sa premiere ligne.
+
+   Le remplissage au survol est celui de .btn-pgy--ghost, repris tel quel : le
+   carre se remplit, le glyphe passe en negatif. Un seul geste, pas de
+   changement de taille ni d'ombre.
+
+   Les glyphes sont en currentColor — jamais le bleu Facebook, le rouge YouTube
+   ni le degrade Instagram. Voir templates/partials/reseaux.php. */
+
+.rx-bloc__t {
+  margin-bottom: var(--sp-3);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.rx {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  /* La rangee se replie plutot que de deborder sa colonne : sur la page
+     Contact elle vit dans un tiers de largeur, et sur un telephone quatre
+     carres de 44px plus leurs ecarts n'y tiennent pas toujours. */
+  flex-wrap: wrap;
+}
+.rx__l {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  box-shadow: inset 0 0 0 1px currentColor;
+  transition: color var(--dur-1) var(--ease), background var(--dur-1) var(--ease);
+}
+.rx__g { display: block; width: 20px; height: 20px; fill: currentColor; }
+
+/* Sur papier : filet et glyphe en gris de rappel, remplissage a l'encre. */
+/* Sur la page Contact le bloc vit dans un `.coord` : son intertitre reprend au
+   pixel pres celui de .coord__titre, interlettrage compris, pour que les cinq
+   coordonnees se lisent comme une serie et non comme quatre plus une. */
+.rx-bloc--contact .rx-bloc__t { color: var(--brass-text); letter-spacing: 0.18em; }
+.rx-bloc--contact .rx__l { color: var(--ink-3); }
+.rx-bloc--contact .rx__l:hover,
+.rx-bloc--contact .rx__l:focus-visible { color: var(--ink); background: var(--ink); }
+.rx-bloc--contact .rx__l:hover .rx__g,
+.rx-bloc--contact .rx__l:focus-visible .rx__g { fill: var(--paper); }
+
+/* Sur le pied sombre, les roles s'inversent : le remplissage se fait en papier
+   et le glyphe passe a l'encre profonde. */
+.rx-bloc--pied { margin-top: var(--sp-6); }
+.rx-bloc--pied .rx-bloc__t { color: var(--brass-soft); }
+.rx-bloc--pied .rx__l { color: rgba(247, 244, 238, 0.42); }
+.rx-bloc--pied .rx__l:hover,
+.rx-bloc--pied .rx__l:focus-visible { color: var(--paper); background: var(--paper); }
+.rx-bloc--pied .rx__l:hover .rx__g,
+.rx-bloc--pied .rx__l:focus-visible .rx__g { fill: var(--ink-deep); }
+
 /* --- Pied de page ------------------------------------------------------ */
 .foot { background: var(--ink-deep); color: rgba(247, 244, 238, 0.68); }
 /* Sur le pied sombre, le meme dessin en papier — c'est tout ce que demande
@@ -682,23 +745,6 @@
 .foot a { color: rgba(247, 244, 238, 0.68); transition: color var(--dur-1) var(--ease); }
 .foot a:hover { color: var(--brass-soft); }
 
-/* La chaine sous le logotype. L'intertitre reprend exactement le traitement de
-   .foot__col p:first-child — c'est une rubrique du pied comme les autres, elle
-   ne merite pas une graisse a elle. */
-.foot__suivre { margin-top: var(--sp-6); }
-.foot__suivre-t {
-  margin-bottom: var(--sp-3);
-  font-size: 0.6875rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--brass-soft);
-}
-.foot__suivre .chaine { font-size: 0.9375rem; }
-.foot__suivre-n {
-  margin: var(--sp-2) 0 0;
-  font-size: 0.8125rem;
-  color: rgba(247, 244, 238, 0.42);
-}
 .foot__rule { height: 1px; background: var(--rule-dark); }
 
 /* --- Responsive --------------------------------------------------------

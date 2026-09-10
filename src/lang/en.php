@@ -81,6 +81,10 @@ return [
     'chaine.rejoindre'  => 'Join',
     'chaine.aria'       => 'Follow the WhatsApp channel — opens WhatsApp in a new tab',
 
+    // --- Social networks ------------------------------------------------------
+    'reseaux.suivre'    => 'Follow',
+    'reseaux.aria'      => 'Philippe Grégoire Yacé on :reseau — opens a new tab',
+
     // --- Breadcrumb ------------------------------------------------------------
     'fil.aria' => 'Breadcrumb',
 

@@ -131,6 +131,18 @@ $config = [
          * bandeau, et c'est ce qui lève l'hésitation à s'abonner.
          */
         'whatsapp_chaine' => 'https://whatsapp.com/channel/0029VbDYE1j2Jl8F3ZEnci3h',
+
+        /*
+         * Les comptes officiels. L'ordre d'affichage n'est pas celui-ci mais
+         * celui de `templates/partials/reseaux.php` : ici c'est de la donnée,
+         * là-bas de la mise en page.
+         *
+         * Une adresse vide n'affiche pas son bouton, et si les quatre sont
+         * vides le bloc entier disparaît — du pied comme de la page Contact.
+         */
+        'facebook'  => 'https://www.facebook.com/philippegyace',
+        'instagram' => 'https://www.instagram.com/philippegyace',
+        'youtube'   => 'https://www.youtube.com/@philippegyace',
     ],
 
     // Passerelle de paiement retenue : celle du site de référence. Elle peut
