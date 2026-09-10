@@ -418,6 +418,16 @@ L'anglais n'a pas besoin de cette bande : son menu fait 889 px contre 1010,
 « The book », « Legacy » et « News » étant bien plus courts, et il ne se replie
 à aucune largeur.
 
+**Les règles du panneau visent les enfants directs — `.nav-menu > li`, jamais
+`.nav-menu li`.** Le menu contient une liste imbriquée, celle du sélecteur de
+langue, et un sélecteur de descendance l'atteint : FR et EN héritaient d'une
+largeur de 100 %, d'un filet inférieur, et EN — dernier enfant de *sa propre*
+liste — d'un `padding-top` destiné au bouton de commande. Les deux langues se
+retrouvaient à chaque bout d'une ligne, séparées par un filet parasite.
+
+C'est un piège qui se referme dès qu'on relâche ces trois sélecteurs, et il ne
+se voyait pas tant que le panneau était réservé aux écrans de moins de 992 px.
+
 ### Réseaux sociaux et chaîne WhatsApp
 
 Le site porte quatre liens sortants de marque : la **chaîne WhatsApp** — qu'il
