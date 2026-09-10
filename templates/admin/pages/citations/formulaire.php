@@ -57,8 +57,13 @@ $aideSource = Citation::AIDES_SOURCE[$emplacementCourant]
                  astérisque que le gabarit ne saurait pas poser. */ ?>
         <?php champ_zone($valeurs, $erreurs, 'texte', 'Texte', [
           'lignes' => 5,
-          'aide'   => 'Sans guillemets : la page les compose elle-même. '
-                    . 'Une phrase qui porte vaut mieux qu\'un paragraphe entier.',
+          /* Le texte est rendu tel quel : `.quote` n'ajoute pas de guillemets,
+             ni sur ce bandeau ni sur celui de la préface, qui partage la même
+             classe. Le dire, plutôt que de laisser l'éditeur les découvrir
+             absents après publication. */
+          'aide'   => 'Le texte s\'affiche tel quel, en grands caractères — les guillemets '
+                    . 'ne sont pas ajoutés, mettez-en si vous en voulez. La ligne est courte '
+                    . 'à cet endroit : une phrase qui porte vaut mieux qu\'un paragraphe entier.',
         ]); ?>
 
         <?php champ_texte($valeurs, $erreurs, 'source', 'Source', [

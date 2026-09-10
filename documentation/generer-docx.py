@@ -348,7 +348,7 @@ p("Tout ce qu'il faut savoir pour tenir le site à jour : publier une actualité
   "déposer une photographie, ouvrir la boutique, répondre à un visiteur. "
   "Aucune connaissance technique n'est nécessaire.", style='Lead')
 
-p("Manuel de l'éditeur  ·  Version du 8 septembre 2026", style='Meta')
+p("Manuel de l'éditeur  ·  Version du 10 septembre 2026", style='Meta')
 p("Se lit dans l'ordre, se consulte au besoin.", style='Meta')
 
 doc.add_paragraph()
@@ -362,7 +362,7 @@ SOMMAIRE = [
                            'Dimensions à respecter', 'Préparer une image',
                            'Les vidéos']),
     ('03 — Les contenus', ['Actualités', 'Événements', 'Biographie', 'Repères',
-                           'Archives', 'Héritage', 'Points de vente']),
+                           'Archives', 'Héritage', 'Citations', 'Points de vente']),
     ('04 — Ce qui vient des visiteurs', ['Témoignages', 'Contributions', 'Messages']),
     ('05 — Le livre et la boutique', ['Paramètres', 'Ouvrir les commandes',
                                       'Zones de livraison', 'Commandes']),
@@ -430,8 +430,8 @@ rubrique('Le tour du propriétaire')
 p("Le menu de gauche est rangé en trois familles.")
 tableau(['Famille', 'Rubriques', "Ce qu'on y fait"], [
     ['Contenus',
-     "Actualités, Événements, Biographie, Repères, Archives, Héritage, Points de vente, "
-     "Médiathèque, Traductions",
+     "Actualités, Événements, Biographie, Repères, Archives, Héritage, Citations, "
+     "Points de vente, Médiathèque, Traductions",
      "Tout ce que le visiteur lit et regarde."],
     ['Modération', "Témoignages, Contributions, Messages",
      "Ce que les visiteurs vous envoient. Rien n'est publié sans votre accord."],
@@ -718,6 +718,48 @@ p("**La source est exigée pour publier**, et elle compte particulièrement ici 
   "de décorations se recopie de proche en proche avec ses erreurs. Publier la nôtre sans "
   "référence ajouterait une source de plus au malentendu.")
 
+rubrique('Citations')
+fiche([
+    ('Alimente', "Trois bandeaux sombres : sur l'accueil, sur la page du livre, et sur "
+                 "la biographie."),
+    ('Obligatoire', "L'emplacement et le texte."),
+    ('Pour publier', "Rien de plus. Mais pour *paraître*, il faut aussi cocher la case."),
+    ('Images', "Aucune."),
+])
+p("Trois endroits du site montrent une phrase en grands caractères sur fond sombre : un "
+  "**extrait de l'ouvrage** sur l'accueil, un autre sur la page du livre, et un **propos "
+  "de Philippe Grégoire Yacé** sur la biographie. Cet écran les tient tous les trois.")
+note("Deux gestes, et il les faut tous les deux", [
+    "**Publier** la citation — comme partout ailleurs sur le site.",
+    "**Cocher « Afficher cette citation sur le site »** — c'est elle qui désigne, parmi "
+    "les citations prêtes, celle qui occupe l'emplacement.",
+    "L'une sans l'autre ne montre rien. La liste vous signale en haut les bandeaux muets, "
+    "et vous dit lequel des deux gestes manque.",
+])
+p("**Un emplacement ne montre qu'une citation à la fois.** Cocher la case décoche "
+  "automatiquement celle qui occupait la place — elle n'est pas supprimée, elle cesse "
+  "simplement de paraître, et vous pouvez la remettre en avant plus tard. C'est pourquoi "
+  "l'écran garde toutes vos citations : celles qu'on retire ont été sourcées et vérifiées, "
+  "elles resserviront.")
+p("**Sans citation, le bandeau disparaît** — la page se referme proprement, elle n'affiche "
+  "pas un cadre vide. Vous pouvez donc laisser un emplacement vide sans que cela se voie.")
+sous("Le champ Source change de sens selon l'emplacement")
+p("Les deux « Extrait » citent le livre : leur source est un chapitre ou une page — "
+  "« Une destinée, chapitre IV ». Celui de la biographie cite Yacé lui-même : sa source "
+  "est un lieu et une date — « Assemblée nationale, 7 août 1960 ». L'aide sous le champ "
+  "suit l'emplacement que vous avez choisi.")
+p("La source est facultative pour enregistrer, mais une citation sans provenance n'a pas à "
+  "paraître : **gardez-la en brouillon tant que vous ne l'avez pas établie.** C'est la "
+  "règle de tout le site, et elle vaut d'autant plus ici — un propos attribué à un homme "
+  "d'État sans référence devient une citation apocryphe dès qu'on le recopie.")
+p("**Le texte s'affiche tel quel**, en très grands caractères. Les guillemets ne sont pas "
+  "ajoutés : mettez-en si vous en voulez. La ligne est courte à cet endroit — une phrase "
+  "qui porte vaut mieux qu'un paragraphe entier.")
+p("Les trois bandeaux sont vides aujourd'hui : ils affichaient auparavant un texte de "
+  "calage, « Emplacement réservé à un extrait de l'ouvrage », qui a été retiré. **Ils "
+  "resteront absents du site tant que vous n'aurez rien saisi**, ce qui vaut mieux que "
+  "d'annoncer un emplacement réservé.")
+
 rubrique('Points de vente')
 fiche([
     ('Alimente', "Le bloc « Où se procurer l'ouvrage », sur l'accueil et sur la page du livre."),
@@ -948,6 +990,9 @@ tableau(['Rubrique', 'Exigé pour publier', 'Pourquoi'], [
      "vérifiable."],
     ['Événements', 'Une ville',
      "Un événement annoncé sans lieu n'aide personne."],
+    ['Citations', 'Rien pour publier + la case cochée pour paraître',
+     "Un emplacement ne montre qu'une citation : la case désigne laquelle, et cocher "
+     "l'une décoche l'autre."],
     ['Points de vente', 'Rien de plus que la ville',
      "Une ville seule est déjà une information utile."],
     ['Boutique', "La case cochée *et* un prix",
@@ -1007,7 +1052,7 @@ fin = doc.add_paragraph()
 bordure(fin._p, ['top'], FILET, taille=4)
 fin.paragraph_format.space_before = Pt(10)
 ecrire(fin, "Manuel d'administration du site **Philippe Grégoire Yacé — une destinée**. "
-            "Rédigé le 8 septembre 2026, d'après le fonctionnement réel de l'administration. "
+            "Rédigé le 8 septembre 2026, revu le 10 septembre 2026, d'après le fonctionnement réel de l'administration. "
             "Les règles décrites ici sont celles que le site applique : quand il refuse une "
             "publication, c'est l'une d'elles qui parle.", taille=8, couleur=ENCRE3)
 
