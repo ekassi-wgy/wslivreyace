@@ -1210,14 +1210,14 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
   typographique provisoire (1200 × 630). La version finale portera la couverture
   de l'ouvrage ou le portrait ; le sujet doit tenir dans les 80 % centraux, les
   vignettes carrées de certaines plateformes rognant les bords.
-- **Adresse publique** — **le domaine est arrêté : `https://www.philippeyace.ci`**.
-  Il se pose en `'url'` dans la section `app` de `config/config.local.php`, qui
-  existe sur le serveur depuis le 10 septembre ; **à confirmer**, la mise en
-  place n'ayant porté que sur les identifiants de base. Il n'est volontairement pas écrit
-  dans `config/config.php` : le poste de développement rendrait alors des
-  `canonical` pointant vers la production. Sans cette valeur, `canonical` et
-  `og:image` retombent sur l'hôte de la requête, acceptable en développement,
-  pas sur un serveur public (voir « URL absolues » au §2).
+- ~~**Adresse publique**~~ — **posé.** Le domaine
+  `https://www.philippeyace.ci` est en `'url'` dans la section `app` de
+  `config/config.local.php`, sur le serveur, aux côtés de `'debug' => false`.
+  Il n'est volontairement pas écrit dans `config/config.php` : le poste de
+  développement rendrait alors des `canonical` pointant vers la production.
+  Sans cette valeur, `canonical` et `og:image` retombent sur l'hôte de la
+  requête, acceptable en développement, pas sur un serveur public (voir
+  « URL absolues » au §2).
 - **Mentions légales — l'état civil de l'éditeur.** La page est écrite et
   publiée&nbsp;; quatre informations qui ne s'inventent pas y sont balisées en
   italique et doivent être fournies avant mise en ligne, la loi imposant de les
@@ -1575,22 +1575,22 @@ valent pour tout déploiement futur :
   `config.php` part comme n'importe quel autre fichier, et **il n'y a plus
   jamais rien à éditer en ligne.**
 
-  Restent deux valeurs du même fichier que le dépôt ne peut ni renseigner ni
-  vérifier, et qu'il faut confirmer une fois sur le serveur : `'debug' => false`
-  et `'url' => 'https://www.philippeyace.ci'`. La première se constate en
-  provoquant une erreur — aucune trace ne doit paraître ; la seconde en lisant
-  la source d'une page en ligne, où `<link rel="canonical">` doit porter le
-  domaine réel.
+  **Les deux autres valeurs du fichier y sont également** — `'debug' => false`
+  et `'url' => 'https://www.philippeyace.ci'` —, confirmées par l'éditeur le
+  10 septembre. Ce sont celles que le dépôt ne peut ni renseigner ni vérifier,
+  et les seules dont l'absence ne se voit pas à l'œil : sans `url`, les pages
+  s'affichent normalement, seules les adresses canoniques sont fausses.
 
-  S'il manque, le site ne rend plus une demi-page : `src/bootstrap.php` arrête
-  tout et sert `templates/maintenance.php` en 503 avec un `Retry-After`. Un 500
-  répété finit par désindexer ; un 503 dit aux moteurs de repasser.
+  Comme `config.local.php` est déjà fusionné par-dessus l'ancien `config.php`,
+  **ces deux réglages sont d'ores et déjà actifs en ligne, avant même l'envoi**.
+  Un contrôle d'une minute reste possible et n'a pas été fait : lire la source
+  d'une page en ligne et vérifier que `<link rel="canonical">` porte le domaine
+  réel et non l'en-tête `Host` de la requête.
 
-  **C'est le seul réglage que le dépôt ne peut jamais renseigner ni vérifier**,
-  et le seul dont l'absence ne se voit pas à l'œil : les pages s'affichent
-  normalement, seules les adresses canoniques sont fausses. Le contrôle se fait
-  en lisant la source d'une page en ligne — la balise `<link rel="canonical">`
-  doit porter le domaine réel.
+  Si le fichier venait à manquer, le site ne rendrait plus une demi-page :
+  `src/bootstrap.php` arrête tout et sert `templates/maintenance.php` en 503
+  avec un `Retry-After`. Un 500 répété finit par désindexer ; un 503 dit aux
+  moteurs de repasser.
 - **Les coordonnées publiques sont dans `config/config.php`**, donc dans le
   dépôt : boîte postale, adresse du siège, courriel, téléphone, domaine. Elles
   alimentent la page Contact, les mentions légales et le pied de page. Les
