@@ -1786,10 +1786,24 @@ la source d'un repère, les bornes d'une période, le crédit d'une image, la da
 d'une actualité. Elles étaient jusqu'ici dispersées dans neuf contrôleurs et ne
 se découvraient qu'en butant dessus.
 
+**Il se lit depuis le back-office depuis le lot G15**, à `/cmsadmin/manuel`,
+dernière entrée de la rubrique Administration. Le lire depuis le dépôt supposait
+de savoir qu'il existe et d'avoir le dépôt sous la main ; celui qui en a besoin
+est devant l'écran d'administration.
+
+**La page ne le recopie pas, elle le lit.** Le fichier source ne porte ni
+`<!doctype>`, ni `<html>`, ni `<head>`, ni `<body>` — il commence à `<title>` —
+ce qui lui permet d'être servi tel quel dans deux coquilles différentes, celle
+de l'artifact publié et `templates/admin/layout-manuel.php`, sans qu'une ligne
+change. Une copie en aurait fait un troisième exemplaire, et le générateur Word
+prévient en tête que deux suffisent à diverger.
+
 | Fichier | Ce que c'est |
 |---|---|
 | `documentation/manuel-administration.html` | La source de vérité. S'ouvre dans un navigateur, s'imprime telle quelle. |
 | `documentation/generer-docx.py` | Produit la version Word. Son en-tête donne les deux commandes — celle du `.docx`, et celle du PDF tiré de la page HTML par Chrome. |
+| `templates/admin/pages/manuel.php` | Le sert dans le back-office, derrière la session. Sans le recopier. |
+| `templates/admin/layout-manuel.php` | Sa coquille : pas celle du back-office, dont le thème Bootstrap se disputerait `body`, les titres et les tableaux avec la feuille du site. Un bandeau de retour, rien de plus. |
 
 **Les exports ne sont pas versionnés.** Le `.docx` et le PDF se régénèrent en
 une commande, et un binaire de 600 Ko dans un dépôt déployé par FTP partirait
@@ -3285,6 +3299,46 @@ anglais de l'institution.
 | Fichier | Ce qu'il apporte |
 |---|---|
 | `sql/018_citation.sql` | la table `citation`, **vide** — les trois bandeaux ne portaient aucun contenu à reprendre |
+
+### Lot G15 — livré
+
+**Le manuel se lisait depuis le dépôt.** Ce qui suppose deux choses de celui qui
+en a besoin : savoir qu'il existe, et avoir le dépôt sous la main. Or il est
+devant l'écran d'administration — le manuel y est désormais, à
+`/cmsadmin/manuel`, dernière entrée de la rubrique Administration.
+
+**Ce n'est pas une copie, c'est une lecture.**
+`documentation/manuel-administration.html` reste la source unique, et elle avait
+déjà deux consommateurs — le générateur Word et l'artifact publié pour le
+commanditaire. Un troisième exemplaire aurait été la garantie qu'un des trois
+cesse d'être tenu à jour ; c'est l'avertissement que le générateur porte en tête
+depuis le premier jour, et il vaut d'autant plus à trois.
+
+**Une mise en page à part, et non celle du back-office.** Le manuel porte la
+feuille du site, qui redéfinit `body`, `h1` à `h4`, `table`, `ul` et `a`. Rendue
+dans la coquille du back-office, elle se disputerait les mêmes sélecteurs avec
+le thème Bootstrap, et aucun des deux ne serait juste. Le manuel est donc servi
+comme ce qu'il est — un document —, avec un bandeau de retour pour seule
+addition.
+
+**Aucune ligne à ajouter à la garde d'authentification.** Elle fonctionne par
+liste blanche : `/connexion` et `/deconnexion` sont ouverts, tout le reste exige
+la session. Une route ajoutée et oubliée est donc fermée par défaut, et c'est
+tout le sens du dispositif.
+
+**L'entrée de menu n'a pas de `role`**, contrairement aux zones, aux commandes
+et aux comptes : c'est l'éditeur qui a le plus l'usage du manuel, et le réserver
+aux administrateurs le retirerait précisément à son destinataire.
+
+**Ce lot change une règle de déploiement.** `documentation/` devait rester hors
+du serveur ; il doit maintenant y partir, puisque la page lit le fichier sur le
+disque. Son `.htaccess` en `Require all denied` ferme l'accès HTTP direct sans
+gêner la lecture par PHP — vérifié sous Apache : 403 sur le manuel comme sur le
+script. **Le manuel est donc mieux protégé qu'avant** : il n'est lisible que
+derrière la session, là où il n'était auparavant nulle part — mais où celui qui
+en avait besoin ne l'avait pas non plus.
+
+Aucune migration.
 
 ### Ce que le brief ajoute à la liste des livrables attendus
 

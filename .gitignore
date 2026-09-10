@@ -22,6 +22,14 @@ media-files.abidjan.net/
 *.swp
 *~
 
+# Exports du manuel de l'éditeur. Ils se régénèrent en une commande depuis
+# `documentation/manuel-administration.html`, qui est la source de vérité —
+# voir README §7 bis. Les versionner pousserait un binaire de 600 Ko sur le
+# serveur à chaque envoi FTP, pour un fichier que personne n'y lit.
+documentation/Manuel-administration-site-Yace.pdf
+documentation/Manuel-administration-site-Yace.docx
+documentation/pylib/
+
 # Surcharge de configuration locale (identifiants de production)
 config/config.local.php
 
