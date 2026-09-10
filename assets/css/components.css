@@ -14,7 +14,16 @@
   position: fixed;
   inset: 0 0 auto;
   z-index: var(--z-nav);
-  padding-block: clamp(1.25rem, 2.4vw, 2.25rem);
+  /* La marge suit le logo en sens inverse : celui-ci grandit avec la largeur
+     (voir .logo__svg), la marge se resserre d'autant, et la barre garde a peu
+     pres la hauteur qu'elle avait. C'est ce qui permet d'agrandir la marque
+     sans faire enfler l'en-tete — a 1366 px la barre fait 113 px avant comme
+     apres, a 1440 px elle passe de 117 a 120 px.
+
+     Le plancher reste a 1.25rem, la valeur d'avant : sous 1176 px la marge ne
+     bouge plus, et les telephones — ou le logo ne grandit pas — sont rendus
+     au pixel pres comme avant. */
+  padding-block: clamp(1.25rem, 1.7vw, 1.75rem);
   transition:
     padding var(--dur-2) var(--ease),
     background var(--dur-2) var(--ease),
@@ -43,19 +52,33 @@
 
    Le rapport est celui de la boite reelle du dessin livre (2613 x 941), tenu
    par aspect-ratio plutot que par un viewBox recopie dans deux gabarits : une
-   seule valeur a corriger si la marque evolue. */
+   seule valeur a corriger si la marque evolue.
+
+   La hauteur suit la largeur de l'ecran plutot que d'etre fixe. Le logotype
+   est tres allonge (2,8:1) et la ligne « PHILIPPE GREGOIRE » n'occupe qu'un
+   septieme de sa hauteur : a 48 px elle tombe a 6 px de capitale, sous le
+   seuil de lecture. C'est elle, et non « YACE », qui faisait paraitre la
+   marque petite sur grand ecran.
+
+   Le clamp depose la croissance la ou la place existe — a 1440 px il restait
+   290 px de vide entre le logo et le menu — et laisse le bas de l'echelle
+   intact : sous 1080 px le menu est deja a l'etroit (« Le livre » se replie
+   des 1024 px), y grossir le logo aggraverait le defaut au lieu de servir la
+   marque. 48 px au plancher, donc, comme avant ; 80 px au plafond. */
 .logo { display: inline-flex; align-items: center; color: var(--ink); }
 .logo__svg {
   display: block;
-  height: 48px;
+  height: clamp(48px, 4.9vw, 80px);
   width: auto;
   aspect-ratio: 2613 / 941;
   transition: height var(--dur-2) var(--ease);
 }
 
 /* En-tete reduit au defilement : le logo suit, sinon la barre garderait la
-   hauteur qu'elle vient de perdre. */
-.nav-bar.is-stuck .logo__svg { height: 38px; }
+   hauteur qu'elle vient de perdre. Le rapport de reduction est celui de l'etat
+   deploye — environ quatre cinquiemes — tenu sur toute l'echelle plutot qu'a
+   une seule largeur. */
+.nav-bar.is-stuck .logo__svg { height: clamp(38px, 3.5vw, 56px); }
 
 .nav-menu {
   display: flex;
@@ -575,9 +598,10 @@
 .foot { background: var(--ink-deep); color: rgba(247, 244, 238, 0.68); }
 /* Sur le pied sombre, le meme dessin en papier — c'est tout ce que demande
    currentColor. Un peu plus grand : la place ne manque pas, et le portrait y
-   gagne. */
+   gagne. Fluide comme celui de l'en-tete, et pour la meme raison ; la colonne
+   qui le porte fait 430 px a 1440 px, le plafond de 92 px y tient large. */
 .foot .logo { color: var(--paper); }
-.foot .logo__svg { height: 64px; }
+.foot .logo__svg { height: clamp(64px, 5.4vw, 92px); }
 .foot a { color: rgba(247, 244, 238, 0.68); transition: color var(--dur-1) var(--ease); }
 .foot a:hover { color: var(--brass-soft); }
 .foot__rule { height: 1px; background: var(--rule-dark); }
