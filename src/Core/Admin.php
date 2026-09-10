@@ -182,6 +182,22 @@ final class Admin
                 'url'    => self::url('/comptes'),
                 'role'   => 'admin',
             ],
+            /*
+             * Le manuel de l'éditeur (lot G15). En fin de rubrique parce qu'on
+             * ne le consulte pas tous les jours, mais dans le menu parce que
+             * celui qui en a besoin est devant cet écran — le chercher dans un
+             * dossier de fichiers supposait de savoir qu'il existe.
+             *
+             * **Sans `role`** : c'est l'éditeur qui en a le plus l'usage, et
+             * le réserver aux administrateurs le retirerait précisément à son
+             * destinataire.
+             */
+            [
+                'cle'    => 'manuel',
+                'titre'  => "Manuel de l'éditeur",
+                'icone'  => 'mdi-book-open-page-variant-outline',
+                'url'    => self::url('/manuel'),
+            ],
         ];
     }
 

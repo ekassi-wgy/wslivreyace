@@ -5,8 +5,15 @@
 # serait servi sous le domaine public : il décrit l'administration du site et
 # donne l'adresse de son entrée. Apache refuse ici toute requête.
 #
-# Comme reference/, cela ne dispense pas de l'exclure du déploiement : il n'a
-# rien à faire sur le serveur, il se lit depuis le dépôt.
+# **Ce dossier se déploie depuis le lot G15**, contrairement à ce qui valait
+# jusque-là. Le back-office sert le manuel à `/cmsadmin/manuel`, en lisant
+# `manuel-administration.html` sur le disque — le fichier doit donc être sur le
+# serveur. La règle ci-dessous ne le gêne pas : elle ferme l'accès HTTP direct,
+# pas la lecture par PHP.
+#
+# Le manuel n'est donc lisible que derrière la session d'administration, ce qui
+# est plus sûr que l'ancien état — où il n'était nulle part, mais où celui qui
+# en avait besoin ne l'avait pas non plus.
 # ============================================================================
 
 Require all denied

@@ -59,6 +59,23 @@ $router->get($base . '/connexion',    [AuthController::class, 'formulaire']);
 $router->post($base . '/connexion',   [AuthController::class, 'connexion']);
 $router->post($base . '/deconnexion', [AuthController::class, 'deconnexion']);
 
+/*
+ * Le manuel de l'éditeur (lot G15). Servi depuis le back-office et non plus
+ * seulement depuis le dépôt : celui qui en a besoin est devant l'écran
+ * d'administration, pas devant un dossier de fichiers.
+ *
+ * `admin/layout-manuel` et non `admin/layout` : le manuel porte sa propre
+ * feuille de style, celle du site, qui redéfinit `body`, les titres et les
+ * tableaux. Dans la coquille du back-office elle entrerait en collision avec
+ * le thème Bootstrap.
+ *
+ * Aucune ligne à ajouter à la garde : elle fonctionne par liste blanche, et
+ * cette route n'y figure pas — elle exige donc la session.
+ */
+$router->get($base . '/manuel', static fn() => View::render('admin/pages/manuel', [
+    'titre' => "Manuel de l'éditeur",
+], 200, 'admin/layout-manuel'));
+
 $router->get($base . '/', static fn() => View::admin('tableau-de-bord', [
     'titre' => 'Tableau de bord',
     'actif' => 'tableau-de-bord',

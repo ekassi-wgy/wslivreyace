@@ -1605,9 +1605,13 @@ valent pour tout déploiement futur :
   le fichier du serveur contient avant de conclure que l'envoi n'a pas pris.
 - **`reference/` n'a rien à faire en production** : 70 Mo verrouillés en 403,
   à exclure explicitement de la règle de déploiement.
-- **`documentation/` non plus** : le manuel de l'éditeur se lit depuis le dépôt,
-  pas depuis le serveur. Il porte le même `.htaccess` en `Require all denied` —
-  il décrit l'administration du site et donne l'adresse de son entrée.
+- **`documentation/` se déploie depuis le lot G15**, ce qui n'était pas le cas
+  avant. Le back-office sert le manuel à `/cmsadmin/manuel` en lisant
+  `manuel-administration.html` sur le disque : le fichier doit donc être sur le
+  serveur. Il garde son `.htaccess` en `Require all denied`, qui ferme l'accès
+  HTTP direct sans gêner la lecture par PHP : le manuel décrit l'administration
+  et donne l'adresse de son entrée, il n'a rien à faire sous le domaine public.
+  Il n'est donc lisible que derrière la session d'administration.
 
 ### Le back-office, lot par lot
 
