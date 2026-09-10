@@ -17,9 +17,22 @@
  * Le sélecteur de langue ne paraît que si une seconde langue est ouverte —
  * proposer un choix qui répond 404 serait pire que ne rien proposer.
  */
+/**
+ * Chaque entrée : [chemin, clé du libellé, clé d'un libellé court (facultatif)].
+ *
+ * **Le libellé court sert la barre horizontale, le long le panneau déroulant.**
+ * « Le livre » est la seule entrée à deux mots — toutes les autres tiennent en
+ * un — donc la seule qui pouvait se replier sur deux lignes, ce qu'elle faisait
+ * dès 1300 px. Dans la barre elle s'écrit « Livre » et s'aligne sur la règle des
+ * autres ; dans le panneau, où chaque entrée a sa ligne entière, la forme longue
+ * revient — c'est celle qu'on attend d'un menu déroulant.
+ *
+ * La commutation est faite par la CSS (`.nav-menu__court` / `.nav-menu__long`),
+ * pas ici : c'est une question de largeur disponible, pas de contenu.
+ */
 $liens = [
     'accueil'  => ['/',            'nav.accueil'],
-    'livre'    => ['/le-livre',    'nav.livre'],
+    'livre'    => ['/le-livre',    'nav.livre',   'nav.livre_court'],
     'bio'      => ['/biographie',  'nav.biographie'],
     'archives' => ['/archives',    'nav.archives'],
     'heritage' => ['/heritage',    'nav.heritage'],
@@ -44,8 +57,24 @@ $lien = static fn(string $chemin): string => App\Core\Langue::chemin($chemin);
 
       <nav aria-label="<?= t('nav.principale_aria') ?>">
         <ul class="nav-menu" id="navMenu">
-<?php foreach ($liens as $cle => [$href, $cleTexte]): ?>
-          <li><a href="<?= $lien($href) ?>"<?= $cle === $page ? ' aria-current="page"' : '' ?>><?= t($cleTexte) ?></a></li>
+<?php foreach ($liens as $cle => $entree): ?>
+<?php
+  [$href, $cleTexte] = $entree;
+  /* Pas de destructuration à trois : la plupart des entrées n'ont pas de forme
+     courte, et un index absent lèverait une notice à chaque page. */
+  $cleCourte = $entree[2] ?? null;
+?>
+          <li><a href="<?= $lien($href) ?>"<?= $cle === $page ? ' aria-current="page"' : '' ?>><?php
+            if ($cleCourte === null) {
+                echo t($cleTexte);
+            } else {
+                /* Les deux formes sont écrites, la CSS n'en montre qu'une. Elles
+                   sont collées sans espace ni retour à la ligne : un blanc entre
+                   les deux se verrait dans la forme affichée. */
+                echo '<span class="nav-menu__court">' . t($cleCourte) . '</span>'
+                   . '<span class="nav-menu__long">' . t($cleTexte) . '</span>';
+            }
+          ?></a></li>
 <?php endforeach; ?>
           <?php /* Une loupe et non une huitième entrée : la barre porte déjà
                    les sept que le brief demande, et « Rechercher » n'est pas

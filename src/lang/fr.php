@@ -56,6 +56,8 @@ return [
     // --- Navigation principale ----------------------------------------------
     'nav.accueil'      => 'Accueil',
     'nav.livre'        => 'Le livre',
+    // Forme courte pour la barre horizontale — voir templates/partials/nav.php.
+    'nav.livre_court'  => 'Livre',
     'nav.biographie'   => 'Biographie',
     'nav.archives'     => 'Archives',
     'nav.heritage'     => 'Héritage',

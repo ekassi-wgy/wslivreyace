@@ -39,6 +39,7 @@ return [
     // --- Main navigation ------------------------------------------------------
     'nav.accueil'         => 'Home',
     'nav.livre'           => 'The book',
+    'nav.livre_court'     => 'Book',
     'nav.biographie'      => 'Biography',
     'nav.archives'        => 'Archives',
     'nav.heritage'        => 'Legacy',
