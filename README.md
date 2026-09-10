@@ -206,7 +206,9 @@ livreyace/                  ← racine web
 │                           Utilisateur, TentativeConnexion    [interdit]
 ├── templates/
 │   ├── layout.php          mise en page du site public       [interdit]
-│   ├── partials/           navigation, pied, symbole du logo [interdit]
+│   ├── partials/           navigation, pied, logo, réseaux,
+│   │                       chaîne WhatsApp, points de vente  [interdit]
+│   ├── maintenance.php     page 503, sans dépendance         [interdit]
 │   ├── pages/              corps des pages publiques         [interdit]
 │   └── admin/              mise en page, partials et pages
 │                           du back-office                    [interdit]
@@ -359,10 +361,97 @@ retiré — deux exemplaires par page, deux `id` identiques se télescopent).
 
 **Le rapport a changé la barre.** Le verrou reconstruit était un bloc typographique
 de 6,4:1 ; le logo officiel fait 2,78:1. À hauteur égale il serait trois fois moins
-large, et illisible. Il est donc posé à 48 px de haut dans l'en-tête (38 px une
-fois la barre réduite au défilement) et 64 px dans le pied. À 38 px, la ligne
-« PHILIPPE GRÉGOIRE » n'est plus lisible mais le nom et le portrait le restent —
-c'est le plancher acceptable, mesuré au rendu.
+large, et illisible.
+
+**Les hauteurs sont fluides depuis le lot G13**, et non plus fixes : la ligne
+« PHILIPPE GRÉGOIRE » n'occupe qu'un septième de la hauteur du dessin, et à
+48 px fixes elle tombait à 6 px de capitale — sous le seuil de lecture. C'est
+elle, et non « YACÉ », qui faisait paraître la marque petite sur grand écran.
+
+| | En-tête | Au défilement | Pied |
+|---|---|---|---|
+| Plancher | 48 px | 38 px | 64 px |
+| Plafond | 80 px | 56 px | 92 px |
+
+La marge de la barre se resserre à mesure que le logo grandit : à 1366 px la
+barre fait la même hauteur qu'avant, à 1440 px elle passe de 117 à 120 px.
+L'air que l'en-tête gardait pour lui est rendu au dessin.
+
+**Le logotype n'est pas compressible** — `flex: none`. Sans cette règle il
+était un élément flexible comme un autre dans la rangée de l'en-tête, et c'est
+lui qui absorbait la compression quand la barre devenait trop pleine : sa
+largeur rendue tombait à **0 px à 1024**, le dessin étant encore dans la page
+sans plus rien occuper. Une marque ne se comprime pas ; c'est au menu de céder.
+
+### La barre de navigation
+
+**Le panneau déroulant prend le relais à 1200 px**, et non plus à 992. La barre
+porte huit éléments — six entrées, la loupe, le sélecteur de langue et le bouton
+de commande — et en dessous de 1150 px « Commander » sortait de l'écran une fois
+le logotype rendu à sa vraie largeur. L'ancien seuil affichait donc une barre
+horizontale là où elle ne tenait pas.
+
+Contrepartie assumée : une tablette en paysage voit le panneau plutôt que la
+barre. Mieux vaut un menu déroulant qui fonctionne qu'une barre qui se replie.
+
+**« Le livre » a deux formes**, parce que c'est la seule entrée à deux mots —
+les cinq autres tiennent en un — donc la seule qui pouvait se replier sur deux
+lignes, ce qu'elle faisait dès 1300 px.
+
+| Largeur | Ce qui s'affiche |
+|---|---|
+| 1440 et au-dessus | **Le livre**, dans la barre |
+| 1200 → 1439 | **Livre**, dans la barre |
+| 1199 et en dessous | **Le livre**, dans le panneau |
+
+La forme longue est le défaut, la courte l'exception : elle ne paraît que dans
+la bande où la barre existe sans pouvoir la tenir.
+
+**La coupure est à 1440 et non à 1362**, où se situe la vraie limite mesurée.
+À 1366 px — l'une des résolutions de portable les plus répandues — « Le livre »
+tient avec **1,4 pixel de marge** : 1011,4 px disponibles pour 1010 demandés.
+Couper au plus juste ferait dépendre la mise en page d'un pixel et demi, que le
+moindre écart reprend — zoom à 110 %, Jost qui ne charge pas et laisse la main
+à Futura, rendu de police sous Windows. À 1440 la marge est de 47 px.
+
+L'anglais n'a pas besoin de cette bande : son menu fait 889 px contre 1010,
+« The book », « Legacy » et « News » étant bien plus courts, et il ne se replie
+à aucune largeur.
+
+### Réseaux sociaux et chaîne WhatsApp
+
+Le site porte quatre liens sortants de marque : la **chaîne WhatsApp** — qu'il
+alimente lui-même — et les comptes **Facebook**, **Instagram** et **YouTube**.
+Les adresses sont en configuration, clé `reseaux` ; **une adresse vide n'affiche
+pas son bouton**, et les quatre vides font disparaître le bloc entier. Fermer un
+canal, c'est vider une ligne, pas retoucher un gabarit.
+
+Ils paraissent à trois endroits, depuis deux partials :
+
+| Où | Quoi | Partial |
+|---|---|---|
+| Pied de page | rangée de quatre boutons, sous le logotype | `partials/reseaux.php` |
+| Page Contact | la même rangée, en cinquième coordonnée | `partials/reseaux.php` |
+| Page Actualités | bandeau de la seule chaîne WhatsApp, après la liste | `partials/chaine.php` |
+
+**Aucune couleur de marque.** Ni le vert WhatsApp, ni le bleu Facebook, ni le
+rouge YouTube, ni le dégradé Instagram : le fichier de jetons ne reconnaît qu'un
+accent, le laiton patiné, et quatre couleurs vives dans un pied qui n'en admet
+qu'une feraient basculer une plaque commémorative en widget. Les glyphes sont
+servis en `currentColor` et prennent l'encre de leur contexte — même mécanique
+que le logotype. La forme du glyphe suffit à la reconnaissance.
+
+Le bouton est un **carré au filet de 44 × 44 px** : c'est un bouton et non un
+lien, 44 px est le minimum de zone tactile recommandé — qu'un glyphe de 22 px ne
+tient pas — et le filet d'un pixel est déjà la grammaire du site. Le remplissage
+au survol est celui de `.btn-pgy--ghost`, repris tel quel. Aucun arrondi.
+
+Le bandeau des actualités vient **après** la liste et non avant : sur une page
+éditoriale, un appel placé au-dessus du contenu repousse ce qu'on est venu lire,
+et le lecteur arrivé au bout est justement celui qui veut la suite. Quand la
+liste est vide — c'est le cas aujourd'hui — il est la seule chose à proposer.
+Il porte la phrase que la rangée ne peut pas porter : « diffusion seule, aucun
+numéro n'est visible », qui lève l'hésitation à s'abonner.
 
 ### Limitation de débit des formulaires publics
 
