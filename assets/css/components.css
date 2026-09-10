@@ -124,9 +124,14 @@
    regle. Le panneau, lui, a toute la largeur d'une ligne — la forme longue y
    revient, et c'est celle que le lecteur attend d'un menu deroulant.
 
+   **La forme longue est le defaut, la courte est l'exception.** Elle ne parait
+   que dans la bande ou la barre horizontale existe sans pouvoir tenir la forme
+   longue — voir la requete `1200px / 1439.98px` plus bas. Partout ailleurs,
+   grands ecrans comme panneau deroulant, l'entree s'ecrit « Le livre ».
+
    `display: none` et non une classe d'accessibilite masquee : la forme cachee
    ne doit pas etre lue deux fois par une synthese vocale. */
-.nav-menu__long { display: none; }
+.nav-menu__court { display: none; }
 .nav-menu a:hover { color: var(--ink); }
 .nav-menu a:hover::after, .nav-menu a:focus-visible::after { transform: scaleX(1); }
 
@@ -699,6 +704,31 @@
 /* --- Responsive --------------------------------------------------------
    Sous 992px la composition dissymetrique n'a plus la largeur pour exister :
    l'image passe en fond plein cadre et le texte se pose dessus. */
+/* --- Navigation : « Livre » dans la bande ou « Le livre » ne tient pas ----
+   Mesure sur la vraie page, logotype rendu a sa largeur reelle : la forme
+   longue tient jusqu'a 1365px et se replie a 1360. La bande a traiter va donc
+   du seuil du panneau deroulant (1200) a ~1362.
+
+   **La coupure est posee a 1439.98 et non a 1362, deliberement.** A 1366px —
+   l'une des resolutions de portable les plus repandues — « Le livre » tient
+   avec 1,4 pixel de marge : 1011,4px disponibles pour 1010 demandes. Couper au
+   plus juste ferait dependre la mise en page d'un pixel et demi, que le moindre
+   ecart reprend : un zoom navigateur a 110%, Jost qui ne charge pas et laisse
+   la main a Futura, un rendu de police different sous Windows. A 1440 la marge
+   est de 47px, et 1440 est une largeur de rupture standard.
+
+   Contrepartie assumee : entre 1366 et 1440 l'entree s'ecrit « Livre » alors
+   que la forme longue y tiendrait — de justesse.
+
+   L'anglais n'a pas besoin de cette bande : son menu fait 889px contre 1010,
+   « The book », « Legacy » et « News » etant bien plus courts, et il ne se
+   replie a aucune largeur. La regle ne le gene pas pour autant, la forme courte
+   y etant simplement plus courte encore. */
+@media (min-width: 1200px) and (max-width: 1439.98px) {
+  .nav-menu__court { display: inline; }
+  .nav-menu__long  { display: none; }
+}
+
 /* --- Navigation : la barre passe au panneau deroulant a 1200px -----------
    Le seuil etait a 992px. Il ne tenait pas : la barre porte huit elements —
    six entrees, la loupe, le selecteur de langue et le bouton de commande — et
@@ -744,11 +774,6 @@
   .nav-menu li:last-child { border: 0; padding-top: var(--sp-5); }
   .nav-menu a { display: block; padding-block: var(--sp-4); font-size: 0.9375rem; }
   .nav-menu a::after { display: none; }
-
-  /* La forme longue reprend sa place : le panneau donne une ligne entiere a
-     chaque entree, « Le livre » n'y risque aucun repli. */
-  .nav-menu__court { display: none; }
-  .nav-menu__long { display: inline; }
 }
 
 @media (max-width: 991.98px) {
