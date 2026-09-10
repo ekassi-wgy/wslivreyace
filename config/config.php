@@ -1,23 +1,53 @@
 <?php
 /**
- * Configuration. Les valeurs ci-dessous sont celles de MAMP en local.
- * Pour surcharger sans toucher au dépôt (identifiants de production, par
- * exemple), créer config/config.local.php qui retourne un tableau partiel ;
- * il est ignoré par git.
+ * Configuration commune à toutes les machines.
+ *
+ * **Ce fichier ne porte aucun identifiant, et c'est délibéré.** Il voyage à
+ * chaque envoi — il contient les coordonnées publiques, les points de vente,
+ * la chaîne WhatsApp — et tout ce qu'on y laisserait d'un environnement
+ * écraserait celui du serveur à la première mise en ligne. Il fallait alors
+ * retaper les identifiants en ligne, le site en erreur pendant ce temps.
+ *
+ * Ce qui dépend de la machine — base de données, affichage des erreurs,
+ * adresse publique — vit dans `config/config.local.php`, ignoré par git et
+ * jamais envoyé. Il existe sur le poste de développement comme sur le
+ * serveur, chacun avec ses valeurs. Modèle : `config.local.exemple.php`.
+ *
+ * `array_replace_recursive` le fusionne par-dessus, clé par clé — voir la
+ * note en fin de fichier, cette finesse a déjà piégé un envoi.
  */
 
 $config = [
+    /*
+     * Base de données — vide ici, renseignée par `config.local.php`.
+     *
+     * `null` plutôt qu'une valeur de repli : une configuration absente doit
+     * s'arrêter net. L'ancienne version retombait sur MAMP, ce qui veut dire
+     * qu'un serveur mal configuré tentait silencieusement de joindre
+     * `127.0.0.1:8889` en `root`/`root` — et rendait une demi-page.
+     * `src/bootstrap.php` vérifie maintenant ces valeurs avant toute chose.
+     */
     'db' => [
-        'host'    => '127.0.0.1',
-        'port'    => 8889,
-        'name'    => 'livreyace_sbd',
-        'user'    => 'root',
-        'pass'    => 'root',
+        'host'    => null,
+        'port'    => null,
+        'name'    => null,
+        'user'    => null,
+        'pass'    => null,
+        // Le jeu de caractères n'est pas un secret et ne change pas d'une
+        // machine à l'autre : lui seul reste ici.
         'charset' => 'utf8mb4',
     ],
     'app' => [
-        // À passer à false en production : conditionne l'affichage des erreurs.
-        'debug'   => true,
+        /*
+         * **`false` par défaut, et c'est le point important.**
+         *
+         * L'affichage des erreurs montre les chemins absolus du serveur,
+         * l'hôte et le nom de la base, et la requête fautive. C'est donc
+         * `true` qui est l'exception, posé dans le `config.local.php` du
+         * poste de développement — jamais l'inverse. Une configuration
+         * oubliée ne peut plus allumer les traces sur un site public.
+         */
+        'debug'   => false,
         // Adresse publique du site, sans barre finale. Sert aux URL absolues
         // — canonical, og:image — qui ne peuvent pas être relatives.
         // En production : 'url' => 'https://www.philippeyace.ci' dans

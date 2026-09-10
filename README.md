@@ -231,9 +231,22 @@ dans le `.htaccess` racine, **et** un `.htaccess` par dossier applicatif. Si
 fuiteraient pas pour autant. Vérifié : `config/config.php` répond 403 et sa réponse
 ne contient aucune occurrence du mot de passe.
 
-`config/config.php` porte les valeurs MAMP locales. Pour la production, créer
-`config/config.local.php` (ignoré par git) retournant un tableau partiel : il est
-fusionné par-dessus.
+**`config/config.php` ne porte aucun identifiant.** Il voyage à chaque envoi —
+il contient les coordonnées publiques, les points de vente, la chaîne WhatsApp —
+et tout ce qu'on y laisserait d'un environnement écraserait celui du serveur.
+C'était le cas jusqu'au lot G13 : il fallait retaper les identifiants en ligne
+après chaque mise en ligne, le site en erreur pendant ce temps.
+
+Ce qui dépend de la machine — base de données, `debug`, `url` — vit dans
+`config/config.local.php`, ignoré par git et **jamais envoyé**. Il existe sur le
+poste comme sur le serveur, chacun avec ses valeurs, et se crée une fois à
+partir de `config/config.local.exemple.php`, qui est versionné et documente ce
+qu'il faut renseigner.
+
+Les valeurs par défaut sont sûres : `db` est à `null` et `debug` à `false`. Une
+configuration absente ne se rabat donc plus sur MAMP en silence — `src/bootstrap.php`
+le vérifie avant toute chose et rend une page de maintenance en **503** plutôt
+qu'une demi-page ou une trace d'erreur.
 
 ### URL absolues
 
@@ -1316,7 +1329,9 @@ ligne, celui du 2 septembre.
 
 **`config/config.php` est dans le lot**, et il porte les coordonnées publiques :
 l'adresse et le téléphone ont changé le 8 septembre, et ils n'atteindront la
-page Contact et les mentions légales que par ce fichier.
+page Contact et les mentions légales que par ce fichier. Depuis le lot G13 il
+n'emporte plus aucun identifiant : il s'envoie sans précaution et sans rien
+écraser.
 
 Les quatre pièges de cet envoi sont listés plus bas — « Côté fichiers » — et le
 premier est que `quarantaine/` ne contient que des fichiers commençant par un
@@ -1445,11 +1460,23 @@ valent pour tout déploiement futur :
   Son `.htaccess` doit partir avec, c'est lui qui empêche l'exécution de ce qui
   y sera déposé — attention aux clients FTP qui masquent les fichiers commençant
   par un point.
-- **`config/config.local.php` est ignoré par git** : il se crée à la main sur le
-  serveur, avec les identifiants de production, `'debug' => false` et surtout
+- **`config/config.local.php` est ignoré par git et ne s'envoie jamais** : il se
+  crée une fois sur le serveur, à partir de `config.local.exemple.php`, avec les
+  identifiants de production, `'debug' => false` et surtout
   `'url' => 'https://www.philippeyace.ci'`. Sans cette dernière valeur,
   `canonical` et `og:image` retombent sur l'en-tête `Host` de la requête, que le
   client choisit.
+
+  **L'ordre de la première bascule compte**, et lui seul : créer ce fichier sur
+  le serveur *avant* d'envoyer le nouveau `config/config.php`. Il est inerte
+  tant que l'ancien `config.php` porte encore ses propres valeurs — le site ne
+  s'interrompt donc à aucun moment, et remettre l'ancien `config.php` suffirait
+  à revenir en arrière. Une fois posé, il n'y a plus jamais rien à éditer en
+  ligne.
+
+  S'il manque, le site ne rend plus une demi-page : `src/bootstrap.php` arrête
+  tout et sert `templates/maintenance.php` en 503 avec un `Retry-After`. Un 500
+  répété finit par désindexer ; un 503 dit aux moteurs de repasser.
 
   **C'est le seul réglage que le dépôt ne peut jamais renseigner ni vérifier**,
   et le seul dont l'absence ne se voit pas à l'œil : les pages s'affichent

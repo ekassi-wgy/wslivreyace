@@ -28,7 +28,10 @@ final class Database
         $c = Config::get('db');
         $dsn = sprintf(
             'mysql:host=%s;port=%d;dbname=%s;charset=%s',
-            $c['host'], $c['port'], $c['name'], $c['charset']
+            // Le port est le seul reglage qui a un defaut raisonnable : la
+            // plupart des hebergements ecoutent sur 3306, MAMP sur 8889. Les
+            // trois autres n'en ont aucun — bootstrap.php les exige.
+            $c['host'], (int) ($c['port'] ?? 3306), $c['name'], $c['charset']
         );
 
         try {
