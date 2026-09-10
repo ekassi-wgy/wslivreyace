@@ -816,9 +816,19 @@
     z-index: -1;
   }
   .nav-menu.is-open { transform: translateY(0); }
-  .nav-menu li { width: 100%; border-bottom: 1px solid var(--rule); }
-  .nav-menu li:last-child { border: 0; padding-top: var(--sp-5); }
-  .nav-menu a { display: block; padding-block: var(--sp-4); font-size: 0.9375rem; }
+  /* `> li` et non `li` : le selecteur de descendance atteignait aussi les deux
+     entrees imbriquees du selecteur de langue. FR et EN heritaient alors d'une
+     largeur de 100%, d'un filet inferieur, et EN — dernier enfant de sa propre
+     liste — d'un `padding-top` de 1.5rem qui le decalait vers le bas. Les deux
+     langues se retrouvaient a chaque bout d'une ligne, separees par un filet
+     qui n'avait rien a y faire.
+
+     Ces trois regles n'ont jamais visé que les entrees de premier rang ; les
+     restreindre aux enfants directs corrige la cause au lieu de rattraper le
+     symptome par une surcharge. */
+  .nav-menu > li { width: 100%; border-bottom: 1px solid var(--rule); }
+  .nav-menu > li:last-child { border: 0; padding-top: var(--sp-5); }
+  .nav-menu > li > a { display: block; padding-block: var(--sp-4); font-size: 0.9375rem; }
   .nav-menu a::after { display: none; }
 }
 
