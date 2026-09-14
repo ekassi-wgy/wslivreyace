@@ -86,6 +86,41 @@ Courbes lentes en sortie, aucun ressort, aucun dépassement — ce sont des marq
 template. Une seule animation appuyée : la révélation par masque des titres du hero.
 `prefers-reduced-motion` est respecté partout.
 
+### Les listes à fond au survol
+
+Sept listes du site public prennent un lavis de laiton (`--brass-wash`) sur la
+ligne survolée : la frise de la biographie, les repères de l'accueil, les
+actualités, l'agenda, les discours, les périodes et les résultats de recherche.
+**Toutes portent le même retrait intérieur, `--rang-pad`** (`tokens.css`,
+0,75 à 1,5rem selon la largeur). Sans lui, le fond s'arrêtait au ras du
+contenu : la date collée au bord gauche, le signe « + » ou la mention d'état
+collés au bord droit — et le « j » de « janvier », en Bodoni, débordait même du
+fond de 2 px.
+
+**Un retrait, et non un fond qui déborde des filets.** La variante par marges
+négatives garde le texte dans l'axe des titres de section, mais à 400 px elle
+mange la gouttière et fait défiler la page en largeur. Le retrait coûte un
+léger décalage du texte par rapport au titre de section ; il ne casse rien.
+
+**Une liste nouvelle qui prend un fond au survol reprend `--rang-pad`.** C'est
+la règle, et la raison pour laquelle le retrait est un jeton plutôt qu'une
+valeur recopiée sept fois.
+
+Deux corrections sont passées avec lui :
+
+- **La notice dépliée de la frise suit la grille de sa ligne.** Elle démarrait
+  sur une colonne Bootstrap en pourcentage (`col-lg-8 offset-lg-3`), et la
+  colonne des titres a une largeur fixe : à 1440 px, la notice tombait 57 px à
+  droite de son titre. `.chrono` déclare désormais ses colonnes une fois
+  (`--chrono-cols`, `--chrono-gap`), et la ligne comme la notice les lisent.
+- **La colonne des dates passe de 10 à 12rem**, sur la frise et sur les repères
+  de l'accueil : une date saisie en toutes lettres, « 23 janvier 1920 », tenait
+  sur trois lignes.
+
+Vérifié au navigateur à 1440, 1024 et 500 px — ligne survolée, ligne dépliée,
+dates longues simulées — et, pour les cinq listes sans données en local, sur
+leur balisage réel injecté dans une page d'essai. Aucun défilement horizontal.
+
 ### Favicon
 
 Le logotype officiel est un **portrait au trait suivi du nom**. À 16 px, le visage
@@ -1263,6 +1298,11 @@ les deux). Ce qu'il reste :
   le dire ne le supprime pas. Héberger les deux fichiers de polices dans
   `assets/` réglerait le premier cas — quelques dizaines de kilo-octets, une
   règle `@font-face`, et une dépendance de moins au moment du rendu.
+- **Les feuilles de style sont servies sans numéro de version.**
+  `templates/layout.php` appelle `/assets/css/components.css` tel quel : après un
+  déploiement qui touche au CSS, un navigateur qui a gardé l'ancienne feuille en
+  cache affiche l'ancien rendu jusqu'au rechargement forcé. Un `?v=` tiré de
+  `filemtime()` réglerait la question pour les trois feuilles et `main.js`.
 - **Aucun test.** Le socle a été vérifié à la main (codes HTTP, connexion PDO,
   absence de warning, mesure du rendu au navigateur). Ces vérifications ne sont
   pas rejouables automatiquement.
