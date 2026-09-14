@@ -79,6 +79,14 @@
   --gutter:    clamp(1.5rem, 5vw, 5.5rem);
   --measure:   64ch;         /* longueur de ligne de lecture confortable */
 
+  /* Retrait interieur des lignes de liste qui prennent un fond au survol —
+     frise, actualites, agenda, discours, periodes, recherche. Sans lui, le
+     fond s'arrete au ras du texte : la date touche le bord gauche, le signe
+     ou la mention d'etat le bord droit. Un retrait plutot qu'un fond qui
+     deborde des filets par marges negatives : a 400 px, le debordement
+     mangerait la gouttiere et ferait defiler la page en largeur. */
+  --rang-pad:  clamp(0.75rem, 2vw, 1.5rem);
+
   /* --- Mouvement ---------------------------------------------------------
      Courbes lentes en sortie : le mouvement doit s'installer, jamais rebondir.
      Aucun ressort, aucun overshoot — ce sont des marqueurs de template. */

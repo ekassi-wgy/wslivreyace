@@ -274,13 +274,16 @@ JSONLD;
               <span class="chrono__sign" aria-hidden="true"></span>
             </button>
             <div class="collapse" id="<?= $cible ?>">
+              <?php /* Même grille que la ligne : la notice démarre sous le
+                       titre, et non sur une colonne Bootstrap qui en tombait
+                       à côté selon la largeur. */ ?>
               <div class="chrono__body">
-                <div class="row"><div class="col-lg-8 offset-lg-3">
+                <div class="chrono__texte">
 <?= View::paragraphes($notice, 't-body') ?>
 <?php if ($source !== ''): ?>
                   <p class="chrono__src"><?= View::e($source) ?></p>
 <?php endif; ?>
-                </div></div>
+                </div>
               </div>
             </div>
 <?php else: ?>

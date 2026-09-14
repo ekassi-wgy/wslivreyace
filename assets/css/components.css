@@ -419,9 +419,12 @@
 .tl { border-top: 1px solid var(--rule); }
 .tl__item {
   display: grid;
-  grid-template-columns: minmax(6rem, 10rem) 1fr;
+  /* 12rem et non 10rem : une date saisie en toutes lettres, « 23 janvier
+     1920 », tenait sur trois lignes au corps de 2,6rem. */
+  grid-template-columns: minmax(6rem, 12rem) 1fr;
   gap: clamp(1.5rem, 4vw, 4rem);
   padding-block: clamp(1.75rem, 3vw, 2.75rem);
+  padding-inline: var(--rang-pad);
   border-bottom: 1px solid var(--rule);
   transition: background var(--dur-2) var(--ease);
 }
@@ -888,6 +891,7 @@
   gap: clamp(1.25rem, 3vw, 3rem);
   align-items: baseline;
   padding-block: clamp(1.5rem, 2.6vw, 2.25rem);
+  padding-inline: var(--rang-pad);
   border-bottom: 1px solid var(--rule);
   transition: background var(--dur-2) var(--ease);
 }
@@ -1035,17 +1039,26 @@
 
 /* --- Frise chronologique depliable -------------------------------------
    Le depliement s'appuie sur le composant collapse de Bootstrap ; seul le
-   signe +/- est dessine ici, en deux filets, pour eviter l'icone stock. */
-.chrono { border-top: 1px solid var(--rule); }
+   signe +/- est dessine ici, en deux filets, pour eviter l'icone stock.
+
+   La ligne et son texte deplie partagent la meme grille, declaree une fois :
+   la notice demarrait sur une colonne Bootstrap en pourcentage, et tombait
+   57 px a droite du titre a 1440 px. */
+.chrono {
+  --chrono-cols: minmax(6rem, 12rem) 1fr auto;
+  --chrono-gap: clamp(1.25rem, 4vw, 4rem);
+  border-top: 1px solid var(--rule);
+}
 .chrono__item { border-bottom: 1px solid var(--rule); }
 .chrono__item[hidden] { display: none; }
 .chrono__head {
   display: grid;
-  grid-template-columns: minmax(6rem, 10rem) 1fr auto;
-  gap: clamp(1.25rem, 4vw, 4rem);
+  grid-template-columns: var(--chrono-cols);
+  gap: var(--chrono-gap);
   align-items: center;
   width: 100%;
   padding-block: clamp(1.4rem, 2.4vw, 2rem);
+  padding-inline: var(--rang-pad);
   text-align: left;
   cursor: pointer;
   transition: background var(--dur-2) var(--ease);
@@ -1073,13 +1086,19 @@
 }
 .chrono__sign::after { transform: rotate(90deg); }
 .chrono__head[aria-expanded="true"] .chrono__sign::after { transform: rotate(0deg); }
-.chrono__body { padding: 0 0 clamp(1.4rem, 2.4vw, 2rem) 0; }
+.chrono__body {
+  display: grid;
+  grid-template-columns: var(--chrono-cols);
+  column-gap: var(--chrono-gap);
+  padding: 0 var(--rang-pad) clamp(1.4rem, 2.4vw, 2rem);
+}
+.chrono__texte { grid-column: 2; }
 .chrono__body .t-body { max-width: 58ch; }
 
 /* Un repere saisi sans notice ni source n'a rien a deplier. Il garde la meme
    ligne, mais ce n'est plus un bouton : ni curseur, ni survol, ni signe +/-.
    Un bouton qui n'ouvre rien ment au clavier comme a la souris. */
-.chrono__head--plat { cursor: default; grid-template-columns: minmax(6rem, 10rem) 1fr; }
+.chrono__head--plat { cursor: default; grid-template-columns: minmax(6rem, 12rem) 1fr; }
 .chrono__head--plat:hover { background: none; }
 
 /* Le sourcage exige par le CDC §6 : discret, mais present sur la piece. */
@@ -1119,6 +1138,8 @@
 @media (max-width: 767.98px) {
   .chrono__head { grid-template-columns: 1fr auto; row-gap: var(--sp-2); }
   .chrono__year { grid-column: 1 / -1; }
+  .chrono__body { grid-template-columns: 1fr; }
+  .chrono__texte { grid-column: 1; }
   .subnav { position: static; margin-bottom: var(--sp-7); }
   .spread { grid-template-columns: 1fr; }
   .toc li { flex-wrap: wrap; }
@@ -1247,6 +1268,7 @@
   gap: clamp(1.25rem, 3vw, 3rem);
   align-items: center;
   padding-block: clamp(1.5rem, 2.6vw, 2.25rem);
+  padding-inline: var(--rang-pad);
   transition: background var(--dur-2) var(--ease);
 }
 .agenda__lien:hover { background: var(--brass-wash); }
@@ -1296,9 +1318,10 @@
 }
 
 /* L'annulation se lit avant le titre : filet rouge au bord, mention en clair,
-   et le titre barre. Un badge seul se rate. */
+   et le titre barre. Un badge seul se rate. Le filet prend 2 px sur le
+   retrait commun, pour que la date reste dans l'alignement des autres. */
 .agenda__i.est-annule { border-left: 2px solid #8C2F26; }
-.agenda__i.est-annule .agenda__lien { padding-left: var(--sp-4); }
+.agenda__i.est-annule .agenda__lien { padding-left: calc(var(--rang-pad) - 2px); }
 .agenda__i.est-annule .agenda__t { text-decoration: line-through; color: var(--ink-3); }
 .agenda__etat--annule { color: #8C2F26; }
 
@@ -1685,6 +1708,7 @@ main > .shell > .avis:first-child { margin-top: var(--sp-7); }
   grid-template-columns: minmax(4.5rem, 7rem) 1fr;
   gap: clamp(1rem, 3vw, 2.5rem);
   padding-block: var(--sp-5);
+  padding-inline: var(--rang-pad);
   color: var(--ink);
   transition: background var(--dur-2) var(--ease);
 }
@@ -1916,7 +1940,7 @@ main > .shell > .avis:first-child { margin-top: var(--sp-7); }
 
 .rech-liste { list-style: none; margin: 0; padding: 0; }
 .rech-liste li { border-bottom: 1px solid var(--rule); }
-.rech-liste a { display: block; padding-block: var(--sp-5); color: var(--ink); }
+.rech-liste a { display: block; padding: var(--sp-5) var(--rang-pad); color: var(--ink); }
 .rech-liste a:hover { background: var(--brass-wash); }
 .rech-item__titre {
   display: block;
@@ -1966,6 +1990,7 @@ mark {
   gap: var(--sp-5);
   align-items: start;
   padding-block: var(--sp-5);
+  padding-inline: var(--rang-pad);
   color: var(--ink);
   transition: background var(--dur-1) var(--ease);
 }
