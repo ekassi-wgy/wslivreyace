@@ -197,7 +197,7 @@ livreyace/                  ← racine web
 │   │                       Periode), Temoignage, Message,
 │   │                       Media, Commande, Compte,
 │   │                       Contribution, Traduction, Zone,
-│   │                       Parametre                         [interdit]
+│   │                       Parametre, Texte                  [interdit]
 │   └── Model/              Modele, Actualite, Evenement,
 │                           Repere, Temoignage, Message,
 │                           Media, Commande, Zone, Parametre,
@@ -1825,7 +1825,8 @@ sommaire, extrait, feuilletage, où acheter — les points de vente sont
 administrables depuis le lot G12, et attendent leurs enseignes. L'auteur (§4.3) y est traité en section
 plutôt qu'en page dédiée, faute de matière ; à détacher dès que le contenu existe.
 
-Biographie (§4.4) — **complet** : contexte historique, parcours découpé en
+Biographie (§4.4) — **complet** : contexte historique — administrable depuis le
+lot G16, et en attente de son texte —, parcours découpé en
 périodes administrables — chacune à son adresse, illustrée, portant les jalons
 de la frise et les pièces du fonds de ses années (lot G10) —, frise
 chronologique filtrable par période et dépliable, citations, galerie de
@@ -1917,6 +1918,9 @@ vérifie.
 | G3 | Boutique et tunnel de commande — paiement à la livraison, boutique fermée | livré |
 | G11 | Version anglaise — mécanisme complet, **anglais ouvert** | livré |
 | G12 | Points de vente — la grille « Où se procurer l'ouvrage » sort du gabarit | livré |
+| G14 | Citations — les trois bandeaux « Extrait » et « Citations » sortent du lexique | livré |
+| G15 | Le manuel de l'éditeur entre dans le back-office | livré |
+| G16 | Textes des pages — le contexte de la biographie sort du lexique | livré |
 
 **G3 est écrit, et la boutique est fermée.** Le commanditaire a confirmé le
 7 septembre qu'aucune date de sortie n'est annoncée ; le lot a donc été livré
@@ -3340,6 +3344,94 @@ en avait besoin ne l'avait pas non plus.
 
 Aucune migration.
 
+### Lot G16 — livré
+
+**La biographie s'ouvrait sur sa propre consigne de rédaction.** « *Texte à
+rédiger.* Situer le personnage dans la Côte d'Ivoire pré- et post-indépendance,
+son rôle aux côtés de Félix Houphouët-Boigny… », sous le titre « Une trajectoire
+et un pays qui naît » — et sa traduction, « *Text to be written.* », sur
+`/en/biographie`. Le texte vivait dans `src/lang/fr.php` et `en.php` : le
+changer demandait une livraison de code.
+
+**Il est en base, dans `parametre`, et non dans `citation`.** La table des
+citations garde un fonds — plusieurs textes par emplacement, un statut, une
+mise en avant exclusive, une source presque exigée. Le contexte n'a ni source,
+ni seconde version en réserve : il y en a un, à sa place. C'est exactement le
+cas que `sql/018_citation.sql` écartait en expliquant « pourquoi une table et
+non trois paramètres » ; le raisonnement vaut à l'envers. `parametre` est déjà
+la maison des textes uniques — préface, biographie de l'auteur, message de
+commande — et **sait déjà se traduire** (`ligne_id = 0`, lot G11).
+
+**Un écran à part, « Textes des pages », dans Contenus**, et non une carte de
+plus sur « Paramètres ». Celui-ci est la fiche technique de l'ouvrage : son
+titre, son compteur « x sur 8 » et son bouton « Enregistrer la fiche » parlent
+du livre. Les sections sont déclarées dans `Parametre::TEXTES_PAGES`, rangées par
+section : les autres textes encore écrits dans le lexique — présentation de
+l'accueil, quatrième de couverture, résumé du livre — s'y ajouteront comme
+sections, sans toucher au gabarit ni au contrôleur. Ouvert aux éditeurs.
+
+**Sans texte, la section disparaît**, dans les deux langues — même règle que
+les citations (G14) et les périodes (G10). Le titre, lui, est facultatif : vide,
+la section garde celui du lexique, `biographie.contexte.titre`, qui existe en
+français et en anglais. C'est ce qui permet de publier le texte sans attendre
+qu'un titre soit arrêté, ni traduit. La clé `biographie.contexte.texte` est
+retirée des deux catalogues ; le surtitre « Contexte » reste au lexique, c'est
+un libellé d'interface.
+
+**Tout ce qui vient de la base est échappé.** Le texte passait par `t_brut()`,
+qui n'échappe pas — sans risque tant qu'il venait du dépôt. Il est désormais
+saisi : une ligne vide sépare deux paragraphes (`View::paragraphes`), un retour
+à la ligne du titre devient `<br>`, et rien d'autre ne passe.
+
+**Le bilinguisme, quatre décisions.**
+
+- **L'anglais se saisit à l'écran des traductions**, comme tout le reste, le
+  français en regard. L'index y porte désormais **deux fiches de paramètres** au
+  lieu d'une : « Le livre et son auteur » et « Textes des pages »
+  (`TraductionController::FICHES_PARAMETRES`, adresses
+  `/traductions/parametre/livre` et `/traductions/parametre/textes`). Toutes deux
+  écrivent sous `entite = 'parametre'`, `ligne_id = 0` ; la clé de la fiche ne
+  choisit que les champs acceptés, et chacune ne compte que les siens. L'ancienne
+  adresse `/traductions/parametre` ramène à l'index.
+- **Le français fait foi.** `Parametre::lire()` pose la traduction par-dessus la
+  valeur française même quand celle-ci est vide : l'éditeur vidait le texte,
+  l'écran annonçait la section disparue, et elle restait en ligne en anglais
+  parce qu'une traduction ancienne traînait en base — constaté à l'essai.
+  `Parametre::texte()` rend vide ce qui est vide en français, dans toutes les
+  langues ; la traduction est conservée et reparaît avec le français.
+- **L'écran de saisie dit ce que la page anglaise affichera**, sous chaque
+  section : texte traduit ou non, titre traduit, non traduit ou par défaut, avec
+  un lien direct vers la fiche de traduction. Un texte non traduit ne se voit
+  sinon que sur `/en/`.
+- **Les numéros de section sont comptés**, et non plus écrits en dur. Le
+  contexte peut manquer, la frise aussi — la page commençait alors à 02, ou
+  sautait de 02 à 04. Le défaut existait déjà pour la frise vide.
+
+**Aucune migration** : `Parametre::ecrire()` crée la ligne au premier
+enregistrement. Rien de plus à jouer en production.
+
+Vérifié en local, en bout de chaîne : section absente et numérotation 01-02-03
+avant saisie ; titre de 201 signes refusé en 422 avec la saisie conservée ;
+titre sur deux lignes et texte en deux paragraphes, balisage échappé, en
+français et en anglais ; traduction du seul texte posée depuis la fiche
+« Textes des pages », un champ d'une autre fiche glissé dans le formulaire
+ignoré ; titre vidé → titre du lexique dans chaque langue ; texte français vidé
+→ section absente des deux pages malgré la traduction. Données d'essai et
+compte effacés.
+
+**Le manuel de l'éditeur suit** : une rubrique « Textes des pages » en partie 03,
+la rubrique au tableau du menu, les deux fiches de paramètres à l'écran des
+traductions, et une ligne à l'aide-mémoire « Ce qui empêche de publier » — rien,
+enregistrer c'est publier, et un texte vide retire la section dans les deux
+langues. `generer-docx.py` reprend les mêmes ajouts. L'artifact publié pour le
+commanditaire est republié à la même adresse ; **le lien partagé montre une
+version épinglée**, à faire avancer depuis le menu de partage pour que ses
+lecteurs voient celle-ci. `/cmsadmin/manuel` lit le fichier : il suit dès que
+`documentation/manuel-administration.html` part sur le serveur.
+
+**Au déploiement**, en plus du code : `documentation/manuel-administration.html`.
+Aucune base à toucher.
+
 ### Ce que le brief ajoute à la liste des livrables attendus
 
 À la liste du §5 s'ajoutent, tous non techniques :
@@ -3356,4 +3448,5 @@ Aucune migration.
 | **Enseignes et adresses des points de vente** — les trois villes sont en base et publiées (G12), mais aucune ne dit encore où aller : l'accueil et la page du livre affichent « Enseigne et adresse à renseigner » sous Abidjan, Yamoussoukro et Paris | commanditaire / éditeur |
 | **Prix de l'ouvrage en francs CFA**, et le **point de retrait** avec ses horaires. Ce sont les deux valeurs qui ouvrent la boutique : sans prix elle reste fermée, sans point de retrait le retrait n'est pas proposé. Les **tarifs de livraison** se posent ensuite, zone par zone | commanditaire / éditeur |
 | **Trois citations sourcées** — un extrait de l'ouvrage pour l'accueil, un autre pour la page du livre, un propos de Philippe Grégoire Yacé pour la biographie, chacun avec sa provenance. Le mécanisme est livré (G14) : les trois bandeaux restent absents du site tant qu'aucune citation n'est publiée et mise en avant | commanditaire / éditeur |
+| **Contexte historique de la biographie** — quelques paragraphes situant Philippe Grégoire Yacé dans la Côte d'Ivoire avant et après l'indépendance, et sa traduction. Le mécanisme est livré (G16), à l'écran « Textes des pages » : la section reste absente du site tant que le texte n'est pas saisi | commanditaire / auteur |
 | **Traduction anglaise des contenus** — biographie, notices d'archives, sujets d'Héritage, préface. **L'anglais est ouvert** : chaque champ traduit depuis le back-office retire une phrase française des pages `/en/`, et un champ non traduit y affiche le français | commanditaire / traducteur |
