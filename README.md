@@ -465,31 +465,42 @@ se voyait pas tant que le panneau était réservé aux écrans de moins de 992 p
 
 ### Réseaux sociaux et chaîne WhatsApp
 
-Le site porte quatre liens sortants de marque : la **chaîne WhatsApp** — qu'il
-alimente lui-même — et les comptes **Facebook**, **Instagram** et **YouTube**.
-Les adresses sont en configuration, clé `reseaux` ; **une adresse vide n'affiche
-pas son bouton**, et les quatre vides font disparaître le bloc entier. Fermer un
-canal, c'est vider une ligne, pas retoucher un gabarit.
+Le site porte cinq liens sortants de marque : la **chaîne WhatsApp** — qu'il
+alimente lui-même — et les comptes **Facebook**, **Instagram**, **YouTube** et
+**TikTok**. Les adresses sont en configuration, clé `reseaux` ; **une adresse
+vide n'affiche pas son bouton**, et toutes vides font disparaître le bloc entier.
+Fermer un canal, c'est vider une ligne, pas retoucher un gabarit.
 
 Ils paraissent à trois endroits, depuis deux partials :
 
 | Où | Quoi | Partial |
 |---|---|---|
-| Pied de page | rangée de quatre boutons, sous le logotype | `partials/reseaux.php` |
+| Pied de page | rangée de cinq boutons, sous le logotype | `partials/reseaux.php` |
 | Page Contact | la même rangée, en cinquième coordonnée | `partials/reseaux.php` |
 | Page Actualités | bandeau de la seule chaîne WhatsApp, après la liste | `partials/chaine.php` |
 
 **Aucune couleur de marque.** Ni le vert WhatsApp, ni le bleu Facebook, ni le
-rouge YouTube, ni le dégradé Instagram : le fichier de jetons ne reconnaît qu'un
-accent, le laiton patiné, et quatre couleurs vives dans un pied qui n'en admet
-qu'une feraient basculer une plaque commémorative en widget. Les glyphes sont
-servis en `currentColor` et prennent l'encre de leur contexte — même mécanique
-que le logotype. La forme du glyphe suffit à la reconnaissance.
+rouge YouTube, ni le dégradé Instagram, ni le cyan-magenta TikTok : le fichier
+de jetons ne reconnaît qu'un accent, le laiton patiné, et cinq couleurs vives
+dans un pied qui n'en admet qu'une feraient basculer une plaque commémorative en
+widget. Les glyphes sont servis en `currentColor` et prennent l'encre de leur
+contexte — même mécanique que le logotype. La forme du glyphe suffit à la reconnaissance.
 
 Le bouton est un **carré au filet de 44 × 44 px** : c'est un bouton et non un
 lien, 44 px est le minimum de zone tactile recommandé — qu'un glyphe de 22 px ne
 tient pas — et le filet d'un pixel est déjà la grammaire du site. Le remplissage
 au survol est celui de `.btn-pgy--ghost`, repris tel quel. Aucun arrondi.
+
+**Ouvrir un réseau, c'est deux lignes.** Une adresse sous la clé `reseaux` de
+`config/config.php`, et une entrée dans le tableau de `partials/reseaux.php` —
+clé, nom affiché, tracé du glyphe. L'ordre de la rangée est celui du tableau, et
+les tracés viennent tous de **Simple Icons** (grille 24 × 24, un seul chemin) :
+un glyphe pris ailleurs n'aurait ni la même boîte ni la même graisse. Le nom
+accessible — « sur TikTok — ouvre un nouvel onglet » — se compose seul, en
+français comme en anglais. C'est ainsi que **TikTok** est arrivé le 14 septembre
+2026, en cinquième après YouTube ; vérifié sur l'accueil, `/contact` et
+`/en/contact`. La rangée se replie sur deux lignes si sa colonne ne tient pas
+cinq carrés : rien à retoucher en CSS.
 
 Le bandeau des actualités vient **après** la liste et non avant : sur une page
 éditoriale, un appel placé au-dessus du contenu repousse ce qu'on est venu lire,
