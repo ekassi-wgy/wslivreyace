@@ -262,7 +262,6 @@ return [
     'biographie.tete.alt'         => 'Philippe Grégoire Yacé jeune homme, en veste claire et lunettes rondes — photographie d\'archive',
     'biographie.contexte.kicker'  => 'Contexte',
     'biographie.contexte.titre'   => 'Une trajectoire<br>et un pays qui naît.',
-    'biographie.contexte.texte'   => '<em>Texte à rédiger.</em> Situer le personnage dans la Côte d\'Ivoire pré- et post-indépendance, son rôle aux côtés de Félix Houphouët-Boigny, et la place de l\'Assemblée nationale dans la construction de l\'État.',
     'biographie.parcours.kicker'  => 'Biographie',
     'biographie.parcours.titre'   => 'Le parcours.',
     'biographie.parcours.vide'    => '<em>Le récit par périodes se constitue.</em> Chaque période paraîtra ici dès qu\'elle sera rédigée et sourcée, avec sa page propre — et les repères de la frise comme les pièces du fonds de ces années-là.',

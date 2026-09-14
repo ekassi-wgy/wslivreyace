@@ -70,7 +70,7 @@ use App\Core\View;
             <?= View::e($reglage['libelle']) ?> — <?= View::e($infos['nom']) ?>
           </label>
 <?php if ($reglage['zone']): ?>
-          <textarea class="form-control" rows="8"
+          <textarea class="form-control" rows="<?= (int) ($reglage['lignes'] ?? 8) ?>"
                     id="<?= View::e($idChamp) ?>"
                     name="<?= View::e($nom) ?>"><?= View::e($traduit) ?></textarea>
 <?php else: ?>

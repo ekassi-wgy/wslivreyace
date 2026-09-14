@@ -7,6 +7,7 @@ use App\Core\Site;
 use App\Core\View;
 use App\Model\Archive;
 use App\Model\Media;
+use App\Model\Parametre;
 use App\Model\Periode;
 use App\Model\Repere;
 
@@ -56,8 +57,20 @@ final class BiographieController
             }
         }
 
+        /*
+         * Le contexte historique (lot G16), saisi à l'écran « Textes des
+         * pages ». Sur `/en/biographie`, un champ traduit remplace le
+         * français, un champ non traduit le laisse paraître — et un champ vide
+         * en français reste vide partout : voir `Parametre::texte()`.
+         */
+        $contexte = [
+            'titre' => Parametre::texte('biographie_contexte_titre'),
+            'texte' => Parametre::texte('biographie_contexte_texte'),
+        ];
+
         View::render('pages/biographie', [
             'page'        => 'bio',
+            'contexte'    => $contexte,
             'periodes'    => $periodes,
             'couvertures' => Periode::couvertures($periodes),
             'reperes'     => $reperes,

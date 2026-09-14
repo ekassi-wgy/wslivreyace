@@ -193,6 +193,82 @@ final class Parametre
         ],
     ];
 
+    /**
+     * Les textes des pages publiques (lot G16).
+     *
+     * **Du texte de page, pas du contenu catalogué.** Le contexte historique de
+     * la biographie n'a ni date, ni statut, ni seconde version en réserve : il
+     * y en a un, et il est à sa place. C'est ce qui le range ici plutôt que
+     * dans `citation`, dont la table garde un fonds où l'éditeur puise — voir
+     * `sql/018_citation.sql`, « pourquoi une table et non trois paramètres ».
+     * Le raisonnement vaut à l'envers.
+     *
+     * Il vivait dans `src/lang/fr.php`, avec sa consigne de rédaction affichée
+     * en ligne — « Texte à rédiger. Situer le personnage… » — et ne pouvait
+     * changer qu'avec une livraison de code.
+     *
+     * **Rangés par section**, et non à plat comme les groupes du livre : l'écran
+     * « Textes des pages » en fait une carte chacune, et les autres textes
+     * encore écrits dans le lexique — présentation de l'accueil, quatrième de
+     * couverture — viendront s'y ajouter comme sections.
+     *
+     * `type` vaut `titre` (court, un retour à la ligne y est permis et se
+     * retrouve sur la page) ou `long` (une ligne vide sépare deux paragraphes).
+     *
+     * **Bilingue par l'écran des traductions**, comme les autres paramètres :
+     * `traduction` avec `ligne_id = 0`. Les clés traduisibles y sont déclarées
+     * — voir `TraductionController::FICHES_PARAMETRES`.
+     *
+     * @var array<string,array{
+     *   titre: string, page: string, chemin: string, aide: string,
+     *   champs: array<string,array{libelle:string,type:string,aide:string,exemple:string}>
+     * }>
+     */
+    public const TEXTES_PAGES = [
+        'biographie_contexte' => [
+            'titre'  => 'Biographie — section « Contexte »',
+            'page'   => 'Biographie',
+            'chemin' => '/biographie',
+            'aide'   => 'La première section de la page, sous le portrait : situer l\'homme dans '
+                      . 'son époque avant d\'entrer dans le parcours.',
+            'champs' => [
+                'biographie_contexte_titre' => [
+                    'libelle' => 'Titre de la section',
+                    'type'    => 'titre',
+                    'aide'    => 'Facultatif. Vide, la page garde son titre actuel, « Une trajectoire '
+                               . 'et un pays qui naît. » — déjà traduit en anglais. Un retour à la '
+                               . 'ligne se retrouve sur la page.',
+                    'exemple' => "Une trajectoire\net un pays qui naît.",
+                ],
+                'biographie_contexte_texte' => [
+                    'libelle' => 'Texte',
+                    'type'    => 'long',
+                    'aide'    => 'La Côte d\'Ivoire avant et après l\'indépendance, le rôle aux côtés '
+                               . 'de Félix Houphouët-Boigny, la place de l\'Assemblée nationale. '
+                               . 'Une ligne vide sépare deux paragraphes. <strong>Vide, la section '
+                               . 'n\'apparaît pas sur le site.</strong>',
+                    'exemple' => '',
+                ],
+            ],
+        ],
+    ];
+
+    /**
+     * Les champs de toutes les sections de `TEXTES_PAGES`, à plat.
+     *
+     * @return array<string,array{libelle:string,type:string,aide:string,exemple:string}>
+     */
+    public static function champsTextes(): array
+    {
+        $champs = [];
+
+        foreach (self::TEXTES_PAGES as $section) {
+            $champs += $section['champs'];
+        }
+
+        return $champs;
+    }
+
     /** @return array<string,string|null> toutes les valeurs, indexées par clé */
     public static function toutes(): array
     {
@@ -210,6 +286,32 @@ final class Parametre
         $l = Database::one('SELECT valeur FROM parametre WHERE cle = ?', [$cle]);
 
         return self::traduites([$cle => $l['valeur'] ?? $defaut])[$cle];
+    }
+
+    /**
+     * Un texte de page dans la langue courante, **à condition que le français
+     * existe** (lot G16).
+     *
+     * `lire()` pose la traduction par-dessus la valeur française, même quand
+     * celle-ci est vide. Pour un réglage, c'est sans conséquence ; pour une
+     * section de page, c'est une contradiction : l'éditeur vide le texte
+     * français, l'écran lui dit que la section a disparu, et elle reste en
+     * ligne en anglais parce qu'une traduction ancienne traîne en base.
+     *
+     * **Le français fait foi, ici comme dans le lexique** : vide en français,
+     * rien dans aucune langue. La traduction reste en base, et reparaît le jour
+     * où le français est rédigé de nouveau.
+     */
+    public static function texte(string $cle): string
+    {
+        $l = Database::one('SELECT valeur FROM parametre WHERE cle = ?', [$cle]);
+        $francais = trim((string) ($l['valeur'] ?? ''));
+
+        if ($francais === '') {
+            return '';
+        }
+
+        return trim((string) self::traduites([$cle => $francais])[$cle]);
     }
 
     /**

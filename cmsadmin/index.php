@@ -25,6 +25,7 @@ use App\Controller\Admin\PeriodeController;
 use App\Controller\Admin\PointDeVenteController;
 use App\Controller\Admin\RepereController;
 use App\Controller\Admin\TemoignageController;
+use App\Controller\Admin\TexteController;
 use App\Controller\Admin\TraductionController;
 use App\Controller\Admin\ZoneController;
 use App\Core\Admin;
@@ -119,6 +120,15 @@ $crud('/points-de-vente', PointDeVenteController::class, 'nouveau');
  * le modèle, pas par les routes.
  */
 $crud('/citations', CitationController::class, 'nouvelle');
+
+/*
+ * Les textes des pages (lot G16). Deux routes et non le jeu des contenus : ce
+ * sont des textes uniques, rangés dans `parametre`, qui ne se créent ni ne se
+ * suppriment — même forme que « Paramètres ». Leur anglais passe par
+ * `/traductions/parametre/textes`.
+ */
+$router->get($base . '/textes',  [TexteController::class, 'formulaire']);
+$router->post($base . '/textes', [TexteController::class, 'enregistrer']);
 
 /**
  * Modération des témoignages. Pas le même jeu de routes que les contenus : on

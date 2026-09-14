@@ -348,7 +348,7 @@ p("Tout ce qu'il faut savoir pour tenir le site à jour : publier une actualité
   "déposer une photographie, ouvrir la boutique, répondre à un visiteur. "
   "Aucune connaissance technique n'est nécessaire.", style='Lead')
 
-p("Manuel de l'éditeur  ·  Version du 10 septembre 2026", style='Meta')
+p("Manuel de l'éditeur  ·  Version du 14 septembre 2026", style='Meta')
 p("Se lit dans l'ordre, se consulte au besoin.", style='Meta')
 
 doc.add_paragraph()
@@ -362,7 +362,8 @@ SOMMAIRE = [
                            'Dimensions à respecter', 'Préparer une image',
                            'Les vidéos']),
     ('03 — Les contenus', ['Actualités', 'Événements', 'Biographie', 'Repères',
-                           'Archives', 'Héritage', 'Citations', 'Points de vente']),
+                           'Archives', 'Héritage', 'Citations', 'Textes des pages',
+                           'Points de vente']),
     ('04 — Ce qui vient des visiteurs', ['Témoignages', 'Contributions', 'Messages']),
     ('05 — Le livre et la boutique', ['Paramètres', 'Ouvrir les commandes',
                                       'Zones de livraison', 'Commandes']),
@@ -431,7 +432,7 @@ p("Le menu de gauche est rangé en trois familles.")
 tableau(['Famille', 'Rubriques', "Ce qu'on y fait"], [
     ['Contenus',
      "Actualités, Événements, Biographie, Repères, Archives, Héritage, Citations, "
-     "Points de vente, Médiathèque, Traductions",
+     "Textes des pages, Points de vente, Médiathèque, Traductions",
      "Tout ce que le visiteur lit et regarde."],
     ['Modération', "Témoignages, Contributions, Messages",
      "Ce que les visiteurs vous envoient. Rien n'est publié sans votre accord."],
@@ -760,6 +761,42 @@ p("Les trois bandeaux sont vides aujourd'hui : ils affichaient auparavant un tex
   "resteront absents du site tant que vous n'aurez rien saisi**, ce qui vaut mieux que "
   "d'annoncer un emplacement réservé.")
 
+rubrique('Textes des pages')
+fiche([
+    ('Alimente', "La section « Contexte » de la biographie, sous le portrait."),
+    ('Obligatoire', "Rien : un texte vide retire simplement la section."),
+    ('Pour paraître', "Le texte. Il n'y a ni brouillon ni bouton de publication : ce qui "
+                      "est enregistré est en ligne."),
+    ('Images', "Aucune."),
+])
+p("Certaines pages ont un texte rédigé qui n'est ni une actualité, ni une période, ni une "
+  "citation : il y en a **un seul**, et il est à sa place. C'est le cas du **contexte "
+  "historique** qui ouvre la biographie — la Côte d'Ivoire avant et après l'indépendance, "
+  "avant d'entrer dans le parcours. Cet écran les rassemble, une carte par section.")
+note("Enregistrer, c'est publier", [
+    "Contrairement au reste des contenus, **il n'y a pas d'état Brouillon** sur cet écran : "
+    "le texte enregistré paraît aussitôt. Préparez-le ailleurs s'il n'est pas prêt.",
+    "Sous chaque carte, un encadré vous dit ce que le site affiche en ce moment — section "
+    "visible ou non, et ce qu'en montre la version anglaise.",
+])
+p("**Sans texte, la section disparaît**, en français comme en anglais. La page affichait "
+  "auparavant une consigne de rédaction, « Texte à rédiger », qui a été retirée : elle reste "
+  "absente tant que vous n'avez rien saisi, et les numéros de section de la page se recalent "
+  "d'eux-mêmes.")
+p("**Le titre est facultatif.** Laissé vide, la section garde son titre actuel, « Une "
+  "trajectoire et un pays qui naît », déjà traduit en anglais. Si vous en saisissez un, un "
+  "retour à la ligne dans le champ se retrouve sur la page.")
+p("Dans le texte, **une ligne vide sépare deux paragraphes**. Il s'affiche tel qu'il est "
+  "saisi : ni gras, ni italique, ni lien.")
+sous("La version anglaise")
+p("L'anglais ne se saisit pas ici mais à l'écran Traductions, fiche **Textes des pages**, le "
+  "français en regard — le lien « Traduire » sous chaque carte y mène directement. Tant "
+  "qu'un champ n'est pas traduit, la page anglaise affiche le français à sa place.")
+p("**Le français décide.** Si vous videz le texte français, la section disparaît aussi de la "
+  "page anglaise, même traduite : la traduction est conservée et reparaîtra quand le français "
+  "sera rédigé de nouveau. À l'inverse, corriger le français ne modifie pas la traduction — "
+  "pensez à la reprendre si le sens a changé.")
+
 rubrique('Points de vente')
 fiche([
     ('Alimente', "Le bloc « Où se procurer l'ouvrage », sur l'accueil et sur la page du livre."),
@@ -961,6 +998,9 @@ note("Un champ non traduit affiche le français", [
 ], sourd=True)
 p("**Rien ne se publie depuis cet écran.** Poser une traduction ne change pas l'état d'une "
   "fiche et ne touche pas au français : c'est un écran qu'on peut confier sans risque.")
+p("Deux rubriques ne portent qu'une fiche, et s'ouvrent directement : **Le livre et son "
+  "auteur** — titre, préface, biographie de l'auteur — et **Textes des pages**, pour le "
+  "contexte de la biographie.")
 p("Tout ne se traduit pas, et c'est voulu. Une adresse web, une année, un crédit photo, un "
   "nom propre n'ont pas de version anglaise — seuls les champs qui le méritent vous sont "
   "proposés.")
@@ -993,6 +1033,8 @@ tableau(['Rubrique', 'Exigé pour publier', 'Pourquoi'], [
     ['Citations', 'Rien pour publier + la case cochée pour paraître',
      "Un emplacement ne montre qu'une citation : la case désigne laquelle, et cocher "
      "l'une décoche l'autre."],
+    ['Textes des pages', "Rien : enregistrer, c'est publier",
+     "Pas d'état Brouillon. Un texte vide retire la section, en français comme en anglais."],
     ['Points de vente', 'Rien de plus que la ville',
      "Une ville seule est déjà une information utile."],
     ['Boutique', "La case cochée *et* un prix",
@@ -1052,7 +1094,7 @@ fin = doc.add_paragraph()
 bordure(fin._p, ['top'], FILET, taille=4)
 fin.paragraph_format.space_before = Pt(10)
 ecrire(fin, "Manuel d'administration du site **Philippe Grégoire Yacé — une destinée**. "
-            "Rédigé le 8 septembre 2026, revu le 10 septembre 2026, d'après le fonctionnement réel de l'administration. "
+            "Rédigé le 8 septembre 2026, revu le 14 septembre 2026, d'après le fonctionnement réel de l'administration. "
             "Les règles décrites ici sont celles que le site applique : quand il refuse une "
             "publication, c'est l'une d'elles qui parle.", taille=8, couleur=ENCRE3)
 

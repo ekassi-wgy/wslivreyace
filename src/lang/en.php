@@ -239,7 +239,6 @@ return [
     'biographie.tete.alt'         => 'Philippe Grégoire Yacé as a young man, in a light jacket and round glasses — archive photograph',
     'biographie.contexte.kicker'  => 'Context',
     'biographie.contexte.titre'   => 'One life<br>and a country being born.',
-    'biographie.contexte.texte'   => '<em>Text to be written.</em> Placing the man in Côte d\'Ivoire before and after independence, his role alongside Félix Houphouët-Boigny, and the part the National Assembly played in building the state.',
     'biographie.parcours.kicker'  => 'Biography',
     'biographie.parcours.titre'   => 'The life.',
     'biographie.parcours.vide'    => '<em>The account by period is being assembled.</em> Each period will appear here once written and sourced, with a page of its own — together with the milestones of the timeline and the archive items of those years.',

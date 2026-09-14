@@ -78,16 +78,18 @@ use App\Core\View;
               </tr>
 <?php endforeach; ?>
 
-              <?php /* Les paramètres n'ont pas de lignes : une seule fiche. */ ?>
+              <?php /* Les paramètres n'ont pas de lignes : une fiche chacun de
+                       leurs groupes, listée directement (lot G16). */ ?>
+<?php foreach ($parametres as $fiche): ?>
               <tr>
                 <td>
-                  <strong>Le livre et son auteur</strong>
-                  <span class="d-block text-muted small">Titre, préface, biographie de l'auteur</span>
+                  <strong><?= View::e($fiche['titre']) ?></strong>
+                  <span class="d-block text-muted small"><?= View::e($fiche['resume']) ?></span>
                 </td>
                 <td class="text-end text-muted">1</td>
 <?php foreach (array_keys($langues) as $code): ?>
                 <td class="text-end">
-                  <?php $n = $parametres['traduites'][$code] ?? 0; ?>
+                  <?php $n = $fiche['traduites'][$code] ?? 0; ?>
                   <?php if ($n === 0): ?>
                     <span class="text-muted">—</span>
                   <?php else: ?>
@@ -97,9 +99,10 @@ use App\Core\View;
 <?php endforeach; ?>
                 <td class="text-end">
                   <a class="btn btn-sm btn-outline-primary"
-                     href="<?= Admin::url('/traductions/parametre') ?>">Ouvrir</a>
+                     href="<?= Admin::url('/traductions/parametre/' . $fiche['cle']) ?>">Ouvrir</a>
                 </td>
               </tr>
+<?php endforeach; ?>
             </tbody>
           </table>
         </div>

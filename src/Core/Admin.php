@@ -115,6 +115,17 @@ final class Admin
                 'icone'  => 'mdi-format-quote-close',
                 'url'    => self::url('/citations'),
             ],
+            /*
+             * Les textes des pages (lot G16). Sous les citations, avec les
+             * contenus : rédiger le contexte de la biographie est le métier de
+             * celui qui rédige, pas un réglage de l'ouvrage.
+             */
+            [
+                'cle'    => 'textes',
+                'titre'  => 'Textes des pages',
+                'icone'  => 'mdi-text-box-edit-outline',
+                'url'    => self::url('/textes'),
+            ],
             [
                 'cle'    => 'points-de-vente',
                 'titre'  => 'Points de vente',

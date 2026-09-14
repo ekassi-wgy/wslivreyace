@@ -195,16 +195,50 @@ final class TraductionController
      * Seuls les textes suivis : un ISBN, un prix ou une date de parution ne se
      * traduisent pas, et les proposer aurait fait un écran de bruit.
      *
-     * @var array<string,array{libelle:string,zone:bool}>
+     * **Deux fiches depuis le lot G16**, et non une seule qui aurait grossi :
+     * le livre et son auteur d'un côté, les textes des pages de l'autre. Ce ne
+     * sont ni les mêmes écrans de saisie, ni forcément le même traducteur, et
+     * un contexte historique glissé sous « Le livre et son auteur » ne se
+     * trouverait pas. Toutes deux écrivent sous `entite = 'parametre'` et
+     * `ligne_id = 0` — c'est là que `Parametre` les lit ; la clé de la fiche ne
+     * sert qu'à l'adresse et au choix des champs.
+     *
+     * `lignes`, facultatif, règle la hauteur d'un champ `zone` : un titre en
+     * deux lignes n'a pas à ouvrir la boîte d'un récit.
+     *
+     * @var array<string,array{
+     *   titre: string, resume: string,
+     *   champs: array<string,array{libelle:string,zone:bool,lignes?:int}>
+     * }>
      */
-    private const PARAMETRES = [
-        'livre_titre'     => ['libelle' => "Titre de l'ouvrage",       'zone' => false],
-        'livre_format'    => ['libelle' => 'Format',                   'zone' => false],
-        'preface_qualite' => ['libelle' => 'Qualité du préfacier',     'zone' => false],
-        'preface_extrait' => ['libelle' => 'Extrait de la préface',    'zone' => true],
-        'preface_texte'   => ['libelle' => 'Texte de la préface',      'zone' => true],
-        'auteur_qualite'  => ['libelle' => "Qualité de l'auteur",      'zone' => false],
-        'auteur_bio'      => ['libelle' => "Biographie de l'auteur",   'zone' => true],
+    private const FICHES_PARAMETRES = [
+        'livre' => [
+            'titre'  => 'Le livre et son auteur',
+            'resume' => "Titre, préface, biographie de l'auteur",
+            'champs' => [
+                'livre_titre'     => ['libelle' => "Titre de l'ouvrage",       'zone' => false],
+                'livre_format'    => ['libelle' => 'Format',                   'zone' => false],
+                'preface_qualite' => ['libelle' => 'Qualité du préfacier',     'zone' => false],
+                'preface_extrait' => ['libelle' => 'Extrait de la préface',    'zone' => true],
+                'preface_texte'   => ['libelle' => 'Texte de la préface',      'zone' => true],
+                'auteur_qualite'  => ['libelle' => "Qualité de l'auteur",      'zone' => false],
+                'auteur_bio'      => ['libelle' => "Biographie de l'auteur",   'zone' => true],
+            ],
+        ],
+        /*
+         * Les textes des pages (lot G16). Un titre de contexte laissé vide en
+         * français n'a rien à traduire ici : la page prend alors celui du
+         * lexique, qui existe déjà dans les deux langues — voir
+         * `templates/pages/biographie.php`.
+         */
+        'textes' => [
+            'titre'  => 'Textes des pages',
+            'resume' => 'Contexte de la biographie',
+            'champs' => [
+                'biographie_contexte_titre' => ['libelle' => 'Biographie — titre du contexte', 'zone' => true, 'lignes' => 2],
+                'biographie_contexte_texte' => ['libelle' => 'Biographie — texte du contexte', 'zone' => true],
+            ],
+        ],
     ];
 
     // -- Écrans ------------------------------------------------------------
@@ -236,10 +270,7 @@ final class TraductionController
             'actif'     => 'traductions',
             'langues'   => $langues,
             'rubriques' => $rubriques,
-            'parametres'=> [
-                'total'     => count(self::PARAMETRES),
-                'traduites' => self::comptees('parametre', $langues),
-            ],
+            'parametres'=> self::rubriquesParametres($langues),
         ]);
     }
 
@@ -249,13 +280,15 @@ final class TraductionController
         $entite = (string) $params['entite'];
 
         /*
-         * `parametre` n'a pas de lignes : le livre et son auteur, c'est une
-         * fiche unique. L'index y renvoie donc par la même adresse que les
-         * autres rubriques, et on saute l'étape de la liste plutôt que de
-         * montrer un tableau d'une seule ligne.
+         * `parametre` n'a pas de lignes : ses fiches — le livre, les textes
+         * des pages — sont listées directement sur l'index, qui renvoie vers
+         * `/traductions/parametre/{fiche}`. Cette adresse-ci n'a donc rien à
+         * montrer qui ne soit déjà là-bas ; elle y ramène plutôt que de
+         * répondre 404 à un ancien favori.
          */
         if ($entite === 'parametre') {
-            self::ficheParametres();
+            header('Location: ' . \App\Core\Admin::url('/traductions'), true, 302);
+            exit;
         }
 
         $def = self::ENTITES[$entite] ?? null;
@@ -293,7 +326,7 @@ final class TraductionController
         $entite = (string) $params['entite'];
 
         if ($entite === 'parametre') {
-            self::ficheParametres();
+            self::ficheParametres((string) $params['id']);
         }
 
         $def = self::ENTITES[$entite] ?? null;
@@ -325,22 +358,35 @@ final class TraductionController
         ]);
     }
 
-    /** La fiche des paramètres : même écran, source prise ailleurs. */
-    private static function ficheParametres(): never
+    /**
+     * Une fiche de paramètres : même écran, source prise ailleurs.
+     *
+     * `id` porte ici la clé de la fiche — `livre`, `textes` — et non un
+     * identifiant de ligne : le gabarit ne s'en sert que pour l'adresse du
+     * formulaire, et `enregistrer()` la retraduit en `Traduction::SANS_ID`.
+     */
+    private static function ficheParametres(string $cle): never
     {
+        $fiche = self::FICHES_PARAMETRES[$cle] ?? null;
+
+        if ($fiche === null) {
+            View::admin('404', ['titre' => 'Page introuvable', 'actif' => 'traductions'], 404);
+            exit;
+        }
+
         $reglages = Parametre::toutes();
         $source   = [];
 
-        foreach (array_keys(self::PARAMETRES) as $cle) {
-            $source[$cle] = (string) ($reglages[$cle] ?? '');
+        foreach (array_keys($fiche['champs']) as $champ) {
+            $source[$champ] = (string) ($reglages[$champ] ?? '');
         }
 
         View::admin('traductions/fiche', [
-            'titre'   => 'Traduire — le livre et son auteur',
+            'titre'   => 'Traduire — ' . $fiche['titre'],
             'actif'   => 'traductions',
             'entite'  => 'parametre',
-            'def'     => ['titre' => 'Le livre et son auteur', 'champs' => self::PARAMETRES],
-            'id'      => Traduction::SANS_ID,
+            'def'     => ['titre' => $fiche['titre'], 'champs' => $fiche['champs']],
+            'id'      => $cle,
             'source'  => $source,
             'cibles'  => self::posees('parametre', Traduction::SANS_ID),
             'langues' => self::languesCibles(),
@@ -356,11 +402,20 @@ final class TraductionController
         Csrf::exiger();
 
         $entite = (string) $params['entite'];
-        $id     = (int) $params['id'];
 
-        $champs = $entite === 'parametre'
-            ? self::PARAMETRES
-            : (self::ENTITES[$entite]['champs'] ?? null);
+        /*
+         * Les fiches de paramètres ont une clé et non un identifiant : toutes
+         * écrivent sous `Traduction::SANS_ID`, et la clé ne choisit que les
+         * champs acceptés. Un champ d'une autre fiche glissé dans le formulaire
+         * est donc ignoré, comme n'importe quel champ inconnu.
+         */
+        if ($entite === 'parametre') {
+            $id     = Traduction::SANS_ID;
+            $champs = self::FICHES_PARAMETRES[(string) $params['id']]['champs'] ?? null;
+        } else {
+            $id     = (int) $params['id'];
+            $champs = self::ENTITES[$entite]['champs'] ?? null;
+        }
 
         if ($champs === null) {
             View::admin('404', ['titre' => 'Page introuvable', 'actif' => 'traductions'], 404);
@@ -422,22 +477,56 @@ final class TraductionController
     /**
      * Combien de champs sont traduits pour une entité, par langue.
      *
+     * `$champs` restreint le compte à certaines colonnes : les deux fiches de
+     * paramètres écrivent sous la même entité, et chacune ne doit compter que
+     * les siennes.
+     *
      * @param array<string,mixed> $langues
+     * @param array<int,string>|null $champs
      * @return array<string,int>
      */
-    private static function comptees(string $entite, array $langues): array
+    private static function comptees(string $entite, array $langues, ?array $champs = null): array
     {
         $comptes = [];
+        $filtre  = '';
+
+        if ($champs !== null) {
+            $filtre = $champs === []
+                ? ' AND 0'
+                : ' AND champ IN (' . implode(', ', array_fill(0, count($champs), '?')) . ')';
+        }
 
         foreach (array_keys($langues) as $code) {
             $ligne = Database::one(
-                'SELECT COUNT(*) AS n FROM traduction WHERE entite = ? AND langue = ?',
-                [$entite, $code]
+                'SELECT COUNT(*) AS n FROM traduction WHERE entite = ? AND langue = ?' . $filtre,
+                [$entite, $code, ...($champs ?? [])]
             );
             $comptes[$code] = (int) ($ligne['n'] ?? 0);
         }
 
         return $comptes;
+    }
+
+    /**
+     * Les fiches de paramètres, telles que l'index les liste.
+     *
+     * @param array<string,mixed> $langues
+     * @return array<int,array{cle:string,titre:string,resume:string,traduites:array<string,int>}>
+     */
+    private static function rubriquesParametres(array $langues): array
+    {
+        $rubriques = [];
+
+        foreach (self::FICHES_PARAMETRES as $cle => $fiche) {
+            $rubriques[] = [
+                'cle'       => $cle,
+                'titre'     => $fiche['titre'],
+                'resume'    => $fiche['resume'],
+                'traduites' => self::comptees('parametre', $langues, array_keys($fiche['champs'])),
+            ];
+        }
+
+        return $rubriques;
     }
 
     /**
@@ -464,9 +553,12 @@ final class TraductionController
     /**
      * Ce qui est déjà posé pour une ligne.
      *
+     * Publique depuis le lot G16 : l'écran « Textes des pages » s'en sert pour
+     * dire, sous chaque section, ce que la page anglaise affichera.
+     *
      * @return array<string,array<string,string>> langue => [champ => valeur]
      */
-    private static function posees(string $entite, int $id): array
+    public static function posees(string $entite, int $id): array
     {
         $cibles = [];
 

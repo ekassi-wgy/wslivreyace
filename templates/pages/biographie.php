@@ -11,8 +11,11 @@
  * écrit ici — contexte, citations, renvoi vers l'ouvrage — est du texte de
  * page et non du contenu catalogué.
  *
- * Reçoit du contrôleur : $periodes, $couvertures, $reperes, $situation,
- * $onglets. Voir App\Controller\BiographieController.
+ * Le contexte historique n'est plus écrit ici depuis le lot G16 : il se saisit
+ * à l'écran « Textes des pages » du back-office, et se traduit comme le reste.
+ *
+ * Reçoit du contrôleur : $contexte, $periodes, $couvertures, $reperes,
+ * $situation, $onglets. Voir App\Controller\BiographieController.
  */
 
 use App\Core\Langue;
@@ -36,6 +39,19 @@ $lien = static fn(string $chemin): string => Langue::chemin($chemin);
  * vaut pas de citation qu'une citation non sourcée.
  */
 $citation = Citation::affichee('biographie');
+
+/**
+ * Les numéros de section, comptés et non écrits (lot G16).
+ *
+ * Ils étaient en dur — 01, 02, 03, 04 — alors que deux sections peuvent
+ * manquer : le contexte tant qu'il n'est pas rédigé, la frise tant qu'aucun
+ * repère n'est publié. La page commençait alors à 02, ou sautait de 02 à 04.
+ * Chaque section qui paraît prend le numéro suivant.
+ */
+$rang   = 0;
+$numero = static function () use (&$rang): string {
+    return sprintf('%02d', ++$rang);
+};
 
 $titre       = t_nu('biographie.titre_page');
 $description = t_nu('biographie.description');
@@ -78,23 +94,43 @@ JSONLD;
 </section>
 
 <!-- ===================== CONTEXTE HISTORIQUE ===================== -->
+<?php
+/**
+ * Le contexte historique (CDC §4.4, lot G16) — écran « Textes des pages ».
+ *
+ * Il affichait « Texte à rédiger. Situer le personnage… » depuis le lexique,
+ * en français comme en anglais. **Sans texte, la section disparaît** : même
+ * règle que les citations et les périodes, une consigne de rédaction n'a rien
+ * à faire sur la biographie d'une personne réelle.
+ *
+ * Le titre saisi est facultatif. Vide, la section garde celui du lexique, qui
+ * existe dans les deux langues — c'est ce qui permet de publier le texte sans
+ * attendre qu'un titre soit arrêté, ni traduit.
+ *
+ * Tout ce qui vient de la base est échappé : un retour à la ligne du titre
+ * devient `<br>`, une ligne vide du texte sépare deux paragraphes.
+ */
+?>
+<?php if ($contexte['texte'] !== ''): ?>
 <section class="section" style="padding-top: 0;">
   <div class="shell">
     <div class="row">
-      <div class="col-lg-2"><p class="section-num reveal">01</p></div>
+      <div class="col-lg-2"><p class="section-num reveal"><?= $numero() ?></p></div>
       <div class="col-lg-8">
         <p class="kicker reveal"><?= t('biographie.contexte.kicker') ?></p>
         <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-7);">
-          <?= t_brut('biographie.contexte.titre') ?>
+          <?= $contexte['titre'] !== ''
+              ? nl2br(View::e($contexte['titre']), false)
+              : t_brut('biographie.contexte.titre') ?>
         </h2>
-        <div class="row"><div class="col-md-10 col-lg-9">
-          <!-- CONTEXTE HISTORIQUE — à rédiger (CDC §4.4) -->
-          <p class="t-body reveal"><?= t_brut('biographie.contexte.texte') ?></p>
+        <div class="row"><div class="col-md-10 col-lg-9 reveal">
+<?= View::paragraphes($contexte['texte'], 't-body') ?>
         </div></div>
       </div>
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <!-- ===================== LE PARCOURS, PAR PÉRIODES ===================== -->
 <?php
@@ -114,7 +150,7 @@ JSONLD;
 <section class="section section--sunk" id="parcours">
   <div class="shell">
     <div class="row" style="margin-bottom: var(--sp-8);">
-      <div class="col-lg-2"><p class="section-num reveal">02</p></div>
+      <div class="col-lg-2"><p class="section-num reveal"><?= $numero() ?></p></div>
       <div class="col-lg-7">
         <p class="kicker reveal"><?= t('biographie.parcours.kicker') ?></p>
         <h2 class="t-d1 reveal"><?= t('biographie.parcours.titre') ?></h2>
@@ -189,7 +225,7 @@ JSONLD;
 <section class="section" id="chronologie">
   <div class="shell">
     <div class="row" style="margin-bottom: var(--sp-7);">
-      <div class="col-lg-2"><p class="section-num reveal">03</p></div>
+      <div class="col-lg-2"><p class="section-num reveal"><?= $numero() ?></p></div>
       <div class="col-lg-7">
         <p class="kicker reveal"><?= t('biographie.chrono.kicker') ?></p>
         <h2 class="t-d1 reveal"><?= t('biographie.chrono.titre') ?></h2>
@@ -286,7 +322,7 @@ JSONLD;
 <section class="section">
   <div class="shell">
     <div class="row" style="margin-bottom: var(--sp-8);">
-      <div class="col-lg-2"><p class="section-num reveal">04</p></div>
+      <div class="col-lg-2"><p class="section-num reveal"><?= $numero() ?></p></div>
       <div class="col-lg-7">
         <p class="kicker reveal"><?= t('biographie.portraits.kicker') ?></p>
         <h2 class="t-d1 reveal"><?= t('biographie.portraits.titre') ?></h2>
