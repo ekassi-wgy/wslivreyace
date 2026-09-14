@@ -23,7 +23,7 @@ $lien = static fn(string $chemin): string => App\Core\Langue::chemin($chemin);
                  — « diffusion seule, aucun numéro n'est visible » — reste sur le
                  bandeau des actualités, où elle lève vraiment une hésitation.
 
-                 Le partial ne rend rien si les quatre adresses sont vides. */ ?>
+                 Le partial ne rend rien si toutes les adresses sont vides. */ ?>
         <?php $variante = 'pied'; require __DIR__ . '/reseaux.php'; ?>
       </div>
       <div class="col-lg-3 foot__col">

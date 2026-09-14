@@ -701,7 +701,7 @@
   padding: 0;
   margin: 0;
   /* La rangee se replie plutot que de deborder sa colonne : sur la page
-     Contact elle vit dans un tiers de largeur, et sur un telephone quatre
+     Contact elle vit dans un tiers de largeur, et sur un telephone cinq
      carres de 44px plus leurs ecarts n'y tiennent pas toujours. */
   flex-wrap: wrap;
 }

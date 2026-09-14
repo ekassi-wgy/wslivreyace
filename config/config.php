@@ -137,12 +137,13 @@ $config = [
          * celui de `templates/partials/reseaux.php` : ici c'est de la donnée,
          * là-bas de la mise en page.
          *
-         * Une adresse vide n'affiche pas son bouton, et si les quatre sont
+         * Une adresse vide n'affiche pas son bouton, et si toutes sont
          * vides le bloc entier disparaît — du pied comme de la page Contact.
          */
         'facebook'  => 'https://www.facebook.com/philippegyace',
         'instagram' => 'https://www.instagram.com/philippegyace',
         'youtube'   => 'https://www.youtube.com/@philippegyace',
+        'tiktok'    => 'https://www.tiktok.com/@philippegyace',
     ],
 
     // Passerelle de paiement retenue : celle du site de référence. Elle peut
