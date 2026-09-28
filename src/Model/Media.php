@@ -437,7 +437,7 @@ final class Media extends Modele
     /**
      * URL de la taille moyenne (1600 px), avec repli sur l'original.
      *
-     * C'est ce que sert la visionneuse. Le repli n'est pas un cas d'erreur :
+     * C'est ce que sert la page d'une notice. Le repli n'est pas un cas d'erreur :
      * une image déjà plus petite que 1600 px n'a pas de dérivée moyenne, elle
      * est servie telle quelle — voir `Televersement::DERIVEES`.
      */

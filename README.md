@@ -2505,6 +2505,19 @@ retire réellement. Données d'essai et compte temporaire effacés.
 
 **Aucune migration.**
 
+**Correctif après livraison : les tuiles de l'accueil et de la biographie.**
+Ces deux planches dataient d'avant G4, quand `/archives` était une planche
+d'images avec visionneuse : leurs tuiles menaient toutes à `/archives`, ce qui
+avait un sens alors et n'en avait plus — un clic sur une photo ouvrait la liste
+des notices, sans rapport avec elle. **Chaque tuile ouvre désormais sa
+notice.** `Archive::planche()` rend les notices publiées et l'image qui les
+montre : la couverture pour l'accueil, le premier portrait pour la biographie.
+Conséquence voulue : **une image rattachée à aucune notice publiée ne paraît
+plus sur ces deux pages** — pour qu'elle y soit, il faut la poser sur une
+notice. L'ordre reste celui de la médiathèque, appliqué aux images : l'éditeur
+compose toujours l'accueil depuis le même écran. Le JavaScript et le CSS de la
+visionneuse, que plus aucune page n'appelait, sont retirés.
+
 ### Lot G5 — livré
 
 **La médiathèque accepte trois familles** et non plus une seule : images,

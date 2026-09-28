@@ -5,6 +5,7 @@ namespace App\Model;
 
 use App\Core\Lexique;
 use App\Core\Database;
+use App\Core\Traduction;
 
 /**
  * Notices d'archives — la bibliothèque numérique (brief §4, lot G4).
@@ -354,6 +355,80 @@ final class Archive extends Modele
         }
 
         return $couvertures;
+    }
+
+    /**
+     * Une planche d'aperçu : quelques notices publiées et l'image qui les montre.
+     *
+     * Sert les galeries de l'accueil et de la biographie. Depuis G4, une image
+     * publique appartient à une notice, et c'est elle que la tuile ouvre ; une
+     * image rattachée à aucune notice publiée ne paraît donc pas ici — une
+     * tuile qui ne mènerait nulle part, ou vers la liste entière, ne vaudrait
+     * pas mieux qu'une tuile absente.
+     *
+     * Sans catégorie, l'image est la couverture de la notice, la même que sur
+     * /archives. Avec une catégorie de médiathèque (« portrait »), c'est la
+     * première image de cette catégorie dans la notice. Une notice ne paraît
+     * qu'une fois, même si elle porte plusieurs images.
+     *
+     * **L'ordre est celui de la médiathèque, appliqué aux images** : c'est le
+     * réglage que l'éditeur avait déjà en main pour composer l'accueil, et il
+     * le garde.
+     *
+     * @param string|null $categorieMedia clé de Media::CATEGORIES ; null = couverture
+     * @return array<int,array{notice:array<string,mixed>,image:array<string,mixed>}>
+     */
+    public static function planche(int $limite, ?string $categorieMedia = null): array
+    {
+        $sql = 'SELECT am.archive_id, am.ordre AS rang_notice, m.* FROM archive_media am'
+             . ' JOIN media m ON m.id = am.media_id'
+             . ' JOIN ' . self::TABLE . ' a ON a.id = am.archive_id'
+             . " WHERE a.statut = 'publie' AND m.famille = 'image'";
+        $params = [];
+
+        if ($categorieMedia !== null && isset(Media::CATEGORIES[$categorieMedia])) {
+            $sql .= ' AND m.categorie = ?';
+            $params[] = $categorieMedia;
+        }
+
+        // La première image de chaque notice, dans l'ordre de la notice — le
+        // départage par `m.id` est celui de `couvertures()`.
+        $images = [];
+
+        foreach (Database::all($sql . ' ORDER BY am.archive_id, am.ordre ASC, m.id ASC', $params) as $l) {
+            $images[(int) $l['archive_id']] ??= $l;
+        }
+
+        // Puis l'ordre de la médiathèque : rang manuel, derniers arrivés.
+        usort($images, static fn(array $a, array $b): int =>
+            [(int) $a['ordre'], (string) $b['cree_le'], (int) $b['id']]
+            <=> [(int) $b['ordre'], (string) $a['cree_le'], (int) $a['id']]);
+
+        $images = array_slice($images, 0, max(1, $limite));
+
+        if ($images === []) {
+            return [];
+        }
+
+        $ids = array_map(static fn(array $i): int => (int) $i['archive_id'], $images);
+
+        $notices = [];
+
+        foreach (self::traduireToutes(Database::all(
+            'SELECT * FROM ' . self::TABLE . ' WHERE id IN ('
+            . implode(', ', array_fill(0, count($ids), '?')) . ')',
+            $ids
+        )) as $n) {
+            $notices[(int) $n['id']] = $n;
+        }
+
+        $planche = [];
+
+        foreach (Traduction::lignes('media', $images) as $image) {
+            $planche[] = ['notice' => $notices[(int) $image['archive_id']], 'image' => $image];
+        }
+
+        return $planche;
     }
 
     /**

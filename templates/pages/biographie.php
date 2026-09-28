@@ -20,6 +20,7 @@
 
 use App\Core\Langue;
 use App\Core\View;
+use App\Model\Archive;
 use App\Model\Citation;
 use App\Model\Media;
 use App\Model\Periode;
@@ -336,10 +337,10 @@ JSONLD;
     </div>
 
     <?php
-    /* Les portraits de la médiathèque, catégorie « portrait » : c'est la même
-       matière que la galerie d'archives, vue par une entrée. La planche
-       complète et sa visionneuse vivent sur /archives. */
-    $portraits = Media::listerPubliees('portrait', 4, 'image');
+    /* Les notices publiées qui portent un portrait — catégorie « portrait »
+       de la médiathèque — montrées par ce portrait. Chaque tuile ouvre sa
+       notice. */
+    $portraits = Archive::planche(4, 'portrait');
     $trame     = ['large', 'haut', 'carre', 'pano'];
     ?>
 
@@ -354,9 +355,10 @@ JSONLD;
     <?php else: ?>
 
       <ul class="gal">
-        <?php foreach ($portraits as $i => $img): ?>
+        <?php foreach ($portraits as $i => $tuile): ?>
+          <?php $img = $tuile['image']; ?>
           <li class="gal__i gal__i--<?= $trame[$i % count($trame)] ?> reveal">
-            <a class="gal__lien" href="<?= Langue::chemin('/archives') ?>?categorie=portrait">
+            <a class="gal__lien" href="<?= Langue::chemin(Archive::chemin($tuile['notice'])) ?>">
               <?php $srcset = Media::srcset($img); ?>
               <img loading="lazy" decoding="async"
                    src="<?= View::e(Media::urlVignette((string) $img['fichier'])) ?>"

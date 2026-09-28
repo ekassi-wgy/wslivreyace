@@ -343,10 +343,10 @@ $compte = [
     </div>
 
     <?php
-    /* Les quatre premières images publiées, dans l'ordre de la médiathèque —
-       les images seules : un PDF ou un MP3 n'a pas de vignette. La planche complète et sa visionneuse vivent sur /archives : l'accueil
-       n'en montre que la trame. */
-    $planche = App\Model\Media::listerPubliees(null, 4, 'image');
+    /* Quatre notices publiées et leur couverture, dans l'ordre de la
+       médiathèque. Chaque tuile ouvre sa notice : c'est là que la pièce se
+       lit en entier, avec ses autres fichiers et son adresse propre. */
+    $planche = App\Model\Archive::planche(4);
     $trame   = ['large', 'haut', 'carre', 'pano'];
     ?>
 
@@ -361,9 +361,10 @@ $compte = [
     <?php else: ?>
 
       <ul class="gal">
-        <?php foreach ($planche as $i => $img): ?>
+        <?php foreach ($planche as $i => $tuile): ?>
+          <?php $img = $tuile['image']; ?>
           <li class="gal__i gal__i--<?= $trame[$i % count($trame)] ?> reveal">
-            <a class="gal__lien" href="<?= App\Core\Langue::chemin('/archives') ?>">
+            <a class="gal__lien" href="<?= App\Core\Langue::chemin(App\Model\Archive::chemin($tuile['notice'])) ?>">
               <?php $srcset = App\Model\Media::srcset($img); ?>
               <img loading="lazy" decoding="async"
                    src="<?= App\Core\View::e(App\Model\Media::urlVignette((string) $img['fichier'])) ?>"

@@ -69,8 +69,8 @@ final class Televersement
      *
      * **Deux, et pas une.** La vignette (600 px) sert les planches du
      * back-office et les tuiles de la galerie ; la taille moyenne (1600 px)
-     * sert la visionneuse d'archives et le second cran du `srcset` des tuiles
-     * sur écran 2×. Sans elle, ouvrir une archive dans la visionneuse
+     * sert les images d'une notice, l'aperçu de partage et le second cran du
+     * `srcset` des tuiles sur écran 2×. Sans elle, ouvrir une notice
      * téléchargerait le fichier d'origine — jusqu'à 8 Mio de scan pour
      * regarder une photo sur un téléphone.
      *
@@ -528,7 +528,7 @@ final class Televersement
         return self::relatifDerivee($relatif, 'vignette');
     }
 
-    /** Chemin relatif de la taille moyenne (1600 px), servie à la visionneuse. */
+    /** Chemin relatif de la taille moyenne (1600 px), servie sur la page d'une notice. */
     public static function relatifMoyen(string $relatif): string
     {
         return self::relatifDerivee($relatif, 'moyen');
