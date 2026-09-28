@@ -1216,6 +1216,8 @@ clavier, `prefers-reduced-motion`, alternatives textuelles.
   faut savoir en déposant : **le sujet doit tenir au centre**, un cadrage serré
   sur un bord sera coupé sur au moins une des quatre.
 
+  **Les trois visuels du hero se choisissent au back-office depuis G17**, écran
+  « Textes des pages » : les `.svg` ne servent plus que de cadres d'attente.
   Les visuels du hero sont recadrés en `object-fit: cover` sur un panneau vertical :
   **prévoir le sujet dans la moitié droite**, la gauche étant recouverte par le voile
   papier. Livrer en JPEG qualité 80 après redimensionnement — les archives brutes sont
@@ -1972,6 +1974,7 @@ vérifie.
 | G14 | Citations — les trois bandeaux « Extrait » et « Citations » sortent du lexique | livré |
 | G15 | Le manuel de l'éditeur entre dans le back-office | livré |
 | G16 | Textes des pages — le contexte de la biographie sort du lexique | livré |
+| G17 | Le diaporama de l'accueil sort du code — textes et images au back-office | livré |
 
 **G3 est écrit, et la boutique est fermée.** Le commanditaire a confirmé le
 7 septembre qu'aucune date de sortie n'est annoncée ; le lot a donc été livré
@@ -3508,6 +3511,63 @@ lecteurs voient celle-ci. `/cmsadmin/manuel` lit le fichier : il suit dès que
 **Au déploiement**, en plus du code : `documentation/manuel-administration.html`.
 Aucune base à toucher.
 
+### Lot G17 — livré
+
+**Le hero de l'accueil ne se changeait qu'en livrant du code.** Ses deux
+premiers titres étaient écrits dans le gabarit, le troisième et les accroches
+dans le lexique, et ses trois images étaient les cadres d'attente de
+`assets/img/`. Les accroches des diapositives 2 et 3 affichaient en ligne, dans
+les deux langues, leur consigne : « *Texte à compléter par l'éditeur* ».
+
+**Trois diapositives rejoignent l'écran « Textes des pages »**, comme G16
+l'avait prévu pour « la présentation de l'accueil ». Chacune a sa carte : titre,
+accroche, texte du bouton, texte du lien quand elle en porte un, et une image
+choisie dans la médiathèque avec le sélecteur des actualités.
+
+**Une section `toujours`, et non une section ordinaire.** Le contexte de la
+biographie disparaît quand son texte est vide ; une diapositive, non — un
+diaporama amputé casserait sa navigation, et il existait avant l'écran. **Un
+champ vide garde donc son texte par défaut**, la clé de lexique déclarée dans
+`Parametre::TEXTES_PAGES` (`defaut`), déjà traduite ; l'écran l'affiche sous le
+champ. Une diapositive sans image garde son cadre d'attente.
+`Parametre::diapositive()` fait ce choix pour le gabarit, qui échappe tout de la
+même façon.
+
+**Les destinations ne se saisissent pas.** Le livre, la biographie, Commander,
+les repères, les points de vente : ce sont les pages du site, pas du contenu, et
+une adresse mal saisie ferait un bouton mort sur la première page vue. Le lien
+vers les repères ne paraît toujours que s'il y en a de mis en avant.
+
+**Rien ne change en ligne tant qu'on n'y touche pas**, à une exception voulue :
+les deux consignes « à compléter » sont retirées des textes par défaut — même
+principe qu'en G16, mieux vaut une phrase courte qu'une consigne publiée. Le
+rendu du hero a été comparé avant et après, en français et en anglais : c'est
+la seule différence.
+
+**L'image est contrôlée à l'enregistrement** : présente en médiathèque, et
+**image** — un PDF glissé dans le champ caché est refusé, et le sélecteur ne
+propose que des photographies (lot G5). Servie en taille moyenne (1600 px) avec
+son `srcset`, jamais l'original, qui peut peser 8 Mo sur la première image
+chargée du site. La légende tient lieu de texte de remplacement, traduite.
+
+**Bilingue** par l'écran des traductions, fiche « Textes des pages » : titres,
+accroches et libellés y sont déclarés, pas les images. Sous chaque diapositive,
+l'écran liste ce qui reste par défaut et ce qui, saisi, n'est pas traduit.
+
+**Vérifié** par le back-office avec un compte d'essai : saisie, PDF refusé,
+libellé trop long refusé, retour à la ligne retiré d'un bouton et conservé dans
+un titre, HTML échappé, traduction anglaise posée et affichée sous `/en/`, rendu
+sur ordinateur et sur téléphone. Compte, paramètres et traductions d'essai
+effacés ensuite.
+
+**Ce qu'une vraie photo révèle.** Les cadres d'attente sont clairs ; une photo
+sombre passe sous les derniers liens du menu, sur ordinateur, qui y deviennent
+peu lisibles. Rien n'est changé à la charte ici : à régler au moment des photos
+définitives.
+
+**Au déploiement** : le code et `documentation/manuel-administration.html`.
+Aucune migration — les valeurs vont dans `parametre`, qui existe.
+
 ### Ce que le brief ajoute à la liste des livrables attendus
 
 À la liste du §5 s'ajoutent, tous non techniques :
@@ -3524,5 +3584,6 @@ Aucune base à toucher.
 | **Enseignes et adresses des points de vente** — les trois villes sont en base et publiées (G12), mais aucune ne dit encore où aller : l'accueil et la page du livre affichent « Enseigne et adresse à renseigner » sous Abidjan, Yamoussoukro et Paris | commanditaire / éditeur |
 | **Prix de l'ouvrage en francs CFA**, et le **point de retrait** avec ses horaires. Ce sont les deux valeurs qui ouvrent la boutique : sans prix elle reste fermée, sans point de retrait le retrait n'est pas proposé. Les **tarifs de livraison** se posent ensuite, zone par zone | commanditaire / éditeur |
 | **Trois citations sourcées** — un extrait de l'ouvrage pour l'accueil, un autre pour la page du livre, un propos de Philippe Grégoire Yacé pour la biographie, chacun avec sa provenance. Le mécanisme est livré (G14) : les trois bandeaux restent absents du site tant qu'aucune citation n'est publiée et mise en avant | commanditaire / éditeur |
+| **Trois photographies du diaporama de l'accueil** — 2000 × 2600 px, en hauteur, sujet dans la moitié droite, avec leur légende et leur crédit. Le mécanisme est livré (G17) : chacune se dépose en médiathèque puis se choisit à l'écran « Textes des pages » ; d'ici là, les cadres d'attente restent affichés | commanditaire / éditeur |
 | **Contexte historique de la biographie** — quelques paragraphes situant Philippe Grégoire Yacé dans la Côte d'Ivoire avant et après l'indépendance, et sa traduction. Le mécanisme est livré (G16), à l'écran « Textes des pages » : la section reste absente du site tant que le texte n'est pas saisi | commanditaire / auteur |
 | **Traduction anglaise des contenus** — biographie, notices d'archives, sujets d'Héritage, préface. **L'anglais est ouvert** : chaque champ traduit depuis le back-office retire une phrase française des pages `/en/`, et un champ non traduit y affiche le français | commanditaire / traducteur |

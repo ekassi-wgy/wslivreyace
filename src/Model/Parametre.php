@@ -5,6 +5,7 @@ namespace App\Model;
 
 use App\Core\Database;
 use App\Core\Langue;
+use App\Core\Lexique;
 use App\Core\Traduction;
 
 /**
@@ -209,11 +210,21 @@ final class Parametre
      *
      * **Rangés par section**, et non à plat comme les groupes du livre : l'écran
      * « Textes des pages » en fait une carte chacune, et les autres textes
-     * encore écrits dans le lexique — présentation de l'accueil, quatrième de
-     * couverture — viendront s'y ajouter comme sections.
+     * encore écrits dans le lexique — quatrième de couverture — viendront s'y
+     * ajouter comme sections. Le diaporama de l'accueil l'a fait le premier.
      *
      * `type` vaut `titre` (court, un retour à la ligne y est permis et se
-     * retrouve sur la page) ou `long` (une ligne vide sépare deux paragraphes).
+     * retrouve sur la page), `long` (une ligne vide sépare deux paragraphes),
+     * `court` (un seul paragraphe), `ligne` (une ligne) ou `image` (un chemin
+     * de la médiathèque, comme la colonne `image` d'une actualité).
+     *
+     * **Deux sortes de sections.** Une section ordinaire disparaît quand son
+     * texte `long` est vide. Une section `toujours` — les diapositives du
+     * diaporama de l'accueil — ne disparaît jamais : chaque champ vide y garde
+     * son texte par défaut, la clé de lexique `defaut`, déjà traduite. Un
+     * diaporama amputé d'une diapositive casserait sa navigation, et il
+     * existait avant l'écran : rien ne doit changer tant qu'on n'y touche pas.
+     * `max` borne la longueur d'un champ ; 200 signes à défaut.
      *
      * **Bilingue par l'écran des traductions**, comme les autres paramètres :
      * `traduction` avec `ligne_id = 0`. Les clés traduisibles y sont déclarées
@@ -221,10 +232,153 @@ final class Parametre
      *
      * @var array<string,array{
      *   titre: string, page: string, chemin: string, aide: string,
-     *   champs: array<string,array{libelle:string,type:string,aide:string,exemple:string}>
+     *   toujours?: bool,
+     *   champs: array<string,array{libelle:string,type:string,aide:string,exemple:string,max?:int,defaut?:string}>
      * }>
      */
     public const TEXTES_PAGES = [
+        'accueil_hero_1' => [
+            'titre'    => 'Accueil — diapositive 1 du diaporama',
+            'page'     => 'Accueil',
+            'chemin'   => '/',
+            'aide'     => 'Le bouton mène à la page du livre.',
+            'toujours' => true,
+            'champs'   => [
+                'accueil_hero_1_titre' => [
+                    'libelle' => 'Titre',
+                    'type'    => 'titre',
+                    'aide'    => 'En très grands caractères : deux ou trois mots. Chaque retour à la '
+                               . 'ligne fait une ligne du titre.',
+                    'exemple' => "Une\ndestinée",
+                    'max'     => 60,
+                    'defaut'  => 'accueil.hero.1_titre',
+                ],
+                'accueil_hero_1_accroche' => [
+                    'libelle' => 'Accroche',
+                    'type'    => 'court',
+                    'aide'    => 'Une ou deux phrases sous le titre.',
+                    'exemple' => '',
+                    'max'     => 300,
+                    'defaut'  => 'accueil.hero.1_lead',
+                ],
+                'accueil_hero_1_bouton' => [
+                    'libelle' => 'Texte du bouton',
+                    'type'    => 'ligne',
+                    'aide'    => 'Deux ou trois mots. La destination du bouton ne change pas.',
+                    'exemple' => '',
+                    'max'     => 40,
+                    'defaut'  => 'accueil.hero.1_cta',
+                ],
+                'accueil_hero_1_lien' => [
+                    'libelle' => 'Texte du lien',
+                    'type'    => 'ligne',
+                    'aide'    => 'Le lien descend vers les repères de la frise ; il ne paraît que si des repères sont mis en avant.',
+                    'exemple' => '',
+                    'max'     => 40,
+                    'defaut'  => 'accueil.hero.1_lien',
+                ],
+                'accueil_hero_1_image' => [
+                    'libelle' => 'Image',
+                    'type'    => 'image',
+                    'aide'    => 'Une photographie en hauteur, 2000 × 2600 px, <strong>sujet dans la '
+                               . 'moitié droite</strong> : la gauche passe sous le texte. Sans image, '
+                               . 'le cadre d\'attente reste affiché.',
+                    'exemple' => '',
+                ],
+            ],
+        ],
+        'accueil_hero_2' => [
+            'titre'    => 'Accueil — diapositive 2 du diaporama',
+            'page'     => 'Accueil',
+            'chemin'   => '/',
+            'aide'     => 'Le bouton mène à la biographie.',
+            'toujours' => true,
+            'champs'   => [
+                'accueil_hero_2_titre' => [
+                    'libelle' => 'Titre',
+                    'type'    => 'titre',
+                    'aide'    => 'En très grands caractères : deux ou trois mots. Chaque retour à la '
+                               . 'ligne fait une ligne du titre.',
+                    'exemple' => "1920\n1998",
+                    'max'     => 60,
+                    'defaut'  => 'accueil.hero.2_titre',
+                ],
+                'accueil_hero_2_accroche' => [
+                    'libelle' => 'Accroche',
+                    'type'    => 'court',
+                    'aide'    => 'Une ou deux phrases sous le titre.',
+                    'exemple' => '',
+                    'max'     => 300,
+                    'defaut'  => 'accueil.hero.2_lead',
+                ],
+                'accueil_hero_2_bouton' => [
+                    'libelle' => 'Texte du bouton',
+                    'type'    => 'ligne',
+                    'aide'    => 'Deux ou trois mots. La destination du bouton ne change pas.',
+                    'exemple' => '',
+                    'max'     => 40,
+                    'defaut'  => 'accueil.hero.2_cta',
+                ],
+                'accueil_hero_2_image' => [
+                    'libelle' => 'Image',
+                    'type'    => 'image',
+                    'aide'    => 'Une photographie en hauteur, 2000 × 2600 px, <strong>sujet dans la '
+                               . 'moitié droite</strong> : la gauche passe sous le texte. Sans image, '
+                               . 'le cadre d\'attente reste affiché.',
+                    'exemple' => '',
+                ],
+            ],
+        ],
+        'accueil_hero_3' => [
+            'titre'    => 'Accueil — diapositive 3 du diaporama',
+            'page'     => 'Accueil',
+            'chemin'   => '/',
+            'aide'     => 'Le bouton mène à la page Commander.',
+            'toujours' => true,
+            'champs'   => [
+                'accueil_hero_3_titre' => [
+                    'libelle' => 'Titre',
+                    'type'    => 'titre',
+                    'aide'    => 'En très grands caractères : deux ou trois mots. Chaque retour à la '
+                               . 'ligne fait une ligne du titre.',
+                    'exemple' => 'L\'ouvrage',
+                    'max'     => 60,
+                    'defaut'  => 'accueil.hero.3_titre',
+                ],
+                'accueil_hero_3_accroche' => [
+                    'libelle' => 'Accroche',
+                    'type'    => 'court',
+                    'aide'    => 'Une ou deux phrases sous le titre.',
+                    'exemple' => '',
+                    'max'     => 300,
+                    'defaut'  => 'accueil.hero.3_lead',
+                ],
+                'accueil_hero_3_bouton' => [
+                    'libelle' => 'Texte du bouton',
+                    'type'    => 'ligne',
+                    'aide'    => 'Deux ou trois mots. La destination du bouton ne change pas.',
+                    'exemple' => '',
+                    'max'     => 40,
+                    'defaut'  => 'accueil.hero.3_cta',
+                ],
+                'accueil_hero_3_lien' => [
+                    'libelle' => 'Texte du lien',
+                    'type'    => 'ligne',
+                    'aide'    => 'Le lien mène aux points de vente, sur la page du livre.',
+                    'exemple' => '',
+                    'max'     => 40,
+                    'defaut'  => 'accueil.hero.3_lien',
+                ],
+                'accueil_hero_3_image' => [
+                    'libelle' => 'Image',
+                    'type'    => 'image',
+                    'aide'    => 'Une photographie en hauteur, 2000 × 2600 px, <strong>sujet dans la '
+                               . 'moitié droite</strong> : la gauche passe sous le texte. Sans image, '
+                               . 'le cadre d\'attente reste affiché.',
+                    'exemple' => '',
+                ],
+            ],
+        ],
         'biographie_contexte' => [
             'titre'  => 'Biographie — section « Contexte »',
             'page'   => 'Biographie',
@@ -312,6 +466,63 @@ final class Parametre
         }
 
         return trim((string) self::traduites([$cle => $francais])[$cle]);
+    }
+
+    /**
+     * Une diapositive du diaporama de l'accueil, prête à afficher.
+     *
+     * Chaque texte est celui de l'écran « Textes des pages » s'il est saisi,
+     * son texte par défaut du lexique sinon — **nu dans les deux cas** : le
+     * gabarit échappe tout de la même façon, qu'il vienne du dépôt ou du
+     * back-office. Le titre est rendu ligne par ligne, chacune ayant son
+     * masque animé.
+     *
+     * L'image est la ligne de `media`, ou `null` : le gabarit garde alors son
+     * cadre d'attente. Une image effacée de la médiathèque, ou qui n'en est
+     * plus une, retombe sur ce cadre plutôt que sur une `<img>` cassée.
+     *
+     * @return array{titre:list<string>,accroche:string,bouton:string,lien:string,image:?array<string,mixed>}
+     */
+    public static function diapositive(int $n): array
+    {
+        $prefixe = 'accueil_hero_' . $n . '_';
+        $diapo   = ['titre' => [], 'accroche' => '', 'bouton' => '', 'lien' => '', 'image' => null];
+
+        foreach (self::TEXTES_PAGES['accueil_hero_' . $n]['champs'] ?? [] as $cle => $champ) {
+            $nom = substr($cle, strlen($prefixe));
+
+            if ($champ['type'] === 'image') {
+                $diapo['image'] = self::imageDiapositive((string) self::lire($cle));
+                continue;
+            }
+
+            $valeur = self::texte($cle);
+            $diapo[$nom] = $valeur !== '' ? $valeur : Lexique::nu((string) $champ['defaut']);
+        }
+
+        $diapo['titre'] = array_values(array_filter(
+            array_map('trim', explode("\n", (string) $diapo['titre'])),
+            static fn(string $ligne): bool => $ligne !== ''
+        ));
+
+        return $diapo;
+    }
+
+    /** @return array<string,mixed>|null */
+    private static function imageDiapositive(string $fichier): ?array
+    {
+        if ($fichier === '') {
+            return null;
+        }
+
+        $media = Media::parFichier($fichier);
+
+        if ($media === null || !Media::aVignette($media)) {
+            return null;
+        }
+
+        // La légende sert de texte de remplacement : elle se traduit.
+        return Traduction::ligne('media', $media);
     }
 
     /**

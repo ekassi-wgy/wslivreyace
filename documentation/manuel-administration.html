@@ -837,7 +837,8 @@ html { scroll-behavior: smooth; }
                   <td>Grande image d'accueil<br><span style="color:var(--ink-3);font-size:.85em">trois images qui défilent</span></td>
                   <td class="nb">2000 × 2600 px</td>
                   <td>Portrait. <strong>Placez le sujet dans la moitié droite</strong> : la
-                      moitié gauche est recouverte par un voile clair sur lequel s'écrit le texte.</td>
+                      moitié gauche est recouverte par un voile clair sur lequel s'écrit le texte.
+                      Se choisit à l'écran <a href="#textes">Textes des pages</a>.</td>
                 </tr>
                 <tr>
                   <td>Couverture du livre</td>
@@ -1264,17 +1265,18 @@ html { scroll-behavior: smooth; }
         <section class="sect" id="textes">
           <h3>Textes des pages</h3>
           <dl class="fiche">
-            <dt>Alimente</dt><dd>La section « Contexte » de la biographie, sous le portrait.</dd>
-            <dt>Obligatoire</dt><dd>Rien : un texte vide retire simplement la section.</dd>
+            <dt>Alimente</dt><dd>Le diaporama de l'accueil — ses trois diapositives — et la section « Contexte » de la biographie, sous le portrait.</dd>
+            <dt>Obligatoire</dt><dd>Rien. Un texte vide retire la section du contexte ; dans le diaporama, il garde le texte par défaut.</dd>
             <dt>Pour paraître</dt><dd>Le texte. Il n'y a ni brouillon ni bouton de publication : ce qui est enregistré est en ligne.</dd>
-            <dt>Images</dt><dd>Aucune.</dd>
+            <dt>Images</dt><dd>Une par diapositive du diaporama, choisie dans la médiathèque.</dd>
           </dl>
           <p>
             Certaines pages ont un texte rédigé qui n'est ni une actualité, ni une période,
             ni une citation : il y en a <strong>un seul</strong>, et il est à sa place. C'est
             le cas du <strong>contexte historique</strong> qui ouvre la biographie — la Côte
-            d'Ivoire avant et après l'indépendance, avant d'entrer dans le parcours. Cet
-            écran les rassemble, une carte par section.
+            d'Ivoire avant et après l'indépendance, avant d'entrer dans le parcours. C'est
+            aussi le cas du <strong>diaporama</strong> qui ouvre l'accueil. Cet écran les
+            rassemble, une carte par section et par diapositive.
           </p>
 
           <div class="note">
@@ -1289,7 +1291,7 @@ html { scroll-behavior: smooth; }
           </div>
 
           <p>
-            <strong>Sans texte, la section disparaît</strong>, en français comme en anglais.
+            <strong>Sans texte, la section du contexte disparaît</strong>, en français comme en anglais.
             La page affichait auparavant une consigne de rédaction, « Texte à rédiger », qui
             a été retirée : elle reste absente tant que vous n'avez rien saisi, et les
             numéros de section de la page se recalent d'eux-mêmes.
@@ -1304,6 +1306,40 @@ html { scroll-behavior: smooth; }
             tel qu'il est saisi : ni gras, ni italique, ni lien.
           </p>
 
+          <h4>Le diaporama de l'accueil</h4>
+          <p>
+            Les trois grandes images qui défilent en haut de l'accueil ont chacune leur
+            carte : <strong>Accueil — diapositive 1, 2 et 3</strong>. Pour chacune, vous
+            réglez le <span class="champ">Titre</span>, l'<span class="champ">Accroche</span>
+            (une ou deux phrases), le <span class="champ">Texte du bouton</span>, le
+            <span class="champ">Texte du lien</span> quand la diapositive en porte un, et
+            l'<span class="champ">Image</span>.
+          </p>
+          <ul>
+            <li><strong>Un champ vide garde son texte par défaut</strong>, affiché sous
+                le champ. Le diaporama ne disparaît jamais : une diapositive qui manque
+                casserait sa navigation.</li>
+            <li><strong>Le titre s'écrit en très grands caractères</strong> : deux ou trois
+                mots, 60 signes au plus. Chaque retour à la ligne fait une ligne du titre.</li>
+            <li><strong>Les boutons changent de texte, pas de destination.</strong> Le
+                bouton de la première diapositive mène toujours au livre, celui de la
+                deuxième à la biographie, celui de la troisième à la page Commander.</li>
+            <li><strong>L'image se choisit dans la médiathèque</strong>, comme celle d'une
+                actualité : déposez-la d'abord, puis choisissez-la ici. Seules les
+                photographies sont proposées. Sans image, la diapositive garde son cadre
+                d'attente gris.</li>
+          </ul>
+
+          <div class="note">
+            <h4>Une image du diaporama se prépare</h4>
+            <p>
+              <strong>2000 × 2600 px, en hauteur, le sujet dans la moitié droite</strong> :
+              sur ordinateur, la moitié gauche de l'image passe sous le texte. Sur
+              téléphone, l'image occupe tout l'écran derrière le texte. Voir
+              <a href="#dimensions">Dimensions à respecter</a>.
+            </p>
+          </div>
+
           <h4>La version anglaise</h4>
           <p>
             L'anglais ne se saisit pas ici mais à l'écran <a href="#traductions">Traductions</a>,
@@ -1313,7 +1349,8 @@ html { scroll-behavior: smooth; }
           </p>
           <p>
             <strong>Le français décide.</strong> Si vous videz le texte français, la section
-            disparaît aussi de la page anglaise, même traduite : la traduction est conservée
+            disparaît aussi de la page anglaise — et une diapositive reprend son texte par
+            défaut, déjà traduit —, même traduite : la traduction est conservée
             et reparaîtra quand le français sera rédigé de nouveau. À l'inverse, corriger le
             français ne modifie pas la traduction — pensez à la reprendre si le sens a changé.
           </p>
@@ -1663,8 +1700,9 @@ html { scroll-behavior: smooth; }
           <p>
             Deux rubriques ne portent qu'une fiche, et s'ouvrent directement :
             <strong>Le livre et son auteur</strong> — titre, préface, biographie de
-            l'auteur — et <strong>Textes des pages</strong>, pour le contexte de la
-            biographie.
+            l'auteur — et <strong>Textes des pages</strong>, pour le diaporama de
+            l'accueil et le contexte de la biographie. Les images du diaporama ne se
+            traduisent pas.
           </p>
           <p>
             Tout ne se traduit pas, et c'est voulu. Une adresse web, une année, un crédit
@@ -1745,8 +1783,9 @@ html { scroll-behavior: smooth; }
                 <tr>
                   <td>Textes des pages</td>
                   <td>Rien : enregistrer, c'est publier</td>
-                  <td>Pas d'état Brouillon. Un texte vide retire la section, en français
-                      comme en anglais.</td>
+                  <td>Pas d'état Brouillon. Un texte vide retire la section du contexte, en
+                      français comme en anglais ; dans le diaporama, il garde son texte par
+                      défaut.</td>
                 </tr>
                 <tr>
                   <td>Points de vente</td>

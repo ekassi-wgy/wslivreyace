@@ -529,7 +529,7 @@ sous('Les emplacements à dimensions imposées')
 tableau(['Emplacement', 'Dimensions', 'Cadrage attendu'], [
     ["Grande image d'accueil (trois images qui défilent)", '2000 × 2600 px',
      "Portrait. **Placez le sujet dans la moitié droite** : la moitié gauche est recouverte "
-     "par un voile clair sur lequel s'écrit le texte."],
+     "par un voile clair sur lequel s'écrit le texte. Se choisit à l'écran Textes des pages."],
     ['Couverture du livre', '1200 × 1550 px',
      "La couverture seule, sans décor autour. Proportion du livre réel (240 × 310 mm)."],
     ['Portrait en tête de biographie', '1400 × 1750 px',
@@ -784,23 +784,26 @@ p("Les trois bandeaux sont vides aujourd'hui : ils affichaient auparavant un tex
 
 rubrique('Textes des pages')
 fiche([
-    ('Alimente', "La section « Contexte » de la biographie, sous le portrait."),
-    ('Obligatoire', "Rien : un texte vide retire simplement la section."),
+    ('Alimente', "Le diaporama de l'accueil — ses trois diapositives — et la section "
+                 "« Contexte » de la biographie, sous le portrait."),
+    ('Obligatoire', "Rien. Un texte vide retire la section du contexte ; dans le diaporama, "
+                    "il garde le texte par défaut."),
     ('Pour paraître', "Le texte. Il n'y a ni brouillon ni bouton de publication : ce qui "
                       "est enregistré est en ligne."),
-    ('Images', "Aucune."),
+    ('Images', "Une par diapositive du diaporama, choisie dans la médiathèque."),
 ])
 p("Certaines pages ont un texte rédigé qui n'est ni une actualité, ni une période, ni une "
   "citation : il y en a **un seul**, et il est à sa place. C'est le cas du **contexte "
   "historique** qui ouvre la biographie — la Côte d'Ivoire avant et après l'indépendance, "
-  "avant d'entrer dans le parcours. Cet écran les rassemble, une carte par section.")
+  "avant d'entrer dans le parcours. C'est aussi le cas du **diaporama** qui ouvre l'accueil. "
+  "Cet écran les rassemble, une carte par section et par diapositive.")
 note("Enregistrer, c'est publier", [
     "Contrairement au reste des contenus, **il n'y a pas d'état Brouillon** sur cet écran : "
     "le texte enregistré paraît aussitôt. Préparez-le ailleurs s'il n'est pas prêt.",
     "Sous chaque carte, un encadré vous dit ce que le site affiche en ce moment — section "
     "visible ou non, et ce qu'en montre la version anglaise.",
 ])
-p("**Sans texte, la section disparaît**, en français comme en anglais. La page affichait "
+p("**Sans texte, la section du contexte disparaît**, en français comme en anglais. La page affichait "
   "auparavant une consigne de rédaction, « Texte à rédiger », qui a été retirée : elle reste "
   "absente tant que vous n'avez rien saisi, et les numéros de section de la page se recalent "
   "d'eux-mêmes.")
@@ -809,12 +812,34 @@ p("**Le titre est facultatif.** Laissé vide, la section garde son titre actuel,
   "retour à la ligne dans le champ se retrouve sur la page.")
 p("Dans le texte, **une ligne vide sépare deux paragraphes**. Il s'affiche tel qu'il est "
   "saisi : ni gras, ni italique, ni lien.")
+sous("Le diaporama de l'accueil")
+p("Les trois grandes images qui défilent en haut de l'accueil ont chacune leur carte : "
+  "**Accueil — diapositive 1, 2 et 3**. Pour chacune, vous réglez le `Titre`, l'`Accroche` "
+  "(une ou deux phrases), le `Texte du bouton`, le `Texte du lien` quand la diapositive en "
+  "porte un, et l'`Image`.")
+puces([
+    "**Un champ vide garde son texte par défaut**, affiché sous le champ. Le diaporama ne "
+    "disparaît jamais : une diapositive qui manque casserait sa navigation.",
+    "**Le titre s'écrit en très grands caractères** : deux ou trois mots, 60 signes au plus. "
+    "Chaque retour à la ligne fait une ligne du titre.",
+    "**Les boutons changent de texte, pas de destination.** Le bouton de la première "
+    "diapositive mène toujours au livre, celui de la deuxième à la biographie, celui de la "
+    "troisième à la page Commander.",
+    "**L'image se choisit dans la médiathèque**, comme celle d'une actualité : déposez-la "
+    "d'abord, puis choisissez-la ici. Seules les photographies sont proposées. Sans image, la "
+    "diapositive garde son cadre d'attente gris.",
+])
+note("Une image du diaporama se prépare", [
+    "**2000 × 2600 px, en hauteur, le sujet dans la moitié droite** : sur ordinateur, la "
+    "moitié gauche de l'image passe sous le texte. Sur téléphone, l'image occupe tout l'écran "
+    "derrière le texte. Voir Dimensions à respecter.",
+])
 sous("La version anglaise")
 p("L'anglais ne se saisit pas ici mais à l'écran Traductions, fiche **Textes des pages**, le "
   "français en regard — le lien « Traduire » sous chaque carte y mène directement. Tant "
   "qu'un champ n'est pas traduit, la page anglaise affiche le français à sa place.")
 p("**Le français décide.** Si vous videz le texte français, la section disparaît aussi de la "
-  "page anglaise, même traduite : la traduction est conservée et reparaîtra quand le français "
+  "page anglaise — et une diapositive reprend son texte par défaut, déjà traduit —, même traduite : la traduction est conservée et reparaîtra quand le français "
   "sera rédigé de nouveau. À l'inverse, corriger le français ne modifie pas la traduction — "
   "pensez à la reprendre si le sens a changé.")
 
@@ -1021,7 +1046,8 @@ p("**Rien ne se publie depuis cet écran.** Poser une traduction ne change pas l
   "fiche et ne touche pas au français : c'est un écran qu'on peut confier sans risque.")
 p("Deux rubriques ne portent qu'une fiche, et s'ouvrent directement : **Le livre et son "
   "auteur** — titre, préface, biographie de l'auteur — et **Textes des pages**, pour le "
-  "contexte de la biographie.")
+  "diaporama de l'accueil et le contexte de la biographie. Les images du diaporama ne se "
+  "traduisent pas.")
 p("Tout ne se traduit pas, et c'est voulu. Une adresse web, une année, un crédit photo, un "
   "nom propre n'ont pas de version anglaise — seuls les champs qui le méritent vous sont "
   "proposés.")
@@ -1055,7 +1081,8 @@ tableau(['Rubrique', 'Exigé pour publier', 'Pourquoi'], [
      "Un emplacement ne montre qu'une citation : la case désigne laquelle, et cocher "
      "l'une décoche l'autre."],
     ['Textes des pages', "Rien : enregistrer, c'est publier",
-     "Pas d'état Brouillon. Un texte vide retire la section, en français comme en anglais."],
+     "Pas d'état Brouillon. Un texte vide retire la section du contexte, en français comme "
+     "en anglais ; dans le diaporama, il garde son texte par défaut."],
     ['Points de vente', 'Rien de plus que la ville',
      "Une ville seule est déjà une information utile."],
     ['Boutique', "La case cochée *et* un prix",

@@ -55,92 +55,67 @@ $citation = App\Model\Citation::affichee('accueil');
 ?>
 
 <!-- ===================== HERO ===================== -->
+<?php
+/*
+ * Le diaporama (lot G17). Titre, accroche, libellés et image se saisissent à
+ * l'écran « Textes des pages » ; un champ vide garde son texte par défaut, et
+ * une diapositive sans image garde son cadre d'attente. Les destinations ne
+ * se saisissent pas : ce sont les pages du site, pas du contenu.
+ *
+ * Le lien de la première diapositive descend vers la frise : il n'a de sens
+ * que si des repères sont mis en avant.
+ */
+$liens = [
+    1 => ['bouton' => App\Core\Langue::chemin('/le-livre'),   'lien' => $jalons !== [] ? '#reperes' : null],
+    2 => ['bouton' => App\Core\Langue::chemin('/biographie'), 'lien' => null],
+    3 => ['bouton' => App\Core\Langue::chemin('/commander'),  'lien' => App\Core\Langue::chemin('/le-livre') . '#acheter'],
+];
+?>
 <section class="hero">
   <div id="heroCarousel" class="carousel slide carousel-fade hero__carousel"
        data-bs-ride="carousel" data-bs-interval="7000">
     <div class="carousel-inner">
 
-      <!-- CONTENU PROVISOIRE — textes à valider par l'éditeur -->
-      <div class="carousel-item active hero__slide">
+<?php foreach ($liens as $n => $cible): ?>
+      <?php $diapo = App\Model\Parametre::diapositive($n); ?>
+      <div class="carousel-item<?= $n === 1 ? ' active' : '' ?> hero__slide">
         <div class="hero__media">
-          <img class="hero__img" src="assets/img/hero-1.svg" alt="">
+          <?php if ($diapo['image'] !== null): ?>
+            <?php $srcset = App\Model\Media::srcset($diapo['image']); ?>
+            <img class="hero__img"
+                 src="<?= App\Core\View::e(App\Model\Media::urlMoyen((string) $diapo['image']['fichier'])) ?>"
+                 <?= $srcset === '' ? '' : 'srcset="' . App\Core\View::e($srcset) . '" sizes="(max-width: 991px) 100vw, 52vw"' ?>
+                 alt="<?= App\Core\View::e(App\Model\Media::alternative($diapo['image'])) ?>">
+          <?php else: ?>
+            <img class="hero__img" src="assets/img/hero-<?= $n ?>.svg" alt="">
+          <?php endif; ?>
         </div>
         <div class="shell hero__content">
           <div class="row">
             <div class="col-lg-7 col-xl-6">
-              <p class="hero__count hero__fade" style="--d:120ms">01 — 03</p>
+              <p class="hero__count hero__fade" style="--d:120ms"><?= sprintf('%02d', $n) ?> — <?= sprintf('%02d', count($liens)) ?></p>
               <h1 class="t-hero hero__title">
-                <span class="mask"><span class="mask__i" style="--d:200ms">Une</span></span>
-                <span class="mask"><span class="mask__i" style="--d:320ms">destinée</span></span>
+                <?php foreach ($diapo['titre'] as $l => $ligne): ?>
+                <span class="mask"><span class="mask__i" style="--d:<?= 200 + 120 * $l ?>ms"><?= App\Core\View::e($ligne) ?></span></span>
+                <?php endforeach; ?>
               </h1>
               <p class="t-lead hero__lead hero__fade" style="--d:560ms">
-                <?= t('accueil.hero.1_lead') ?>
+                <?= App\Core\View::e($diapo['accroche']) ?>
               </p>
               <div class="hero__cta hero__fade" style="--d:680ms">
-                <a class="btn-pgy" href="<?= App\Core\Langue::chemin('/le-livre') ?>">
-                  <?= t('accueil.hero.1_cta') ?>
+                <a class="btn-pgy" href="<?= App\Core\View::e($cible['bouton']) ?>">
+                  <?= App\Core\View::e($diapo['bouton']) ?>
                   <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
                 </a>
-<?php if ($jalons !== []): ?>
-                <a class="link" href="#reperes"><?= t('accueil.hero.1_lien') ?></a>
+<?php if ($cible['lien'] !== null): ?>
+                <a class="link" href="<?= App\Core\View::e($cible['lien']) ?>"><?= App\Core\View::e($diapo['lien']) ?></a>
 <?php endif; ?>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <div class="carousel-item hero__slide">
-        <div class="hero__media">
-          <img class="hero__img" src="assets/img/hero-2.svg" alt="">
-        </div>
-        <div class="shell hero__content">
-          <div class="row">
-            <div class="col-lg-7 col-xl-6">
-              <p class="hero__count hero__fade" style="--d:120ms">02 — 03</p>
-              <h1 class="t-hero hero__title">
-                <span class="mask"><span class="mask__i" style="--d:200ms">1920</span></span>
-                <span class="mask"><span class="mask__i" style="--d:320ms">1998</span></span>
-              </h1>
-              <p class="t-lead hero__lead hero__fade" style="--d:560ms">
-                <?= t_brut('accueil.hero.2_lead') ?>
-              </p>
-              <div class="hero__cta hero__fade" style="--d:680ms">
-                <a class="btn-pgy" href="<?= App\Core\Langue::chemin('/biographie') ?>">
-                  <?= t('accueil.hero.2_cta') ?>
-                  <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="carousel-item hero__slide">
-        <div class="hero__media">
-          <img class="hero__img" src="assets/img/hero-3.svg" alt="">
-        </div>
-        <div class="shell hero__content">
-          <div class="row">
-            <div class="col-lg-7 col-xl-6">
-              <p class="hero__count hero__fade" style="--d:120ms">03 — 03</p>
-              <h1 class="t-hero hero__title">
-                <span class="mask"><span class="mask__i" style="--d:200ms"><?= t('accueil.hero.3_titre') ?></span></span>
-              </h1>
-              <p class="t-lead hero__lead hero__fade" style="--d:560ms">
-                <?= t_brut('accueil.hero.3_lead') ?>
-              </p>
-              <div class="hero__cta hero__fade" style="--d:680ms">
-                <a class="btn-pgy" href="<?= App\Core\Langue::chemin('/commander') ?>">
-                  <?= t('accueil.hero.3_cta') ?>
-                  <span class="btn-pgy__arrow" aria-hidden="true">&#8594;</span>
-                </a>
-                <a class="link" href="<?= App\Core\Langue::chemin('/le-livre') ?>#acheter"><?= t('accueil.hero.3_lien') ?></a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+<?php endforeach; ?>
 
     </div>
   </div>

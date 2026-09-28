@@ -229,12 +229,25 @@ final class TraductionController
          * Les textes des pages (lot G16). Un titre de contexte laissé vide en
          * français n'a rien à traduire ici : la page prend alors celui du
          * lexique, qui existe déjà dans les deux langues — voir
-         * `templates/pages/biographie.php`.
+         * `templates/pages/biographie.php`. Même règle pour le diaporama de
+         * l'accueil (lot G17) : un champ vide y garde son texte du lexique.
+         * Ses images ne se traduisent pas, elles ne figurent donc pas ici.
          */
         'textes' => [
             'titre'  => 'Textes des pages',
-            'resume' => 'Contexte de la biographie',
+            'resume' => "Diaporama de l'accueil, contexte de la biographie",
             'champs' => [
+                'accueil_hero_1_titre'    => ['libelle' => 'Diapositive 1 — titre',    'zone' => true, 'lignes' => 2],
+                'accueil_hero_1_accroche' => ['libelle' => 'Diapositive 1 — accroche', 'zone' => true, 'lignes' => 3],
+                'accueil_hero_1_bouton'   => ['libelle' => 'Diapositive 1 — bouton',   'zone' => false],
+                'accueil_hero_1_lien'     => ['libelle' => 'Diapositive 1 — lien',     'zone' => false],
+                'accueil_hero_2_titre'    => ['libelle' => 'Diapositive 2 — titre',    'zone' => true, 'lignes' => 2],
+                'accueil_hero_2_accroche' => ['libelle' => 'Diapositive 2 — accroche', 'zone' => true, 'lignes' => 3],
+                'accueil_hero_2_bouton'   => ['libelle' => 'Diapositive 2 — bouton',   'zone' => false],
+                'accueil_hero_3_titre'    => ['libelle' => 'Diapositive 3 — titre',    'zone' => true, 'lignes' => 2],
+                'accueil_hero_3_accroche' => ['libelle' => 'Diapositive 3 — accroche', 'zone' => true, 'lignes' => 3],
+                'accueil_hero_3_bouton'   => ['libelle' => 'Diapositive 3 — bouton',   'zone' => false],
+                'accueil_hero_3_lien'     => ['libelle' => 'Diapositive 3 — lien',     'zone' => false],
                 'biographie_contexte_titre' => ['libelle' => 'Biographie — titre du contexte', 'zone' => true, 'lignes' => 2],
                 'biographie_contexte_texte' => ['libelle' => 'Biographie — texte du contexte', 'zone' => true],
             ],

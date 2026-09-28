@@ -2,7 +2,8 @@
 /**
  * Les textes des pages publiques (lot G16).
  *
- * Une carte par section de page, dérivée de `Parametre::TEXTES_PAGES` : une
+ * Une carte par section de page — et par diapositive du diaporama de
+ * l'accueil (lot G17) —, dérivée de `Parametre::TEXTES_PAGES` : une
  * section ajoutée au modèle paraît ici, dans la validation et à l'écran des
  * traductions sans qu'on retouche ce gabarit.
  *
@@ -56,14 +57,78 @@ $rempli = static fn(array $valeurs, string $cle): bool => trim((string) ($valeur
         <p class="text-muted small"><?= View::e($section['aide']) ?></p>
 
         <?php foreach ($section['champs'] as $cle => $champ): ?>
-          <?php champ_zone($valeurs, $erreurs, $cle, $champ['libelle'], [
-              'aide'   => $champ['aide'],
-              'lignes' => $champ['type'] === 'titre' ? 2 : 10,
-          ]); ?>
+          <?php
+            /* Sous un champ qui a un texte par défaut, ce texte : c'est ce que
+               le site affiche tant que le champ reste vide. */
+            $aide = $champ['aide'];
+
+            if (isset($champ['defaut'])) {
+                $aide .= ' <span class="text-muted">Vide : « '
+                       . nl2br(View::e(t_nu($champ['defaut'])), false) . ' ».</span>';
+            }
+          ?>
+          <?php if ($champ['type'] === 'image'): ?>
+            <?php champ_media($valeurs, $erreurs, $cle, $champ['libelle'], $medias, ['aide' => $aide]); ?>
+          <?php elseif ($champ['type'] === 'ligne'): ?>
+            <?php champ_texte($valeurs, $erreurs, $cle, $champ['libelle'], [
+                'aide'      => $aide,
+                'attributs' => 'maxlength="' . (int) ($champ['max'] ?? 200) . '"',
+            ]); ?>
+          <?php else: ?>
+            <?php champ_zone($valeurs, $erreurs, $cle, $champ['libelle'], [
+                'aide'   => $aide,
+                'lignes' => match ($champ['type']) { 'titre' => 2, 'court' => 3, default => 10 },
+            ]); ?>
+          <?php endif; ?>
         <?php endforeach; ?>
 
         <?php /* --- Ce que le site affiche aujourd'hui ------------------- */ ?>
-        <?php if ($visible): ?>
+        <?php if (!empty($section['toujours'])): ?>
+          <?php
+            /* Une diapositive ne disparaît jamais : ce qui compte est de
+               savoir ce qui y reste par défaut, et ce qui manque en anglais. */
+            $parDefaut     = [];
+            $nonTraduits   = [];
+
+            foreach ($section['champs'] as $cle => $champ) {
+                if ($champ['type'] === 'image') {
+                    if (!$rempli($enBase, $cle)) {
+                        $parDefaut[] = 'image (cadre d\'attente)';
+                    }
+                } elseif (!$rempli($enBase, $cle)) {
+                    $parDefaut[] = mb_strtolower($champ['libelle']);
+                } else {
+                    foreach ($langues as $code => $infos) {
+                        if (trim((string) ($traduits[$code][$cle] ?? '')) === '') {
+                            $nonTraduits[$code][] = mb_strtolower($champ['libelle']);
+                        }
+                    }
+                }
+            }
+          ?>
+          <div class="alert alert-success mb-3">
+            <i class="mdi mdi-eye-outline me-1" aria-hidden="true"></i>
+            <strong>La diapositive paraît toujours</strong> sur
+            <a href="<?= View::e($section['chemin']) ?>" target="_blank" rel="noopener">l'accueil</a>.
+            <?php if ($parDefaut !== []): ?>
+              Par défaut : <?= View::e(implode(', ', $parDefaut)) ?>.
+            <?php endif; ?>
+          </div>
+          <?php foreach ($langues as $code => $infos): ?>
+            <div class="alert <?= empty($nonTraduits[$code]) ? 'alert-light' : 'alert-warning' ?> mb-0 mt-2" role="note">
+              <i class="mdi mdi-translate me-1" aria-hidden="true"></i>
+              <strong><?= View::e($infos['nom']) ?></strong>
+              <span class="text-muted">(<?= View::e($code) ?><?= $infos['active'] ? '' : ', fermée au public' ?>)</span> —
+              <?php if (empty($nonTraduits[$code])): ?>
+                tout ce qui est saisi est traduit ; les textes par défaut le sont déjà.
+              <?php else: ?>
+                <strong>non traduit</strong>, affiché en français :
+                <?= View::e(implode(', ', $nonTraduits[$code])) ?>.
+              <?php endif; ?>
+              <a class="ms-1" href="<?= Admin::url('/traductions/parametre/textes') ?>">Traduire</a>
+            </div>
+          <?php endforeach; ?>
+        <?php elseif ($visible): ?>
           <div class="alert alert-success mb-3">
             <i class="mdi mdi-eye-outline me-1" aria-hidden="true"></i>
             <strong>La section paraît</strong> sur la page
@@ -80,7 +145,7 @@ $rempli = static fn(array $valeurs, string $cle): bool => trim((string) ($valeur
           </div>
         <?php endif; ?>
 
-        <?php if ($visible): ?>
+        <?php if ($visible && empty($section['toujours'])): ?>
           <?php foreach ($langues as $code => $infos): ?>
             <?php
               $titrePropre  = $cleTitre !== null && $rempli($enBase, $cleTitre);
@@ -126,6 +191,10 @@ $rempli = static fn(array $valeurs, string $cle): bool => trim((string) ($valeur
           <li><strong>Un texte vide retire la section</strong> du site, en français
               comme en anglais. Mieux vaut pas de section qu'une consigne de rédaction
               affichée en ligne.</li>
+          <li><strong>Le diaporama de l'accueil fait exception</strong> : ses trois
+              diapositives paraissent toujours. Un champ vide y garde son texte par
+              défaut, déjà traduit, et une diapositive sans image garde son cadre
+              d'attente.</li>
           <li><strong>L'anglais se saisit à part</strong>, à l'écran
               <a href="<?= Admin::url('/traductions/parametre/textes') ?>">Traductions</a>,
               le français en regard. Un champ non traduit affiche le français.</li>
@@ -140,3 +209,5 @@ $rempli = static fn(array $valeurs, string $cle): bool => trim((string) ($valeur
     <button type="submit" class="btn btn-primary">Enregistrer les textes</button>
   </div>
 </form>
+
+<?php require dirname(__DIR__) . '/partials/selecteur-media.php'; ?>

@@ -6,13 +6,16 @@ namespace App\Controller\Admin;
 use App\Core\Admin;
 use App\Core\Csrf;
 use App\Core\Session;
+use App\Core\Televersement;
 use App\Core\Traduction;
 use App\Core\Validator;
 use App\Core\View;
+use App\Model\Media;
 use App\Model\Parametre;
 
 /**
- * Les textes des pages publiques (lot G16).
+ * Les textes des pages publiques (lot G16), et le diaporama de l'accueil
+ * (lot G17).
  *
  * Le contexte historique de la biographie vivait dans `src/lang/fr.php` et
  * affichait en ligne sa propre consigne — « Texte à rédiger. » — dans les
@@ -50,7 +53,51 @@ final class TexteController
             'erreurs'  => $erreurs,
             'langues'  => TraductionController::languesCibles(),
             'traduits' => TraductionController::posees('parametre', Traduction::SANS_ID),
+            'medias'   => self::images(),
+            'scripts'  => [Admin::asset('js/medias.js')],
         ], $erreurs === [] ? 200 : 422);
+    }
+
+    /**
+     * Les images proposées au sélecteur du diaporama.
+     *
+     * Le même lot borné que les fiches de contenu, **images seules** : un PDF
+     * n'a pas de vignette, et posé dans le diaporama il y rendrait un cadre
+     * cassé (lot G5).
+     *
+     * @return array<int,array<string,mixed>>
+     */
+    private static function images(): array
+    {
+        return array_values(array_filter(
+            Media::chercher(null, '', 200),
+            static fn(array $m): bool => Media::aVignette($m)
+        ));
+    }
+
+    /**
+     * L'image choisie existe-t-elle, et en est-elle une ?
+     *
+     * Le champ est un contrôle caché, qui se réécrit comme un autre : la forme
+     * du chemin, sa présence en médiathèque et sa famille sont vérifiées. La
+     * page publique retomberait de toute façon sur le cadre d'attente, mais
+     * l'éditeur croirait son image en place.
+     */
+    private static function validerImage(Validator $v, string $cle): void
+    {
+        $chemin = $v->valeur($cle);
+
+        if ($chemin === '') {
+            return;
+        }
+
+        $media = Televersement::formeValide($chemin) ? Media::parFichier($chemin) : null;
+
+        if ($media === null) {
+            $v->erreur($cle, "L'image choisie n'est plus dans la médiathèque. Choisissez-en une autre.");
+        } elseif (!Media::aVignette($media)) {
+            $v->erreur($cle, 'Ce fichier n\'est pas une image : choisissez une photographie.');
+        }
     }
 
     public static function enregistrer(): void
@@ -60,10 +107,13 @@ final class TexteController
         $v = new Validator($_POST);
 
         foreach (Parametre::champsTextes() as $cle => $champ) {
-            if ($champ['type'] === 'titre') {
-                // Le titre s'affiche en très grands caractères : 200 signes
-                // en font déjà quatre lignes pleines.
-                $v->longueur($cle, $champ['libelle'], 0, 200);
+            if ($champ['type'] === 'image') {
+                self::validerImage($v, $cle);
+            } elseif ($champ['type'] !== 'long') {
+                // Un titre s'affiche en très grands caractères : 200 signes
+                // en font déjà quatre lignes pleines. Ceux du diaporama, et
+                // ses libellés, en ont moins encore — voir `max`.
+                $v->longueur($cle, $champ['libelle'], 0, $champ['max'] ?? 200);
             }
         }
 
@@ -77,6 +127,13 @@ final class TexteController
             // « Paramètres » : la page publique teste l'absence de valeur pour
             // retirer la section.
             $valeur = str_replace("\r\n", "\n", $v->valeur($cle));
+
+            // Une ligne reste une ligne : un retour collé depuis un traitement
+            // de texte casserait un bouton en deux.
+            if ($champ['type'] === 'ligne') {
+                $valeur = trim(preg_replace('/\s+/u', ' ', $valeur) ?? '');
+            }
+
             Parametre::ecrire($cle, $valeur === '' ? null : $valeur, $champ['libelle']);
         }
 
