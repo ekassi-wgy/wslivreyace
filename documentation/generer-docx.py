@@ -348,7 +348,7 @@ p("Tout ce qu'il faut savoir pour tenir le site à jour : publier une actualité
   "déposer une photographie, ouvrir la boutique, répondre à un visiteur. "
   "Aucune connaissance technique n'est nécessaire.", style='Lead')
 
-p("Manuel de l'éditeur  ·  Version du 14 septembre 2026", style='Meta')
+p("Manuel de l'éditeur  ·  Version du 28 septembre 2026", style='Meta')
 p("Se lit dans l'ordre, se consulte au besoin.", style='Meta')
 
 doc.add_paragraph()
@@ -1143,7 +1143,7 @@ fin = doc.add_paragraph()
 bordure(fin._p, ['top'], FILET, taille=4)
 fin.paragraph_format.space_before = Pt(10)
 ecrire(fin, "Manuel d'administration du site **Philippe Grégoire Yacé — une destinée**. "
-            "Rédigé le 8 septembre 2026, revu le 14 septembre 2026, d'après le fonctionnement réel de l'administration. "
+            "Rédigé le 8 septembre 2026, revu le 28 septembre 2026, d'après le fonctionnement réel de l'administration. "
             "Les règles décrites ici sont celles que le site applique : quand il refuse une "
             "publication, c'est l'une d'elles qui parle.", taille=8, couleur=ENCRE3)
 
