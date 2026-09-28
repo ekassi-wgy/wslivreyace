@@ -1974,7 +1974,7 @@ vérifie.
 | G14 | Citations — les trois bandeaux « Extrait » et « Citations » sortent du lexique | livré |
 | G15 | Le manuel de l'éditeur entre dans le back-office | livré |
 | G16 | Textes des pages — le contexte de la biographie sort du lexique | livré |
-| G17 | Le diaporama de l'accueil sort du code — textes et images au back-office | livré |
+| G17 | Le diaporama et la section « L'homme » de l'accueil sortent du code — textes et images au back-office | livré |
 
 **G3 est écrit, et la boutique est fermée.** Le commanditaire a confirmé le
 7 septembre qu'aucune date de sortie n'est annoncée ; le lot a donc été livré
@@ -3567,6 +3567,19 @@ définitives.
 
 **Au déploiement** : le code et `documentation/manuel-administration.html`.
 Aucune migration — les valeurs vont dans `parametre`, qui existe.
+
+**Suite : la section « L'homme » de l'accueil.** Même défaut, même remède. Son
+premier paragraphe était une consigne publiée — « *Texte de présentation à
+rédiger par l'éditeur.* Ce paragraphe tient la place du chapeau introductif… » —
+en français et en anglais. Titre et texte rejoignent « Textes des pages » comme
+section `toujours` : vides, ils gardent leur texte par défaut, qui n'est plus que
+le titre et le paragraphe sur la présidence de l'Assemblée. Le sur-titre et le
+lien vers la biographie restent des libellés d'interface. `Parametre::section()`
+sert désormais les deux : une section `toujours` se lit par ses noms courts,
+chaque valeur saisie ou par défaut. Dans le lexique, le `<br>` du titre devient
+un retour à la ligne, qui se saisit tel quel à l'écran ; `accueil.homme.p1` et
+`p2` deviennent `accueil.homme.texte`. Rendu comparé avant et après dans les deux
+langues : seule la consigne disparaît.
 
 ### Ce que le brief ajoute à la liste des livrables attendus
 

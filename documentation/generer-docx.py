@@ -784,10 +784,10 @@ p("Les trois bandeaux sont vides aujourd'hui : ils affichaient auparavant un tex
 
 rubrique('Textes des pages')
 fiche([
-    ('Alimente', "Le diaporama de l'accueil — ses trois diapositives — et la section "
-                 "« Contexte » de la biographie, sous le portrait."),
-    ('Obligatoire', "Rien. Un texte vide retire la section du contexte ; dans le diaporama, "
-                    "il garde le texte par défaut."),
+    ('Alimente', "Sur l'accueil, le diaporama — ses trois diapositives — et la section "
+                 "« L'homme » ; sur la biographie, la section « Contexte », sous le portrait."),
+    ('Obligatoire', "Rien. Un texte vide retire la section du contexte ; sur l'accueil, il "
+                    "garde le texte par défaut."),
     ('Pour paraître', "Le texte. Il n'y a ni brouillon ni bouton de publication : ce qui "
                       "est enregistré est en ligne."),
     ('Images', "Une par diapositive du diaporama, choisie dans la médiathèque."),
@@ -795,8 +795,9 @@ fiche([
 p("Certaines pages ont un texte rédigé qui n'est ni une actualité, ni une période, ni une "
   "citation : il y en a **un seul**, et il est à sa place. C'est le cas du **contexte "
   "historique** qui ouvre la biographie — la Côte d'Ivoire avant et après l'indépendance, "
-  "avant d'entrer dans le parcours. C'est aussi le cas du **diaporama** qui ouvre l'accueil. "
-  "Cet écran les rassemble, une carte par section et par diapositive.")
+  "avant d'entrer dans le parcours. C'est aussi le cas du **diaporama** qui ouvre l'accueil, "
+  "et de la section **« L'homme »** qui le suit. Cet écran les rassemble, une carte par "
+  "section et par diapositive.")
 note("Enregistrer, c'est publier", [
     "Contrairement au reste des contenus, **il n'y a pas d'état Brouillon** sur cet écran : "
     "le texte enregistré paraît aussitôt. Préparez-le ailleurs s'il n'est pas prêt.",
@@ -834,6 +835,13 @@ note("Une image du diaporama se prépare", [
     "moitié gauche de l'image passe sous le texte. Sur téléphone, l'image occupe tout l'écran "
     "derrière le texte. Voir Dimensions à respecter.",
 ])
+sous("La section « L'homme » de l'accueil")
+p("Sous le diaporama, la première section de l'accueil pose en quelques lignes la stature du "
+  "personnage. Sa carte porte un `Titre` et un `Texte` — une ligne vide sépare deux "
+  "paragraphes. Comme pour le diaporama, **la section paraît toujours** : un champ vide garde "
+  "son texte par défaut, le titre actuel et le paragraphe sur la présidence de l'Assemblée "
+  "nationale. Le petit sur-titre « L'homme » et le lien « Lire la biographie complète » ne "
+  "changent pas.")
 sous("La version anglaise")
 p("L'anglais ne se saisit pas ici mais à l'écran Traductions, fiche **Textes des pages**, le "
   "français en regard — le lien « Traduire » sous chaque carte y mène directement. Tant "
@@ -1046,8 +1054,8 @@ p("**Rien ne se publie depuis cet écran.** Poser une traduction ne change pas l
   "fiche et ne touche pas au français : c'est un écran qu'on peut confier sans risque.")
 p("Deux rubriques ne portent qu'une fiche, et s'ouvrent directement : **Le livre et son "
   "auteur** — titre, préface, biographie de l'auteur — et **Textes des pages**, pour le "
-  "diaporama de l'accueil et le contexte de la biographie. Les images du diaporama ne se "
-  "traduisent pas.")
+  "diaporama de l'accueil, la section « L'homme » et le contexte de la biographie. Les "
+  "images du diaporama ne se traduisent pas.")
 p("Tout ne se traduit pas, et c'est voulu. Une adresse web, une année, un crédit photo, un "
   "nom propre n'ont pas de version anglaise — seuls les champs qui le méritent vous sont "
   "proposés.")
@@ -1082,7 +1090,7 @@ tableau(['Rubrique', 'Exigé pour publier', 'Pourquoi'], [
      "l'une décoche l'autre."],
     ['Textes des pages', "Rien : enregistrer, c'est publier",
      "Pas d'état Brouillon. Un texte vide retire la section du contexte, en français comme "
-     "en anglais ; dans le diaporama, il garde son texte par défaut."],
+     "en anglais ; sur l'accueil, il garde son texte par défaut."],
     ['Points de vente', 'Rien de plus que la ville',
      "Une ville seule est déjà une information utile."],
     ['Boutique', "La case cochée *et* un prix",

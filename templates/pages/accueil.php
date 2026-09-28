@@ -169,14 +169,18 @@ $liens = [
         <p class="section-num reveal">01</p>
       </div>
       <div class="col-lg-9 col-xl-8">
+        <?php
+        /* Titre et texte se saisissent à l'écran « Textes des pages » (lot
+           G17) ; vides, ils gardent leur texte par défaut du lexique. */
+        $homme = App\Model\Parametre::section('accueil_homme');
+        ?>
         <p class="kicker reveal"><?= t('accueil.homme.kicker') ?></p>
         <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-7);">
-          <?= t_brut('accueil.homme.titre') ?>
+          <?= nl2br(App\Core\View::e($homme['titre']), false) ?>
         </h2>
         <div class="row">
           <div class="col-md-10 col-lg-9">
-            <p class="t-body reveal"><?= t_brut('accueil.homme.p1') ?></p>
-            <p class="t-body reveal"><?= t_brut('accueil.homme.p2') ?></p>
+            <?= App\Core\View::paragraphes($homme['texte'], 't-body reveal') ?>
             <p class="reveal" style="margin-top: var(--sp-6);">
               <a class="link" href="<?= App\Core\Langue::chemin('/biographie') ?>"><?= t('accueil.homme.lien') ?></a>
             </p>

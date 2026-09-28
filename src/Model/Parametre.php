@@ -379,6 +379,33 @@ final class Parametre
                 ],
             ],
         ],
+        'accueil_homme' => [
+            'titre'    => 'Accueil — section « L\'homme »',
+            'page'     => 'Accueil',
+            'chemin'   => '/',
+            'aide'     => 'La première section sous le diaporama : la stature du personnage et '
+                        . 'l\'angle retenu par l\'ouvrage, en quelques lignes. Le lien « Lire la '
+                        . 'biographie complète » la suit toujours.',
+            'toujours' => true,
+            'champs'   => [
+                'accueil_homme_titre' => [
+                    'libelle' => 'Titre',
+                    'type'    => 'titre',
+                    'aide'    => 'Un retour à la ligne se retrouve sur la page.',
+                    'exemple' => '',
+                    'max'     => 120,
+                    'defaut'  => 'accueil.homme.titre',
+                ],
+                'accueil_homme_texte' => [
+                    'libelle' => 'Texte',
+                    'type'    => 'long',
+                    'aide'    => 'Deux ou trois courts paragraphes. Une ligne vide sépare deux '
+                               . 'paragraphes.',
+                    'exemple' => '',
+                    'defaut'  => 'accueil.homme.texte',
+                ],
+            ],
+        ],
         'biographie_contexte' => [
             'titre'  => 'Biographie — section « Contexte »',
             'page'   => 'Biographie',
@@ -469,6 +496,35 @@ final class Parametre
     }
 
     /**
+     * Les textes d'une section `toujours`, indexés par nom court (lot G17).
+     *
+     * `accueil_homme_titre` y devient `titre`. Chaque valeur est celle de
+     * l'écran si elle est saisie — traduite dans la langue courante —, son
+     * texte par défaut du lexique sinon, **nu dans les deux cas** : le gabarit
+     * échappe tout de la même façon. Les images n'y figurent pas.
+     *
+     * @return array<string,string>
+     */
+    public static function section(string $section): array
+    {
+        $prefixe = $section . '_';
+        $textes  = [];
+
+        foreach (self::TEXTES_PAGES[$section]['champs'] ?? [] as $cle => $champ) {
+            if ($champ['type'] === 'image') {
+                continue;
+            }
+
+            $valeur = self::texte($cle);
+            $textes[substr($cle, strlen($prefixe))] = $valeur !== ''
+                ? $valeur
+                : Lexique::nu((string) ($champ['defaut'] ?? ''));
+        }
+
+        return $textes;
+    }
+
+    /**
      * Une diapositive du diaporama de l'accueil, prête à afficher.
      *
      * Chaque texte est celui de l'écran « Textes des pages » s'il est saisi,
@@ -485,19 +541,13 @@ final class Parametre
      */
     public static function diapositive(int $n): array
     {
-        $prefixe = 'accueil_hero_' . $n . '_';
-        $diapo   = ['titre' => [], 'accroche' => '', 'bouton' => '', 'lien' => '', 'image' => null];
+        $diapo = self::section('accueil_hero_' . $n)
+               + ['titre' => '', 'accroche' => '', 'bouton' => '', 'lien' => '', 'image' => null];
 
         foreach (self::TEXTES_PAGES['accueil_hero_' . $n]['champs'] ?? [] as $cle => $champ) {
-            $nom = substr($cle, strlen($prefixe));
-
             if ($champ['type'] === 'image') {
                 $diapo['image'] = self::imageDiapositive((string) self::lire($cle));
-                continue;
             }
-
-            $valeur = self::texte($cle);
-            $diapo[$nom] = $valeur !== '' ? $valeur : Lexique::nu((string) $champ['defaut']);
         }
 
         $diapo['titre'] = array_values(array_filter(

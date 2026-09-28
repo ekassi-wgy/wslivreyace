@@ -85,8 +85,9 @@ $rempli = static fn(array $valeurs, string $cle): bool => trim((string) ($valeur
         <?php /* --- Ce que le site affiche aujourd'hui ------------------- */ ?>
         <?php if (!empty($section['toujours'])): ?>
           <?php
-            /* Une diapositive ne disparaît jamais : ce qui compte est de
-               savoir ce qui y reste par défaut, et ce qui manque en anglais. */
+            /* Une section `toujours` — diapositive, section « L'homme » — ne
+               disparaît jamais : ce qui compte est de savoir ce qui y reste par
+               défaut, et ce qui manque en anglais. */
             $parDefaut     = [];
             $nonTraduits   = [];
 
@@ -108,8 +109,8 @@ $rempli = static fn(array $valeurs, string $cle): bool => trim((string) ($valeur
           ?>
           <div class="alert alert-success mb-3">
             <i class="mdi mdi-eye-outline me-1" aria-hidden="true"></i>
-            <strong>La diapositive paraît toujours</strong> sur
-            <a href="<?= View::e($section['chemin']) ?>" target="_blank" rel="noopener">l'accueil</a>.
+            <strong>Cette section paraît toujours</strong> sur la page
+            <a href="<?= View::e($section['chemin']) ?>" target="_blank" rel="noopener"><?= View::e($section['page']) ?></a>.
             <?php if ($parDefaut !== []): ?>
               Par défaut : <?= View::e(implode(', ', $parDefaut)) ?>.
             <?php endif; ?>
@@ -191,9 +192,9 @@ $rempli = static fn(array $valeurs, string $cle): bool => trim((string) ($valeur
           <li><strong>Un texte vide retire la section</strong> du site, en français
               comme en anglais. Mieux vaut pas de section qu'une consigne de rédaction
               affichée en ligne.</li>
-          <li><strong>Le diaporama de l'accueil fait exception</strong> : ses trois
-              diapositives paraissent toujours. Un champ vide y garde son texte par
-              défaut, déjà traduit, et une diapositive sans image garde son cadre
+          <li><strong>Les sections de l'accueil font exception</strong> — le diaporama
+              et « L'homme » : elles paraissent toujours. Un champ vide y garde son texte
+              par défaut, déjà traduit, et une diapositive sans image garde son cadre
               d'attente.</li>
           <li><strong>L'anglais se saisit à part</strong>, à l'écran
               <a href="<?= Admin::url('/traductions/parametre/textes') ?>">Traductions</a>,

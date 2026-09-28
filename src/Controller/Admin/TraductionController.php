@@ -229,13 +229,14 @@ final class TraductionController
          * Les textes des pages (lot G16). Un titre de contexte laissé vide en
          * français n'a rien à traduire ici : la page prend alors celui du
          * lexique, qui existe déjà dans les deux langues — voir
-         * `templates/pages/biographie.php`. Même règle pour le diaporama de
-         * l'accueil (lot G17) : un champ vide y garde son texte du lexique.
+         * `templates/pages/biographie.php`. Même règle pour le diaporama et la
+         * section « L'homme » de l'accueil (lot G17) : un champ vide y garde son
+         * texte du lexique.
          * Ses images ne se traduisent pas, elles ne figurent donc pas ici.
          */
         'textes' => [
             'titre'  => 'Textes des pages',
-            'resume' => "Diaporama de l'accueil, contexte de la biographie",
+            'resume' => "Diaporama et « L'homme » sur l'accueil, contexte de la biographie",
             'champs' => [
                 'accueil_hero_1_titre'    => ['libelle' => 'Diapositive 1 — titre',    'zone' => true, 'lignes' => 2],
                 'accueil_hero_1_accroche' => ['libelle' => 'Diapositive 1 — accroche', 'zone' => true, 'lignes' => 3],
@@ -248,6 +249,8 @@ final class TraductionController
                 'accueil_hero_3_accroche' => ['libelle' => 'Diapositive 3 — accroche', 'zone' => true, 'lignes' => 3],
                 'accueil_hero_3_bouton'   => ['libelle' => 'Diapositive 3 — bouton',   'zone' => false],
                 'accueil_hero_3_lien'     => ['libelle' => 'Diapositive 3 — lien',     'zone' => false],
+                'accueil_homme_titre'       => ['libelle' => 'Accueil, « L\'homme » — titre', 'zone' => true, 'lignes' => 2],
+                'accueil_homme_texte'       => ['libelle' => 'Accueil, « L\'homme » — texte', 'zone' => true],
                 'biographie_contexte_titre' => ['libelle' => 'Biographie — titre du contexte', 'zone' => true, 'lignes' => 2],
                 'biographie_contexte_texte' => ['libelle' => 'Biographie — texte du contexte', 'zone' => true],
             ],
