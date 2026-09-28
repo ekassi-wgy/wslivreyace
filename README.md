@@ -3638,6 +3638,12 @@ d'essai effacées ensuite. Restent, hors de ce lot, les « Enseigne et adresse �
 renseigner » des points de vente : ce sont des données en base (G12), pas des
 consignes du code.
 
+**La couverture garde ses couleurs.** Le cadre `.frame` applique le traitement
+noir et blanc chaud des archives à toute image, couverture du livre comprise —
+or c'est un objet qu'on reconnaîtra en librairie, pas une archive
+à unifier. `.frame--couleur` lève le filtre, posé sur la couverture de l'accueil
+et de la page du livre seulement.
+
 ### Ce que le brief ajoute à la liste des livrables attendus
 
 À la liste du §5 s'ajoutent, tous non techniques :

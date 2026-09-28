@@ -163,7 +163,7 @@ $blocPreface = static function (array $preface, bool $enAvant, string $num = 'â€
     <div class="row" style="row-gap: var(--sp-9);">
 
       <div class="col-lg-5">
-        <span class="frame reveal">
+        <span class="frame frame--couleur reveal">
           <?php if ($couverture !== null): ?>
             <?php $srcset = Media::srcset($couverture); ?>
             <img loading="lazy" decoding="async"

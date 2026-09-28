@@ -393,6 +393,9 @@
   pointer-events: none;
 }
 .frame img { position: relative; filter: grayscale(1) contrast(1.04) sepia(0.14); }
+/* La couverture du livre garde ses couleurs : c'est un objet qu'on
+   reconnaitra en librairie, pas une archive a unifier. */
+.frame--couleur img { filter: none; }
 
 /* --- Fiche technique de l'ouvrage -------------------------------------- */
 .specs { border-top: 1px solid var(--rule); }

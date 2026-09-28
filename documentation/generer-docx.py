@@ -552,7 +552,8 @@ note("Les archives sont uniformisées automatiquement", [
     "Le site applique de lui-même un traitement noir et blanc chaud aux images d'archives, "
     "ce qui donne une allure homogène à des sources d'origines très diverses. **Ne "
     "retouchez pas vos scans** : déposez-les tels quels, en couleur si c'est ainsi qu'ils "
-    "vous parviennent.",
+    "vous parviennent. **Seule la couverture du livre y échappe** : elle paraît dans ses "
+    "couleurs, telle qu'on la reconnaîtra en librairie.",
 ], sourd=True)
 
 rubrique('Préparer une image avant de la déposer')

@@ -236,7 +236,7 @@ $liens = [
       </div>
 
       <div class="col-lg-5 order-lg-1">
-        <span class="frame reveal">
+        <span class="frame frame--couleur reveal">
           <?php if ($couverture !== null): ?>
             <?php $srcset = App\Model\Media::srcset($couverture); ?>
             <img loading="lazy" decoding="async"
