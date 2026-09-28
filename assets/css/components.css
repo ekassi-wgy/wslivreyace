@@ -1154,6 +1154,13 @@
   color: var(--ink-3);
 }
 
+/* Sous une image encadree, la legende descend du decalage du filet : sans
+   quoi le filet laiton, qui deborde sous l'image, barre sa premiere ligne.
+   Le clamp est celui de `.frame::before`, et doit le rester. */
+.frame + .article__legende {
+  margin-top: calc(clamp(12px, 1.6vw, 22px) + var(--sp-4));
+}
+
 /* Le credit tient sa propre ligne : il ne se lit pas comme la legende, et il
    doit rester reperable — une archive publiee est une archive creditee. */
 .article__credit {
