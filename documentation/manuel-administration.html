@@ -734,8 +734,8 @@ html { scroll-behavior: smooth; }
                 <tr><td>Légende</td><td>Le texte affiché sous l'image sur le site. <strong>Sert aussi de description aux personnes non voyantes et aux moteurs de recherche</strong> — écrivez-la, elle compte double.</td></tr>
                 <tr><td>Crédit</td><td>Le photographe, le fonds ou l'institution qui détient la pièce. <strong>Obligatoire pour publier une image.</strong></td></tr>
                 <tr><td>Date de prise de vue</td><td>Texte libre : « 1962 », « vers 1958 », « mars 1970 ».</td></tr>
-                <tr><td>Catégorie</td><td>Portrait, Officiel, Privé, Document, Presse. Sert à filtrer la médiathèque quand elle sera grande.</td></tr>
-                <tr><td>Rang</td><td>L'ordre d'apparition dans la galerie. Le plus petit passe en premier.</td></tr>
+                <tr><td>Catégorie</td><td>Portrait, Officiel, Privé, Document, Presse. Sert à filtrer la médiathèque quand elle sera grande. <strong>Portrait</strong> choisit aussi les images de la galerie de la biographie. La catégorie ne dit rien du format : le scan JPEG d'une lettre peut être rangé en Document.</td></tr>
+                <tr><td>Rang</td><td>L'ordre des galeries de l'accueil et de la biographie : la notice dont l'image a le plus petit rang passe en premier. À rang égal, la plus récemment déposée d'abord.</td></tr>
               </tbody>
             </table>
           </div>
@@ -1093,10 +1093,10 @@ html { scroll-behavior: smooth; }
         <section class="sect" id="archives">
           <h3>Archives</h3>
           <dl class="fiche">
-            <dt>Alimente</dt><dd>Le fonds d'archives : l'index, les catégories, et une page par pièce.</dd>
+            <dt>Alimente</dt><dd>Le fonds d'archives : l'index, les catégories, et une page par pièce. Et les galeries de l'accueil et de la biographie.</dd>
             <dt>Obligatoire</dt><dd>Titre, catégorie.</dd>
             <dt>Pour publier</dt><dd>Un crédit <em>ou</em> une source — au moins l'un des deux.</dd>
-            <dt>Fichiers</dt><dd>Plusieurs, de toutes familles. Le premier coché fait la vignette.</dd>
+            <dt>Fichiers</dt><dd>Plusieurs, de toutes familles. La première <em>image</em> cochée fait la vignette — un PDF ou un enregistrement n'en fait jamais.</dd>
           </dl>
           <p>
             <strong>Une archive est une notice, pas un fichier.</strong> C'est la notion
@@ -1126,6 +1126,32 @@ html { scroll-behavior: smooth; }
               droits ; la <span class="champ">Source</span> nomme le fonds ou l'institution
               qui détient la pièce. Le site accepte de publier avec l'un ou l'autre —
               mais pas sans les deux.
+            </p>
+          </div>
+
+          <h4>Ce qui paraît sur l'accueil et la biographie</h4>
+          <p>
+            La galerie de l'accueil montre <strong>quatre notices publiées</strong>,
+            chacune par sa vignette. Un clic sur une image ouvre sa notice, où la pièce
+            se lit en entier. La galerie de la biographie fait de même avec les notices
+            qui contiennent une image rangée en catégorie <strong>Portrait</strong>,
+            montrées par ce portrait.
+          </p>
+          <p>
+            L'ordre se règle dans la médiathèque, par le champ
+            <span class="champ">Rang</span> de l'image qui sert de vignette.
+          </p>
+
+          <div class="note">
+            <h4>Une image seule ne paraît pas sur l'accueil</h4>
+            <p>
+              Publier une image dans la médiathèque ne suffit pas à la faire paraître :
+              <strong>elle doit être rattachée à une notice publiée</strong>. Une image
+              sans notice, ou dont la notice est en brouillon, n'apparaît sur aucune
+              galerie. Pour la montrer, créez la notice, cochez l'image dans ses
+              fichiers, puis publiez la notice. Une notice sans aucune image ne paraît
+              pas non plus sur l'accueil — elle reste visible dans le fonds d'archives,
+              avec le pictogramme de sa catégorie.
             </p>
           </div>
         </section>
@@ -1760,6 +1786,7 @@ html { scroll-behavior: smooth; }
                 <tr><td>Portrait de l'auteur</td><td><span class="nb">1000 × 1250 px</span></td></tr>
                 <tr><td>Extraits du livre</td><td><span class="nb">1500 × 1000 px</span></td></tr>
                 <tr><td>Archives et galerie</td><td>Aucune dimension imposée — sujet au centre</td></tr>
+                <tr><td>Faire paraître une image sur l'accueil</td><td>La rattacher à une notice publiée</td></tr>
               </tbody>
             </table>
           </div>

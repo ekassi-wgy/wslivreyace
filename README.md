@@ -1892,9 +1892,9 @@ Témoignages (§4.8) — **complet** : page publique, formulaire de dépôt, fil
 modération, et l'aperçu des trois derniers validés sur l'accueil. La chaîne
 entière tourne, du visiteur qui écrit au modérateur qui décide.
 
-Galerie/Archives (§4.6) — **complet** : la planche filtrable par catégorie, sa
-visionneuse au clavier, la légende et le crédit sur chaque pièce. L'accueil en
-montre les quatre premières.
+Galerie/Archives (§4.6) — **complet** : le fonds de notices filtrable par
+catégorie, une page par pièce avec la légende et le crédit de chaque fichier.
+L'accueil en montre quatre, chacune ouvrant sa notice.
 
 Événements (§4.10) — **complet** : l'agenda en deux temps, la fiche par slug
 avec son balisage `Event`, et les rendez-vous annulés qui restent affichés et le

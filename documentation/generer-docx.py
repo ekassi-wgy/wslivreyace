@@ -481,8 +481,12 @@ tableau(['Champ', 'À quoi il sert'], [
                "**Obligatoire pour publier une image.**"],
     ['Date de prise de vue', "Texte libre : « 1962 », « vers 1958 », « mars 1970 »."],
     ['Catégorie', "Portrait, Officiel, Privé, Document, Presse. Sert à filtrer la "
-                  "médiathèque quand elle sera grande."],
-    ['Rang', "L'ordre d'apparition dans la galerie. Le plus petit passe en premier."],
+                  "médiathèque quand elle sera grande. **Portrait** choisit aussi les "
+                  "images de la galerie de la biographie. La catégorie ne dit rien du "
+                  "format : le scan JPEG d'une lettre peut être rangé en Document."],
+    ['Rang', "L'ordre des galeries de l'accueil et de la biographie : la notice dont "
+             "l'image a le plus petit rang passe en premier. À rang égal, la plus "
+             "récemment déposée d'abord."],
 ], largeurs=[4.0, 12.2])
 note("Une image publiée doit porter son crédit", [
     "Le site refuse de publier une image dont le champ Crédit est vide. Ce n'est pas une "
@@ -672,10 +676,12 @@ p("La période à laquelle appartient un repère ne se saisit pas : elle se déd
 
 rubrique('Archives')
 fiche([
-    ('Alimente', "Le fonds d'archives : l'index, les catégories, et une page par pièce."),
+    ('Alimente', "Le fonds d'archives : l'index, les catégories, et une page par pièce. "
+                 "Et les galeries de l'accueil et de la biographie."),
     ('Obligatoire', "Titre, catégorie."),
     ('Pour publier', "Un crédit *ou* une source — au moins l'un des deux."),
-    ('Fichiers', "Plusieurs, de toutes familles. Le premier coché fait la vignette."),
+    ('Fichiers', "Plusieurs, de toutes familles. La première *image* cochée fait la "
+                 "vignette — un PDF ou un enregistrement n'en fait jamais."),
 ])
 p("**Une archive est une notice, pas un fichier.** C'est la notion la plus importante de "
   "cet écran : vous ne cataloguez pas une photographie, vous décrivez une pièce — un "
@@ -692,6 +698,21 @@ note("Crédit ou source : l'un des deux, au minimum", [
     "Le `Crédit` nomme le photographe ou le détenteur des droits ; la `Source` nomme le "
     "fonds ou l'institution qui détient la pièce. Le site accepte de publier avec l'un ou "
     "l'autre — mais pas sans les deux.",
+])
+sous("Ce qui paraît sur l'accueil et la biographie")
+p("La galerie de l'accueil montre **quatre notices publiées**, chacune par sa vignette. "
+  "Un clic sur une image ouvre sa notice, où la pièce se lit en entier. La galerie de la "
+  "biographie fait de même avec les notices qui contiennent une image rangée en catégorie "
+  "**Portrait**, montrées par ce portrait.")
+p("L'ordre se règle dans la médiathèque, par le champ `Rang` de l'image qui sert de "
+  "vignette.")
+note("Une image seule ne paraît pas sur l'accueil", [
+    "Publier une image dans la médiathèque ne suffit pas à la faire paraître : **elle doit "
+    "être rattachée à une notice publiée**. Une image sans notice, ou dont la notice est en "
+    "brouillon, n'apparaît sur aucune galerie. Pour la montrer, créez la notice, cochez "
+    "l'image dans ses fichiers, puis publiez la notice. Une notice sans aucune image ne "
+    "paraît pas non plus sur l'accueil — elle reste visible dans le fonds d'archives, avec "
+    "le pictogramme de sa catégorie.",
 ])
 
 rubrique('Héritage')
@@ -1057,6 +1078,7 @@ tableau(['Question', 'Réponse'], [
     ["Portrait de l'auteur", '1000 × 1250 px'],
     ['Extraits du livre', '1500 × 1000 px'],
     ['Archives et galerie', 'Aucune dimension imposée — sujet au centre'],
+    ["Faire paraître une image sur l'accueil", 'La rattacher à une notice publiée'],
 ], largeurs=[5.4, 10.8])
 
 rubrique("Si quelque chose ne marche pas")
