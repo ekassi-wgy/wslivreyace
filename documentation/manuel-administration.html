@@ -854,12 +854,12 @@ html { scroll-behavior: smooth; }
                 <tr>
                   <td>Portrait de l'auteur du livre</td>
                   <td class="nb">1000 × 1250 px</td>
-                  <td>Portrait vertical classique.</td>
+                  <td>Portrait vertical classique. Se choisit à l'écran <a href="#textes">Textes des pages</a>.</td>
                 </tr>
                 <tr>
                   <td>Extraits du livre</td>
                   <td class="nb">1500 × 1000 px</td>
-                  <td>Double page photographiée à plat, horizontale.</td>
+                  <td>Double page photographiée à plat, horizontale. Se choisit à l'écran <a href="#textes">Textes des pages</a>.</td>
                 </tr>
               </tbody>
             </table>
@@ -1268,7 +1268,7 @@ html { scroll-behavior: smooth; }
             <dt>Alimente</dt><dd>Sur l'accueil, le diaporama — ses trois diapositives — et la section « L'homme » ; la couverture, la quatrième de couverture et le résumé du livre ; sur la biographie, la section « Contexte », sous le portrait.</dd>
             <dt>Obligatoire</dt><dd>Rien. Un champ vide garde son texte par défaut quand il en a un — l'aide sous le champ le dit —, sinon il disparaît du site.</dd>
             <dt>Pour paraître</dt><dd>Le texte. Il n'y a ni brouillon ni bouton de publication : ce qui est enregistré est en ligne.</dd>
-            <dt>Images</dt><dd>Une par diapositive du diaporama, et la couverture du livre, choisies dans la médiathèque.</dd>
+            <dt>Images</dt><dd>Une par diapositive du diaporama ; pour le livre, la couverture, deux doubles pages et le portrait de l'auteur — toutes choisies dans la médiathèque, comme le PDF d'extrait.</dd>
           </dl>
           <p>
             Certaines pages ont un texte rédigé qui n'est ni une actualité, ni une période,
@@ -1358,21 +1358,44 @@ html { scroll-behavior: smooth; }
             fiche technique ne dit pas :
           </p>
           <ul>
+            <li>le <span class="champ">Sous-titre et accroche</span>, une ou deux phrases
+                sous le titre, en tête de la page du livre ;</li>
             <li>la <span class="champ">Couverture</span>, choisie dans la médiathèque —
                 1200 × 1550 px, la couverture seule. Elle paraît sur l'accueil et sur la
                 page du livre ; sans image, le cadre d'attente reste ;</li>
             <li>la <span class="champ">Quatrième de couverture</span>, quelques lignes sous
                 le titre du livre, sur l'accueil ;</li>
-            <li>le <span class="champ">Résumé long</span>, sur la page du livre — une ligne
-                vide sépare deux paragraphes.</li>
+            <li>le <span class="champ">Résumé long</span> et le <span class="champ">Mot de
+                l'éditeur</span>, sur la page du livre — une ligne vide sépare deux
+                paragraphes.</li>
           </ul>
           <p>
-            <strong>Vides, la quatrième et le résumé n'apparaissent pas</strong> : ils
-            n'ont pas de texte par défaut, et les pages affichaient auparavant une
-            consigne « à fournir » qui a été retirée. Le titre, l'auteur, l'éditeur, le
-            prix et le reste de la fiche se règlent à l'écran
-            <a href="#parametres">Paramètres</a>.
+            <strong>Vides, ces textes n'apparaissent pas</strong> : ils n'ont pas de texte
+            par défaut, et les pages affichaient auparavant des consignes « à fournir »
+            qui ont été retirées. Le titre, l'auteur, l'éditeur, le prix et le reste de
+            la fiche se règlent à l'écran <a href="#parametres">Paramètres</a>.
           </p>
+
+          <h4>Sommaire, feuilletage et auteur</h4>
+          <p>
+            La carte <strong>Le livre — sommaire, feuilletage, auteur</strong> règle trois
+            sections de la page du livre. <strong>Chacune disparaît tant qu'elle n'a rien
+            à montrer</strong>, et les numéros des sections suivantes se recalent.
+          </p>
+          <ul>
+            <li><span class="champ">Sommaire</span> — une ligne par partie. La page,
+                facultative, se met après une barre verticale :
+                <span class="champ">Les années de formation | 13</span>. Seule la dernière
+                barre compte, un intitulé peut donc en contenir une.</li>
+            <li><span class="champ">Feuilletage</span> — une ou deux doubles pages
+                photographiées à plat (1500 × 1000 px), et, si vous le souhaitez, un
+                <strong>extrait en PDF</strong> choisi dans la médiathèque, proposé en
+                téléchargement. Sans double page, la section n'apparaît pas.</li>
+            <li><span class="champ">Portrait de l'auteur</span> — 1000 × 1250 px. La
+                section de l'auteur paraît dès que son <strong>nom</strong> est saisi à
+                l'écran <a href="#parametres">Paramètres</a> ; sans portrait, elle paraît
+                sans image.</li>
+          </ul>
 
           <h4>La version anglaise</h4>
           <p>
@@ -1566,7 +1589,9 @@ html { scroll-behavior: smooth; }
           <p>
             Nom, qualité, biographie. <strong>La page de l'auteur se publie toute seule dès
             que le nom est renseigné</strong>, et reste introuvable tant qu'il est vide —
-            une fiche d'auteur sans auteur n'est pas une page.
+            une fiche d'auteur sans auteur n'est pas une page. Il en va de même de la
+            section « L'auteur » sur la page du livre. Son portrait se choisit à l'écran
+            <a href="#textes">Textes des pages</a>.
           </p>
           <p>
             Attention à ne pas confondre l'auteur <em>du livre</em> avec son <em>sujet</em>.

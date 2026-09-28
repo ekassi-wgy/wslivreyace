@@ -536,9 +536,9 @@ tableau(['Emplacement', 'Dimensions', 'Cadrage attendu'], [
     ['Portrait en tête de biographie', '1400 × 1750 px',
      "Buste, cadrage serré. *Déjà livré.*"],
     ["Portrait de l'auteur du livre", '1000 × 1250 px',
-     "Portrait vertical classique."],
+     "Portrait vertical classique. Se choisit à l'écran Textes des pages."],
     ['Extraits du livre', '1500 × 1000 px',
-     "Double page photographiée à plat, horizontale."],
+     "Double page photographiée à plat, horizontale. Se choisit à l'écran Textes des pages."],
 ], largeurs=[4.6, 3.0, 8.6])
 
 sous('Partout ailleurs : aucune dimension imposée')
@@ -792,8 +792,9 @@ fiche([
                     "sous le champ le dit —, sinon il disparaît du site."),
     ('Pour paraître', "Le texte. Il n'y a ni brouillon ni bouton de publication : ce qui "
                       "est enregistré est en ligne."),
-    ('Images', "Une par diapositive du diaporama, et la couverture du livre, choisies dans "
-               "la médiathèque."),
+    ('Images', "Une par diapositive du diaporama ; pour le livre, la couverture, deux doubles "
+               "pages et le portrait de l'auteur — toutes choisies dans la médiathèque, comme "
+               "le PDF d'extrait."),
 ])
 p("Certaines pages ont un texte rédigé qui n'est ni une actualité, ni une période, ni une "
   "citation : il y en a **un seul**, et il est à sa place. C'est le cas du **contexte "
@@ -849,15 +850,31 @@ sous("La présentation du livre")
 p("La carte **Le livre — couverture et présentation** porte ce que la fiche technique ne "
   "dit pas :")
 puces([
+    "le `Sous-titre et accroche`, une ou deux phrases sous le titre, en tête de la page du "
+    "livre ;",
     "la `Couverture`, choisie dans la médiathèque — 1200 × 1550 px, la couverture seule. "
     "Elle paraît sur l'accueil et sur la page du livre ; sans image, le cadre d'attente reste ;",
     "la `Quatrième de couverture`, quelques lignes sous le titre du livre, sur l'accueil ;",
-    "le `Résumé long`, sur la page du livre — une ligne vide sépare deux paragraphes.",
+    "le `Résumé long` et le `Mot de l'éditeur`, sur la page du livre — une ligne vide sépare "
+    "deux paragraphes.",
 ])
-p("**Vides, la quatrième et le résumé n'apparaissent pas** : ils n'ont pas de texte par "
-  "défaut, et les pages affichaient auparavant une consigne « à fournir » qui a été retirée. "
-  "Le titre, l'auteur, l'éditeur, le prix et le reste de la fiche se règlent à l'écran "
-  "Paramètres.")
+p("**Vides, ces textes n'apparaissent pas** : ils n'ont pas de texte par défaut, et les pages "
+  "affichaient auparavant des consignes « à fournir » qui ont été retirées. Le titre, "
+  "l'auteur, l'éditeur, le prix et le reste de la fiche se règlent à l'écran Paramètres.")
+sous("Sommaire, feuilletage et auteur")
+p("La carte **Le livre — sommaire, feuilletage, auteur** règle trois sections de la page du "
+  "livre. **Chacune disparaît tant qu'elle n'a rien à montrer**, et les numéros des sections "
+  "suivantes se recalent.")
+puces([
+    "`Sommaire` — une ligne par partie. La page, facultative, se met après une barre "
+    "verticale : `Les années de formation | 13`. Seule la dernière barre compte, un intitulé "
+    "peut donc en contenir une.",
+    "`Feuilletage` — une ou deux doubles pages photographiées à plat (1500 × 1000 px), et, si "
+    "vous le souhaitez, un **extrait en PDF** choisi dans la médiathèque, proposé en "
+    "téléchargement. Sans double page, la section n'apparaît pas.",
+    "`Portrait de l'auteur` — 1000 × 1250 px. La section de l'auteur paraît dès que son "
+    "**nom** est saisi à l'écran Paramètres ; sans portrait, elle paraît sans image.",
+])
 sous("La version anglaise")
 p("L'anglais ne se saisit pas ici mais à l'écran Traductions, fiche **Textes des pages**, le "
   "français en regard — le lien « Traduire » sous chaque carte y mène directement. Tant "
@@ -975,7 +992,8 @@ p("**La case « Mettre la préface en avant »** est un vrai levier éditorial :
 sous('L’auteur du livre')
 p("Nom, qualité, biographie. **La page de l'auteur se publie toute seule dès que le nom est "
   "renseigné**, et reste introuvable tant qu'il est vide — une fiche d'auteur sans auteur "
-  "n'est pas une page.")
+  "n'est pas une page. Il en va de même de la section « L'auteur » sur la page du livre. Son "
+  "portrait se choisit à l'écran Textes des pages.")
 p("Attention à ne pas confondre l'auteur *du livre* avec son *sujet*.")
 
 rubrique('Ouvrir les commandes')

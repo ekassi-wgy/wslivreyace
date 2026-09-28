@@ -50,6 +50,29 @@ $citation = Citation::affichee('livre');
  */
 $presentation = Parametre::section('livre_presentation');
 $couverture   = Parametre::image('livre_presentation_couverture');
+
+/*
+ * Sommaire, feuilletage et portrait de l'auteur (lot G17), écran « Textes
+ * des pages » ; le nom et la biographie de l'auteur viennent de « Paramètres ».
+ * Chacune de ces sections disparaît tant qu'elle n'a rien à montrer — elles
+ * affichaient jusqu'ici leurs consignes en ligne.
+ */
+$sommaire   = Parametre::sommaire();
+$extraits   = array_values(array_filter([
+    Parametre::image('livre_contenu_extrait_1'),
+    Parametre::image('livre_contenu_extrait_2'),
+]));
+$extraitPdf = Parametre::document('livre_contenu_extrait_pdf');
+$portrait   = Parametre::image('livre_contenu_portrait');
+
+/**
+ * Numéro de section : une section absente ne laisse pas de trou dans la
+ * suite, comme sur la biographie.
+ */
+$rang   = 0;
+$numero = static function () use (&$rang): string {
+    return sprintf('%02d', ++$rang);
+};
 $ficheGauche  = Parametre::fiche(['livre_auteur', 'livre_editeur', 'livre_parution']);
 $ficheDroite  = Parametre::fiche(['livre_format', 'livre_pages', 'livre_isbn', 'livre_prix']);
 $libellesFiche = [
@@ -70,12 +93,12 @@ $libellesFiche = [
  * bloc deux fois aurait garanti qu'une des deux versions cesse d'être tenue à
  * jour. Voir `Parametre::AUTOUR_LIVRE`.
  */
-$blocPreface = static function (array $preface, bool $enAvant): void {
+$blocPreface = static function (array $preface, bool $enAvant, string $num = '—'): void {
     ?>
     <section class="section<?= $enAvant ? ' section--dark' : ' section--sunk' ?>" id="preface">
       <div class="shell">
         <div class="row">
-          <div class="col-lg-2"><p class="section-num reveal"><?= $enAvant ? '—' : '02' ?></p></div>
+          <div class="col-lg-2"><p class="section-num reveal"><?= View::e($num) ?></p></div>
           <div class="col-lg-8">
             <p class="kicker reveal"><?= t('livre.preface.kicker') ?></p>
 
@@ -114,13 +137,13 @@ $blocPreface = static function (array $preface, bool $enAvant): void {
 <section class="page-head">
   <div class="shell">
     <div class="row">
-      <div class="col-lg-2"><p class="section-num reveal">01</p></div>
+      <div class="col-lg-2"><p class="section-num reveal"><?= $numero() ?></p></div>
       <div class="col-lg-8">
         <p class="kicker reveal"><?= t('livre.tete.kicker') ?></p>
         <h1 class="t-d1 reveal"><?= t('livre.tete.titre') ?></h1>
-        <p class="t-lead page-head__lead reveal">
-          <em><?= t('livre.tete.lead') ?></em>
-        </p>
+        <?php if ($presentation['accroche'] !== ''): ?>
+          <p class="t-lead page-head__lead reveal"><?= nl2br(View::e($presentation['accroche']), false) ?></p>
+        <?php endif; ?>
       </div>
     </div>
     <div class="rule reveal"></div>
@@ -161,12 +184,16 @@ $blocPreface = static function (array $preface, bool $enAvant): void {
         <?php if ($presentation['resume'] !== ''): ?>
           <p class="kicker reveal"><?= t('livre.resume.kicker') ?></p>
           <?= View::paragraphes($presentation['resume'], 't-body reveal') ?>
+        <?php endif; ?>
 
+        <?php if ($presentation['resume'] !== '' && $presentation['editeur'] !== ''): ?>
           <div class="rule reveal" style="margin-block: var(--sp-7);"></div>
         <?php endif; ?>
 
-        <p class="kicker reveal"><?= t('livre.editeur.kicker') ?></p>
-        <p class="t-body reveal"><?= t_brut('livre.editeur.texte') ?></p>
+        <?php if ($presentation['editeur'] !== ''): ?>
+          <p class="kicker reveal"><?= t('livre.editeur.kicker') ?></p>
+          <?= View::paragraphes($presentation['editeur'], 't-body reveal') ?>
+        <?php endif; ?>
       </div>
 
     </div>
@@ -177,7 +204,7 @@ $blocPreface = static function (array $preface, bool $enAvant): void {
 <section class="section section--sunk">
   <div class="shell">
     <div class="row" style="margin-bottom: var(--sp-8);">
-      <div class="col-lg-2"><p class="section-num reveal">02</p></div>
+      <div class="col-lg-2"><p class="section-num reveal"><?= $numero() ?></p></div>
       <div class="col-lg-7">
         <p class="kicker reveal"><?= t('livre.fiche.kicker') ?></p>
         <h2 class="t-d1 reveal"><?= t('livre.fiche.titre') ?></h2>
@@ -207,10 +234,11 @@ $blocPreface = static function (array $preface, bool $enAvant): void {
 </section>
 
 <!-- ===================== SOMMAIRE ===================== -->
+<?php if ($sommaire !== []): ?>
 <section class="section">
   <div class="shell">
     <div class="row" style="margin-bottom: var(--sp-8);">
-      <div class="col-lg-2"><p class="section-num reveal">03</p></div>
+      <div class="col-lg-2"><p class="section-num reveal"><?= $numero() ?></p></div>
       <div class="col-lg-7">
         <p class="kicker reveal"><?= t('livre.sommaire.kicker') ?></p>
         <h2 class="t-d1 reveal"><?= t('livre.sommaire.titre') ?></h2>
@@ -219,19 +247,16 @@ $blocPreface = static function (array $preface, bool $enAvant): void {
 
     <div class="row">
       <div class="col-lg-9 offset-lg-2">
-        <!-- SOMMAIRE — intitulés et pagination à reprendre de l'ouvrage -->
         <ol class="toc reveal">
-          <li><span class="toc__t"><?= t('livre.sommaire.partie') ?></span><span class="toc__lead"></span><span class="toc__p"><?= t('livre.sommaire.page') ?></span></li>
-          <li><span class="toc__t"><?= t('livre.sommaire.partie') ?></span><span class="toc__lead"></span><span class="toc__p"><?= t('livre.sommaire.page') ?></span></li>
-          <li><span class="toc__t"><?= t('livre.sommaire.partie') ?></span><span class="toc__lead"></span><span class="toc__p"><?= t('livre.sommaire.page') ?></span></li>
-          <li><span class="toc__t"><?= t('livre.sommaire.partie') ?></span><span class="toc__lead"></span><span class="toc__p"><?= t('livre.sommaire.page') ?></span></li>
-          <li><span class="toc__t"><?= t('livre.sommaire.partie') ?></span><span class="toc__lead"></span><span class="toc__p"><?= t('livre.sommaire.page') ?></span></li>
-          <li><span class="toc__t"><?= t('livre.sommaire.partie') ?></span><span class="toc__lead"></span><span class="toc__p"><?= t('livre.sommaire.page') ?></span></li>
+          <?php foreach ($sommaire as $entree): ?>
+          <li><span class="toc__t"><?= View::e($entree['titre']) ?></span><span class="toc__lead"></span><span class="toc__p"><?= $entree['page'] === '' ? '' : View::e(t_nu('livre.sommaire.page', ['page' => $entree['page']])) ?></span></li>
+          <?php endforeach; ?>
         </ol>
       </div>
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <!-- ===================== EXTRAIT ===================== -->
 <?php if ($citation !== null): ?>
@@ -251,71 +276,87 @@ $blocPreface = static function (array $preface, bool $enAvant): void {
 <?php endif; ?>
 
 <!-- ===================== FEUILLETAGE ===================== -->
+<?php if ($extraits !== []): ?>
 <section class="section">
   <div class="shell">
     <div class="row" style="margin-bottom: var(--sp-8);">
-      <div class="col-lg-2"><p class="section-num reveal">04</p></div>
+      <div class="col-lg-2"><p class="section-num reveal"><?= $numero() ?></p></div>
       <div class="col-lg-7">
         <p class="kicker reveal"><?= t('livre.feuilletage.kicker') ?></p>
         <h2 class="t-d1 reveal"><?= t('livre.feuilletage.titre') ?></h2>
       </div>
+      <?php if ($extraitPdf !== null): ?>
       <div class="col-lg-3 d-flex align-items-end justify-content-lg-end">
-        <a class="link reveal" href="#"><?= t('livre.feuilletage.pdf') ?></a>
+        <a class="link reveal" href="<?= View::e(Media::url((string) $extraitPdf['fichier'])) ?>" download><?= t('livre.feuilletage.pdf') ?></a>
       </div>
+      <?php endif; ?>
     </div>
 
     <div class="row">
       <div class="col-lg-10 offset-lg-2">
         <div class="spread reveal">
-          <img loading="lazy" decoding="async" src="assets/img/extrait-1.svg"
-               width="1500" height="1000" alt="<?= t('livre.feuilletage.alt') ?>">
-          <img loading="lazy" decoding="async" src="assets/img/extrait-2.svg"
-               width="1500" height="1000" alt="<?= t('livre.feuilletage.alt') ?>">
+          <?php foreach ($extraits as $extrait): ?>
+            <?php $srcset = Media::srcset($extrait); ?>
+            <img loading="lazy" decoding="async"
+                 src="<?= View::e(Media::urlMoyen((string) $extrait['fichier'])) ?>"
+                 <?= $srcset === '' ? '' : 'srcset="' . View::e($srcset) . '" sizes="(max-width: 767px) 100vw, 40vw"' ?>
+                 <?php if ((int) ($extrait['largeur'] ?? 0) > 0 && (int) ($extrait['hauteur'] ?? 0) > 0): ?>
+                 width="<?= (int) $extrait['largeur'] ?>" height="<?= (int) $extrait['hauteur'] ?>"
+                 <?php endif; ?>
+                 alt="<?= View::e(Media::alternative($extrait)) ?>">
+          <?php endforeach; ?>
         </div>
       </div>
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <!-- ===================== L'AUTEUR ===================== -->
+<?php $auteurNom = trim((string) ($reglages['auteur_nom'] ?? '')); ?>
+<?php if ($auteurNom !== ''): ?>
+<?php /* Sans nom, pas de section : la page de l'auteur est elle-même en 404
+         tant qu'il n'est pas saisi. */ ?>
 <section class="section section--sunk" id="auteur">
   <div class="shell">
     <div class="row align-items-center" style="row-gap: var(--sp-9);">
+      <?php if ($portrait !== null): ?>
       <div class="col-lg-4 offset-lg-2 order-lg-2">
         <span class="frame reveal">
-          <img loading="lazy" decoding="async" src="assets/img/auteur.svg"
-               width="1000" height="1250" alt="<?= t('livre.auteur.alt') ?>">
+          <?php $srcset = Media::srcset($portrait); ?>
+          <img loading="lazy" decoding="async"
+               src="<?= View::e(Media::urlMoyen((string) $portrait['fichier'])) ?>"
+               <?= $srcset === '' ? '' : 'srcset="' . View::e($srcset) . '" sizes="(max-width: 991px) 100vw, 33vw"' ?>
+               <?php if ((int) ($portrait['largeur'] ?? 0) > 0 && (int) ($portrait['hauteur'] ?? 0) > 0): ?>
+               width="<?= (int) $portrait['largeur'] ?>" height="<?= (int) $portrait['hauteur'] ?>"
+               <?php endif; ?>
+               alt="<?= View::e(Media::alternative($portrait)) ?>">
         </span>
       </div>
+      <?php endif; ?>
       <div class="col-lg-5 order-lg-1">
-        <p class="section-num reveal">05</p>
+        <p class="section-num reveal"><?= $numero() ?></p>
         <p class="kicker reveal"><?= t('livre.auteur.kicker') ?></p>
-        <?php $auteurNom = trim((string) ($reglages['auteur_nom'] ?? '')); ?>
-        <h2 class="t-d2 reveal" style="margin-bottom: var(--sp-6);">
-          <?= $auteurNom === '' ? t('livre.auteur.nom_vide') : View::e($auteurNom) ?>
-        </h2>
+        <h2 class="t-d2 reveal" style="margin-bottom: var(--sp-6);"><?= View::e($auteurNom) ?></h2>
 
         <?php $auteurBio = trim((string) ($reglages['auteur_bio'] ?? '')); ?>
         <?php if ($auteurBio !== ''): ?>
           <?php /* L'aperçu seul : la page de l'auteur porte le texte entier. */ ?>
           <p class="t-body reveal"><?= View::e(mb_strimwidth(preg_replace('/\s+/', ' ', $auteurBio) ?? '', 0, 320, '…')) ?></p>
-        <?php else: ?>
-          <p class="t-body reveal"><?= t_brut('livre.auteur.bio_vide') ?></p>
         <?php endif; ?>
 
-        <?php if ($auteurNom !== ''): ?>
-          <p class="reveal" style="margin-top: var(--sp-6);">
-            <a class="link" href="<?= $lien('/auteur') ?>"><?= t('livre.auteur.lien') ?></a>
-          </p>
-        <?php endif; ?>
+        <p class="reveal" style="margin-top: var(--sp-6);">
+          <a class="link" href="<?= $lien('/auteur') ?>"><?= t('livre.auteur.lien') ?></a>
+        </p>
       </div>
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <?php /* Préface à sa place ordinaire, quand elle n'est pas mise en avant. */ ?>
 <?php if ($preface['presente'] && !$preface['avant']): ?>
-<?php $blocPreface($preface, false); ?>
+<?php $blocPreface($preface, false, $numero()); ?>
 <?php endif; ?>
 
 <?php /* ============ REVUE DE PRESSE ET ÉVÉNEMENTS DE LANCEMENT ============
@@ -380,7 +421,7 @@ $blocPreface = static function (array $preface, bool $enAvant): void {
 <section class="section" id="acheter">
   <div class="shell">
     <div class="row" style="margin-bottom: var(--sp-8);">
-      <div class="col-lg-2"><p class="section-num reveal">06</p></div>
+      <div class="col-lg-2"><p class="section-num reveal"><?= $numero() ?></p></div>
       <div class="col-lg-7">
         <p class="kicker reveal"><?= t('livre.acheter.kicker') ?></p>
         <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-6);">

@@ -69,6 +69,8 @@ $rempli = static fn(array $valeurs, string $cle): bool => trim((string) ($valeur
           ?>
           <?php if ($champ['type'] === 'image'): ?>
             <?php champ_media($valeurs, $erreurs, $cle, $champ['libelle'], $medias, ['aide' => $aide]); ?>
+          <?php elseif ($champ['type'] === 'document'): ?>
+            <?php champ_choix($valeurs, $erreurs, $cle, $champ['libelle'], $documents, ['aide' => $aide]); ?>
           <?php elseif ($champ['type'] === 'ligne'): ?>
             <?php champ_texte($valeurs, $erreurs, $cle, $champ['libelle'], [
                 'aide'      => $aide,
@@ -77,7 +79,7 @@ $rempli = static fn(array $valeurs, string $cle): bool => trim((string) ($valeur
           <?php else: ?>
             <?php champ_zone($valeurs, $erreurs, $cle, $champ['libelle'], [
                 'aide'   => $aide,
-                'lignes' => match ($champ['type']) { 'titre' => 2, 'court' => 3, default => 10 },
+                'lignes' => match ($champ['type']) { 'titre' => 2, 'court' => 3, 'sommaire' => 8, default => 10 },
             ]); ?>
           <?php endif; ?>
         <?php endforeach; ?>
@@ -94,9 +96,15 @@ $rempli = static fn(array $valeurs, string $cle): bool => trim((string) ($valeur
             $nonTraduits   = [];
 
             foreach ($section['champs'] as $cle => $champ) {
-                if ($champ['type'] === 'image') {
+                if ($champ['type'] === 'image' || $champ['type'] === 'document') {
+                    // Un fichier ne se traduit pas ; vide, il laisse un cadre
+                    // d'attente ou ne laisse rien, selon le champ.
                     if (!$rempli($enBase, $cle)) {
-                        $parDefaut[] = 'image (cadre d\'attente)';
+                        if (!empty($champ['attente'])) {
+                            $parDefaut[] = mb_strtolower($champ['libelle']) . ' (cadre d\'attente)';
+                        } else {
+                            $absents[] = mb_strtolower($champ['libelle']);
+                        }
                     }
                 } elseif (!$rempli($enBase, $cle)) {
                     // Sans texte par défaut, un champ vide n'affiche rien.

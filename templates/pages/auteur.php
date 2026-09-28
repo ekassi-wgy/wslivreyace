@@ -55,11 +55,9 @@ $ld = json_encode(array_filter([
   <div class="shell">
     <div class="row">
       <div class="col-lg-7 offset-lg-2">
-        <?php if (trim($bio) !== ''): ?>
-          <?= View::paragraphes($bio, 't-body') ?>
-        <?php else: ?>
-          <p class="t-body reveal"><em><?= t('auteur.notice_vide') ?></em></p>
-        <?php endif; ?>
+        <?php /* Sans biographie, rien : la consigne « Notice biographique à
+                 compléter » s'affichait en ligne (lot G17). */ ?>
+        <?= View::paragraphes($bio, 't-body') ?>
 
         <p class="reveal" style="margin-top: var(--sp-7);">
           <a class="btn-pgy" href="<?= $lien('/le-livre') ?>">

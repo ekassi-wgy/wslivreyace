@@ -53,7 +53,8 @@ final class TexteController
             'erreurs'  => $erreurs,
             'langues'  => TraductionController::languesCibles(),
             'traduits' => TraductionController::posees('parametre', Traduction::SANS_ID),
-            'medias'   => self::images(),
+            'medias'    => self::images(),
+            'documents' => self::documents(),
             'scripts'  => [Admin::asset('js/medias.js')],
         ], $erreurs === [] ? 200 : 422);
     }
@@ -73,6 +74,47 @@ final class TexteController
             Media::chercher(null, '', 200),
             static fn(array $m): bool => Media::aVignette($m)
         ));
+    }
+
+    /**
+     * Les PDF proposés au menu d'un champ `document`, par titre.
+     *
+     * Un menu déroulant et non le sélecteur à vignettes : un PDF n'en a pas, et
+     * c'est son titre qu'on reconnaît. Le premier choix, vide, retire le lien.
+     *
+     * @return array<string,string> chemin => libellé
+     */
+    private static function documents(): array
+    {
+        $choix = ['' => '— Aucun —'];
+
+        foreach (Media::chercher(null, '', 200) as $m) {
+            if (Media::est($m, 'document')) {
+                $choix[(string) $m['fichier']] = trim((string) ($m['titre'] ?? '')) !== ''
+                    ? (string) $m['titre']
+                    : (string) $m['fichier'];
+            }
+        }
+
+        return $choix;
+    }
+
+    /** Le PDF choisi existe-t-il, et en est-il un ? */
+    private static function validerDocument(Validator $v, string $cle): void
+    {
+        $chemin = $v->valeur($cle);
+
+        if ($chemin === '') {
+            return;
+        }
+
+        $media = Televersement::formeValide($chemin) ? Media::parFichier($chemin) : null;
+
+        if ($media === null) {
+            $v->erreur($cle, "Le PDF choisi n'est plus dans la médiathèque. Choisissez-en un autre.");
+        } elseif (!Media::est($media, 'document')) {
+            $v->erreur($cle, "Ce fichier n'est pas un PDF.");
+        }
     }
 
     /**
@@ -109,7 +151,9 @@ final class TexteController
         foreach (Parametre::champsTextes() as $cle => $champ) {
             if ($champ['type'] === 'image') {
                 self::validerImage($v, $cle);
-            } elseif ($champ['type'] !== 'long') {
+            } elseif ($champ['type'] === 'document') {
+                self::validerDocument($v, $cle);
+            } elseif ($champ['type'] !== 'long' && $champ['type'] !== 'sommaire') {
                 // Un titre s'affiche en très grands caractères : 200 signes
                 // en font déjà quatre lignes pleines. Ceux du diaporama, et
                 // ses libellés, en ont moins encore — voir `max`.

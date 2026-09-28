@@ -216,8 +216,10 @@ final class Parametre
      *
      * `type` vaut `titre` (court, un retour à la ligne y est permis et se
      * retrouve sur la page), `long` (une ligne vide sépare deux paragraphes),
-     * `court` (un seul paragraphe), `ligne` (une ligne) ou `image` (un chemin
-     * de la médiathèque, comme la colonne `image` d'une actualité).
+     * `court` (un seul paragraphe), `ligne` (une ligne), `sommaire` (une entrée
+     * par ligne, voir `sommaire()`), `image` (un chemin de la médiathèque, comme
+     * la colonne `image` d'une actualité ; `attente` dit qu'un cadre d'attente
+     * la remplace quand elle manque) ou `document` (un PDF de la médiathèque).
      *
      * **Deux sortes de sections.** Une section ordinaire disparaît quand son
      * texte `long` est vide. Une section `toujours` — les diapositives du
@@ -285,6 +287,8 @@ final class Parametre
                                . 'moitié droite</strong> : la gauche passe sous le texte. Sans image, '
                                . 'le cadre d\'attente reste affiché.',
                     'exemple' => '',
+'exemple' => '',
+                    'attente' => true,
                 ],
             ],
         ],
@@ -327,6 +331,8 @@ final class Parametre
                                . 'moitié droite</strong> : la gauche passe sous le texte. Sans image, '
                                . 'le cadre d\'attente reste affiché.',
                     'exemple' => '',
+'exemple' => '',
+                    'attente' => true,
                 ],
             ],
         ],
@@ -377,6 +383,8 @@ final class Parametre
                                . 'moitié droite</strong> : la gauche passe sous le texte. Sans image, '
                                . 'le cadre d\'attente reste affiché.',
                     'exemple' => '',
+'exemple' => '',
+                    'attente' => true,
                 ],
             ],
         ],
@@ -417,12 +425,22 @@ final class Parametre
                         . '« Paramètres ».',
             'toujours' => true,
             'champs'   => [
+                'livre_presentation_accroche' => [
+                    'libelle' => 'Sous-titre et accroche',
+                    'type'    => 'court',
+                    'aide'    => 'Une ou deux phrases sous le titre, en tête de la page du livre. '
+                               . '<strong>Vide, la ligne n\'apparaît pas.</strong>',
+                    'exemple' => '',
+                    'max'     => 300,
+                ],
                 'livre_presentation_couverture' => [
                     'libelle' => 'Couverture',
                     'type'    => 'image',
                     'aide'    => 'La couverture seule, sans décor autour : 1200 × 1550 px. Sans image, '
                                . 'le cadre d\'attente reste affiché.',
                     'exemple' => '',
+'exemple' => '',
+                    'attente' => true,
                 ],
                 'livre_presentation_quatrieme' => [
                     'libelle' => 'Quatrième de couverture',
@@ -439,6 +457,60 @@ final class Parametre
                     'aide'    => 'Sur la page du livre : trois à cinq paragraphes, l\'objet du livre, la '
                                . 'période couverte, les sources. Une ligne vide sépare deux paragraphes. '
                                . '<strong>Vide, le résumé n\'apparaît pas.</strong>',
+                    'exemple' => '',
+                ],
+                'livre_presentation_editeur' => [
+                    'libelle' => 'Mot de l\'éditeur',
+                    'type'    => 'long',
+                    'aide'    => 'Sous le résumé, sur la page du livre. Une ligne vide sépare deux '
+                               . 'paragraphes. <strong>Vide, il n\'apparaît pas.</strong>',
+                    'exemple' => '',
+                ],
+            ],
+        ],
+        'livre_contenu' => [
+            'titre'    => 'Le livre — sommaire, feuilletage, auteur',
+            'page'     => 'Le livre',
+            'chemin'   => '/le-livre',
+            'aide'     => 'Trois sections de la page du livre. Chacune disparaît tant qu\'elle n\'a rien '
+                        . 'à montrer, et les numéros des sections suivantes se recalent. Le nom et la '
+                        . 'biographie de l\'auteur se saisissent à l\'écran « Paramètres ».',
+            'toujours' => true,
+            'champs'   => [
+                'livre_contenu_sommaire' => [
+                    'libelle' => 'Sommaire',
+                    'type'    => 'sommaire',
+                    'aide'    => 'Une ligne par partie. La page, facultative, après une barre verticale : '
+                               . '« Les années de formation | 13 ». <strong>Vide, la section Sommaire '
+                               . 'n\'apparaît pas.</strong>',
+                    'exemple' => '',
+                ],
+                'livre_contenu_extrait_1' => [
+                    'libelle' => 'Feuilletage — première double page',
+                    'type'    => 'image',
+                    'aide'    => 'Une double page photographiée à plat, 1500 × 1000 px. <strong>Sans '
+                               . 'aucune double page, la section Feuilletage n\'apparaît pas.</strong>',
+                    'exemple' => '',
+                ],
+                'livre_contenu_extrait_2' => [
+                    'libelle' => 'Feuilletage — seconde double page',
+                    'type'    => 'image',
+                    'aide'    => 'Facultative.',
+                    'exemple' => '',
+                ],
+                'livre_contenu_extrait_pdf' => [
+                    'libelle' => 'Feuilletage — extrait en PDF',
+                    'type'    => 'document',
+                    'aide'    => 'Un PDF de la médiathèque, proposé en téléchargement. <strong>Vide, le '
+                               . 'lien n\'apparaît pas.</strong>',
+                    'exemple' => '',
+                ],
+                'livre_contenu_portrait' => [
+                    'libelle' => 'Portrait de l\'auteur',
+                    'type'    => 'image',
+                    'aide'    => 'Un portrait vertical, 1000 × 1250 px. Sans portrait, la section de '
+                               . 'l\'auteur paraît sans image ; <strong>sans nom d\'auteur</strong> '
+                               . '(écran « Paramètres »), elle n\'apparaît pas.',
                     'exemple' => '',
                 ],
             ],
@@ -548,7 +620,7 @@ final class Parametre
         $textes  = [];
 
         foreach (self::TEXTES_PAGES[$section]['champs'] ?? [] as $cle => $champ) {
-            if ($champ['type'] === 'image') {
+            if ($champ['type'] === 'image' || $champ['type'] === 'document') {
                 continue;
             }
 
@@ -620,6 +692,54 @@ final class Parametre
         }
 
         return Traduction::ligne('media', $media);
+    }
+
+    /**
+     * Le PDF d'un champ `document`, ou `null` — champ vide, fichier effacé, ou
+     * qui n'est pas un document (lot G17).
+     *
+     * @return array<string,mixed>|null
+     */
+    public static function document(string $cle): ?array
+    {
+        $fichier = trim((string) self::lire($cle));
+        $media   = $fichier === '' ? null : Media::parFichier($fichier);
+
+        return $media !== null && Media::est($media, 'document')
+            ? Traduction::ligne('media', $media)
+            : null;
+    }
+
+    /**
+     * Le sommaire de l'ouvrage, une entrée par ligne saisie (lot G17).
+     *
+     * « Intitulé | page » : la page est facultative, et seule la dernière barre
+     * la sépare — un intitulé peut en contenir une. Les lignes vides sont
+     * ignorées.
+     *
+     * @return list<array{titre:string,page:string}>
+     */
+    public static function sommaire(): array
+    {
+        $entrees = [];
+
+        foreach (explode("\n", self::texte('livre_contenu_sommaire')) as $ligne) {
+            $ligne = trim($ligne);
+
+            if ($ligne === '') {
+                continue;
+            }
+
+            $barre = mb_strrpos($ligne, '|');
+            $titre = $barre === false ? $ligne : trim(mb_substr($ligne, 0, $barre));
+            $page  = $barre === false ? '' : trim(mb_substr($ligne, $barre + 1));
+
+            if ($titre !== '') {
+                $entrees[] = ['titre' => $titre, 'page' => $page];
+            }
+        }
+
+        return $entrees;
     }
 
     /**

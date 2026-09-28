@@ -3609,9 +3609,34 @@ auteur »). Rendu comparé avant et après sur les deux pages et dans les deux
 langues : c'est le seul autre écart que les lignes vides et les consignes
 retirées. Vérifié par le back-office avec des valeurs d'essai, effacées ensuite.
 
-**Restent en consigne sur la page du livre**, hors de ce lot : le sous-titre
-(« *Sous-titre et accroche à fournir* »), le mot de l'éditeur, le sommaire, le
-feuilletage et le portrait de l'auteur.
+**Suite : le reste de la page du livre.** Cinq consignes y restaient publiées.
+Le **sous-titre** et le **mot de l'éditeur** rejoignent la carte « Le livre —
+couverture et présentation », sans défaut : vides, ils disparaissent. Une carte
+**« Le livre — sommaire, feuilletage, auteur »** porte le reste :
+
+- le **sommaire**, une entrée par ligne, « intitulé | page » — seule la dernière
+  barre sépare, un intitulé peut en contenir une (`Parametre::sommaire()`) ;
+- le **feuilletage** : deux doubles pages choisies en médiathèque et un PDF
+  d'extrait, nouveau type de champ `document` (un menu des PDF, pas le sélecteur
+  à vignettes : un PDF n'en a pas). Le lien « Télécharger l'extrait » pointait
+  sur `#` ; il n'existe plus qu'avec un PDF ;
+- le **portrait de l'auteur**. La section « L'auteur » suit désormais la règle de
+  sa page : **absente tant que le nom n'est pas saisi**, au lieu de « Nom de
+  l'auteur à renseigner » ; sans biographie, pas de consigne non plus, ici comme
+  sur `/auteur`.
+
+Chaque section absente ne laisse pas de trou : **les numéros se recalent**, par
+le compteur de la biographie. La préface à sa place ordinaire prenait « 02 » en
+dur après la section 05 ; elle prend désormais le rang suivant. Sous une section
+`toujours`, l'écran distingue les images à cadre d'attente (`attente`) de celles
+dont l'absence retire quelque chose.
+
+Vérifié : page vide, sections 01, 02, 03 et plus aucune consigne ni lien mort ;
+page remplie par le back-office, sections 01 à 06, sommaire, extrait PDF, image
+glissée dans le champ PDF et PDF glissé dans un champ image refusés. Valeurs
+d'essai effacées ensuite. Restent, hors de ce lot, les « Enseigne et adresse à
+renseigner » des points de vente : ce sont des données en base (G12), pas des
+consignes du code.
 
 ### Ce que le brief ajoute à la liste des livrables attendus
 
@@ -3629,7 +3654,7 @@ feuilletage et le portrait de l'auteur.
 | **Enseignes et adresses des points de vente** — les trois villes sont en base et publiées (G12), mais aucune ne dit encore où aller : l'accueil et la page du livre affichent « Enseigne et adresse à renseigner » sous Abidjan, Yamoussoukro et Paris | commanditaire / éditeur |
 | **Prix de l'ouvrage en francs CFA**, et le **point de retrait** avec ses horaires. Ce sont les deux valeurs qui ouvrent la boutique : sans prix elle reste fermée, sans point de retrait le retrait n'est pas proposé. Les **tarifs de livraison** se posent ensuite, zone par zone | commanditaire / éditeur |
 | **Trois citations sourcées** — un extrait de l'ouvrage pour l'accueil, un autre pour la page du livre, un propos de Philippe Grégoire Yacé pour la biographie, chacun avec sa provenance. Le mécanisme est livré (G14) : les trois bandeaux restent absents du site tant qu'aucune citation n'est publiée et mise en avant | commanditaire / éditeur |
-| **Couverture, quatrième de couverture et résumé long de l'ouvrage** — la couverture en 1200 × 1550 px. Le mécanisme est livré (G17), à l'écran « Textes des pages » : la quatrième et le résumé restent absents du site tant qu'ils ne sont pas saisis | commanditaire / éditeur |
+| **Couverture, sous-titre, quatrième de couverture, résumé long, mot de l'éditeur, sommaire, deux doubles pages et un extrait PDF, portrait de l'auteur** — la couverture en 1200 × 1550 px. Le mécanisme est livré (G17), à l'écran « Textes des pages » : chaque élément reste absent du site tant qu'il n'est pas saisi, la couverture garde son cadre d'attente | commanditaire / éditeur |
 | **Trois photographies du diaporama de l'accueil** — 2000 × 2600 px, en hauteur, sujet dans la moitié droite, avec leur légende et leur crédit. Le mécanisme est livré (G17) : chacune se dépose en médiathèque puis se choisit à l'écran « Textes des pages » ; d'ici là, les cadres d'attente restent affichés | commanditaire / éditeur |
 | **Contexte historique de la biographie** — quelques paragraphes situant Philippe Grégoire Yacé dans la Côte d'Ivoire avant et après l'indépendance, et sa traduction. Le mécanisme est livré (G16), à l'écran « Textes des pages » : la section reste absente du site tant que le texte n'est pas saisi | commanditaire / auteur |
 | **Traduction anglaise des contenus** — biographie, notices d'archives, sujets d'Héritage, préface. **L'anglais est ouvert** : chaque champ traduit depuis le back-office retire une phrase française des pages `/en/`, et un champ non traduit y affiche le français | commanditaire / traducteur |
