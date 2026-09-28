@@ -2571,6 +2571,18 @@ aussi. Données d'essai et compte temporaire effacés, `medias/` remis à vide.
 |---|---|
 | `sql/012_media_famille.sql` | la colonne `famille` sur `media`, et son index |
 
+**Correctif après livraison : les galeries de l'accueil et de la biographie.**
+Ces deux planches lisent la médiathèque directement, sans passer par une notice,
+et G5 les avait laissées de côté : un PDF publié arrivait en tête de l'accueil
+et s'y affichait comme une image cassée. `Media::listerPubliees()` prend
+désormais une famille en troisième argument, et les deux planches demandent
+`'image'`. **Le filtre est en SQL, avant le `LIMIT`** : filtrer après coup
+aurait laissé moins de quatre tuiles dès que des documents sont en tête. La
+*catégorie* « Document » n'y est pour rien — le scan JPEG d'une lettre y reste
+à sa place ; c'est la *famille* qui décide. Un PDF publié mais rattaché à
+aucune notice n'apparaît nulle part en public : c'est depuis une notice qu'il se
+télécharge.
+
 ### Lot G6 — livré
 
 Le brief décrit la bibliothèque des discours par un exemple : « 1980 — Discours

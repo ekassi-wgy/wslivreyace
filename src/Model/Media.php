@@ -326,8 +326,8 @@ final class Media extends Modele
      * galerie, y compris quand on connaît l'adresse de son fichier — mais
      * `medias/` est un dossier servi par Apache : le fichier lui-même reste
      * téléchargeable par qui devine son nom. C'est assumé et ce n'est pas un
-     * secret d'État : le nom porte huit caractères aléatoires, et rien
-     * d'autre qu'une image n'y est déposé.
+     * secret d'État : le nom porte huit caractères aléatoires, et seuls
+     * des images, des PDF et des enregistrements y sont déposés (lot G5).
      */
     private const PUBLIQUE = "statut = 'publie'";
 
@@ -338,17 +338,31 @@ final class Media extends Modele
      * dernières arrivées. Le même que la médiathèque : une planche réordonnée
      * au back-office se retrouve telle quelle en public, sans second réglage.
      *
+     * Une planche d'images passe `'image'` en famille : un PDF ou un MP3
+     * publié n'a pas de vignette et rendrait un cadre cassé. Le filtre est posé
+     * en SQL, avant la limite — filtrer après coup laisserait l'accueil avec
+     * moins de quatre tuiles dès que des documents arrivent en tête.
+     *
      * @param string|null $categorie clé de CATEGORIES ; null = toutes
+     * @param string|null $famille   clé de FAMILLES ; null = toutes
      * @return array<int,array<string,mixed>>
      */
-    public static function listerPubliees(?string $categorie = null, ?int $limite = null): array
-    {
+    public static function listerPubliees(
+        ?string $categorie = null,
+        ?int $limite = null,
+        ?string $famille = null
+    ): array {
         $sql = 'SELECT * FROM ' . self::TABLE . ' WHERE ' . self::PUBLIQUE;
         $params = [];
 
         if ($categorie !== null && isset(self::CATEGORIES[$categorie])) {
             $sql .= ' AND categorie = ?';
             $params[] = $categorie;
+        }
+
+        if ($famille !== null && isset(self::FAMILLES[$famille])) {
+            $sql .= ' AND famille = ?';
+            $params[] = $famille;
         }
 
         $sql .= ' ORDER BY ' . self::ORDRE;

@@ -343,10 +343,10 @@ $compte = [
     </div>
 
     <?php
-    /* Les quatre premières archives publiées, dans l'ordre de la médiathèque.
-       La planche complète et sa visionneuse vivent sur /archives : l'accueil
+    /* Les quatre premières images publiées, dans l'ordre de la médiathèque —
+       les images seules : un PDF ou un MP3 n'a pas de vignette. La planche complète et sa visionneuse vivent sur /archives : l'accueil
        n'en montre que la trame. */
-    $planche = App\Model\Media::listerPubliees(null, 4);
+    $planche = App\Model\Media::listerPubliees(null, 4, 'image');
     $trame   = ['large', 'haut', 'carre', 'pano'];
     ?>
 

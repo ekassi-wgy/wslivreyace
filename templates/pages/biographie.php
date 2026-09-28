@@ -339,7 +339,7 @@ JSONLD;
     /* Les portraits de la médiathèque, catégorie « portrait » : c'est la même
        matière que la galerie d'archives, vue par une entrée. La planche
        complète et sa visionneuse vivent sur /archives. */
-    $portraits = Media::listerPubliees('portrait', 4);
+    $portraits = Media::listerPubliees('portrait', 4, 'image');
     $trame     = ['large', 'haut', 'carre', 'pano'];
     ?>
 
