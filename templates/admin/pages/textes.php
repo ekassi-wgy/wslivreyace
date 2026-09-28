@@ -85,10 +85,12 @@ $rempli = static fn(array $valeurs, string $cle): bool => trim((string) ($valeur
         <?php /* --- Ce que le site affiche aujourd'hui ------------------- */ ?>
         <?php if (!empty($section['toujours'])): ?>
           <?php
-            /* Une section `toujours` — diapositive, section « L'homme » — ne
-               disparaît jamais : ce qui compte est de savoir ce qui y reste par
-               défaut, et ce qui manque en anglais. */
+            /* Une section `toujours` — diapositive, « L'homme », présentation
+               du livre — ne disparaît jamais : ce qui compte est de savoir ce
+               qui y reste par défaut, ce qui en est absent faute de texte, et
+               ce qui manque en anglais. */
             $parDefaut     = [];
+            $absents       = [];
             $nonTraduits   = [];
 
             foreach ($section['champs'] as $cle => $champ) {
@@ -97,7 +99,12 @@ $rempli = static fn(array $valeurs, string $cle): bool => trim((string) ($valeur
                         $parDefaut[] = 'image (cadre d\'attente)';
                     }
                 } elseif (!$rempli($enBase, $cle)) {
-                    $parDefaut[] = mb_strtolower($champ['libelle']);
+                    // Sans texte par défaut, un champ vide n'affiche rien.
+                    if (isset($champ['defaut'])) {
+                        $parDefaut[] = mb_strtolower($champ['libelle']);
+                    } else {
+                        $absents[] = mb_strtolower($champ['libelle']);
+                    }
                 } else {
                     foreach ($langues as $code => $infos) {
                         if (trim((string) ($traduits[$code][$cle] ?? '')) === '') {
@@ -113,6 +120,9 @@ $rempli = static fn(array $valeurs, string $cle): bool => trim((string) ($valeur
             <a href="<?= View::e($section['chemin']) ?>" target="_blank" rel="noopener"><?= View::e($section['page']) ?></a>.
             <?php if ($parDefaut !== []): ?>
               Par défaut : <?= View::e(implode(', ', $parDefaut)) ?>.
+            <?php endif; ?>
+            <?php if ($absents !== []): ?>
+              Vides, donc absents du site : <?= View::e(implode(', ', $absents)) ?>.
             <?php endif; ?>
           </div>
           <?php foreach ($langues as $code => $infos): ?>
@@ -192,10 +202,11 @@ $rempli = static fn(array $valeurs, string $cle): bool => trim((string) ($valeur
           <li><strong>Un texte vide retire la section</strong> du site, en français
               comme en anglais. Mieux vaut pas de section qu'une consigne de rédaction
               affichée en ligne.</li>
-          <li><strong>Les sections de l'accueil font exception</strong> — le diaporama
-              et « L'homme » : elles paraissent toujours. Un champ vide y garde son texte
-              par défaut, déjà traduit, et une diapositive sans image garde son cadre
-              d'attente.</li>
+          <li><strong>L'accueil et le livre font exception</strong> — le diaporama,
+              « L'homme », la présentation du livre : ces sections paraissent toujours.
+              Un champ vide y garde son texte par défaut, déjà traduit, ou disparaît
+              s'il n'en a pas — l'aide sous le champ le dit ; une image absente laisse
+              son cadre d'attente.</li>
           <li><strong>L'anglais se saisit à part</strong>, à l'écran
               <a href="<?= Admin::url('/traductions/parametre/textes') ?>">Traductions</a>,
               le français en regard. Un champ non traduit affiche le français.</li>

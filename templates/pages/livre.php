@@ -16,6 +16,8 @@ use App\Core\View;
 use App\Model\Actualite;
 use App\Model\Citation;
 use App\Model\Evenement;
+use App\Model\Media;
+use App\Model\Parametre;
 use App\Model\PointDeVente;
 use App\Core\DateLisible;
 
@@ -38,6 +40,27 @@ $pointsDeVente = PointDeVente::listerPublies();
  * `null` fait disparaître la section entière.
  */
 $citation = Citation::affichee('livre');
+
+/**
+ * La présentation et la fiche technique (lot G17). La couverture et le résumé
+ * se saisissent à l'écran « Textes des pages », la fiche à l'écran
+ * « Paramètres » — qu'aucune page ne lisait jusqu'ici : les deux colonnes
+ * affichaient « À renseigner » en dur. Une valeur vide retire sa ligne, un
+ * résumé vide sa rubrique ; sans couverture, le cadre d'attente reste.
+ */
+$presentation = Parametre::section('livre_presentation');
+$couverture   = Parametre::image('livre_presentation_couverture');
+$ficheGauche  = Parametre::fiche(['livre_auteur', 'livre_editeur', 'livre_parution']);
+$ficheDroite  = Parametre::fiche(['livre_format', 'livre_pages', 'livre_isbn', 'livre_prix']);
+$libellesFiche = [
+    'livre_auteur'   => t('livre.fiche.auteur'),
+    'livre_editeur'  => t('livre.fiche.editeur'),
+    'livre_parution' => t('livre.fiche.parution'),
+    'livre_format'   => t('livre.fiche.format'),
+    'livre_pages'    => t('livre.fiche.pages'),
+    'livre_isbn'     => t('livre.fiche.isbn'),
+    'livre_prix'     => t('livre.fiche.prix'),
+];
 
 /**
  * Le bloc de préface, rendu à l'une ou l'autre place selon le réglage.
@@ -118,18 +141,29 @@ $blocPreface = static function (array $preface, bool $enAvant): void {
 
       <div class="col-lg-5">
         <span class="frame reveal">
-          <img loading="lazy" decoding="async" src="assets/img/couverture.svg"
-               width="1200" height="1550" alt="<?= t('livre.couverture_alt') ?>">
+          <?php if ($couverture !== null): ?>
+            <?php $srcset = Media::srcset($couverture); ?>
+            <img loading="lazy" decoding="async"
+                 src="<?= View::e(Media::urlMoyen((string) $couverture['fichier'])) ?>"
+                 <?= $srcset === '' ? '' : 'srcset="' . View::e($srcset) . '" sizes="(max-width: 991px) 100vw, 40vw"' ?>
+                 <?php if ((int) ($couverture['largeur'] ?? 0) > 0 && (int) ($couverture['hauteur'] ?? 0) > 0): ?>
+                 width="<?= (int) $couverture['largeur'] ?>" height="<?= (int) $couverture['hauteur'] ?>"
+                 <?php endif; ?>
+                 alt="<?= View::e(Media::alternative($couverture)) ?>">
+          <?php else: ?>
+            <img loading="lazy" decoding="async" src="assets/img/couverture.svg"
+                 width="1200" height="1550" alt="<?= t('livre.couverture_alt') ?>">
+          <?php endif; ?>
         </span>
       </div>
 
       <div class="col-lg-6 offset-lg-1">
-        <p class="kicker reveal"><?= t('livre.resume.kicker') ?></p>
-        <!-- RÉSUMÉ LONG — à rédiger (CDC §4.2) -->
-        <p class="t-body reveal"><?= t_brut('livre.resume.p1') ?></p>
-        <p class="t-body reveal"><?= t_brut('livre.resume.p2') ?></p>
+        <?php if ($presentation['resume'] !== ''): ?>
+          <p class="kicker reveal"><?= t('livre.resume.kicker') ?></p>
+          <?= View::paragraphes($presentation['resume'], 't-body reveal') ?>
 
-        <div class="rule reveal" style="margin-block: var(--sp-7);"></div>
+          <div class="rule reveal" style="margin-block: var(--sp-7);"></div>
+        <?php endif; ?>
 
         <p class="kicker reveal"><?= t('livre.editeur.kicker') ?></p>
         <p class="t-body reveal"><?= t_brut('livre.editeur.texte') ?></p>
@@ -152,22 +186,22 @@ $blocPreface = static function (array $preface, bool $enAvant): void {
 
     <div class="row">
       <div class="col-lg-5 offset-lg-2">
-        <!-- FICHE TECHNIQUE — valeurs provisoires (CDC §4.2) -->
         <dl class="specs reveal">
-          <div><dt><?= t('livre.fiche.auteur') ?></dt><dd><?= t('livre.fiche.a_renseigner') ?></dd></div>
-          <div><dt><?= t('livre.fiche.editeur') ?></dt><dd><?= t('livre.fiche.a_renseigner') ?></dd></div>
-          <div><dt><?= t('livre.fiche.parution') ?></dt><dd><?= t('livre.fiche.a_renseigner') ?></dd></div>
+          <?php foreach ($ficheGauche as $cle => $valeur): ?>
+          <div><dt><?= $libellesFiche[$cle] ?></dt><dd><?= View::e($valeur) ?></dd></div>
+          <?php endforeach; ?>
           <div><dt><?= t('livre.fiche.langue') ?></dt><dd><?= t('livre.fiche.langue_valeur') ?></dd></div>
         </dl>
       </div>
+      <?php if ($ficheDroite !== []): ?>
       <div class="col-lg-5">
         <dl class="specs reveal">
-          <div><dt><?= t('livre.fiche.format') ?></dt><dd><?= t('livre.fiche.format_valeur') ?></dd></div>
-          <div><dt><?= t('livre.fiche.pages') ?></dt><dd><?= t('livre.fiche.a_renseigner') ?></dd></div>
-          <div><dt><?= t('livre.fiche.isbn') ?></dt><dd><?= t('livre.fiche.a_renseigner') ?></dd></div>
-          <div><dt><?= t('livre.fiche.prix') ?></dt><dd><?= t('livre.fiche.a_renseigner') ?></dd></div>
+          <?php foreach ($ficheDroite as $cle => $valeur): ?>
+          <div><dt><?= $libellesFiche[$cle] ?></dt><dd><?= View::e($valeur) ?></dd></div>
+          <?php endforeach; ?>
         </dl>
       </div>
+      <?php endif; ?>
     </div>
   </div>
 </section>

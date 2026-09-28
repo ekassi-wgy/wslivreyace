@@ -196,21 +196,38 @@ $liens = [
   <div class="shell">
     <div class="row align-items-center" style="row-gap: var(--sp-9);">
 
+      <?php
+      /* La fiche technique vient de l'écran « Paramètres », la couverture et
+         la quatrième de « Textes des pages » (lot G17). Une valeur vide retire
+         sa ligne ; sans couverture, le cadre d'attente reste. */
+      $fiche = App\Model\Parametre::fiche(['livre_auteur', 'livre_editeur', 'livre_parution', 'livre_format', 'livre_pages', 'livre_isbn']);
+      $libelles = [
+          'livre_auteur'   => t('accueil.ouvrage.auteur'),
+          'livre_editeur'  => t('accueil.ouvrage.editeur'),
+          'livre_parution' => t('accueil.ouvrage.parution'),
+          'livre_format'   => t('accueil.ouvrage.format'),
+          'livre_pages'    => t('accueil.ouvrage.pages'),
+          'livre_isbn'     => t('accueil.ouvrage.isbn'),
+      ];
+      $livreTitre = App\Model\Parametre::texte('livre_titre');
+      $quatrieme  = App\Model\Parametre::section('livre_presentation')['quatrieme'];
+      $couverture = App\Model\Parametre::image('livre_presentation_couverture');
+      ?>
       <div class="col-lg-5 offset-lg-1 order-lg-2">
         <p class="section-num reveal">02</p>
         <p class="kicker reveal"><?= t('accueil.ouvrage.kicker') ?></p>
-        <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-6);"><?= t('accueil.ouvrage.titre') ?></h2>
-        <p class="t-lead reveal" style="margin-bottom: var(--sp-7);"><?= t_brut('accueil.ouvrage.lead') ?></p>
+        <h2 class="t-d1 reveal" style="margin-bottom: var(--sp-6);"><?= $livreTitre !== '' ? App\Core\View::e($livreTitre) : t('accueil.ouvrage.titre') ?></h2>
+        <?php if ($quatrieme !== ''): ?>
+          <p class="t-lead reveal" style="margin-bottom: var(--sp-7);"><?= nl2br(App\Core\View::e($quatrieme), false) ?></p>
+        <?php endif; ?>
 
-        <!-- FICHE TECHNIQUE — valeurs provisoires -->
+        <?php if ($fiche !== []): ?>
         <dl class="specs reveal" style="margin-bottom: var(--sp-7);">
-          <div><dt><?= t('accueil.ouvrage.auteur') ?></dt><dd><?= t('accueil.ouvrage.a_renseigner') ?></dd></div>
-          <div><dt><?= t('accueil.ouvrage.editeur') ?></dt><dd><?= t('accueil.ouvrage.a_renseigner') ?></dd></div>
-          <div><dt><?= t('accueil.ouvrage.parution') ?></dt><dd><?= t('accueil.ouvrage.a_renseigner') ?></dd></div>
-          <div><dt><?= t('accueil.ouvrage.format') ?></dt><dd><?= t('accueil.ouvrage.format_valeur') ?></dd></div>
-          <div><dt><?= t('accueil.ouvrage.pages') ?></dt><dd><?= t('accueil.ouvrage.a_renseigner') ?></dd></div>
-          <div><dt><?= t('accueil.ouvrage.isbn') ?></dt><dd><?= t('accueil.ouvrage.a_renseigner') ?></dd></div>
+          <?php foreach ($fiche as $cle => $valeur): ?>
+          <div><dt><?= $libelles[$cle] ?></dt><dd><?= App\Core\View::e($valeur) ?></dd></div>
+          <?php endforeach; ?>
         </dl>
+        <?php endif; ?>
 
         <a class="btn-pgy reveal" href="<?= App\Core\Langue::chemin('/commander') ?>">
           <?= t('accueil.ouvrage.cta') ?>
@@ -220,7 +237,18 @@ $liens = [
 
       <div class="col-lg-5 order-lg-1">
         <span class="frame reveal">
-          <img loading="lazy" decoding="async" src="assets/img/couverture.svg" alt="<?= t('accueil.ouvrage.alt') ?>">
+          <?php if ($couverture !== null): ?>
+            <?php $srcset = App\Model\Media::srcset($couverture); ?>
+            <img loading="lazy" decoding="async"
+                 src="<?= App\Core\View::e(App\Model\Media::urlMoyen((string) $couverture['fichier'])) ?>"
+                 <?= $srcset === '' ? '' : 'srcset="' . App\Core\View::e($srcset) . '" sizes="(max-width: 991px) 100vw, 40vw"' ?>
+                 <?php if ((int) ($couverture['largeur'] ?? 0) > 0 && (int) ($couverture['hauteur'] ?? 0) > 0): ?>
+                 width="<?= (int) $couverture['largeur'] ?>" height="<?= (int) $couverture['hauteur'] ?>"
+                 <?php endif; ?>
+                 alt="<?= App\Core\View::e(App\Model\Media::alternative($couverture)) ?>">
+          <?php else: ?>
+            <img loading="lazy" decoding="async" src="assets/img/couverture.svg" alt="<?= t('accueil.ouvrage.alt') ?>">
+          <?php endif; ?>
         </span>
       </div>
 

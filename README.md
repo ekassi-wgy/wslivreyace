@@ -984,7 +984,9 @@ champs, leur ordre et leur validation ; en ajouter un ne touche qu'un fichier.
 **L'ISBN est vérifié sur sa clé de contrôle**, pas seulement sur sa longueur :
 c'est le numéro qui sert à commander l'ouvrage, un chiffre mal recopié se paie
 en commandes perdues. Un champ vidé redevient `NULL` et non chaîne vide — la
-page publique masque la ligne au lieu de l'afficher en blanc.
+page publique masque la ligne au lieu de l'afficher en blanc. *(Vrai depuis le
+lot G17 seulement : jusque-là, ni l'accueil ni la page du livre ne lisaient la
+fiche, et les deux affichaient « À renseigner » en dur.)*
 
 Le tableau de bord lit désormais la base. **Ce qu'il met en avant n'est pas le
 volume mais ce qui attend une décision** : témoignages à modérer, repères sans
@@ -3581,6 +3583,36 @@ un retour à la ligne, qui se saisit tel quel à l'écran ; `accueil.homme.p1` e
 `p2` deviennent `accueil.homme.texte`. Rendu comparé avant et après dans les deux
 langues : seule la consigne disparaît.
 
+**Suite : le livre sur l'accueil et sur sa page.** **La fiche technique de
+« Paramètres » n'était lue par aucune page publique** — seuls le prix (la
+boutique) et le titre (la page de l'auteur) servaient. L'accueil et la page du
+livre affichaient « À renseigner » en dur, et le format venait du lexique. Le
+manuel et ce README affirmaient le contraire. `Parametre::fiche()` rend
+désormais les valeurs saisies, dans l'ordre demandé, **les vides écartés**, le
+prix écrit « 25 000 F CFA » ; les deux pages les lisent, et le titre du livre
+vient de la fiche. La ligne « Langue : Français » reste un libellé.
+
+Une carte **« Le livre — couverture et présentation »** rejoint « Textes des
+pages » : la couverture, choisie en médiathèque (sinon le cadre d'attente), la
+quatrième de couverture de l'accueil et le résumé long de la page du livre.
+Ces deux textes n'ont **pas de défaut** : vides, ils disparaissent, et avec eux
+les consignes « *Quatrième de couverture à fournir* », « *Résumé long à
+fournir* » et « *Suite du résumé à fournir* ». L'écran distingue désormais, sous
+une section `toujours`, ce qui reste par défaut et ce qui est absent faute de
+texte. `Parametre::image()` sert la couverture comme les diapositives.
+
+**Un écart en anglais, voulu et à corriger au back-office** : le format
+s'affichait « Hardback, 240 × 310 mm » depuis le lexique ; il vient maintenant de
+la fiche, qui n'a pas de traduction — la page anglaise montre « Relié, 240 ×
+310 mm » tant que le champ n'est pas traduit (Traductions, « Le livre et son
+auteur »). Rendu comparé avant et après sur les deux pages et dans les deux
+langues : c'est le seul autre écart que les lignes vides et les consignes
+retirées. Vérifié par le back-office avec des valeurs d'essai, effacées ensuite.
+
+**Restent en consigne sur la page du livre**, hors de ce lot : le sous-titre
+(« *Sous-titre et accroche à fournir* »), le mot de l'éditeur, le sommaire, le
+feuilletage et le portrait de l'auteur.
+
 ### Ce que le brief ajoute à la liste des livrables attendus
 
 À la liste du §5 s'ajoutent, tous non techniques :
@@ -3597,6 +3629,7 @@ langues : seule la consigne disparaît.
 | **Enseignes et adresses des points de vente** — les trois villes sont en base et publiées (G12), mais aucune ne dit encore où aller : l'accueil et la page du livre affichent « Enseigne et adresse à renseigner » sous Abidjan, Yamoussoukro et Paris | commanditaire / éditeur |
 | **Prix de l'ouvrage en francs CFA**, et le **point de retrait** avec ses horaires. Ce sont les deux valeurs qui ouvrent la boutique : sans prix elle reste fermée, sans point de retrait le retrait n'est pas proposé. Les **tarifs de livraison** se posent ensuite, zone par zone | commanditaire / éditeur |
 | **Trois citations sourcées** — un extrait de l'ouvrage pour l'accueil, un autre pour la page du livre, un propos de Philippe Grégoire Yacé pour la biographie, chacun avec sa provenance. Le mécanisme est livré (G14) : les trois bandeaux restent absents du site tant qu'aucune citation n'est publiée et mise en avant | commanditaire / éditeur |
+| **Couverture, quatrième de couverture et résumé long de l'ouvrage** — la couverture en 1200 × 1550 px. Le mécanisme est livré (G17), à l'écran « Textes des pages » : la quatrième et le résumé restent absents du site tant qu'ils ne sont pas saisis | commanditaire / éditeur |
 | **Trois photographies du diaporama de l'accueil** — 2000 × 2600 px, en hauteur, sujet dans la moitié droite, avec leur légende et leur crédit. Le mécanisme est livré (G17) : chacune se dépose en médiathèque puis se choisit à l'écran « Textes des pages » ; d'ici là, les cadres d'attente restent affichés | commanditaire / éditeur |
 | **Contexte historique de la biographie** — quelques paragraphes situant Philippe Grégoire Yacé dans la Côte d'Ivoire avant et après l'indépendance, et sa traduction. Le mécanisme est livré (G16), à l'écran « Textes des pages » : la section reste absente du site tant que le texte n'est pas saisi | commanditaire / auteur |
 | **Traduction anglaise des contenus** — biographie, notices d'archives, sujets d'Héritage, préface. **L'anglais est ouvert** : chaque champ traduit depuis le back-office retire une phrase française des pages `/en/`, et un champ non traduit y affiche le français | commanditaire / traducteur |

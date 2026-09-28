@@ -236,7 +236,7 @@ final class TraductionController
          */
         'textes' => [
             'titre'  => 'Textes des pages',
-            'resume' => "Diaporama et « L'homme » sur l'accueil, contexte de la biographie",
+            'resume' => "Accueil, présentation du livre, contexte de la biographie",
             'champs' => [
                 'accueil_hero_1_titre'    => ['libelle' => 'Diapositive 1 — titre',    'zone' => true, 'lignes' => 2],
                 'accueil_hero_1_accroche' => ['libelle' => 'Diapositive 1 — accroche', 'zone' => true, 'lignes' => 3],
@@ -251,6 +251,8 @@ final class TraductionController
                 'accueil_hero_3_lien'     => ['libelle' => 'Diapositive 3 — lien',     'zone' => false],
                 'accueil_homme_titre'       => ['libelle' => 'Accueil, « L\'homme » — titre', 'zone' => true, 'lignes' => 2],
                 'accueil_homme_texte'       => ['libelle' => 'Accueil, « L\'homme » — texte', 'zone' => true],
+                'livre_presentation_quatrieme' => ['libelle' => 'Le livre — quatrième de couverture', 'zone' => true, 'lignes' => 4],
+                'livre_presentation_resume'    => ['libelle' => 'Le livre — résumé long', 'zone' => true],
                 'biographie_contexte_titre' => ['libelle' => 'Biographie — titre du contexte', 'zone' => true, 'lignes' => 2],
                 'biographie_contexte_texte' => ['libelle' => 'Biographie — texte du contexte', 'zone' => true],
             ],

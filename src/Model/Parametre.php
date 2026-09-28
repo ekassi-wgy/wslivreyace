@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Model;
 
+use App\Core\Boutique;
 use App\Core\Database;
 use App\Core\Langue;
 use App\Core\Lexique;
@@ -406,6 +407,42 @@ final class Parametre
                 ],
             ],
         ],
+        'livre_presentation' => [
+            'titre'    => 'Le livre — couverture et présentation',
+            'page'     => 'Le livre',
+            'chemin'   => '/le-livre',
+            'aide'     => 'La couverture et la quatrième paraissent sur l\'accueil et sur la page du '
+                        . 'livre ; le résumé long, sur la page du livre seulement. Le titre, l\'auteur, '
+                        . 'l\'éditeur et le reste de la fiche technique se saisissent à l\'écran '
+                        . '« Paramètres ».',
+            'toujours' => true,
+            'champs'   => [
+                'livre_presentation_couverture' => [
+                    'libelle' => 'Couverture',
+                    'type'    => 'image',
+                    'aide'    => 'La couverture seule, sans décor autour : 1200 × 1550 px. Sans image, '
+                               . 'le cadre d\'attente reste affiché.',
+                    'exemple' => '',
+                ],
+                'livre_presentation_quatrieme' => [
+                    'libelle' => 'Quatrième de couverture',
+                    'type'    => 'court',
+                    'aide'    => 'Quelques lignes sous le titre, sur l\'accueil : l\'objet du livre, sa '
+                               . 'méthode, ce qu\'il apporte de neuf. <strong>Vide, le paragraphe '
+                               . 'n\'apparaît pas.</strong>',
+                    'exemple' => '',
+                    'max'     => 600,
+                ],
+                'livre_presentation_resume' => [
+                    'libelle' => 'Résumé long',
+                    'type'    => 'long',
+                    'aide'    => 'Sur la page du livre : trois à cinq paragraphes, l\'objet du livre, la '
+                               . 'période couverte, les sources. Une ligne vide sépare deux paragraphes. '
+                               . '<strong>Vide, le résumé n\'apparaît pas.</strong>',
+                    'exemple' => '',
+                ],
+            ],
+        ],
         'biographie_contexte' => [
             'titre'  => 'Biographie — section « Contexte »',
             'page'   => 'Biographie',
@@ -546,7 +583,7 @@ final class Parametre
 
         foreach (self::TEXTES_PAGES['accueil_hero_' . $n]['champs'] ?? [] as $cle => $champ) {
             if ($champ['type'] === 'image') {
-                $diapo['image'] = self::imageDiapositive((string) self::lire($cle));
+                $diapo['image'] = self::image($cle);
             }
         }
 
@@ -558,9 +595,20 @@ final class Parametre
         return $diapo;
     }
 
-    /** @return array<string,mixed>|null */
-    private static function imageDiapositive(string $fichier): ?array
+    /**
+     * L'image d'un champ `image`, prête à afficher (lot G17).
+     *
+     * La ligne de `media`, traduite — la légende sert de texte de
+     * remplacement —, ou `null` : champ vide, fichier effacé de la
+     * médiathèque, ou qui n'est pas une image. Le gabarit garde alors son cadre
+     * d'attente plutôt qu'une `<img>` cassée.
+     *
+     * @return array<string,mixed>|null
+     */
+    public static function image(string $cle): ?array
     {
+        $fichier = trim((string) self::lire($cle));
+
         if ($fichier === '') {
             return null;
         }
@@ -571,8 +619,35 @@ final class Parametre
             return null;
         }
 
-        // La légende sert de texte de remplacement : elle se traduit.
         return Traduction::ligne('media', $media);
+    }
+
+    /**
+     * La fiche technique de l'ouvrage, telle que l'accueil et la page du livre
+     * la montrent (lot G17).
+     *
+     * Les valeurs de l'écran « Paramètres », dans l'ordre demandé, **les vides
+     * écartés** : une ligne « À renseigner » publiée n'apprend rien au lecteur,
+     * et c'est ce que les deux pages affichaient en dur, sans jamais lire ce
+     * qui était saisi. Le prix est écrit comme on le lit, « 25 000 F CFA » ;
+     * les textes sont traduits, **le français décidant** — voir `texte()`.
+     *
+     * @param list<string> $cles clés de FICHE_LIVRE
+     * @return array<string,string> clé => valeur affichable
+     */
+    public static function fiche(array $cles): array
+    {
+        $fiche = [];
+
+        foreach ($cles as $cle) {
+            $valeur = $cle === 'livre_prix' ? Boutique::prixLisible() : self::texte($cle);
+
+            if ($valeur !== '') {
+                $fiche[$cle] = $valeur;
+            }
+        }
+
+        return $fiche;
     }
 
     /**

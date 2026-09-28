@@ -531,7 +531,8 @@ tableau(['Emplacement', 'Dimensions', 'Cadrage attendu'], [
      "Portrait. **Placez le sujet dans la moitié droite** : la moitié gauche est recouverte "
      "par un voile clair sur lequel s'écrit le texte. Se choisit à l'écran Textes des pages."],
     ['Couverture du livre', '1200 × 1550 px',
-     "La couverture seule, sans décor autour. Proportion du livre réel (240 × 310 mm)."],
+     "La couverture seule, sans décor autour. Proportion du livre réel (240 × 310 mm). Se "
+     "choisit à l'écran Textes des pages."],
     ['Portrait en tête de biographie', '1400 × 1750 px',
      "Buste, cadrage serré. *Déjà livré.*"],
     ["Portrait de l'auteur du livre", '1000 × 1250 px',
@@ -785,12 +786,14 @@ p("Les trois bandeaux sont vides aujourd'hui : ils affichaient auparavant un tex
 rubrique('Textes des pages')
 fiche([
     ('Alimente', "Sur l'accueil, le diaporama — ses trois diapositives — et la section "
-                 "« L'homme » ; sur la biographie, la section « Contexte », sous le portrait."),
-    ('Obligatoire', "Rien. Un texte vide retire la section du contexte ; sur l'accueil, il "
-                    "garde le texte par défaut."),
+                 "« L'homme » ; la couverture, la quatrième de couverture et le résumé du "
+                 "livre ; sur la biographie, la section « Contexte », sous le portrait."),
+    ('Obligatoire', "Rien. Un champ vide garde son texte par défaut quand il en a un — l'aide "
+                    "sous le champ le dit —, sinon il disparaît du site."),
     ('Pour paraître', "Le texte. Il n'y a ni brouillon ni bouton de publication : ce qui "
                       "est enregistré est en ligne."),
-    ('Images', "Une par diapositive du diaporama, choisie dans la médiathèque."),
+    ('Images', "Une par diapositive du diaporama, et la couverture du livre, choisies dans "
+               "la médiathèque."),
 ])
 p("Certaines pages ont un texte rédigé qui n'est ni une actualité, ni une période, ni une "
   "citation : il y en a **un seul**, et il est à sa place. C'est le cas du **contexte "
@@ -842,6 +845,19 @@ p("Sous le diaporama, la première section de l'accueil pose en quelques lignes 
   "son texte par défaut, le titre actuel et le paragraphe sur la présidence de l'Assemblée "
   "nationale. Le petit sur-titre « L'homme » et le lien « Lire la biographie complète » ne "
   "changent pas.")
+sous("La présentation du livre")
+p("La carte **Le livre — couverture et présentation** porte ce que la fiche technique ne "
+  "dit pas :")
+puces([
+    "la `Couverture`, choisie dans la médiathèque — 1200 × 1550 px, la couverture seule. "
+    "Elle paraît sur l'accueil et sur la page du livre ; sans image, le cadre d'attente reste ;",
+    "la `Quatrième de couverture`, quelques lignes sous le titre du livre, sur l'accueil ;",
+    "le `Résumé long`, sur la page du livre — une ligne vide sépare deux paragraphes.",
+])
+p("**Vides, la quatrième et le résumé n'apparaissent pas** : ils n'ont pas de texte par "
+  "défaut, et les pages affichaient auparavant une consigne « à fournir » qui a été retirée. "
+  "Le titre, l'auteur, l'éditeur, le prix et le reste de la fiche se règlent à l'écran "
+  "Paramètres.")
 sous("La version anglaise")
 p("L'anglais ne se saisit pas ici mais à l'écran Traductions, fiche **Textes des pages**, le "
   "français en regard — le lien « Traduire » sous chaque carte y mène directement. Tant "
@@ -937,8 +953,9 @@ p("Cet écran ne contient pas des contenus mais des **réglages** : des valeurs 
 
 sous('La fiche technique de l’ouvrage')
 p("Titre, auteur, éditeur, date de parution, nombre de pages, ISBN, prix, format. Ces "
-  "valeurs paraissent sur la page du livre, et certaines sont reprises par les moteurs de "
-  "recherche.")
+  "valeurs paraissent sur l'accueil et sur la page du livre. **Une valeur vide retire sa "
+  "ligne** : rien n'affiche « À renseigner ». Le prix, lui, ne paraît que sur la page du "
+  "livre.")
 puces([
     "**La date de parution est du texte libre** : « Mars 2026 » convient très bien si le "
     "jour n'est pas arrêté.",
@@ -1054,8 +1071,10 @@ p("**Rien ne se publie depuis cet écran.** Poser une traduction ne change pas l
   "fiche et ne touche pas au français : c'est un écran qu'on peut confier sans risque.")
 p("Deux rubriques ne portent qu'une fiche, et s'ouvrent directement : **Le livre et son "
   "auteur** — titre, préface, biographie de l'auteur — et **Textes des pages**, pour le "
-  "diaporama de l'accueil, la section « L'homme » et le contexte de la biographie. Les "
-  "images du diaporama ne se traduisent pas.")
+  "diaporama de l'accueil, la section « L'homme », la présentation du livre et le contexte "
+  "de la biographie. Les images ne se traduisent pas. Le **format** de l'ouvrage, lui, se "
+  "traduit dans **Le livre et son auteur** : sans traduction, la page anglaise affiche "
+  "« Relié, 240 × 310 mm ».")
 p("Tout ne se traduit pas, et c'est voulu. Une adresse web, une année, un crédit photo, un "
   "nom propre n'ont pas de version anglaise — seuls les champs qui le méritent vous sont "
   "proposés.")
