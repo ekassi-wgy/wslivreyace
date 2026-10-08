@@ -54,9 +54,6 @@ final class Televersement
         'audio'    => 60 * 1024 * 1024,   // 60 Mio — un discours d'une heure
     ];
 
-    /** Plafond des images. Conservé : le nom est employé par les écrans. */
-    public const TAILLE_MAX = 8 * 1024 * 1024;      // 8 Mio
-
     /**
      * Garde-fou contre la bombe de décompression : un PNG de 40 Ko peut
      * déclarer 30 000 × 30 000 pixels et réclamer plusieurs gigaoctets à
@@ -572,6 +569,22 @@ final class Televersement
     public static function limiteServeur(): int
     {
         return min(self::octetsIni('upload_max_filesize'), self::octetsIni('post_max_size'));
+    }
+
+    /**
+     * Les plafonds tels que le serveur les laisse réellement passer.
+     *
+     * C'est ce que les écrans annoncent, et jamais `PLAFONDS` nu : promettre
+     * soixante méga-octets à un éditeur quand PHP en coupe à deux, c'est lui
+     * faire découvrir la vraie limite par un refus.
+     *
+     * @return array<string,int>
+     */
+    public static function plafondsServis(): array
+    {
+        $serveur = self::limiteServeur();
+
+        return array_map(static fn (int $plafond): int => min($plafond, $serveur), self::PLAFONDS);
     }
 
     /**

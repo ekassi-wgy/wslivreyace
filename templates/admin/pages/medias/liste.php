@@ -37,7 +37,7 @@ $onglets = ['tous' => 'Toutes'] + Media::CATEGORIES;
       <div class="card-body">
         <h4 class="card-title card-title-dash">Déposer</h4>
         <p class="card-subtitle card-subtitle-dash">
-          Images JPEG, PNG, WebP (<?= View::e(Televersement::poids($tailleMax)) ?>),
+          Images JPEG, PNG, WebP (<?= View::e(Televersement::poids($plafonds['image'])) ?>),
           documents PDF (<?= View::e(Televersement::poids($plafonds['document'])) ?>),
           enregistrements MP3, M4A, OGG (<?= View::e(Televersement::poids($plafonds['audio'])) ?>).
           <?= (int) $lotMax ?> fichiers par dépôt. Tout arrive en brouillon :
