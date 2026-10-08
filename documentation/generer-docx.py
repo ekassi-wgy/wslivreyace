@@ -697,6 +697,9 @@ p("**Une archive est une notice, pas un fichier.** C'est la notion la plus impor
 p("L'`Année` est facultative — une pièce est souvent mal datée — mais si vous la donnez, "
   "elle doit tomber entre 1900 et 2100 : c'est elle qui filtre et qui classe. Le champ "
   "`Date affichée`, lui, est du texte libre pour l'œil.")
+p("**Le fonds se lit dans le sens de l'histoire** : la pièce la plus ancienne d'abord, la "
+  "plus récente ensuite, et les pièces sans année tout à la fin. Une archive que vous venez "
+  "de publier n'arrive donc jamais en tête de page — elle prend la place de son année.")
 p("Les champs `Personnes présentes` et `Mots-clés` nourrissent la recherche du site. "
   "Remplissez-les : c'est ce qui rendra le fonds consultable quand il comptera des "
   "centaines de pièces.")
@@ -1163,6 +1166,14 @@ rubrique("Si quelque chose ne marche pas")
 sous("« J’ai enregistré, mais la page publique n’a pas changé »")
 p("Neuf fois sur dix, le contenu est resté en **Brouillon**. Vérifiez la colonne Statut "
   "dans la liste. Sinon, rafraîchissez la page publique en forçant le rechargement.")
+
+sous("« Ma nouvelle archive n’apparaît pas sur la page Archives »")
+p("Trois causes possibles, dans l'ordre de fréquence. Le fichier a été déposé dans la "
+  "médiathèque, mais aucune notice ne le porte : la page Archives ne montre que des notices, "
+  "jamais un fichier seul. La notice existe, mais elle est restée en **Brouillon**. Ou elle "
+  "est bien publiée, mais vous la cherchez en haut de page : le fonds va du plus ancien au "
+  "plus récent, et les pièces sans année ferment la marche. Tapez son titre dans la recherche "
+  "de la page Archives pour la retrouver.")
 
 sous("« Mon image est refusée »")
 p("Trois causes possibles, dans l'ordre de fréquence : elle dépasse 8 Mo ; ce n'est pas "
