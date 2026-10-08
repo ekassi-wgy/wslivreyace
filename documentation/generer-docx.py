@@ -348,7 +348,7 @@ p("Tout ce qu'il faut savoir pour tenir le site à jour : publier une actualité
   "déposer une photographie, ouvrir la boutique, répondre à un visiteur. "
   "Aucune connaissance technique n'est nécessaire.", style='Lead')
 
-p("Manuel de l'éditeur  ·  Version du 28 septembre 2026", style='Meta')
+p("Manuel de l'éditeur  ·  Version du 8 octobre 2026", style='Meta')
 p("Se lit dans l'ordre, se consulte au besoin.", style='Meta')
 
 doc.add_paragraph()
@@ -505,6 +505,10 @@ tableau(['Famille', 'Formats acceptés', 'Poids maximum', 'Pour quoi'], [
     ['Enregistrements', 'MP3, M4A, OGG', '60 Mo',
      'Discours, allocutions, entretiens'],
 ], largeurs=[3.2, 3.9, 2.6, 6.5])
+p("**L'écran de dépôt affiche les limites réellement en vigueur.** Si la Médiathèque "
+  "annonce des poids plus faibles que ceux de ce tableau, c'est l'hébergement du site qui "
+  "est réglé plus bas, et c'est son chiffre qui s'applique. Alléger vos fichiers n'est pas "
+  "la réponse : signalez-le à la personne qui s'occupe de l'hébergement.")
 p("**Deux limites supplémentaires sur les images :**")
 puces([
     "**40 millions de pixels au maximum** — soit, par exemple, 8 000 × 5 000 points. C'est "
@@ -1165,6 +1169,12 @@ p("Trois causes possibles, dans l'ordre de fréquence : elle dépasse 8 Mo ; ce 
   "réellement un JPEG, un PNG ou un WebP malgré son nom ; elle dépasse 40 millions de "
   "pixels. Le message affiché vous dit laquelle.")
 
+sous("« La Médiathèque annonce moins que ce manuel »")
+p("Ce manuel dit 8, 30 et 60 Mo ; si l'écran de dépôt affiche des chiffres plus faibles, "
+  "l'hébergement du site n'accepte pas davantage et vos fichiers seront refusés au-delà. "
+  "Ce n'est pas une erreur de votre part. Transmettez les chiffres affichés à la personne "
+  "qui s'occupe de l'hébergement.")
+
 sous("« Le bouton de publication refuse et affiche un message »")
 p("C'est une des règles du tableau ci-dessus. Le message nomme précisément ce qui manque. "
   "Ouvrez la fiche, complétez, réessayez.")
@@ -1189,7 +1199,7 @@ fin = doc.add_paragraph()
 bordure(fin._p, ['top'], FILET, taille=4)
 fin.paragraph_format.space_before = Pt(10)
 ecrire(fin, "Manuel d'administration du site **Philippe Grégoire Yacé — une destinée**. "
-            "Rédigé le 8 septembre 2026, revu le 28 septembre 2026, d'après le fonctionnement réel de l'administration. "
+            "Rédigé le 8 septembre 2026, revu le 8 octobre 2026, d'après le fonctionnement réel de l'administration. "
             "Les règles décrites ici sont celles que le site applique : quand il refuse une "
             "publication, c'est l'une d'elles qui parle.", taille=8, couleur=ENCRE3)
 

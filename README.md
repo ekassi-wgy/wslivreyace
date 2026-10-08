@@ -1019,7 +1019,10 @@ n'est plus manipulable, ni en FTP ni en sauvegarde.
 (applicatif), 40 mégapixels par image — un PNG de 40 Ko peut déclarer
 30 000 × 30 000 pixels et réclamer des gigaoctets à l'ouverture — et 20 fichiers
 par dépôt. Quand c'est le serveur qui tranche, c'est sa limite qui est annoncée,
-la plus petite de `upload_max_filesize` et `post_max_size`.
+la plus petite de `upload_max_filesize` et `post_max_size`. Depuis le lot G5 le
+plafond applicatif se décline par famille (8, 30 et 60 Mio), et depuis le
+8 octobre 2026 les trois sont annoncés ainsi — voir « Les plafonds annoncés
+sont ceux que le serveur sert », au §9.
 
 **Un envoi coupé par `post_max_size` est reconnu comme tel.** PHP vide alors
 `$_POST` sans le dire, jeton CSRF compris : la vérification du dépassement passe
@@ -3643,6 +3646,40 @@ noir et blanc chaud des archives à toute image, couverture du livre comprise �
 or c'est un objet qu'on reconnaîtra en librairie, pas une archive
 à unifier. `.frame--couleur` lève le filtre, posé sur la couverture de l'accueil
 et de la page du livre seulement.
+
+**Les plafonds annoncés sont ceux que le serveur sert** (8 octobre 2026). La
+médiathèque affichait « Images (2 Mo), documents PDF (30 Mo), enregistrements
+(60 Mo) » : seul le plafond des images était comparé à la limite de PHP, les
+deux autres s'écrivaient tels quels. Sur un serveur resté au `upload_max_filesize`
+par défaut, l'écran promettait donc 30 et 60 Mo à des fichiers coupés à 2.
+`Televersement::plafondsServis()` rend les trois plafonds bornés par
+`limiteServeur()`, et l'écran n'en lit plus d'autres ; `TAILLE_MAX`, qui ne
+servait qu'à cet affichage, a disparu. Vérifié en ligne de commande avec
+`upload_max_filesize` à 2M, 40M et 64M : 2/2/2, 8/30/40, 8/30/60 Mo. La page
+elle-même n'a pas été rouverte dans un navigateur.
+
+**Ce que le serveur doit accorder à PHP pour tenir ces plafonds**, à régler dans
+Plesk — domaine, « Paramètres PHP » :
+
+| Directive | Valeur | Pourquoi |
+|---|---|---|
+| `upload_max_filesize` | `64M` | Un enregistrement peut peser 60 Mo. |
+| `post_max_size` | `128M` au moins | Borne l'envoi entier ; un dépôt porte jusqu'à 20 fichiers. Au-delà, le site demande de déposer en plusieurs lots. |
+| `memory_limit` | `256M` | GD ouvre des images jusqu'à 40 Mpx, environ 160 Mo en mémoire. |
+| `max_execution_time` | `120` | Dérivées d'un lot de 20 images. |
+| `max_input_time` | `300` | Réception de 60 Mo sur une connexion lente. |
+| `max_file_uploads` | `20` au moins | Défaut de PHP, à ne pas trouver abaissé. |
+
+Il faut aussi `fileinfo` (sans elle, aucun dépôt ne passe), `gd` avec WebP
+(sans elle, pas de dérivées) et `exif` (sans elle, les portraits de téléphone
+sortent couchés en vignette). Si nginx est en frontal, son
+`client_max_body_size` doit dépasser `post_max_size`.
+
+**Ces valeurs ont été réglées dans Plesk le 8 octobre 2026 ; rien n'a encore été
+constaté en ligne.** La preuve tient en un regard — la médiathèque de
+production doit afficher 8, 30 et 60 Mo, tout autre chiffre désigne PHP — puis
+en trois dépôts : un MP3 d'environ 50 Mo, un PDF d'environ 25 Mo, une photo de
+téléphone en pleine résolution dont la vignette doit paraître, droite.
 
 ### Ce que le brief ajoute à la liste des livrables attendus
 
